@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AXIOM • Technologies</title>
+
+  <!-- Общие стили оболочки ( iframe → ../../ ) -->
+  <link rel="stylesheet" href="../../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../../assets/css/axiom.css" />
+
+  <style>
+    body { background: var(--grad-bg); }
+    .page { max-width: 960px; margin: 24px auto; padding: 16px; }
+    .card { background: var(--grad-panel); border: 1px solid var(--outline); border-radius: var(--radius-3); box-shadow: var(--shadow-1); }
+    .head { padding: 16px; border-bottom: 1px solid var(--outline); display:flex; align-items:center; gap:12px; }
+    .head .bolt { width:10px; height:10px; border-radius:2px; background: var(--accent); box-shadow: 0 0 14px var(--accent-glow); transform: rotate(45deg); }
+    .head h1 { font-size: 18px; letter-spacing: .04em; text-transform: uppercase; }
+    .body { padding: 16px; display:grid; gap:12px; }
+    .muted { color: var(--muted); }
+
+    .grid { display:grid; gap:12px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .tech { border: 1px solid var(--outline); border-radius: 12px; background: var(--panel-2); padding: 12px; display:grid; gap:8px; }
+    .tech h3 { font-size: 14px; }
+    .tag { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+    .meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); opacity:.9; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="card">
+      <div class="head">
+        <div class="bolt" aria-hidden="true"></div>
+        <h1>Технологии • Demo</h1>
+      </div>
+      <div class="body">
+        <p class="muted">Страница‑заглушка для публичного UI. Здесь будет подключаться контент из сектора <span class="mono">05_TECHNOLOGIES</span> (импланты, устройства, ИИ‑модули и т.п.).</p>
+
+        <div class="grid">
+          <article class="tech">
+            <h3>NIGHTMARE • Клинок <span class="tag">ID: 05.X_NIGHTMARE</span></h3>
+            <p class="muted">Эталонный протокол клинка с эволюционными стадиями. Этот текст будет заменён на реальную спецификацию из системы.</p>
+            <div class="meta">class: weapon • tier: high</div>
+          </article>
+
+          <article class="tech">
+            <h3>Ω_CATALYST • Имплант <span class="tag">ID: 05.X_OMEGA_CATALYST</span></h3>
+            <p class="muted">Имплант‑катализатор. В демо описания — placeholder; при интеграции подтянем страницу из ядра.</p>
+            <div class="meta">class: implant • tier: experimental</div>
+          </article>
+
+          <article class="tech">
+            <h3>AXIOM CORE • ИИ‑ядро <span class="tag">ID: 05.X_AXIOM_CORE</span></h3>
+            <p class="muted">Цифровой компонент системы. Здесь появится выдержка из соответствующего файла после связывания.</p>
+            <div class="meta">class: AI • tier: system</div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

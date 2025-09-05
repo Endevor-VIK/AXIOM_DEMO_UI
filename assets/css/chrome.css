@@ -1,0 +1,105 @@
+/*
+  AXIOM PUBLIC DEMO UI — CHROME (Title Bar) v1.0
+  Порт идей из axiom_chrome.qss в CSS для веб-оболочки.
+  Зависит от: assets/css/tokens.css
+  Оформляет: верхнюю панель, бренд, кнопки управления.
+
+  Примечание: в вебе нет настоящего drag-region/resize, поэтому только визуальная часть.
+*/
+
+/* ——— Title Bar ——— */
+.titlebar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px var(--space);
+    border-bottom: 1px solid var(--outline);
+    background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.00)),
+                linear-gradient(135deg, rgba(255,32,52,.08), rgba(255,32,52,.00));
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    backdrop-filter: blur(8px);
+  }
+  
+  /* Уплотнённый режим при малой высоте экрана */
+  @media (max-height: 720px) {
+    .titlebar { padding: 8px var(--space); }
+  }
+  
+  /* ——— Brand ——— */
+  .titlebar .brand {
+    display: inline-flex;
+    align-items: baseline;
+    gap: .5ch;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-size: 13px;
+    color: var(--ink);
+    opacity: .95;
+  }
+  .titlebar .brand .sig { color: var(--accent-crimson); font-weight: 900; }
+  
+  /* ——— Controls ——— */
+  .titlebar .controls { display: flex; gap: 8px; align-items: center; }
+  
+  /* Базовая кнопка иконки (совместима с .iconbtn из axiom.css; слегка уточняем для chrome) */
+  .titlebar .iconbtn,
+  .titlebar .winbtn {
+    height: 30px;
+    min-width: 30px;
+    padding: 0 10px;
+    border-radius: 10px;
+    border: 1px solid var(--outline);
+    background: var(--panel-2);
+    color: var(--ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: filter var(--dur) var(--ease-1), transform var(--dur-fast) var(--ease-1), background var(--dur) var(--ease-1), border-color var(--dur) var(--ease-1);
+  }
+  .titlebar .iconbtn:hover,
+  .titlebar .winbtn:hover { filter: brightness(1.06); }
+  .titlebar .iconbtn:active,
+  .titlebar .winbtn:active { transform: translateY(1px) scale(.99); }
+  .titlebar .iconbtn:disabled,
+  .titlebar .winbtn:disabled { opacity: .55; cursor: not-allowed; }
+  .titlebar .iconbtn:focus-visible,
+  .titlebar .winbtn:focus-visible { outline: 2px solid rgba(255,32,52,.55); outline-offset: 2px; }
+  
+  /* Вариант «опасная» (закрыть/выйти) */
+  .titlebar .iconbtn.danger,
+  .titlebar .winbtn.close {
+    background: var(--grad-accent);
+    border-color: rgba(69,24,34,1);
+    color: #fff;
+  }
+  .titlebar .iconbtn.danger:hover,
+  .titlebar .winbtn.close:hover { filter: brightness(1.07); }
+  
+  /* Семейство winbtn (если захочешь добавить) */
+  .titlebar .winbtn.min::before { content: "−"; font-weight: 800; }
+  .titlebar .winbtn.max::before { content: "□"; font-size: 12px; }
+  .titlebar .winbtn.close::before { content: "×"; font-weight: 800; }
+  
+  /* ——— Дополнительно: разделитель, тени ——— */
+  .titlebar::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -1px; height: 1px;
+    background: linear-gradient(90deg,
+      transparent, rgba(207,46,74,0.25) 12%, rgba(207,46,74,0.85) 50%, rgba(207,46,74,0.25) 88%, transparent);
+    opacity: .35;
+  }
+  
+  /* ——— Reduced motion ——— */
+  @media (prefers-reduced-motion: reduce) {
+    .titlebar { backdrop-filter: none; }
+    .titlebar .iconbtn,
+    .titlebar .winbtn { transition: none; }
+  }
+  

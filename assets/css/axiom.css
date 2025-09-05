@@ -1,0 +1,231 @@
+/*
+  AXIOM PUBLIC DEMO UI — CORE THEME v1.0
+  Зависит от: assets/css/tokens.css (переменные!)
+  Покрывает: базовую типографику, фон, Login, Tabs, Panels, Lists, Iframe, Statusbar.
+  Chrome/TitleBar → в chrome.css (Шаг 3).
+*/
+
+/* ——— Reset / base ——— */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+html { color-scheme: dark; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-size);
+  background: var(--grad-bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+:where(h1,h2,h3,h4,h5,h6){ margin:0; font-weight:700; }
+:where(p){ margin:0; }
+.hidden { display: none !important; }
+.view { height: 100%; width: 100%; }
+.mono { font-family: var(--font-mono); }
+.muted { color: var(--muted); }
+.kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border: 1px solid var(--outline);
+  border-bottom-width: 2px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--panel-2);
+}
+
+/* ——— Login ——— */
+.login-wrap {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: calc(var(--space) * 2) var(--space);
+  position: relative;
+  overflow: hidden;
+}
+/* лёгкая сетка-свет для глубины */
+.login-wrap::before,
+.login-wrap::after {
+  content: "";
+  position: absolute; inset: -40% -20% -20% -20%;
+  background:
+    linear-gradient(transparent 23px, rgba(255,255,255,.02) 24px) top left / 100% 24px repeat-y,
+    linear-gradient(90deg, transparent 23px, rgba(255,255,255,.02) 24px) top left / 24px 100% repeat-x;
+  mask: radial-gradient(60% 60% at 50% 50%, #000 0 60%, transparent 80%);
+  pointer-events: none;
+}
+
+.login-card {
+  width: min(520px, 92vw);
+  background: var(--grad-panel);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-4);
+  box-shadow: var(--shadow-1);
+  padding: calc(var(--space) * 1.25);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.login-card::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(600px 220px at 100% 0%, rgba(255,32,52,.15), transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+.brand {
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-size: clamp(18px, 3.6vw, 22px);
+  color: var(--ink);
+  display: inline-flex; align-items: baseline; gap: .5ch;
+}
+.brand .sig { color: var(--accent-crimson); font-weight: 900; }
+.sub { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+.form { margin-top: 20px; display: grid; gap: 12px; }
+.field label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+.field input {
+  width: 100%; height: var(--control-h);
+  border-radius: var(--radius-2);
+  background: var(--panel-2);
+  border: var(--field-border) solid #36151f; /* из QSS */
+  padding: 0 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color var(--dur) var(--ease-1), box-shadow var(--dur) var(--ease-1);
+}
+.field input::placeholder { color: var(--placeholder); }
+.field input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(207,46,74,.25) inset; }
+
+.row { display:flex; gap:12px; align-items:center; justify-content:space-between; }
+.hint { font-size: 12px; color: var(--muted); }
+
+.btn {
+  appearance: none; cursor: pointer; user-select: none;
+  border: 0; border-radius: var(--radius-2);
+  height: var(--control-h); padding: 0 16px; font-weight: 700;
+  background: var(--grad-accent);
+  color: white;
+  box-shadow: var(--shadow-2), inset 0 1px 0 rgba(255,255,255,.15);
+  transition: transform var(--dur-fast) var(--ease-1), filter var(--dur) var(--ease-1), opacity var(--dur) var(--ease-1);
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:active { transform: translateY(1px) scale(.99); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn.alt { background: none; border: 1px solid var(--outline); color: var(--ink); box-shadow: none; }
+
+.legal { margin-top: 10px; font-size: 11px; color: var(--muted); }
+
+/* ——— Main Shell ——— */
+.shell {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  background:
+    radial-gradient(1200px 600px at 100% 0%, rgba(255,32,52,.09), transparent 60%),
+    var(--grad-bg);
+}
+
+/* Titlebar будет детально оформлен в chrome.css; но дадим нейтральный базовый вид */
+.titlebar {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+  gap: 10px; padding: 10px var(--space);
+  border-bottom: 1px solid var(--outline);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), rgba(10,12,15,.6);
+  position: sticky; top: 0; z-index: 5;
+  backdrop-filter: blur(6px);
+}
+.titlebar .brand { font-size: 14px; opacity: .95; }
+.iconbtn {
+  height: 34px; padding: 0 10px; border-radius: 10px;
+  border: 1px solid var(--outline);
+  background: var(--panel-2); color: var(--ink);
+  cursor: pointer; transition: filter var(--dur) var(--ease-1);
+}
+.iconbtn:hover { filter: brightness(1.06); }
+
+/* Tabs */
+.tabbar {
+  display: flex; gap: 8px; padding: 8px var(--space);
+  border-bottom: 1px solid var(--outline);
+  background: linear-gradient(180deg, rgba(255,255,255,.02), transparent);
+}
+.tab {
+  padding: 10px 14px; font-weight: 700; font-size: 13px; letter-spacing: .04em;
+  border-radius: var(--radius-2); cursor: pointer;
+  border: 1px solid var(--outline);
+  background: var(--panel-2); color: var(--ink);
+  transition: border-color var(--dur) var(--ease-1), background var(--dur) var(--ease-1);
+}
+.tab:hover { border-color: #3a2832; }
+.tab.active {
+  background: linear-gradient(180deg, rgba(255,32,52,.18), rgba(177,15,30,.18));
+  border-color: rgba(255,32,52,.45);
+}
+
+/* Panels */
+.content { min-height: 0; display: grid; grid-template-rows: 1fr; padding: var(--space); }
+.panel { display: none; min-height: 0; }
+.panel.active { display: grid; grid-template-columns: 1fr; min-height: 0; }
+
+/* Iframes */
+iframe.embed {
+  width: 100%;
+  height: calc(100vh - 190px);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-3);
+  background: #0a0c0f;
+}
+
+/* Audit / Content grids */
+.audit-grid,
+.content-grid {
+  display: grid; grid-template-columns: minmax(240px, 360px) 1fr; gap: var(--space);
+  min-height: 0;
+}
+.panel-list { background: var(--panel); border: 1px solid var(--outline); border-radius: var(--radius-3); min-height: 0; overflow: auto; }
+.panel-view { background: var(--panel); border: 1px solid var(--outline); border-radius: var(--radius-3); min-height: 0; overflow: hidden; }
+
+.list-head { padding: 12px 14px; border-bottom: 1px solid var(--outline); font-weight: 700; letter-spacing: .06em; color: var(--muted); }
+.list { display: grid; }
+.list button.item {
+  text-align: left; display: grid; gap: 4px; padding: 12px 14px;
+  border: 0; border-bottom: 1px solid var(--outline);
+  background: transparent; color: var(--ink); cursor: pointer;
+  transition: background var(--dur) var(--ease-1);
+}
+.list button.item:hover { background: rgba(255,32,52,.06); }
+.list .title { font-weight: 700; font-size: 13px; }
+.list .meta { color: var(--muted); font-size: 12px; }
+
+.viewbar { padding: 10px 12px; border-bottom: 1px solid var(--outline); display: flex; gap: 10px; align-items: center; }
+.viewbar .path { font-family: var(--font-mono); color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Search */
+.search { display: flex; gap: 10px; padding: 10px; border-bottom: 1px solid var(--outline); }
+.search input {
+  flex: 1; height: 36px; border-radius: 10px; background: var(--panel-2);
+  border: 1px solid var(--outline); padding: 0 12px; color: var(--ink);
+}
+.search input::placeholder { color: var(--placeholder); }
+.search input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(207,46,74,.25) inset; outline: none; }
+
+/* Statusbar */
+.statusbar {
+  border-top: 1px solid var(--outline);
+  padding: 8px var(--space);
+  color: var(--muted); font-size: 12px;
+  display: flex; gap: 12px; align-items: center; justify-content: space-between;
+  background: linear-gradient(0deg, rgba(255,255,255,.02), transparent);
+}
+
+/* A11y */
+:focus-visible { outline: 2px solid rgba(255,32,52,.55); outline-offset: 2px; }
+
+/* Responsive */
+@media (max-width: 860px) {
+  .audit-grid, .content-grid { grid-template-columns: 1fr; }
+  iframe.embed { height: calc(100vh - 240px); }
+}

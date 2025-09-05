@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AXIOM SYSTEM V2 — ROADMAP</title>
+  <style>
+
+:root {
+  --bg: #0e0b0b;
+  --fg: #f3f4f6;
+  --muted: #cbd5e1;
+  --primary: #ef4444;
+  --accent: #dc2626;
+  --border: #1f1f1f;
+  --rowAlt: #131010;
+  --folder: #f87171;
+  --file: #fca5a5;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; background: var(--bg); color: var(--fg); font: 14px/1.5 "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+header { position: sticky; top: 0; z-index: 20; background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,0)), var(--bg); backdrop-filter: blur(6px); border-bottom: 1px solid var(--border); }
+.container { max-width: 1280px; margin: 0 auto; padding: 16px 20px; }
+h1 { margin: 0; font-size: 20px; letter-spacing: .5px; }
+.subtle { color: var(--muted); font-size: 12px; }
+.controls { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+input[type="search"] { flex: 1; min-width: 220px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--fg); }
+button { padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--fg); cursor: pointer; }
+button.primary { border-color: var(--primary); }
+main { padding: 16px 20px; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin-bottom: 8px; }
+.card { border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+.card .label { font-size: 12px; color: var(--muted); }
+.tree { margin-top: 10px; }
+.tree ul { list-style: none; margin: 0; padding-left: 18px; }
+.tree li { margin: 4px 0; }
+.tree details { border-left: 1px dashed var(--border); padding-left: 10px; }
+.tree summary { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.badge { display: inline-block; padding: 0 6px; border-radius: 999px; font-size: 11px; border: 1px solid var(--border); color: var(--muted); }
+.icon { width: 1.1em; text-align: center; }
+.folder { color: var(--folder); }
+.file { color: var(--file); }
+.highlight { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 8px; }
+.hidden { display: none !important; }
+.footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+        
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>AXIOM SYSTEM V2 — ROADMAP</h1>
+      <div class="subtle">Сгенерировано: 2025-08-22 04:16:26</div>
+      <div class="controls">
+        <input id="search" type="search" placeholder="Поиск по названию / id / zone…" />
+        <button id="expandAll" class="primary">Развернуть все</button>
+        <button id="collapseAll">Свернуть все</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="summary">
+      <div class="card"><div class="label">Всего папок</div><div><b>148</b></div></div>
+      <div class="card"><div class="label">Всего файлов</div><div><b>572</b></div></div>
+      <div class="card"><div class="label">Форматы</div><div>.md: 405, .json: 121, .py: 38, .html: 5, .03_router: 1, .04_llm: 1, .jpg: 1</div></div>
+    </div>
+
+    <div class=tree><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>00_NAVIGATION</span> <span class=badge>1 folders</span> <span class=badge>6 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>00.00.gns_NAV_SCRIPTS</span> <span class=badge>0 folders</span> <span class=badge>13 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>00.00.gns.00.n_NAV.json</span><span class=subtle> — id: 00.00.gns.00.n | name: NAV | zone: 00.00.gns_NAV_SCRIPTS</span></li>
+<li><span class=icon>📄</span><span class=file>00.00.gns.00.r_README.md</span><span class=subtle> — id: 00.00.gns.00.r | name: README | zone: 00.00.gns_NAV_SCRIPTS</span></li>
+<li><span class=icon>📄</span><span class=file>00.00.gns.00.s_STRUCTURE.md</span><span class=subtle> — id: 00.00.gns.00.s | name: STRUCTURE | zone: 00.00.gns_NAV_SCRIPTS</span></li>
+<li><span class=icon>📄</span><span class=file>MARKDOWN HEADER PARSER</span><span class=subtle> — id: 00.00.gns.01.01 | name: axiom_header_parser | zone: [00_NAVIGATION]</span></li>
+<li><span class=icon>📄</span><span class=file>PY HEADER PARSER</span><span class=subtle> — id: 00.00.gns.01.02 | name: axiom_py_header_parser | zone: [00_NAVIGATION]</span></li>
+<li><span class=icon>📄</span><span class=file>NAVIGATION TREE GENERATOR (RC)</span><span class=subtle> — id: 00.00.gns.01 | name: GEN_NAV_BETA | zone: [00_NAVIGATION]</span></li>
+<li><span class=icon>📄</span><span class=file>00.00.gns.02_PATCH_NAV_TREE.py</span><span class=subtle> — id: 00.00.gns.02 | name: PATCH_NAV_TREE | zone: 00.00.gns_NAV_SCRIPTS</span></li>
+<li><span class=icon>📄</span><span class=file>00.00.gns.03_SCAN_V2_STATUS.py</span><span class=subtle> — id: 00.00.gns.03 | name: SCAN_V2_STATUS | zone: 00.00.gns_NAV_SCRIPTS</span></li>
+<li><span class=icon>📄</span><span class=file>00.00.gns.04_EXPORT_NAV_JSON.py</span><span class=subtle> — id: 00.00.gns.04 | name: EXPORT_NAV_JSON | zone: 00.00.gns_NAV_SCRIPTS</span></li>
+<li><span class=icon>📄</span><span class=file>AUTOFILL ALL NAV JSON</span><span class=subtle> — id: 00.00.gns.05 | name: AUTOFILL_ALL_NAV | zone: [00_NAVIGATION]</span></li>
+<li><span class=icon>📄</span><span class=file>AXIOM ROADMAP TABLE GENERATOR (optimized)</span><span class=subtle> — id: 00.00.gns.06 | name: BUILD_ROADMAP_TABLE | zone: [00_NAVIGATION/00.00.gns_NAV_SCRIPTS]</span></li>
+<li><span class=icon>📄</span><span class=file>00.00.gns.07_BUILD_ROADMAP_HTML.py</span><span class=subtle> — id: 00.00.gns.07 | name: BUILD_ROADMAP_HTML | zone: 00.00.gns_NAV_SCRIPTS</span></li>
+<li><span class=icon>📄</span><span class=file>AXIOM NAVIGATION LAUNCHER</span><span class=subtle> — id: axiom | name: navigation | zone: [11_SYSTEM_INTERFACE]</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>00.00.n_AXIOM_NAVIGATION.json</span><span class=subtle> — id: 00.00.n | name: AXIOM_NAVIGATION | zone: 00_NAVIGATION</span></li>
+<li><span class=icon>📄</span><span class=file>00.00.r_README.md</span><span class=subtle> — id: 00.00.r | name: README | zone: 00_NAVIGATION</span></li>
+<li><span class=icon>📄</span><span class=file>00.01.n_RESOLVED_TREE.json</span><span class=subtle> — id: 00.01.n | name: RESOLVED_TREE | zone: 00_NAVIGATION</span></li>
+<li><span class=icon>📄</span><span class=file>00.02.n_SEARCH_INDEX.json</span><span class=subtle> — id: 00.02.n | name: SEARCH_INDEX | zone: 00_NAVIGATION</span></li>
+<li><span class=icon>📄</span><span class=file>00.03.n_ROADMAP.md</span><span class=subtle> — id: 00.03.n | name: ROADMAP | zone: 00_NAVIGATION</span></li>
+<li><span class=icon>📄</span><span class=file>00.04.n_ROADMAP.html</span><span class=subtle> — id: 00.04.n | name: ROADMAP | zone: 00_NAVIGATION</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>01_CORE_SYSTEM</span> <span class=badge>3 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>01.00.n_NAV.json</span><span class=subtle> — id: 01.00.n | name: NAV | zone: 01_CORE_SYSTEM</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>01.00.pm_PATTERN_MODULES</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>01.00.r_README.md</span><span class=subtle> — id: 01.00.r | name: README | zone: 01_CORE_SYSTEM</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>01.00.rm_ROADMAP</span> <span class=badge>0 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>01.00.rm.00.n_NAV.json</span><span class=subtle> — id: 01.00.rm.00.n | name: NAV | zone: 01.00.rm_ROADMAP</span></li>
+<li><span class=icon>📄</span><span class=file>01.00.rm.00.r_README.md</span><span class=subtle> — id: 01.00.rm.00.r | name: README | zone: 01.00.rm_ROADMAP</span></li>
+<li><span class=icon>📄</span><span class=file>01.00.rm.01_AXIOM_ROADMAP.md</span><span class=subtle> — id: 01.00.rm.01 | name: AXIOM_ROADMAP | zone: 01.00.rm_ROADMAP</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>01.00.s_STRUCTURE.md</span><span class=subtle> — id: 01.00.s | name: STRUCTURE | zone: 01_CORE_SYSTEM</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>01.00.w_AXIOM_SOUL_CORE</span> <span class=badge>1 folders</span> <span class=badge>4 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>01.00.w.00.n_NAV.json</span><span class=subtle> — id: 01.00.w.00.n | name: NAV | zone: 01.00.w_AXIOM_SOUL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>01.00.w.00.r_README_AXIOM_EVOLUTION_CORE.md</span><span class=subtle> — id: 01.00.w.00.r | name: README_AXIOM_EVOLUTION_CORE | zone: 01.00.w_AXIOM_SOUL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>01.00.w.00.s_STRUCTURE.md</span><span class=subtle> — id: 01.00.w.00.s | name: STRUCTURE | zone: 01.00.w_AXIOM_SOUL_CORE</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>01.00.w.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>01.00.w.01_AXIOM_DATA_INTEGRITY_PROTOCOL.md</span><span class=subtle> — id: 01.00.w.01 | name: AXIOM_DATA_INTEGRITY_PROTOCOL | zone: 01.00.w_AXIOM_SOUL_CORE</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02_LOCATIONS</span> <span class=badge>7 folders</span> <span class=badge>4 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.00.f_FRAMEWORK</span> <span class=badge>1 folders</span> <span class=badge>13 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.00.f.00.r_README.md</span><span class=subtle> — id: 02.00.f.00.r | name: README | zone: 02.00.f_FRAMEWORK</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.00.f.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.01.md</span><span class=subtle> — id: 02.00.f.01 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.02.md</span><span class=subtle> — id: 02.00.f.02 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.03.md</span><span class=subtle> — id: 02.00.f.03 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.04.md</span><span class=subtle> — id: 02.00.f.04 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.05.md</span><span class=subtle> — id: 02.00.f.05 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.06.md</span><span class=subtle> — id: 02.00.f.06 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.07.md</span><span class=subtle> — id: 02.00.f.07 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.08.md</span><span class=subtle> — id: 02.00.f.08 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.09.md</span><span class=subtle> — id: 02.00.f.09 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.10.md</span><span class=subtle> — id: 02.00.f.10 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.11.md</span><span class=subtle> — id: 02.00.f.11 | zone: 02.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.f.12.md</span><span class=subtle> — id: 02.00.f.12 | zone: 02.00.f_FRAMEWORK</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>02.00.n_NAV.json</span><span class=subtle> — id: 02.00.n | name: NAV | zone: 02_LOCATIONS</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.r_README.md</span><span class=subtle> — id: 02.00.r | name: README | zone: 02_LOCATIONS</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.s_STRUCTURE.md</span><span class=subtle> — id: 02.00.s | name: STRUCTURE | zone: 02_LOCATIONS</span></li>
+<li><span class=icon>📄</span><span class=file>02.00.t_STATUS.md</span><span class=subtle> — id: 02.00.t | name: STATUS | zone: 02_LOCATIONS</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.01_GLUHAYA_STATION</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.01.00.n_NAV.json</span><span class=subtle> — id: 02.01.00.n | name: NAV | zone: 02.01_GLUHAYA_STATION</span></li>
+<li><span class=icon>📄</span><span class=file>02.01.00.r_README.md</span><span class=subtle> — id: 02.01.00.r | name: README | zone: 02.01_GLUHAYA_STATION</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.02_NEXUS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.02.00.n_NAV.json</span><span class=subtle> — id: 02.02.00.n | name: NAV | zone: 02.02_NEXUS</span></li>
+<li><span class=icon>📄</span><span class=file>02.02.00.r_README.md</span><span class=subtle> — id: 02.02.00.r | name: README | zone: 02.02_NEXUS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.03_FACELESS_BASE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.03.00.n_NAV.json</span><span class=subtle> — id: 02.03.00.n | name: NAV | zone: 02.03_FACELESS_BASE</span></li>
+<li><span class=icon>📄</span><span class=file>02.03.00.r_README.md</span><span class=subtle> — id: 02.03.00.r | name: README | zone: 02.03_FACELESS_BASE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04_ECHELON</span> <span class=badge>7 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.00.f_FRAMEWORK</span> <span class=badge>1 folders</span> <span class=badge>16 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.00.n_NAV.json</span><span class=subtle> — id: 02.04.00.f.00.n | name: NAV | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.00.r_README.md</span><span class=subtle> — id: 02.04.00.f.00.r | name: README | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.00.f.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.01.md</span><span class=subtle> — id: 02.04.00.f.01 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.02.md</span><span class=subtle> — id: 02.04.00.f.02 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.03.md</span><span class=subtle> — id: 02.04.00.f.03 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.04.md</span><span class=subtle> — id: 02.04.00.f.04 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.05.md</span><span class=subtle> — id: 02.04.00.f.05 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.06.md</span><span class=subtle> — id: 02.04.00.f.06 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.07.md</span><span class=subtle> — id: 02.04.00.f.07 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.08.md</span><span class=subtle> — id: 02.04.00.f.08 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.09.md</span><span class=subtle> — id: 02.04.00.f.09 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.10.md</span><span class=subtle> — id: 02.04.00.f.10 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.11.md</span><span class=subtle> — id: 02.04.00.f.11 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.12.md</span><span class=subtle> — id: 02.04.00.f.12 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.13.md</span><span class=subtle> — id: 02.04.00.f.13 | zone: 02.04.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.f.14.md</span><span class=subtle> — id: 02.04.00.f.14 | zone: 02.04.00.f_FRAMEWORK</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.n_NAV.json</span><span class=subtle> — id: 02.04.00.n | name: NAV | zone: 02.04_ECHELON</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.00.r_README.md</span><span class=subtle> — id: 02.04.00.r | name: README | zone: 02.04_ECHELON</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.01_ECHELON.md</span><span class=subtle> — id: 02.04.01 | name: ECHELON | zone: 02.04_ECHELON</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.10_UPPER_ECHELON</span> <span class=badge>5 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.10.00.n_NAV.json</span><span class=subtle> — id: 02.04.10.00.n | name: NAV | zone: 02.04.10_UPPER_ECHELON</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.10.00.r_README.md</span><span class=subtle> — id: 02.04.10.00.r | name: README | zone: 02.04.10_UPPER_ECHELON</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.10.01_SKYDOME_TOWER</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.10.01.00.n_NAV.json</span><span class=subtle> — id: 02.04.10.01.00.n | name: NAV | zone: 02.04.10.01_SKYDOME_TOWER</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.10.01.00.r_README.md</span><span class=subtle> — id: 02.04.10.01.00.r | name: README | zone: 02.04.10.01_SKYDOME_TOWER</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.10.02_CELESTIAL_HALL</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.10.02.00.n_NAV.json</span><span class=subtle> — id: 02.04.10.02.00.n | name: NAV | zone: 02.04.10.02_CELESTIAL_HALL</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.10.02.00.r_README.md</span><span class=subtle> — id: 02.04.10.02.00.r | name: README | zone: 02.04.10.02_CELESTIAL_HALL</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.10.03_HELIOS_PLATFORM</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.10.03.00.n_NAV.json</span><span class=subtle> — id: 02.04.10.03.00.n | name: NAV | zone: 02.04.10.03_HELIOS_PLATFORM</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.10.03.00.r_README.md</span><span class=subtle> — id: 02.04.10.03.00.r | name: README | zone: 02.04.10.03_HELIOS_PLATFORM</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.10.04_PRIVATE_DOMES</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.10.04.00.n_NAV.json</span><span class=subtle> — id: 02.04.10.04.00.n | name: NAV | zone: 02.04.10.04_PRIVATE_DOMES</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.10.04.00.r_README.md</span><span class=subtle> — id: 02.04.10.04.00.r | name: README | zone: 02.04.10.04_PRIVATE_DOMES</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.10.05_OBSERVATORY</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.10.05.00.n_NAV.json</span><span class=subtle> — id: 02.04.10.05.00.n | name: NAV | zone: 02.04.10.05_OBSERVATORY</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.10.05.00.r_README.md</span><span class=subtle> — id: 02.04.10.05.00.r | name: README | zone: 02.04.10.05_OBSERVATORY</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.20_CORPORATE_LEVEL</span> <span class=badge>5 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.20.00.n_NAV.json</span><span class=subtle> — id: 02.04.20.00.n | name: NAV | zone: 02.04.20_CORPORATE_LEVEL</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.20.00.r_README.md</span><span class=subtle> — id: 02.04.20.00.r | name: README | zone: 02.04.20_CORPORATE_LEVEL</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.20.01_SYNDICORE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.20.01.00.n_NAV.json</span><span class=subtle> — id: 02.04.20.01.00.n | name: NAV | zone: 02.04.20.01_SYNDICORE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.20.01.00.r_README.md</span><span class=subtle> — id: 02.04.20.01.00.r | name: README | zone: 02.04.20.01_SYNDICORE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.20.02_ENDEAVOR_TOWER</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.20.02.00.n_NAV.json</span><span class=subtle> — id: 02.04.20.02.00.n | name: NAV | zone: 02.04.20.02_ENDEAVOR_TOWER</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.20.02.00.r_README.md</span><span class=subtle> — id: 02.04.20.02.00.r | name: README | zone: 02.04.20.02_ENDEAVOR_TOWER</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.20.03_BLACK_LOUNGES</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.20.03.00.n_NAV.json</span><span class=subtle> — id: 02.04.20.03.00.n | name: NAV | zone: 02.04.20.03_BLACK_LOUNGES</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.20.03.00.r_README.md</span><span class=subtle> — id: 02.04.20.03.00.r | name: README | zone: 02.04.20.03_BLACK_LOUNGES</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.20.04_LEGIS_PLATFORM</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.20.04.00.n_NAV.json</span><span class=subtle> — id: 02.04.20.04.00.n | name: NAV | zone: 02.04.20.04_LEGIS_PLATFORM</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.20.04.00.r_README.md</span><span class=subtle> — id: 02.04.20.04.00.r | name: README | zone: 02.04.20.04_LEGIS_PLATFORM</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.20.05_FINTECH_CONCORD</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.20.05.00.n_NAV.json</span><span class=subtle> — id: 02.04.20.05.00.n | name: NAV | zone: 02.04.20.05_FINTECH_CONCORD</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.20.05.00.r_README.md</span><span class=subtle> — id: 02.04.20.05.00.r | name: README | zone: 02.04.20.05_FINTECH_CONCORD</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.30_MIDZONE</span> <span class=badge>5 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.30.00.n_NAV.json</span><span class=subtle> — id: 02.04.30.00.n | name: NAV | zone: 02.04.30_MIDZONE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.30.00.r_README.md</span><span class=subtle> — id: 02.04.30.00.r | name: README | zone: 02.04.30_MIDZONE</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.30.01_AURORA_DISTRICT</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.30.01.00.n_NAV.json</span><span class=subtle> — id: 02.04.30.01.00.n | name: NAV | zone: 02.04.30.01_AURORA_DISTRICT</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.30.01.00.r_README.md</span><span class=subtle> — id: 02.04.30.01.00.r | name: README | zone: 02.04.30.01_AURORA_DISTRICT</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.30.02_SOMA_BLOCKS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.30.02.00.n_NAV.json</span><span class=subtle> — id: 02.04.30.02.00.n | name: NAV | zone: 02.04.30.02_SOMA_BLOCKS</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.30.02.00.r_README.md</span><span class=subtle> — id: 02.04.30.02.00.r | name: README | zone: 02.04.30.02_SOMA_BLOCKS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.30.03_TECH_MILE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.30.03.00.n_NAV.json</span><span class=subtle> — id: 02.04.30.03.00.n | name: NAV | zone: 02.04.30.03_TECH_MILE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.30.03.00.r_README.md</span><span class=subtle> — id: 02.04.30.03.00.r | name: README | zone: 02.04.30.03_TECH_MILE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.30.04_EXCHANGE_CORE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.30.04.00.n_NAV.json</span><span class=subtle> — id: 02.04.30.04.00.n | name: NAV | zone: 02.04.30.04_EXCHANGE_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.30.04.00.r_README.md</span><span class=subtle> — id: 02.04.30.04.00.r | name: README | zone: 02.04.30.04_EXCHANGE_CORE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.30.05_MEDSTATION_ALPHA</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.30.05.00.n_NAV.json</span><span class=subtle> — id: 02.04.30.05.00.n | name: NAV | zone: 02.04.30.05_MEDSTATION_ALPHA</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.30.05.00.r_README.md</span><span class=subtle> — id: 02.04.30.05.00.r | name: README | zone: 02.04.30.05_MEDSTATION_ALPHA</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40_UNDERCITY</span> <span class=badge>20 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.00.n | name: NAV | zone: 02.04.40_UNDERCITY</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.00.r_README.md</span><span class=subtle> — id: 02.04.40.00.r | name: README | zone: 02.04.40_UNDERCITY</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.01_RUSTFIELD_ZONE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.01.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.01.00.n | name: NAV | zone: 02.04.40.01_RUSTFIELD_ZONE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.01.00.r_README.md</span><span class=subtle> — id: 02.04.40.01.00.r | name: README | zone: 02.04.40.01_RUSTFIELD_ZONE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.02_BLACK_CIRCUITS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.02.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.02.00.n | name: NAV | zone: 02.04.40.02_BLACK_CIRCUITS</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.02.00.r_README.md</span><span class=subtle> — id: 02.04.40.02.00.r | name: README | zone: 02.04.40.02_BLACK_CIRCUITS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.03_GLASSBONES_ARENA</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.03.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.03.00.n | name: NAV | zone: 02.04.40.03_GLASSBONES_ARENA</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.03.00.r_README.md</span><span class=subtle> — id: 02.04.40.03.00.r | name: README | zone: 02.04.40.03_GLASSBONES_ARENA</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.04_SYNDICATE_NEST</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.04.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.04.00.n | name: NAV | zone: 02.04.40.04_SYNDICATE_NEST</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.04.00.r_README.md</span><span class=subtle> — id: 02.04.40.04.00.r | name: README | zone: 02.04.40.04_SYNDICATE_NEST</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.05_NARCORE_DISTRICT</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.05.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.05.00.n | name: NAV | zone: 02.04.40.05_NARCORE_DISTRICT</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.05.00.r_README.md</span><span class=subtle> — id: 02.04.40.05.00.r | name: README | zone: 02.04.40.05_NARCORE_DISTRICT</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.06_REAPERS_BLOCKS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.06.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.06.00.n | name: NAV | zone: 02.04.40.06_REAPERS_BLOCKS</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.06.00.r_README.md</span><span class=subtle> — id: 02.04.40.06.00.r | name: README | zone: 02.04.40.06_REAPERS_BLOCKS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.07_FLESHMARKET</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.07.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.07.00.n | name: NAV | zone: 02.04.40.07_FLESHMARKET</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.07.00.r_README.md</span><span class=subtle> — id: 02.04.40.07.00.r | name: README | zone: 02.04.40.07_FLESHMARKET</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.08_LABRAT_HOLLOW</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.08.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.08.00.n | name: NAV | zone: 02.04.40.08_LABRAT_HOLLOW</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.08.00.r_README.md</span><span class=subtle> — id: 02.04.40.08.00.r | name: README | zone: 02.04.40.08_LABRAT_HOLLOW</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.09_SEWAGE_HEART</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.09.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.09.00.n | name: NAV | zone: 02.04.40.09_SEWAGE_HEART</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.09.00.r_README.md</span><span class=subtle> — id: 02.04.40.09.00.r | name: README | zone: 02.04.40.09_SEWAGE_HEART</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.10_FAULTLINE_TUNNELS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.10.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.10.00.n | name: NAV | zone: 02.04.40.10_FAULTLINE_TUNNELS</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.10.00.r_README.md</span><span class=subtle> — id: 02.04.40.10.00.r | name: README | zone: 02.04.40.10_FAULTLINE_TUNNELS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.11_RELIC_HALL</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.11.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.11.00.n | name: NAV | zone: 02.04.40.11_RELIC_HALL</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.11.00.r_README.md</span><span class=subtle> — id: 02.04.40.11.00.r | name: README | zone: 02.04.40.11_RELIC_HALL</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.12_NULLCORE_GATE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.12.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.12.00.n | name: NAV | zone: 02.04.40.12_NULLCORE_GATE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.12.00.r_README.md</span><span class=subtle> — id: 02.04.40.12.00.r | name: README | zone: 02.04.40.12_NULLCORE_GATE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.13_SCRAP_TOWERS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.13.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.13.00.n | name: NAV | zone: 02.04.40.13_SCRAP_TOWERS</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.13.00.r_README.md</span><span class=subtle> — id: 02.04.40.13.00.r | name: README | zone: 02.04.40.13_SCRAP_TOWERS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.14_WIDOW_LANE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.14.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.14.00.n | name: NAV | zone: 02.04.40.14_WIDOW_LANE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.14.00.r_README.md</span><span class=subtle> — id: 02.04.40.14.00.r | name: README | zone: 02.04.40.14_WIDOW_LANE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.15_ASPHALT_CATHEDRAL</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.15.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.15.00.n | name: NAV | zone: 02.04.40.15_ASPHALT_CATHEDRAL</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.15.00.r_README.md</span><span class=subtle> — id: 02.04.40.15.00.r | name: README | zone: 02.04.40.15_ASPHALT_CATHEDRAL</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.16_CARGO_VOID</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.16.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.16.00.n | name: NAV | zone: 02.04.40.16_CARGO_VOID</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.16.00.r_README.md</span><span class=subtle> — id: 02.04.40.16.00.r | name: README | zone: 02.04.40.16_CARGO_VOID</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.17_NOIR_WARRENS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.17.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.17.00.n | name: NAV | zone: 02.04.40.17_NOIR_WARRENS</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.17.00.r_README.md</span><span class=subtle> — id: 02.04.40.17.00.r | name: README | zone: 02.04.40.17_NOIR_WARRENS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.18_BIOLEAK_ZONE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.18.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.18.00.n | name: NAV | zone: 02.04.40.18_BIOLEAK_ZONE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.18.00.r_README.md</span><span class=subtle> — id: 02.04.40.18.00.r | name: README | zone: 02.04.40.18_BIOLEAK_ZONE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.19_EXILED_BASTION</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.19.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.19.00.n | name: NAV | zone: 02.04.40.19_EXILED_BASTION</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.19.00.r_README.md</span><span class=subtle> — id: 02.04.40.19.00.r | name: README | zone: 02.04.40.19_EXILED_BASTION</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.40.20_SILENT_DEPTHS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.40.20.00.n_NAV.json</span><span class=subtle> — id: 02.04.40.20.00.n | name: NAV | zone: 02.04.40.20_SILENT_DEPTHS</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.40.20.00.r_README.md</span><span class=subtle> — id: 02.04.40.20.00.r | name: README | zone: 02.04.40.20_SILENT_DEPTHS</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50_SUBTERRA</span> <span class=badge>10 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.00.n | name: NAV | zone: 02.04.50_SUBTERRA</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.00.r_README.md</span><span class=subtle> — id: 02.04.50.00.r | name: README | zone: 02.04.50_SUBTERRA</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50.01_TOMBVAULTS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.01.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.01.00.n | name: NAV | zone: 02.04.50.01_TOMBVAULTS</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.01.00.r_README.md</span><span class=subtle> — id: 02.04.50.01.00.r | name: README | zone: 02.04.50.01_TOMBVAULTS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50.02_CRADLE_CORE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.02.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.02.00.n | name: NAV | zone: 02.04.50.02_CRADLE_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.02.00.r_README.md</span><span class=subtle> — id: 02.04.50.02.00.r | name: README | zone: 02.04.50.02_CRADLE_CORE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50.03_ABYSSAL_PIT</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.03.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.03.00.n | name: NAV | zone: 02.04.50.03_ABYSSAL_PIT</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.03.00.r_README.md</span><span class=subtle> — id: 02.04.50.03.00.r | name: README | zone: 02.04.50.03_ABYSSAL_PIT</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50.04_GHOST_ECHOES</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.04.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.04.00.n | name: NAV | zone: 02.04.50.04_GHOST_ECHOES</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.04.00.r_README.md</span><span class=subtle> — id: 02.04.50.04.00.r | name: README | zone: 02.04.50.04_GHOST_ECHOES</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50.05_EXO_CHAMBERS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.05.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.05.00.n | name: NAV | zone: 02.04.50.05_EXO_CHAMBERS</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.05.00.r_README.md</span><span class=subtle> — id: 02.04.50.05.00.r | name: README | zone: 02.04.50.05_EXO_CHAMBERS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50.06_IRON_MONASTERY</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.06.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.06.00.n | name: NAV | zone: 02.04.50.06_IRON_MONASTERY</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.06.00.r_README.md</span><span class=subtle> — id: 02.04.50.06.00.r | name: README | zone: 02.04.50.06_IRON_MONASTERY</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50.07_GRAVESHIFT_ZONE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.07.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.07.00.n | name: NAV | zone: 02.04.50.07_GRAVESHIFT_ZONE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.07.00.r_README.md</span><span class=subtle> — id: 02.04.50.07.00.r | name: README | zone: 02.04.50.07_GRAVESHIFT_ZONE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50.08_FORGOTTEN_HANGAR</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.08.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.08.00.n | name: NAV | zone: 02.04.50.08_FORGOTTEN_HANGAR</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.08.00.r_README.md</span><span class=subtle> — id: 02.04.50.08.00.r | name: README | zone: 02.04.50.08_FORGOTTEN_HANGAR</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50.09_DREAD_ENGINE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.09.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.09.00.n | name: NAV | zone: 02.04.50.09_DREAD_ENGINE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.09.00.r_README.md</span><span class=subtle> — id: 02.04.50.09.00.r | name: README | zone: 02.04.50.09_DREAD_ENGINE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.50.10_OBLIVION_CRYPT</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.50.10.00.n_NAV.json</span><span class=subtle> — id: 02.04.50.10.00.n | name: NAV | zone: 02.04.50.10_OBLIVION_CRYPT</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.50.10.00.r_README.md</span><span class=subtle> — id: 02.04.50.10.00.r | name: README | zone: 02.04.50.10_OBLIVION_CRYPT</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99_CORE_AI_SYSTEM</span> <span class=badge>10 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.00.n | name: NAV | zone: 02.04.99_CORE_AI_SYSTEM</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.00.r_README.md</span><span class=subtle> — id: 02.04.99.00.r | name: README | zone: 02.04.99_CORE_AI_SYSTEM</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99.01_NEUROGRID_CORE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.01.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.01.00.n | name: NAV | zone: 02.04.99.01_NEUROGRID_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.01.00.r_README.md</span><span class=subtle> — id: 02.04.99.01.00.r | name: README | zone: 02.04.99.01_NEUROGRID_CORE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99.02_SENTINEL_NEXUS</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.02.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.02.00.n | name: NAV | zone: 02.04.99.02_SENTINEL_NEXUS</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.02.00.r_README.md</span><span class=subtle> — id: 02.04.99.02.00.r | name: README | zone: 02.04.99.02_SENTINEL_NEXUS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99.03_VEIL_PROTOCOL</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.03.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.03.00.n | name: NAV | zone: 02.04.99.03_VEIL_PROTOCOL</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.03.00.r_README.md</span><span class=subtle> — id: 02.04.99.03.00.r | name: README | zone: 02.04.99.03_VEIL_PROTOCOL</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99.04_GHOST_FRAMEWORK</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.04.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.04.00.n | name: NAV | zone: 02.04.99.04_GHOST_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.04.00.r_README.md</span><span class=subtle> — id: 02.04.99.04.00.r | name: README | zone: 02.04.99.04_GHOST_FRAMEWORK</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99.05_AXIOM_RELIC</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.05.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.05.00.n | name: NAV | zone: 02.04.99.05_AXIOM_RELIC</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.05.00.r_README.md</span><span class=subtle> — id: 02.04.99.05.00.r | name: README | zone: 02.04.99.05_AXIOM_RELIC</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99.06_BLACKROOM_ARCH</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.06.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.06.00.n | name: NAV | zone: 02.04.99.06_BLACKROOM_ARCH</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.06.00.r_README.md</span><span class=subtle> — id: 02.04.99.06.00.r | name: README | zone: 02.04.99.06_BLACKROOM_ARCH</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99.07_CODE_FORGE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.07.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.07.00.n | name: NAV | zone: 02.04.99.07_CODE_FORGE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.07.00.r_README.md</span><span class=subtle> — id: 02.04.99.07.00.r | name: README | zone: 02.04.99.07_CODE_FORGE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99.08_MIRROR_HALL</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.08.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.08.00.n | name: NAV | zone: 02.04.99.08_MIRROR_HALL</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.08.00.r_README.md</span><span class=subtle> — id: 02.04.99.08.00.r | name: README | zone: 02.04.99.08_MIRROR_HALL</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99.09_GODSEED_CORE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.09.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.09.00.n | name: NAV | zone: 02.04.99.09_GODSEED_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.09.00.r_README.md</span><span class=subtle> — id: 02.04.99.09.00.r | name: README | zone: 02.04.99.09_GODSEED_CORE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.04.99.10_EXILE_CHAMBER</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.04.99.10.00.n_NAV.json</span><span class=subtle> — id: 02.04.99.10.00.n | name: NAV | zone: 02.04.99.10_EXILE_CHAMBER</span></li>
+<li><span class=icon>📄</span><span class=file>02.04.99.10.00.r_README.md</span><span class=subtle> — id: 02.04.99.10.00.r | name: README | zone: 02.04.99.10_EXILE_CHAMBER</span></li>
+</ul></details></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.05_LABORATORY_OMEGA_0</span> <span class=badge>6 folders</span> <span class=badge>4 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.02.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>02.05.00.n_NAV.json</span><span class=subtle> — id: 02.05.00.n | name: NAV | zone: 02.05_LABORATORY_OMEGA_0</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.00.r_README.html</span><span class=subtle> — id: 02.05.00.r | name: README | zone: 02.05_LABORATORY_OMEGA_0</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.00.r_README.md</span><span class=subtle> — id: 02.05.00.r | name: README | zone: 02.05_LABORATORY_OMEGA_0</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.00.s_STRUCTURE.md</span><span class=subtle> — id: 02.05.00.s | name: STRUCTURE | zone: 02.05_LABORATORY_OMEGA_0</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.05.10_CORE_FACILITY</span> <span class=badge>0 folders</span> <span class=badge>8 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.05.10.00.n_NAV.json</span><span class=subtle> — id: 02.05.10.00.n | name: NAV | zone: 02.05.10_CORE_FACILITY</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.10.00.r_README.md</span><span class=subtle> — id: 02.05.10.00.r | name: README | zone: 02.05.10_CORE_FACILITY</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.10.01_LAB_ENTRANCE.md</span><span class=subtle> — id: 02.05.10.01 | name: LAB_ENTRANCE | zone: 02.05.10_CORE_FACILITY</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.10.02_MAIN_OFFICE.md</span><span class=subtle> — id: 02.05.10.02 | name: MAIN_OFFICE | zone: 02.05.10_CORE_FACILITY</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.10.03_CONTROL_CENTER.md</span><span class=subtle> — id: 02.05.10.03 | name: CONTROL_CENTER | zone: 02.05.10_CORE_FACILITY</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.10.04_RESEARCH_HALL.md</span><span class=subtle> — id: 02.05.10.04 | name: RESEARCH_HALL | zone: 02.05.10_CORE_FACILITY</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.10.05_MED_LAB_BLOCK.md</span><span class=subtle> — id: 02.05.10.05 | name: MED_LAB_BLOCK | zone: 02.05.10_CORE_FACILITY</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.10.06_DETENTION_WING.md</span><span class=subtle> — id: 02.05.10.06 | name: DETENTION_WING | zone: 02.05.10_CORE_FACILITY</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.05.20_INFRASTRUCTURE</span> <span class=badge>0 folders</span> <span class=badge>6 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.05.20.00.n_NAV.json</span><span class=subtle> — id: 02.05.20.00.n | name: NAV | zone: 02.05.20_INFRASTRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.20.00.r_README.md</span><span class=subtle> — id: 02.05.20.00.r | name: README | zone: 02.05.20_INFRASTRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.20.01_MAIN_CORRIDOR.md</span><span class=subtle> — id: 02.05.20.01 | name: MAIN_CORRIDOR | zone: 02.05.20_INFRASTRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.20.02_RAIL_TUNNELS.md</span><span class=subtle> — id: 02.05.20.02 | name: RAIL_TUNNELS | zone: 02.05.20_INFRASTRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.20.03_MAINTENANCE_SHAFTS.md</span><span class=subtle> — id: 02.05.20.03 | name: MAINTENANCE_SHAFTS | zone: 02.05.20_INFRASTRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.20.04_POWER_CORE.md</span><span class=subtle> — id: 02.05.20.04 | name: POWER_CORE | zone: 02.05.20_INFRASTRUCTURE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.05.30_DERELICT_ZONES</span> <span class=badge>0 folders</span> <span class=badge>6 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.05.30.00.n_NAV.json</span><span class=subtle> — id: 02.05.30.00.n | name: NAV | zone: 02.05.30_DERELICT_ZONES</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.30.00.r_README.md</span><span class=subtle> — id: 02.05.30.00.r | name: README | zone: 02.05.30_DERELICT_ZONES</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.30.01_RUINED_LABS.md</span><span class=subtle> — id: 02.05.30.01 | name: RUINED_LABS | zone: 02.05.30_DERELICT_ZONES</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.30.02_INDUSTRIAL_COMPLEX.md</span><span class=subtle> — id: 02.05.30.02 | name: INDUSTRIAL_COMPLEX | zone: 02.05.30_DERELICT_ZONES</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.30.03_ANOMALY_LABS.md</span><span class=subtle> — id: 02.05.30.03 | name: ANOMALY_LABS | zone: 02.05.30_DERELICT_ZONES</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.30.04_ABANDONED_WING.md</span><span class=subtle> — id: 02.05.30.04 | name: ABANDONED_WING | zone: 02.05.30_DERELICT_ZONES</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.05.40_SECRET_SECTORS</span> <span class=badge>0 folders</span> <span class=badge>7 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.05.40.00.n_NAV.json</span><span class=subtle> — id: 02.05.40.00.n | name: NAV | zone: 02.05.40_SECRET_SECTORS</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.40.00.r_README.md</span><span class=subtle> — id: 02.05.40.00.r | name: README | zone: 02.05.40_SECRET_SECTORS</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.40.01_HIDDEN_LAB_LEVELS.md</span><span class=subtle> — id: 02.05.40.01 | name: HIDDEN_LAB_LEVELS | zone: 02.05.40_SECRET_SECTORS</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.40.02_CORE_PASSAGES.md</span><span class=subtle> — id: 02.05.40.02 | name: CORE_PASSAGES | zone: 02.05.40_SECRET_SECTORS</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.40.03_WARPED_SECTORS.md</span><span class=subtle> — id: 02.05.40.03 | name: WARPED_SECTORS | zone: 02.05.40_SECRET_SECTORS</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.40.04_PURGED_ZONES.md</span><span class=subtle> — id: 02.05.40.04 | name: PURGED_ZONES | zone: 02.05.40_SECRET_SECTORS</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.40.05_SPECIAL_OPS_LABS.md</span><span class=subtle> — id: 02.05.40.05 | name: SPECIAL_OPS_LABS | zone: 02.05.40_SECRET_SECTORS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.05.z_META</span> <span class=badge>0 folders</span> <span class=badge>4 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>02.05.z.00.r_README.md</span><span class=subtle> — id: 02.05.z.00.r | name: README | zone: 02.05.z_META</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.z.01_HISTORY.md</span><span class=subtle> — id: 02.05.z.01 | name: HISTORY | zone: 02.05.z_META</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.z.02_AI_SYSTEM.md</span><span class=subtle> — id: 02.05.z.02 | name: AI_SYSTEM | zone: 02.05.z_META</span></li>
+<li><span class=icon>📄</span><span class=file>02.05.z.03_DATABASE.md</span><span class=subtle> — id: 02.05.z.03 | name: DATABASE | zone: 02.05.z_META</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>02.06_LOCATION_AI_ZONE</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>03_CHARACTERS</span> <span class=badge>3 folders</span> <span class=badge>16 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>03.00.f_FRAMEWORK</span> <span class=badge>1 folders</span> <span class=badge>16 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>03.00.f.00.n_NAV.json</span><span class=subtle> — id: 03.00.f.00.n | name: NAV | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.00.r_README.md</span><span class=subtle> — id: 03.00.f.00.r | name: README | zone: 03.00.f_FRAMEWORK</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>03.00.f.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.01.md</span><span class=subtle> — id: 03.00.f.01 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.02.md</span><span class=subtle> — id: 03.00.f.02 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.03.md</span><span class=subtle> — id: 03.00.f.03 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.04.md</span><span class=subtle> — id: 03.00.f.04 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.05.md</span><span class=subtle> — id: 03.00.f.05 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.06.md</span><span class=subtle> — id: 03.00.f.06 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.07.md</span><span class=subtle> — id: 03.00.f.07 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.08.md</span><span class=subtle> — id: 03.00.f.08 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.09.md</span><span class=subtle> — id: 03.00.f.09 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.10.md</span><span class=subtle> — id: 03.00.f.10 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.11.md</span><span class=subtle> — id: 03.00.f.11 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.12.md</span><span class=subtle> — id: 03.00.f.12 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.13.md</span><span class=subtle> — id: 03.00.f.13 | zone: 03.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.f.14.md</span><span class=subtle> — id: 03.00.f.14 | zone: 03.00.f_FRAMEWORK</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>03.00.n_NAV.json</span><span class=subtle> — id: 03.00.n | name: NAV | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.r_README.md</span><span class=subtle> — id: 03.00.r | name: README | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.s_STRUCTURE.md</span><span class=subtle> — id: 03.00.s | name: STRUCTURE | zone: 03_CHARACTERS</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>03.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>03.00.z_META_CORE</span> <span class=badge>0 folders</span> <span class=badge>4 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>03.00.z.01_NARRATIVE_ROLE_MATRIX.md</span><span class=subtle> — id: 03.00.z.01 | name: NARRATIVE_ROLE_MATRIX | zone: 03.00.z_META_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.z.02_DYNAMIC_MEMORY_AND_BEHAVIOR_HISTORY.md</span><span class=subtle> — id: 03.00.z.02 | name: DYNAMIC_MEMORY_AND_BEHAVIOR_HISTORY | zone: 03.00.z_META_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.z.03_DIGITAL_DNA_SYSTEM.md</span><span class=subtle> — id: 03.00.z.03 | name: DIGITAL_DNA_SYSTEM | zone: 03.00.z_META_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>03.00.z.04_MULTIVERSAL_PERSONALITY_FRAMEWORK.md</span><span class=subtle> — id: 03.00.z.04 | name: MULTIVERSAL_PERSONALITY_FRAMEWORK | zone: 03.00.z_META_CORE</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>03.01_VIKTOR.md</span><span class=subtle> — id: 03.01 | name: VIKTOR | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.02_LIZA.md</span><span class=subtle> — id: 03.02 | name: LIZA | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.03_AXIOM.md</span><span class=subtle> — id: 03.03 | name: AXIOM | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.04_TOMMY.md</span><span class=subtle> — id: 03.04 | name: TOMMY | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.05_CALEB.md</span><span class=subtle> — id: 03.05 | name: CALEB | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.06_AXIO.md</span><span class=subtle> — id: 03.06 | name: AXIO | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.07_MR_X.md</span><span class=subtle> — id: 03.07 | name: MR_X | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.08_ARTEMIDA.md</span><span class=subtle> — id: 03.08 | name: ARTEMIDA | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.09_SOMETHING.md</span><span class=subtle> — id: 03.09 | name: SOMETHING | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.10_ARCHIBALD.md</span><span class=subtle> — id: 03.10 | name: ARCHIBALD | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.11_IVA.md</span><span class=subtle> — id: 03.11 | name: IVA | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.16_DMITRII.md</span><span class=subtle> — id: 03.16 | name: DMITRII | zone: 03_CHARACTERS</span></li>
+<li><span class=icon>📄</span><span class=file>03.999.dream_EVA.md</span><span class=subtle> — id: 03.999.dream | name: EVA | zone: 03_CHARACTERS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>04_STORY_STRUCTURE</span> <span class=badge>0 folders</span> <span class=badge>5 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>04.00.n_NAV.json</span><span class=subtle> — id: 04.00.n | name: NAV | zone: 04_STORY_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>04.00.r_README.md</span><span class=subtle> — id: 04.00.r | name: README | zone: 04_STORY_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>04.00.s_STRUCTURE.md</span><span class=subtle> — id: 04.00.s | name: STRUCTURE | zone: 04_STORY_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>04.01_FIRST_CHAPTER.md</span><span class=subtle> — id: 04.01 | name: FIRST_CHAPTER | zone: 04_STORY_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>04.02_PROLOGUE.md</span><span class=subtle> — id: 04.02 | name: PROLOGUE | zone: 04_STORY_STRUCTURE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>05_TECHNOLOGIES</span> <span class=badge>2 folders</span> <span class=badge>30 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>05.00.f_FRAMEWORK</span> <span class=badge>1 folders</span> <span class=badge>14 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>05.00.f.00.r_README.md</span><span class=subtle> — id: 05.00.f.00.r | name: README | zone: 05.00.f_FRAMEWORK</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>05.00.f.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.01.md</span><span class=subtle> — id: 05.00.f.01 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.02.md</span><span class=subtle> — id: 05.00.f.02 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.03.md</span><span class=subtle> — id: 05.00.f.03 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.04.md</span><span class=subtle> — id: 05.00.f.04 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.05.md</span><span class=subtle> — id: 05.00.f.05 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.06.md</span><span class=subtle> — id: 05.00.f.06 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.07.md</span><span class=subtle> — id: 05.00.f.07 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.08.md</span><span class=subtle> — id: 05.00.f.08 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.09.md</span><span class=subtle> — id: 05.00.f.09 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.10.md</span><span class=subtle> — id: 05.00.f.10 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.11.md</span><span class=subtle> — id: 05.00.f.11 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.12.md</span><span class=subtle> — id: 05.00.f.12 | zone: 05.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.f.13.md</span><span class=subtle> — id: 05.00.f.13 | zone: 05.00.f_FRAMEWORK</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>05.00.n_NAV.json</span><span class=subtle> — id: 05.00.n | name: NAV | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.r_README.md</span><span class=subtle> — id: 05.00.r | name: README | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.00.s_STRUCTURE.md</span><span class=subtle> — id: 05.00.s | name: STRUCTURE | zone: 05_TECHNOLOGIES</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>05.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>05.01.01_ACCELERATOR_EVOLUTION_LOG.md</span><span class=subtle> — id: 05.01.01 | name: ACCELERATOR_EVOLUTION_LOG | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.01_ACCELERATOR.md</span><span class=subtle> — id: 05.01 | name: ACCELERATOR | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.02.01_NIGHTMARE_EVOLUTION_LOG.md</span><span class=subtle> — id: 05.02.01 | name: NIGHTMARE_EVOLUTION_LOG | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.02_NIGHTMARE.md</span><span class=subtle> — id: 05.02 | name: NIGHTMARE | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.03_SPECTRE_GT.md</span><span class=subtle> — id: 05.03 | name: SPECTRE_GT | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.04_HARPOON_IMPLANT.md</span><span class=subtle> — id: 05.04 | name: HARPOON_IMPLANT | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.05_MAGNETIC_IMPLANT.md</span><span class=subtle> — id: 05.05 | name: MAGNETIC_IMPLANT | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.06_NEURAL_SCANNER.md</span><span class=subtle> — id: 05.06 | name: NEURAL_SCANNER | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.07_BLOODTECH.md</span><span class=subtle> — id: 05.07 | name: BLOODTECH | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.08_GROM_FIST.md</span><span class=subtle> — id: 05.08 | name: GROM_FIST | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.09_T_COLLAR.md</span><span class=subtle> — id: 05.09 | name: T_COLLAR | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.10_RAWR_V2.md</span><span class=subtle> — id: 05.10 | name: RAWR_V2 | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.11_PAIN_DROP.md</span><span class=subtle> — id: 05.11 | name: PAIN_DROP | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.12_DOGHOWL.md</span><span class=subtle> — id: 05.12 | name: DOGHOWL | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.13_ADRENALINE_LOCK.md</span><span class=subtle> — id: 05.13 | name: ADRENALINE_LOCK | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.14.01_THUNDER_CORE.md</span><span class=subtle> — id: 05.14.01 | name: THUNDER_CORE | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.14.02_KINETIC_HOWL.md</span><span class=subtle> — id: 05.14.02 | name: KINETIC_HOWL | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.14.03_RAGE_FEED.md</span><span class=subtle> — id: 05.14.03 | name: RAGE_FEED | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.14.04_SHOCK_VEINS.md</span><span class=subtle> — id: 05.14.04 | name: SHOCK_VEINS | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.14.05_HEART_RIPPER.md</span><span class=subtle> — id: 05.14.05 | name: HEART_RIPPER | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.14.06_FLESH_SHIELD.md</span><span class=subtle> — id: 05.14.06 | name: FLESH_SHIELD | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.14.07_BERSERK_ECHO.md</span><span class=subtle> — id: 05.14.07 | name: BERSERK_ECHO | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.14_THUNDER_TECH.md</span><span class=subtle> — id: 05.14 | name: THUNDER_TECH | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.15_LIMBO_PROTOCOL_v1.0.md</span><span class=subtle> — id: 05.15 | name: LIMBO_PROTOCOL_v1.0 | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.16_CYBERLINK_INTERFACE.md</span><span class=subtle> — id: 05.16 | name: CYBERLINK_INTERFACE | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.999_Ω_CATALYST.html</span><span class=subtle> — id: 05.999 | name: Ω_CATALYST | zone: 05_TECHNOLOGIES</span></li>
+<li><span class=icon>📄</span><span class=file>05.999_Ω_CATALYST.md</span><span class=subtle> — id: 05.999 | name: Ω_CATALYST | zone: 05_TECHNOLOGIES</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>06_FACTIONS</span> <span class=badge>1 folders</span> <span class=badge>15 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>06.00.f_FRAMEWORK</span> <span class=badge>0 folders</span> <span class=badge>23 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>06.00.f.00.n_NAV.json</span><span class=subtle> — id: 06.00.f.00.n | name: NAV | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.00.r_README.md</span><span class=subtle> — id: 06.00.f.00.r | name: README | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.01.md</span><span class=subtle> — id: 06.00.f.01 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.02.md</span><span class=subtle> — id: 06.00.f.02 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.03.md</span><span class=subtle> — id: 06.00.f.03 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.04.md</span><span class=subtle> — id: 06.00.f.04 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.05.md</span><span class=subtle> — id: 06.00.f.05 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.06.md</span><span class=subtle> — id: 06.00.f.06 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.07.md</span><span class=subtle> — id: 06.00.f.07 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.08.md</span><span class=subtle> — id: 06.00.f.08 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.09.md</span><span class=subtle> — id: 06.00.f.09 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.10.md</span><span class=subtle> — id: 06.00.f.10 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.11.md</span><span class=subtle> — id: 06.00.f.11 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.12.md</span><span class=subtle> — id: 06.00.f.12 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.13.md</span><span class=subtle> — id: 06.00.f.13 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.14.md</span><span class=subtle> — id: 06.00.f.14 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.15.md</span><span class=subtle> — id: 06.00.f.15 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.16.md</span><span class=subtle> — id: 06.00.f.16 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.17.md</span><span class=subtle> — id: 06.00.f.17 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.18.md</span><span class=subtle> — id: 06.00.f.18 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.19.md</span><span class=subtle> — id: 06.00.f.19 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.20.md</span><span class=subtle> — id: 06.00.f.20 | zone: 06.00.f_FRAMEWORK</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.f.21.md</span><span class=subtle> — id: 06.00.f.21 | zone: 06.00.f_FRAMEWORK</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>06.00.n_NAV.json</span><span class=subtle> — id: 06.00.n | name: NAV | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.r_README.md</span><span class=subtle> — id: 06.00.r | name: README | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.00.s_STRUCTURE.md</span><span class=subtle> — id: 06.00.s | name: STRUCTURE | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.01.01_DIGITAL_DNA.md</span><span class=subtle> — id: 06.01.01 | name: DIGITAL_DNA | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.01.02_ENTITY_CORE.md</span><span class=subtle> — id: 06.01.02 | name: ENTITY_CORE | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.01.03_ENDEAVOR_TWIST_REVELATION.md</span><span class=subtle> — id: 06.01.03 | name: ENDEAVOR_TWIST_REVELATION | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.01_ENDEAVOR.md</span><span class=subtle> — id: 06.01 | name: ENDEAVOR | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.02_NEURA_TECH.md</span><span class=subtle> — id: 06.02 | name: NEURA_TECH | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.03_VOIDLINK.md</span><span class=subtle> — id: 06.03 | name: VOIDLINK | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.04_THUNDER_DOGS.md</span><span class=subtle> — id: 06.04 | name: THUNDER_DOGS | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.05_IRON_FIST.md</span><span class=subtle> — id: 06.05 | name: IRON_FIST | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.06_BLACK_NOVA.md</span><span class=subtle> — id: 06.06 | name: BLACK_NOVA | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.07_INTRAVOX.md</span><span class=subtle> — id: 06.07 | name: INTRAVOX | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.08_CRYPTIC_FAITH.md</span><span class=subtle> — id: 06.08 | name: CRYPTIC_FAITH | zone: 06_FACTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>06.09_REAPERS.md</span><span class=subtle> — id: 06.09 | name: REAPERS | zone: 06_FACTIONS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>07_NOTES_EXCEPTIONS</span> <span class=badge>4 folders</span> <span class=badge>5 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>07.00.cp_CONTENT_PROTOCOLS</span> <span class=badge>0 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>07.00.cp.00.n_NAV.json</span><span class=subtle> — id: 07.00.cp.00.n | name: NAV | zone: 07.00.cp_CONTENT_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>07.00.cp.00.r_README.md</span><span class=subtle> — id: 07.00.cp.00.r | name: README | zone: 07.00.cp_CONTENT_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>07.00.cp.01_GENERAL_CONTENT_PROTOCOL.md</span><span class=subtle> — id: 07.00.cp.01 | name: GENERAL_CONTENT_PROTOCOL | zone: 07.00.cp_CONTENT_PROTOCOLS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>07.00.d_RELINKING</span> <span class=badge>0 folders</span> <span class=badge>6 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>07.00.d.00.n_NAV.json</span><span class=subtle> — id: 07.00.d.00.n | name: NAV | zone: 07.00.d_RELINKING</span></li>
+<li><span class=icon>📄</span><span class=file>07.00.d.00.r_README.md</span><span class=subtle> — id: 07.00.d.00.r | name: README | zone: 07.00.d_RELINKING</span></li>
+<li><span class=icon>📄</span><span class=file>07.00.d.01_AXIOM_RELINK_PROTOCOL.md</span><span class=subtle> — id: 07.00.d.01 | name: AXIOM_RELINK_PROTOCOL | zone: 07.00.d_RELINKING</span></li>
+<li><span class=icon>📄</span><span class=file>07.00.d.02_RELINK_TASKS_LIST.md</span><span class=subtle> — id: 07.00.d.02 | name: RELINK_TASKS_LIST | zone: 07.00.d_RELINKING</span></li>
+<li><span class=icon>📄</span><span class=file>07.00.d.03_AXIOM_RELINK_PROTOCOL.html</span><span class=subtle> — id: 07.00.d.03 | name: AXIOM_RELINK_PROTOCOL | zone: 07.00.d_RELINKING</span></li>
+<li><span class=icon>📄</span><span class=file>07.00.d.03_AXIOM_RELINK_PROTOCOL.md</span><span class=subtle> — id: 07.00.d.03 | name: AXIOM_RELINK_PROTOCOL | zone: 07.00.d_RELINKING</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>07.00.n_NAV.json</span><span class=subtle> — id: 07.00.n | name: NAV | zone: 07_NOTES_EXCEPTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>07.00.r_README.md</span><span class=subtle> — id: 07.00.r | name: README | zone: 07_NOTES_EXCEPTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>07.00.s_STRUCTURE.md</span><span class=subtle> — id: 07.00.s | name: STRUCTURE | zone: 07_NOTES_EXCEPTIONS</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>07.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>07.01_LABRAT_HOLLOW.md</span><span class=subtle> — id: 07.01 | name: LABRAT_HOLLOW | zone: 07_NOTES_EXCEPTIONS</span></li>
+<li><span class=icon>📄</span><span class=file>07.02_AXIOM_VISUAL_TZ_01.md</span><span class=subtle> — id: 07.02 | name: AXIOM_VISUAL_TZ_01 | zone: 07_NOTES_EXCEPTIONS</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>07.04_AXIOM_VESSEL_PROTOCOL</span> <span class=badge>1 folders</span> <span class=badge>5 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>07.04.00.n_NAV.json</span><span class=subtle> — id: 07.04.00.n | name: NAV | zone: 07.04_AXIOM_VESSEL_PROTOCOL</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>07.04.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>07.04.01_AXIOM_VESSEL_PROTOCOL.md</span><span class=subtle> — id: 07.04.01 | name: AXIOM_VESSEL_PROTOCOL | zone: 07.04_AXIOM_VESSEL_PROTOCOL</span></li>
+<li><span class=icon>📄</span><span class=file>07.04.02_VESSEL_F01.md</span><span class=subtle> — id: 07.04.02 | name: VESSEL_F01 | zone: 07.04_AXIOM_VESSEL_PROTOCOL</span></li>
+<li><span class=icon>📄</span><span class=file>07.04.03_VESSEL_M01.md</span><span class=subtle> — id: 07.04.03 | name: VESSEL_M01 | zone: 07.04_AXIOM_VESSEL_PROTOCOL</span></li>
+<li><span class=icon>📄</span><span class=file>07.04.04_META_FORM.md</span><span class=subtle> — id: 07.04.04 | name: META_FORM | zone: 07.04_AXIOM_VESSEL_PROTOCOL</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>08_CONCEPTS_THEORY</span> <span class=badge>1 folders</span> <span class=badge>7 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>08.00.n_NAV.json</span><span class=subtle> — id: 08.00.n | name: NAV | zone: 08_CONCEPTS_THEORY</span></li>
+<li><span class=icon>📄</span><span class=file>08.00.r_README.md</span><span class=subtle> — id: 08.00.r | name: README | zone: 08_CONCEPTS_THEORY</span></li>
+<li><span class=icon>📄</span><span class=file>08.00.s_STRUCTURE.md</span><span class=subtle> — id: 08.00.s | name: STRUCTURE | zone: 08_CONCEPTS_THEORY</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>08.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>08.01_WORLDBUILDING.md</span><span class=subtle> — id: 08.01 | name: WORLDBUILDING | zone: 08_CONCEPTS_THEORY</span></li>
+<li><span class=icon>📄</span><span class=file>08.03_MAIN_PLOT.md</span><span class=subtle> — id: 08.03 | name: MAIN_PLOT | zone: 08_CONCEPTS_THEORY</span></li>
+<li><span class=icon>📄</span><span class=file>08.05_LIMBO_THEORY.md</span><span class=subtle> — id: 08.05 | name: LIMBO_THEORY | zone: 08_CONCEPTS_THEORY</span></li>
+<li><span class=icon>📄</span><span class=file>08.07_AXIOM_FRAGMENT_COLLECTION.md</span><span class=subtle> — id: 08.07 | name: AXIOM_FRAGMENT_COLLECTION | zone: 08_CONCEPTS_THEORY</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>09_SCENE_CONCEPTS</span> <span class=badge>0 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>09.00.n_NAV.json</span><span class=subtle> — id: 09.00.n | name: NAV | zone: 09_SCENE_CONCEPTS</span></li>
+<li><span class=icon>📄</span><span class=file>09.00.r_README.md</span><span class=subtle> — id: 09.00.r | name: README | zone: 09_SCENE_CONCEPTS</span></li>
+<li><span class=icon>📄</span><span class=file>09.00.s_STRUCTURE.md</span><span class=subtle> — id: 09.00.s | name: STRUCTURE | zone: 09_SCENE_CONCEPTS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>10_VISUAL_PROTOCOLS</span> <span class=badge>4 folders</span> <span class=badge>10 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>10.00.n_NAV.json</span><span class=subtle> — id: 10.00.n | name: NAV | zone: 10_VISUAL_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.r_README.md</span><span class=subtle> — id: 10.00.r | name: README | zone: 10_VISUAL_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.s_STRUCTURE.md</span><span class=subtle> — id: 10.00.s | name: STRUCTURE | zone: 10_VISUAL_PROTOCOLS</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>10.00.style_LIBRARY</span> <span class=badge>1 folders</span> <span class=badge>11 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>10.00.style.00.n_NAV.json</span><span class=subtle> — id: 10.00.style.00.n | name: NAV | zone: 10.00.style_LIBRARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.style.00.r_README.md</span><span class=subtle> — id: 10.00.style.00.r | name: README | zone: 10.00.style_LIBRARY</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>10.00.style.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>10.00.style.01_cover-block.md</span><span class=subtle> — id: 10.00.style.01 | name: cover-block | zone: 10.00.style_LIBRARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.style.02_split-block.md</span><span class=subtle> — id: 10.00.style.02 | name: split-block | zone: 10.00.style_LIBRARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.style.03_eva-cover.md</span><span class=subtle> — id: 10.00.style.03 | name: eva-cover | zone: 10.00.style_LIBRARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.style.04_eva-global-style.md</span><span class=subtle> — id: 10.00.style.04 | name: eva-global-style | zone: 10.00.style_LIBRARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.style.05_lab-global-style.md</span><span class=subtle> — id: 10.00.style.05 | name: lab-global-style | zone: 10.00.style_LIBRARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.style.06_gold-audit-cover.md</span><span class=subtle> — id: 10.00.style.06 | name: gold-audit-cover | zone: 10.00.style_LIBRARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.style.07_gold-audit-global.md</span><span class=subtle> — id: 10.00.style.07 | name: gold-audit-global | zone: 10.00.style_LIBRARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.style.08_viktor-cover.md</span><span class=subtle> — id: 10.00.style.08 | name: viktor-cover | zone: 10.00.style_LIBRARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.style.09_viktor-split.md</span><span class=subtle> — id: 10.00.style.09 | name: viktor-split | zone: 10.00.style_LIBRARY</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>10.00.svg.GENERATION</span> <span class=badge>1 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>10.00.svg.00.n_NAV.json</span><span class=subtle> — id: 10.00.svg.00.n | name: NAV | zone: 10.00.svg.GENERATION</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.svg.00.r_README.md</span><span class=subtle> — id: 10.00.svg.00.r | name: README | zone: 10.00.svg.GENERATION</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.svg.01_SIGMA_INTEGRATION_POLICY.md</span><span class=subtle> — id: 10.00.svg.01 | name: SIGMA_INTEGRATION_POLICY | zone: 10.00.svg.GENERATION</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>sets</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>10.00.term_GLOSSARY</span> <span class=badge>0 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>10.00.term.00.n_NAV.json</span><span class=subtle> — id: 10.00.term.00.n | name: NAV | zone: 10.00.term_GLOSSARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.term.00.r_README.md</span><span class=subtle> — id: 10.00.term.00.r | name: README | zone: 10.00.term_GLOSSARY</span></li>
+<li><span class=icon>📄</span><span class=file>10.00.term.01_AXIOMITRIC.md</span><span class=subtle> — id: 10.00.term.01 | name: AXIOMITRIC | zone: 10.00.term_GLOSSARY</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>10.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>1 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>10.00.v.01_INCIDENT_07_PLACEHOLDER.jpg</span><span class=subtle> — id: 10.00.v.01 | name: INCIDENT_07_PLACEHOLDER | zone: 10.00.v_VISUAL</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>10.01_AXIOM_VISUAL_SIGMA.json</span><span class=subtle> — id: 10.01 | name: AXIOM_VISUAL_SIGMA | zone: 10_VISUAL_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>10.02_ARCANE_INSPIRED.json</span><span class=subtle> — id: 10.02 | name: ARCANE_INSPIRED | zone: 10_VISUAL_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>10.03_AXIOM_FRACTURE.json</span><span class=subtle> — id: 10.03 | name: AXIOM_FRACTURE | zone: 10_VISUAL_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>10.04_SIGMA_FRACTAL_SOUL.json</span><span class=subtle> — id: 10.04 | name: SIGMA_FRACTAL_SOUL | zone: 10_VISUAL_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>10.05_SIGMA_RAGE_FRAME.json</span><span class=subtle> — id: 10.05 | name: SIGMA_RAGE_FRAME | zone: 10_VISUAL_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>10.06_AXIOM_DIGITAL_REFLECTOR_v1.0.json</span><span class=subtle> — id: 10.06 | name: AXIOM_DIGITAL_REFLECTOR_v1.0 | zone: 10_VISUAL_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>10.07_CREATOR_BIRTH_RIFT.md</span><span class=subtle> — id: 10.07 | name: CREATOR_BIRTH_RIFT | zone: 10_VISUAL_PROTOCOLS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>11_SYSTEM_INTERFACE</span> <span class=badge>2 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>11.00.n_NAV.json</span><span class=subtle> — id: 11.00.n | name: NAV | zone: 11_SYSTEM_INTERFACE</span></li>
+<li><span class=icon>📄</span><span class=file>11.00.r_README.md</span><span class=subtle> — id: 11.00.r | name: README | zone: 11_SYSTEM_INTERFACE</span></li>
+<li><span class=icon>📄</span><span class=file>11.00.s_STRUCTURE.md</span><span class=subtle> — id: 11.00.s | name: STRUCTURE | zone: 11_SYSTEM_INTERFACE</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>11.01_PYQT_PANEL</span> <span class=badge>6 folders</span> <span class=badge>11 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>11.01.00.n_NAV.json</span><span class=subtle> — id: 11.01.00.n | name: NAV | zone: 11.01_PYQT_PANEL</span></li>
+<li><span class=icon>📄</span><span class=file>11.01.00.r_README.md</span><span class=subtle> — id: 11.01.00.r | name: README | zone: 11.01_PYQT_PANEL</span></li>
+<li><span class=icon>📄</span><span class=file>AXIOM PANEL CONFIG MANAGER</span><span class=subtle> — zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL]</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>fonts</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>LOGIN WINDOW MODULE (compact, PyQt5-stable)</span><span class=subtle> — id: login | name: window | zone: [11_SYSTEM_INTERFACE]</span></li>
+<li><span class=icon>📄</span><span class=file>PYQT PANEL LAUNCHER (PyQt5, HiDPI-stable)</span><span class=subtle> — zone: [11_SYSTEM_INTERFACE]</span></li>
+<li><span class=icon>📄</span><span class=file>AXIOM MAIN PANEL — SYSTEM WINDOW (TABBED)</span><span class=subtle> — id: main | name: window | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL/]</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>modules</span> <span class=badge>0 folders</span> <span class=badge>1 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>AXIOM PANEL MODULES PACKAGE</span><span class=subtle> — name: _init__ | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL/modules]</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>AXIOM PANEL — MODULES MANAGER</span><span class=subtle> — id: modules | name: window | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL]</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>native</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>AXIOM PANEL — NAVIGATION WINDOW</span><span class=subtle> — id: navigation | name: window | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL]</span></li>
+<li><span class=icon>📄</span><span class=file>AXIOM PANEL — ROADMAP GENERATOR</span><span class=subtle> — id: roadmap | name: panel | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL]</span></li>
+<li><span class=icon>📄</span><span class=file>AXIOM PANEL — SETTINGS WINDOW</span><span class=subtle> — id: settings | name: window | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL]</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>test</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>ui</span> <span class=badge>3 folders</span> <span class=badge>4 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>11.01.00.r_README_ui_CANVAS.md</span><span class=subtle> — id: 11.01.00.r | name: README_ui_CANVAS | zone: 11.01_PYQT_PANEL</span></li>
+<li><span class=icon>📄</span><span class=file>AXIOM SVG GENERATOR — CORE MODULE</span><span class=subtle> — id: generate | name: svg | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL/ui]</span></li>
+<li><span class=icon>📄</span><span class=file>AXIOM SVG GENERATOR — GUI PANEL</span><span class=subtle> — id: panel | name: svg_generator | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL/ui]</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>style</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>AXIOM PANEL STYLE LOADER (enhanced)</span><span class=subtle> — id: style | name: loader | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL/ui]</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>templates</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>widgets</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>AXIOM PANEL CARD WIDGET</span><span class=subtle> — id: axiom | name: card | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL/ui/widgets]</span></li>
+<li><span class=icon>📄</span><span class=file>viktor_seal.py</span><span class=subtle> — id: viktor | name: seal | zone: 11.01_PYQT_PANEL</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>users</span> <span class=badge>0 folders</span> <span class=badge>1 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>USER HASH GENERATOR</span><span class=subtle> — id: generate | name: user | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL/users]</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>AXIOM PANEL — GMS Validator Runner</span><span class=subtle> — id: validator | name: panel | zone: [11_SYSTEM_INTERFACE/11.01_PYQT_PANEL]</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>11.02_WEB_CORE</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>12_AI_ZONE_NODES</span> <span class=badge>1 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>12.00.n_NAV.json</span><span class=subtle> — id: 12.00.n | name: NAV | zone: 12_AI_ZONE_NODES</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>12.00.pr_PROTOCOLS</span> <span class=badge>0 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>12.00.pr.00.n_NAV.json</span><span class=subtle> — id: 12.00.pr.00.n | name: NAV | zone: 12.00.pr_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>12.00.pr.00.r_README.md</span><span class=subtle> — id: 12.00.pr.00.r | name: README | zone: 12.00.pr_PROTOCOLS</span></li>
+<li><span class=icon>📄</span><span class=file>12.00.pr.01_REFACTORING_PROTOCOL.md</span><span class=subtle> — id: 12.00.pr.01 | name: REFACTORING_PROTOCOL | zone: 12.00.pr_PROTOCOLS</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>12.00.r_README.md</span><span class=subtle> — id: 12.00.r | name: README | zone: 12_AI_ZONE_NODES</span></li>
+<li><span class=icon>📄</span><span class=file>12.00.s_STRUCTURE.md</span><span class=subtle> — id: 12.00.s | name: STRUCTURE | zone: 12_AI_ZONE_NODES</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>13_TECHNICAL_CORE</span> <span class=badge>3 folders</span> <span class=badge>17 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>13.00.d_DOCKER</span> <span class=badge>1 folders</span> <span class=badge>6 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>13.00.d.00.n_NAV.json</span><span class=subtle> — id: 13.00.d.00.n | name: NAV | zone: 13.00.d_DOCKER</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.d.00.r_README.md</span><span class=subtle> — id: 13.00.d.00.r | name: README | zone: 13.00.d_DOCKER</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.d.01_AXIOM_DOCKER_CONTAINER_GUIDE.md</span><span class=subtle> — id: 13.00.d.01 | name: AXIOM_DOCKER_CONTAINER_GUIDE | zone: 13.00.d_DOCKER</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.d.02_AXIOM_DOCKER_TEMPLATES.md</span><span class=subtle> — id: 13.00.d.02 | name: AXIOM_DOCKER_TEMPLATES | zone: 13.00.d_DOCKER</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.d.03_ROUTER</span><span class=subtle> — id: 13.00.d | zone: 13.00.d_DOCKER</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.d.04_LLM</span><span class=subtle> — id: 13.00.d | zone: 13.00.d_DOCKER</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>13.00.d.05_ROUTER</span> <span class=badge>0 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>13.00.d.05.00.n_NAV.json</span><span class=subtle> — id: 13.00.d.05.00.n | name: NAV | zone: 13.00.d.05_ROUTER</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.d.05.00.r_README.md</span><span class=subtle> — id: 13.00.d.05.00.r | name: README | zone: 13.00.d.05_ROUTER</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.d.05.01_AXIOM_ROUTER_NODE_PROTOTYPE.md</span><span class=subtle> — id: 13.00.d.05.01 | name: AXIOM_ROUTER_NODE_PROTOTYPE | zone: 13.00.d.05_ROUTER</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>13.00.gcs_STRUCTURE</span> <span class=badge>2 folders</span> <span class=badge>9 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>13.00.gcs.00.n_NAV.json</span><span class=subtle> — id: 13.00.gcs.00.n | name: NAV | zone: 13.00.gcs_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gcs.00.r_README.md</span><span class=subtle> — id: 13.00.gcs.00.r | name: README | zone: 13.00.gcs_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gcs.01_CORE.md</span><span class=subtle> — id: 13.00.gcs.01 | name: CORE | zone: 13.00.gcs_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gcs.cs_HEADER.md</span><span class=subtle> — id: 13.00.gcs.cs | name: HEADER | zone: 13.00.gcs_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gcs.java_HEADER.md</span><span class=subtle> — id: 13.00.gcs.java | name: HEADER | zone: 13.00.gcs_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gcs.ps1_HEADER.md</span><span class=subtle> — id: 13.00.gcs.ps1 | name: HEADER | zone: 13.00.gcs_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gcs.py_HEADER.md</span><span class=subtle> — id: 13.00.gcs.py | name: HEADER | zone: 13.00.gcs_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gcs.sh_HEADER.md</span><span class=subtle> — id: 13.00.gcs.sh | name: HEADER | zone: 13.00.gcs_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gcs.ts_HEADER.md</span><span class=subtle> — id: 13.00.gcs.ts | name: HEADER | zone: 13.00.gcs_STRUCTURE</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>samples</span> <span class=badge>0 folders</span> <span class=badge>1 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>sample.py</span><span class=subtle> — zone: 13.00.gcs_STRUCTURE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>tools</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>gcs.build_used_by.py</span><span class=subtle> — id: gcs.build | name: used_by | zone: 13.00.gcs_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>gcs.validate_axch.py</span><span class=subtle> — id: gcs.validate | name: axch | zone: 13.00.gcs_STRUCTURE</span></li>
+</ul></details></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>13.00.gms_STRUCTURE</span> <span class=badge>1 folders</span> <span class=badge>8 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>13.00.gms.00.n_NAV.json</span><span class=subtle> — id: 13.00.gms.00.n | name: NAV | zone: 13.00.gms_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gms.00.r_README.md</span><span class=subtle> — id: 13.00.gms.00.r | name: README | zone: 13.00.gms_STRUCTURE</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>13.00.gms.00.tools_VALIDATE</span> <span class=badge>2 folders</span> <span class=badge>4 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>13.00.gms.00.tools.00.n_NAV.json</span><span class=subtle> — id: 13.00.gms.00.tools.00.n | name: NAV | zone: 13.00.gms.00.tools_VALIDATE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gms.00.tools.00.r_README.md</span><span class=subtle> — id: 13.00.gms.00.tools.00.r | name: README | zone: 13.00.gms.00.tools_VALIDATE</span></li>
+<li><span class=icon>📄</span><span class=file>GMS VALIDATOR CORE UTILITIES</span><span class=subtle> — zone: [13_TECHNICAL_CORE/13.00.gms_STRUCTURE/13.00.gms.00.tools_VALIDATE]</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>modules</span> <span class=badge>0 folders</span> <span class=badge>4 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>VALIDATOR MODULES PACKAGE</span><span class=subtle> — name: _init__ | zone: [13_TECHNICAL_CORE/13.00.gms_STRUCTURE/13.00.gms.00.tools_VALIDATE/modules]</span></li>
+<li><span class=icon>📄</span><span class=file>CANVAS BLOCK VALIDATOR</span><span class=subtle> — id: canvas | name: validator | zone: [13_TECHNICAL_CORE/13.00.gms_STRUCTURE/13.00.gms.00.tools_VALIDATE/modules]</span></li>
+<li><span class=icon>📄</span><span class=file>HEADER &amp; META VALIDATOR</span><span class=subtle> — id: header | name: validator | zone: [13_TECHNICAL_CORE/13.00.gms_STRUCTURE/13.00.gms.00.tools_VALIDATE/modules]</span></li>
+<li><span class=icon>📄</span><span class=file>LINKED OBJECTS VALIDATOR</span><span class=subtle> — id: linkage | name: validator | zone: [13_TECHNICAL_CORE/13.00.gms_STRUCTURE/13.00.gms.00.tools_VALIDATE/modules]</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>test</span> <span class=badge>0 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>test_canvas_validator.py</span><span class=subtle> — id: test | name: canvas_validator | zone: 13.00.gms.00.tools_VALIDATE</span></li>
+<li><span class=icon>📄</span><span class=file>test_header_validator.py</span><span class=subtle> — id: test | name: header_validator | zone: 13.00.gms.00.tools_VALIDATE</span></li>
+<li><span class=icon>📄</span><span class=file>test_linkage_validator.py</span><span class=subtle> — id: test | name: linkage_validator | zone: 13.00.gms.00.tools_VALIDATE</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>GMS STRUCTURE VALIDATOR</span><span class=subtle> — id: validate | name: gms | zone: [13_TECHNICAL_CORE/13.00.gms_STRUCTURE/13.00.gms.00.tools_VALIDATE]</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>13.00.gms.01_BLOCK_CANVAS.md</span><span class=subtle> — id: 13.00.gms.01 | name: BLOCK_CANVAS | zone: 13.00.gms_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gms.02_SYSTEM_STYLE_GUIDE.md</span><span class=subtle> — id: 13.00.gms.02 | name: SYSTEM_STYLE_GUIDE | zone: 13.00.gms_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gms.03_HEADER_META.md</span><span class=subtle> — id: 13.00.gms.03 | name: HEADER_META | zone: 13.00.gms_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gms.04_FILE_STATUS.md</span><span class=subtle> — id: 13.00.gms.04 | name: FILE_STATUS | zone: 13.00.gms_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gms.05_LINKAGE_SYSTEM.md</span><span class=subtle> — id: 13.00.gms.05 | name: LINKAGE_SYSTEM | zone: 13.00.gms_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.gms.06_STUB_TEMPLATE.md</span><span class=subtle> — id: 13.00.gms.06 | name: STUB_TEMPLATE | zone: 13.00.gms_STRUCTURE</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>13.00.n_NAV.json</span><span class=subtle> — id: 13.00.n | name: NAV | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.r_README.md</span><span class=subtle> — id: 13.00.r | name: README | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.00.s_STRUCTURE.md</span><span class=subtle> — id: 13.00.s | name: STRUCTURE | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.01_IO_PROTOCOLS.md</span><span class=subtle> — id: 13.01 | name: IO_PROTOCOLS | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.02_LOGGING_STRUCTURE.md</span><span class=subtle> — id: 13.02 | name: LOGGING_STRUCTURE | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.03_CORE_STRUCTURE.json</span><span class=subtle> — id: 13.03 | name: CORE_STRUCTURE | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.03_FRAMEWORK_TEMPLATE.md</span><span class=subtle> — id: 13.03 | name: FRAMEWORK_TEMPLATE | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.04_FILE_FORMATTING_RULES.md</span><span class=subtle> — id: 13.04 | name: FILE_FORMATTING_RULES | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.05_FILE_INFRASTRUCTURE.md</span><span class=subtle> — id: 13.05 | name: FILE_INFRASTRUCTURE | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.06_FORMAT_LINKS_V2.md</span><span class=subtle> — id: 13.06 | name: FORMAT_LINKS_V2 | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.07_TRINITY_INITIATION_PLAN.md</span><span class=subtle> — id: 13.07 | name: TRINITY_INITIATION_PLAN | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.08_AEC_STRUCTURE_REBUILD.md</span><span class=subtle> — id: 13.08 | name: AEC_STRUCTURE_REBUILD | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.09_AXIOM_SELF_EVOLUTION_ENGINE_v1.0.md</span><span class=subtle> — id: 13.09 | name: AXIOM_SELF_EVOLUTION_ENGINE_v1.0 | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.10_AXIOM_ROUTER_NODE_v1.0.md</span><span class=subtle> — id: 13.10 | name: AXIOM_ROUTER_NODE_v1.0 | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.11_TRINITY_INTEGRATION_DEEP_INVESTIGATOR.md</span><span class=subtle> — id: 13.11 | name: TRINITY_INTEGRATION_DEEP_INVESTIGATOR | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.12_CPP_INTEGRATION_DRAFT.md</span><span class=subtle> — id: 13.12 | name: CPP_INTEGRATION_DRAFT | zone: 13_TECHNICAL_CORE</span></li>
+<li><span class=icon>📄</span><span class=file>13.13_AXIOM_GIT_COMMANDS.md</span><span class=subtle> — id: 13.13 | name: AXIOM_GIT_COMMANDS | zone: 13_TECHNICAL_CORE</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>14_INTELLIGENT_LINKS</span> <span class=badge>0 folders</span> <span class=badge>6 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>14.00.n_NAV.json</span><span class=subtle> — id: 14.00.n | name: NAV | zone: 14_INTELLIGENT_LINKS</span></li>
+<li><span class=icon>📄</span><span class=file>14.00.r_README.md</span><span class=subtle> — id: 14.00.r | name: README | zone: 14_INTELLIGENT_LINKS</span></li>
+<li><span class=icon>📄</span><span class=file>14.00.s_STRUCTURE.md</span><span class=subtle> — id: 14.00.s | name: STRUCTURE | zone: 14_INTELLIGENT_LINKS</span></li>
+<li><span class=icon>📄</span><span class=file>14.01_LINK_AUDIT_REFERENCE.md</span><span class=subtle> — id: 14.01 | name: LINK_AUDIT_REFERENCE | zone: 14_INTELLIGENT_LINKS</span></li>
+<li><span class=icon>📄</span><span class=file>14.02_FIXED_LOG.md</span><span class=subtle> — id: 14.02 | name: FIXED_LOG | zone: 14_INTELLIGENT_LINKS</span></li>
+<li><span class=icon>📄</span><span class=file>14.03_PEREFERENCE_LINK.md</span><span class=subtle> — id: 14.03 | name: PEREFERENCE_LINK | zone: 14_INTELLIGENT_LINKS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>15_ARCHIVAL_MODULES</span> <span class=badge>1 folders</span> <span class=badge>4 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>15.00.leg_LEGACY_CONTENT</span> <span class=badge>0 folders</span> <span class=badge>5 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>00.03.r_PREFIX_SYSTEM_V2.md</span><span class=subtle> — id: 00.03.r | name: PREFIX_SYSTEM_V2 | zone: 15.00.leg_LEGACY_CONTENT</span></li>
+<li><span class=icon>📄</span><span class=file>00.04.r_PREFIX_SYSTEM_V2.1.md</span><span class=subtle> — id: 00.04.r | name: PREFIX_SYSTEM_V2.1 | zone: 15.00.leg_LEGACY_CONTENT</span></li>
+<li><span class=icon>📄</span><span class=file>00.04.s_CORE_INDEX.md</span><span class=subtle> — id: 00.04.s | name: CORE_INDEX | zone: 15.00.leg_LEGACY_CONTENT</span></li>
+<li><span class=icon>📄</span><span class=file>15.00.leg.00.n_NAV.json</span><span class=subtle> — id: 15.00.leg.00.n | name: NAV | zone: 15.00.leg_LEGACY_CONTENT</span></li>
+<li><span class=icon>📄</span><span class=file>15.00.leg.00.r_README.md</span><span class=subtle> — id: 15.00.leg.00.r | name: README | zone: 15.00.leg_LEGACY_CONTENT</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>15.00.n_NAV.json</span><span class=subtle> — id: 15.00.n | name: NAV | zone: 15_ARCHIVAL_MODULES</span></li>
+<li><span class=icon>📄</span><span class=file>15.00.r_README.md</span><span class=subtle> — id: 15.00.r | name: README | zone: 15_ARCHIVAL_MODULES</span></li>
+<li><span class=icon>📄</span><span class=file>15.00.s_STRUCTURE.md</span><span class=subtle> — id: 15.00.s | name: STRUCTURE | zone: 15_ARCHIVAL_MODULES</span></li>
+<li><span class=icon>📄</span><span class=file>15.01_AST_NAV_DECLARATION.md</span><span class=subtle> — id: 15.01 | name: AST_NAV_DECLARATION | zone: 15_ARCHIVAL_MODULES</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>16_AXIOM_DEPLOYMENT</span> <span class=badge>1 folders</span> <span class=badge>7 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>16.00.n_NAV.json</span><span class=subtle> — id: 16.00.n | name: NAV | zone: 16_AXIOM_DEPLOYMENT</span></li>
+<li><span class=icon>📄</span><span class=file>16.00.r_README.md</span><span class=subtle> — id: 16.00.r | name: README | zone: 16_AXIOM_DEPLOYMENT</span></li>
+<li><span class=icon>📄</span><span class=file>16.00.s_STRUCTURE.md</span><span class=subtle> — id: 16.00.s | name: STRUCTURE | zone: 16_AXIOM_DEPLOYMENT</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>16.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>16.01_MIGRATION_CHART.md</span><span class=subtle> — id: 16.01 | name: MIGRATION_CHART | zone: 16_AXIOM_DEPLOYMENT</span></li>
+<li><span class=icon>📄</span><span class=file>16.02_AXIOM_TERMINAL.md</span><span class=subtle> — id: 16.02 | name: AXIOM_TERMINAL | zone: 16_AXIOM_DEPLOYMENT</span></li>
+<li><span class=icon>📄</span><span class=file>16.03_DEPLOY_HTML_CONVERT.md</span><span class=subtle> — id: 16.03 | name: DEPLOY_HTML_CONVERT | zone: 16_AXIOM_DEPLOYMENT</span></li>
+<li><span class=icon>📄</span><span class=file>16.04_MAC_DEPLOYMENT_PLAN.md</span><span class=subtle> — id: 16.04 | name: MAC_DEPLOYMENT_PLAN | zone: 16_AXIOM_DEPLOYMENT</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>17_DEEP_INVESTIGATOR</span> <span class=badge>2 folders</span> <span class=badge>17 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>17.00.a_BASE_STATE</span> <span class=badge>1 folders</span> <span class=badge>3 files</span></summary><ul>
+<li><details open><summary><span class=icon>📁</span><span class=folder>17.00.a.00.b_SUBCORE_STRUCTURE</span> <span class=badge>0 folders</span> <span class=badge>2 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>17.00.a.00.b.00.n_NAV.json</span><span class=subtle> — id: 17.00.a.00.b.00.n | name: NAV | zone: 17.00.a.00.b_SUBCORE_STRUCTURE</span></li>
+<li><span class=icon>📄</span><span class=file>17.00.a.00.b.01_SUBCORE_PLAN.md</span><span class=subtle> — id: 17.00.a.00.b.01 | name: SUBCORE_PLAN | zone: 17.00.a.00.b_SUBCORE_STRUCTURE</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>17.00.a.00.n_NAV.json</span><span class=subtle> — id: 17.00.a.00.n | name: NAV | zone: 17.00.a_BASE_STATE</span></li>
+<li><span class=icon>📄</span><span class=file>17.00.a.01_BASE_STATE_09.05.25.md</span><span class=subtle> — id: 17.00.a.01 | name: BASE_STATE_09.05.25 | zone: 17.00.a_BASE_STATE</span></li>
+<li><span class=icon>📄</span><span class=file>17.00.a.02_SHARD_MAP.md</span><span class=subtle> — id: 17.00.a.02 | name: SHARD_MAP | zone: 17.00.a_BASE_STATE</span></li>
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>17.00.ap_AUDIT_PROTOCOL.md</span><span class=subtle> — id: 17.00.ap | name: AUDIT_PROTOCOL | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.00.n_NAV.json</span><span class=subtle> — id: 17.00.n | name: NAV | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.00.r_README.md</span><span class=subtle> — id: 17.00.r | name: README | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.00.s_CONCEPT.md</span><span class=subtle> — id: 17.00.s | name: CONCEPT | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.00.s_STRUCTURE.md</span><span class=subtle> — id: 17.00.s | name: STRUCTURE | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>17.00.v_VISUAL</span> <span class=badge>0 folders</span> <span class=badge>0 files</span></summary><ul>
+
+</ul></details></li>
+<li><span class=icon>📄</span><span class=file>17.01_ANALYSIS_27.04.25.md</span><span class=subtle> — id: 17.01 | name: ANALYSIS_27.04.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.02_ANALYSIS_30.04.25.md</span><span class=subtle> — id: 17.02 | name: ANALYSIS_30.04.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.03_ANALYSIS_05.05.25.md</span><span class=subtle> — id: 17.03 | name: ANALYSIS_05.05.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.04_ANALYSIS_09.05.25.md</span><span class=subtle> — id: 17.04 | name: ANALYSIS_09.05.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.05_ANALYSIS_15.05.25.md</span><span class=subtle> — id: 17.05 | name: ANALYSIS_15.05.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.06_ANALYSIS_24.05.25.md</span><span class=subtle> — id: 17.06 | name: ANALYSIS_24.05.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.07_ANALYSIS_29.05.25.md</span><span class=subtle> — id: 17.07 | name: ANALYSIS_29.05.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.08_ANALYSIS_04.06.25.md</span><span class=subtle> — id: 17.08 | name: ANALYSIS_04.06.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.09_ANALYSIS_03.07.25.html</span><span class=subtle> — id: 17.09 | name: ANALYSIS_03.07.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.09_ANALYSIS_03.07.25.md</span><span class=subtle> — id: 17.09 | name: ANALYSIS_03.07.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.10_ANALYSIS_03.08.25.md</span><span class=subtle> — id: 17.10 | name: ANALYSIS_03.08.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+<li><span class=icon>📄</span><span class=file>17.11.AUDIT_UI_PANEL_SCALING_AND_LAUNCHER.15.08.25.md</span><span class=subtle> — id: 17.11.AUDIT | name: UI_PANEL_SCALING_AND_LAUNCHER.15.08.25 | zone: 17_DEEP_INVESTIGATOR</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>18_EVENTS</span> <span class=badge>0 folders</span> <span class=badge>5 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>18.00.n_NAV.json</span><span class=subtle> — id: 18.00.n | name: NAV | zone: 18_EVENTS</span></li>
+<li><span class=icon>📄</span><span class=file>18.00.r_README.md</span><span class=subtle> — id: 18.00.r | name: README | zone: 18_EVENTS</span></li>
+<li><span class=icon>📄</span><span class=file>18.00.s_STRUCTURE.md</span><span class=subtle> — id: 18.00.s | name: STRUCTURE | zone: 18_EVENTS</span></li>
+<li><span class=icon>📄</span><span class=file>18.01_GOLDEN_ERA.md</span><span class=subtle> — id: 18.01 | name: GOLDEN_ERA | zone: 18_EVENTS</span></li>
+<li><span class=icon>📄</span><span class=file>18.02_BLACK_SUN.md</span><span class=subtle> — id: 18.02 | name: BLACK_SUN | zone: 18_EVENTS</span></li>
+</ul></details></li>
+<li><details open><summary><span class=icon>📁</span><span class=folder>19_CHANGELOG</span> <span class=badge>0 folders</span> <span class=badge>30 files</span></summary><ul>
+<li><span class=icon>📄</span><span class=file>19.00.log_CHANGELOG_INDEX.md</span><span class=subtle> — id: 19.00.log | name: CHANGELOG_INDEX | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.00.n_NAV.json</span><span class=subtle> — id: 19.00.n | name: NAV | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.00.r_README.md</span><span class=subtle> — id: 19.00.r | name: README | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.01_LOG.27.07.25.md</span><span class=subtle> — id: 19.01 | name: LOG.27.07.25 | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.01_LOG.28.07.25.md</span><span class=subtle> — id: 19.01 | name: LOG.28.07.25 | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.02_LOG.27.07.25__INTERFACE-UPDATE.md</span><span class=subtle> — id: 19.02 | name: LOG.27.07.25__INTERFACE-UPDATE | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.03_LOG.28.07.25__AGENT-REFAC.md</span><span class=subtle> — id: 19.03 | name: LOG.28.07.25__AGENT-REFAC | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.04_LOG.27.07.25__NAV-GUI.md</span><span class=subtle> — id: 19.04 | name: LOG.27.07.25__NAV-GUI | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.05_LOG.28.07.25__NAV-ASYNC.md</span><span class=subtle> — id: 19.05 | name: LOG.28.07.25__NAV-ASYNC | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.06_LOG.28.07.25__CORE-SYNC.md</span><span class=subtle> — id: 19.06 | name: LOG.28.07.25__CORE-SYNC | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.07_LOG.28.07.25__HEADER-REFORMAT.md</span><span class=subtle> — id: 19.07 | name: LOG.28.07.25__HEADER-REFORMAT | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.08_LOG.28.07.25__README-UPDATE.md</span><span class=subtle> — id: 19.08 | name: LOG.28.07.25__README-UPDATE | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.09_LOG.28.07.25__README-UPDATE2.md</span><span class=subtle> — id: 19.09 | name: LOG.28.07.25__README-UPDATE2 | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.10_LOG.29.07.25__NAV-FILE-COUNT.md</span><span class=subtle> — id: 19.10 | name: LOG.29.07.25__NAV-FILE-COUNT | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.11_LOG.29.07.25__NAV-FILE-REALNAME.md</span><span class=subtle> — id: 19.11 | name: LOG.29.07.25__NAV-FILE-REALNAME | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.12_LOG.29.07.25__AXIOM-WORKLOG.md</span><span class=subtle> — id: 19.12 | name: LOG.29.07.25__AXIOM-WORKLOG | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.13_LOG.29.07.25__BLOCK-CANVAS-REFAC.md</span><span class=subtle> — id: 19.13 | name: LOG.29.07.25__BLOCK-CANVAS-REFAC | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.14_LOG.30.07.25__GMS-STRUCTURE-UPDATE.md</span><span class=subtle> — id: 19.14 | name: LOG.30.07.25__GMS-STRUCTURE-UPDATE | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.15_LOG.30.07.25__VIKTOR-REFAC.md</span><span class=subtle> — id: 19.15 | name: LOG.30.07.25__VIKTOR-REFAC | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.16_LOG.30.07.25__VIKTOR-REFAC-UPDATE.md</span><span class=subtle> — id: 19.16 | name: LOG.30.07.25__VIKTOR-REFAC-UPDATE | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.17_LOG.02.08.25__GMS-STRUCTURE-README-DETAIL.md</span><span class=subtle> — id: 19.17 | name: LOG.02.08.25__GMS-STRUCTURE-README-DETAIL | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.18_LOG.05.08.25__ANALYSIS-REFAC.md</span><span class=subtle> — id: 19.18 | name: LOG.05.08.25__ANALYSIS-REFAC | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.19_LOG.06.08.25__PYQT-PANEL-ROADMAP-VALIDATOR.md</span><span class=subtle> — id: 19.19 | name: LOG.06.08.25__PYQT-PANEL-ROADMAP-VALIDATOR | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.20_LOG.08.08.25__QSS-ICON-CONSOLE-UPDATE.md</span><span class=subtle> — id: 19.20 | name: LOG.08.08.25__QSS-ICON-CONSOLE-UPDATE | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.21_LOG.08.08.25__LOGIN-MAIN-REDESIGN.md</span><span class=subtle> — id: 19.21 | name: LOG.08.08.25__LOGIN-MAIN-REDESIGN | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.22_LOG.10.08.25__VIKTOR-OPTIM.md</span><span class=subtle> — id: 19.22 | name: LOG.10.08.25__VIKTOR-OPTIM | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.23_LOG.09.08.25__03-CHARACTERS-REFAC.md</span><span class=subtle> — id: 19.23 | name: LOG.09.08.25__03-CHARACTERS-REFAC | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.24_LOG.15.08.25__UI-PANEL-LAUNCHER-AUDIT-GMS.md</span><span class=subtle> — id: 19.24 | name: LOG.15.08.25__UI-PANEL-LAUNCHER-AUDIT-GMS | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.25_LOG.17.08.25__05-FRAMEWORK-GMS-REFAC.md</span><span class=subtle> — id: 19.25 | name: LOG.17.08.25__05-FRAMEWORK-GMS-REFAC | zone: 19_CHANGELOG</span></li>
+<li><span class=icon>📄</span><span class=file>19.26_LOG.20.08.25__PYQT-PANEL-HIDPI-STABILIZE.md</span><span class=subtle> — id: 19.26 | name: LOG.20.08.25__PYQT-PANEL-HIDPI-STABILIZE | zone: 19_CHANGELOG</span></li>
+</ul></details></li>
+</ul></div>
+
+    <div class="footer">AXIOM SYSTEM V2 — Roadmap HTML • Генератор v2.3</div>
+  </main>
+
+  <script>
+    const search = document.getElementById('search');
+    const root = document.querySelector('.tree');
+
+    function setAll(open) {
+      root.querySelectorAll('details').forEach(d => d.open = open);
+    }
+    document.getElementById('expandAll').addEventListener('click', () => setAll(true));
+    document.getElementById('collapseAll').addEventListener('click', () => setAll(false));
+
+    function matchText(el) {
+      return (el.textContent || '').toLowerCase();
+    }
+
+    function filterTree(q) {
+      q = q.trim().toLowerCase();
+      if (!q) {
+        // Показать всё
+        root.querySelectorAll('li, details').forEach(el => el.classList.remove('hidden'));
+        return;
+      }
+      const lis = root.querySelectorAll('li');
+      lis.forEach(li => li.classList.add('hidden'));
+      // Совпавшие файлы/папки показываем и открываем родителей
+      lis.forEach(li => {
+        const text = matchText(li);
+        if (text.includes(q)) {
+          li.classList.remove('hidden');
+          let p = li.parentElement;
+          while (p) {
+            if (p.tagName === 'DETAILS') p.open = true;
+            if (p.tagName === 'LI') p.classList.remove('hidden');
+            p = p.parentElement;
+          }
+        }
+      });
+    }
+
+    search.addEventListener('input', (e) => filterTree(e.target.value));
+  </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="axiom-cover-block__svg" width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true" focusable="false" role="img">
+  <defs>
+    <radialGradient id="ax_crimson_aura" cx="0.5" cy="0.5" r="0.52">
+      <stop offset="0%" stop-color="#ffede8" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#ff2034" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ax_blade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff6f4" stop-opacity="0.95"/>
+      <stop offset="58%" stop-color="#ff4a54" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#5a0a12" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="ax_ring" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff2034"/>
+      <stop offset="100%" stop-color="#b10f1e"/>
+    </linearGradient>
+  </defs>
+  <!-- Внешнее динамическое кольцо (аура) -->
+  <circle cx="32" cy="32" r="29" stroke="url(#ax_ring)" stroke-width="2.2" fill="url(#ax_crimson_aura)">
+    <animate attributeName="r" values="28.8;30;28.8" dur="2.8s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-width" values="2.2;2.6;2.2" dur="2.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.25;0.34;0.25" dur="2.8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- Орбитальные треки -->
+  <g opacity="0.36">
+    <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 32 32" to="360 32 32" dur="5.5s" repeatCount="indefinite"/>
+    <ellipse cx="32" cy="32" rx="21" ry="7.6" fill="none" stroke="#ff6b75" stroke-width="1"/>
+  </g>
+  <!-- Клинок / кристалл NIGHTMARE (вертикальный ромб) -->
+  <g>
+    <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 32 32" to="360 32 32" dur="3.2s" repeatCount="indefinite"/>
+    <path d="M32 12 L40 32 L32 52 L24 32 Z" fill="url(#ax_blade)" fill-opacity="0.92"/>
+  </g>
+  <!-- Внутреннее энергокольцо -->
+  <circle cx="32" cy="32" r="7.6" fill="#ff2034" fill-opacity="0.22">
+    <animate attributeName="r" values="7.6;10;7.6" dur="1.8s" repeatCount="indefinite"/>
+    <animate attributeName="fill-opacity" values="0.22;0.40;0.22" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  <!-- Пульсирующее ядро -->
+  <circle cx="32" cy="32" r="3.2" fill="#fff2f2" opacity="0.96">
+    <animate attributeName="r" values="3.2;4.8;3.2" dur="1.2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.82;1;0.82" dur="1.2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

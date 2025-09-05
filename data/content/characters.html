@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AXIOM • Characters</title>
+  
+  <!-- Подключаем общие стили демо-оболочки из корня ( iframe → ../../ ) -->
+  <link rel="stylesheet" href="../../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../../assets/css/axiom.css" />
+  
+  <style>
+    /* Лёгкие локальные уточнения под страницу контента */
+    body { background: var(--grad-bg); }
+    .page { max-width: 960px; margin: 24px auto; padding: 16px; }
+    .card { background: var(--grad-panel); border: 1px solid var(--outline); border-radius: var(--radius-3); box-shadow: var(--shadow-1); }
+    .head { padding: 16px; border-bottom: 1px solid var(--outline); display:flex; align-items:center; gap:12px; }
+    .head .dot { width:10px; height:10px; border-radius:50%; background: var(--accent); box-shadow: 0 0 14px var(--accent-glow); }
+    .head h1 { font-size: 18px; letter-spacing: .04em; text-transform: uppercase; }
+    .body { padding: 16px; display:grid; gap:12px; }
+    .muted { color: var(--muted); }
+    .list { display:grid; gap: 10px; }
+    .item { padding: 12px; border: 1px solid var(--outline); border-radius: 12px; background: var(--panel-2); }
+    .item h3 { font-size: 14px; margin-bottom: 6px; }
+    .tag { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="card">
+      <div class="head">
+        <div class="dot" aria-hidden="true"></div>
+        <h1>Персонажи • Demo</h1>
+      </div>
+      <div class="body">
+        <p class="muted">Эта страница — заглушка для публичного UI. Здесь будет подключаться контент из сектора <span class="mono">03_CHARACTERS</span> (карточки, профили, ссылки).</p>
+        <div class="list">
+          <div class="item">
+            <h3>Виктор — <span class="tag">ID: 03.01_VIKTOR</span></h3>
+            <p class="muted">Карточка персонажа (пример заглушки). Текст будет заменён при интеграции из системы.</p>
+          </div>
+          <div class="item">
+            <h3>Лиза — <span class="tag">ID: 03.02_LIZA</span></h3>
+            <p class="muted">Карточка персонажа (пример заглушки). Текст будет заменён при интеграции из системы.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
