@@ -1,0 +1,7 @@
+{
+    "objects": [
+      { "id": "roadmap", "path": "roadmap/index.html", "type": "html" },
+      { "id": "audit.demo", "path": "audits/2025-09-06__audit-demo.html", "type": "html" },
+      { "id": "content.demo", "path": "content/2025-09-06__content-demo.html", "type": "html" }
+    ]
+  }

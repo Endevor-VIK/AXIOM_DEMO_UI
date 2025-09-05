@@ -1,0 +1,20 @@
+[
+    {
+      "id": "2025-09-06-webcore",
+      "date": "2025-09-06",
+      "title": "WEB CORE: старт работ",
+      "kind": "update",
+      "tags": ["webcore","release"],
+      "summary": "Инициализация архитектуры, терминальная загрузка, строгий логин.",
+      "link": "/dashboard/news"
+    },
+    {
+      "id": "2025-09-06-roadmap",
+      "date": "2025-09-06",
+      "title": "Roadmap: добавлен iframe-рендер",
+      "kind": "update",
+      "tags": ["roadmap","ui"],
+      "summary": "Страница Roadmap теперь рендерит HTML из data/roadmap/index.html",
+      "link": "/dashboard/roadmap"
+    }
+  ]

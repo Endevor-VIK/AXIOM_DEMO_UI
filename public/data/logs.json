@@ -1,0 +1,7 @@
+{
+    "logs": [
+      { "ts": "2025-09-06T06:00:00Z", "level": "info", "msg": "WEB CORE bootstrap" },
+      { "ts": "2025-09-06T06:01:00Z", "level": "ok",   "msg": "Snapshots available (index, objects, logs)" },
+      { "ts": "2025-09-06T06:02:00Z", "level": "ok",   "msg": "Manifests available (audits, content, news)" }
+    ]
+  }

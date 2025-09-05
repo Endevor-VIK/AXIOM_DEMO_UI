@@ -1,0 +1,8 @@
+{
+    "meta": {
+      "version": "v1",
+      "generatedAt": "2025-09-06T00:00:00Z",
+      "zone": "[11_SYSTEM_INTERFACE]"
+    },
+    "zones": ["00_NAVIGATION", "11_SYSTEM_INTERFACE", "19_CHANGELOG"]
+  }

@@ -1,0 +1,137 @@
+/* AXIOM_DEMO_UI — WEB CORE
+   Canvas: C06 — styles/app.css
+   Purpose: Base layout, resets, responsive rules and component shells for Layout/Ticker/TerminalBoot.
+*/
+
+/* ------------------------------
+   Base / Reset
+--------------------------------*/
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; min-height: 100dvh; }
+body { background: var(--ax-bg); color: var(--ax-text); -webkit-font-smoothing: antialiased; }
+#root { min-height: 100dvh; display: contents; }
+
+:focus-visible { outline: 2px solid var(--ax-accent); outline-offset: 2px; }
+
+.hidden { display: none !important; }
+.visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); white-space: nowrap; }
+
+/* Typography */
+h1,h2,h3,h4 { margin: .6rem 0; font-weight: 700; letter-spacing: .04em; }
+p { margin: .5rem 0 1rem; }
+small { color: var(--ax-muted); }
+
+/* Links */
+a { color: var(--ax-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ------------------------------
+   Layout Shell
+--------------------------------*/
+.ax-shell { display: flex; flex-direction: column; min-height: 100dvh; }
+
+.ax-topbar { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; gap: var(--ax-gap); justify-content: space-between; padding: .5rem 1rem; background: color-mix(in srgb, var(--ax-ink) 78%, transparent); border-bottom: 1px solid var(--ax-border); backdrop-filter: blur(6px); }
+.ax-brand { font-family: var(--ax-font-mono); letter-spacing: .08em; font-weight: 800; }
+
+.ax-nav { display: flex; gap: .5rem; overflow-x: auto; scrollbar-width: thin; }
+.ax-tab { display: inline-flex; align-items: center; gap: .35rem; padding: .5rem .75rem; border-radius: .5rem; border: 1px solid transparent; color: var(--ax-text); }
+.ax-tab:hover { border-color: var(--ax-border); }
+.ax-tab.active { background: color-mix(in srgb, var(--ax-red) 14%, transparent); border-color: var(--ax-red2); }
+
+.ax-actions { display:flex; align-items:center; gap:.5rem; }
+.ax-btn { color: var(--ax-text); border:1px solid var(--ax-border); background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.15)); border-radius:.6rem; padding:.45rem .8rem; cursor:pointer; }
+.ax-btn:hover { border-color: var(--ax-red2); box-shadow: 0 0 0 1px var(--ax-red2); }
+.ax-btn.primary { border-color: var(--ax-red2); background: color-mix(in srgb, var(--ax-red) 18%, transparent); }
+
+.ax-ticker { border-bottom: 1px dashed var(--ax-border); padding: .25rem .75rem; font-size: .92rem; background: color-mix(in srgb, var(--ax-ink) 70%, transparent); }
+.ax-status { border-top: 1px solid var(--ax-border); padding: .35rem .75rem; font-size: .85rem; color: var(--ax-muted); background: color-mix(in srgb, var(--ax-ink) 80%, transparent); }
+
+.ax-main { flex: 1 1 auto; padding: 1rem; display: block; }
+
+/* Content rows/cards */
+.container { max-width: 1200px; margin: 0 auto; }
+.grid { display: grid; gap: 1rem; grid-template-columns: repeat(12, 1fr); }
+.card { grid-column: span 12; }
+
+/* Responsive */
+@media (max-width: 960px){
+  .grid { grid-template-columns: repeat(6, 1fr); }
+  .card { grid-column: span 6; }
+}
+@media (max-width: 640px){
+  .grid { grid-template-columns: repeat(4, 1fr); }
+  .card { grid-column: span 4; }
+  .ax-topbar { padding: .5rem .75rem; }
+}
+@media (max-width: 420px){
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .card { grid-column: span 2; }
+}
+
+/* ------------------------------
+   Forms (for Login/Register)
+--------------------------------*/
+.ax-form { max-width: 420px; margin: 2rem auto; padding: 1rem; border: 1px solid var(--ax-border); border-radius: var(--ax-radius); background: color-mix(in srgb, var(--ax-ink) 70%, transparent); box-shadow: var(--ax-shadow); }
+.ax-field { display: grid; gap: .35rem; margin-bottom: .9rem; }
+.ax-label { font-size: .92rem; color: var(--ax-muted); }
+.ax-input { background: #0f0f13; border: 1px solid var(--ax-border); color: var(--ax-text); padding: .55rem .6rem; border-radius: .5rem; font-family: var(--ax-font-mono); }
+.ax-input:focus { border-color: var(--ax-red2); outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, var(--ax-red) 30%, transparent); }
+.ax-actions-row { display:flex; gap:.5rem; align-items:center; justify-content: flex-end; }
+
+/* ------------------------------
+   Iframes / Panels
+--------------------------------*/
+.ax-frame { width: 100%; min-height: 60dvh; border: 1px solid var(--ax-border); border-radius: var(--ax-radius); background: #0b0c10; }
+
+/* ------------------------------
+   Ticker component basics
+--------------------------------*/
+.ticker { display:flex; gap: 1.25rem; align-items:center; white-space: nowrap; overflow:hidden; }
+.ticker-item { display:inline-flex; align-items:center; gap:.5rem; }
+.ticker-kind { font-family: var(--ax-font-mono); font-size: .78rem; padding:.15rem .35rem; border:1px solid var(--ax-border); border-radius:.4rem; color: var(--ax-muted); }
+
+/* optional marquee-like animation; disabled when prefers-reduced-motion */
+@media (prefers-reduced-motion: no-preference){
+  .ticker-track { display:inline-block; will-change: transform; animation: ticker-move 28s linear infinite; }
+  @keyframes ticker-move { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+}
+
+/* ------------------------------
+   News Feed / Cards (skeleton styles)
+--------------------------------*/
+.news-grid { display:grid; gap: 1rem; grid-template-columns: repeat(12,1fr); }
+.news-card { grid-column: span 6; background: color-mix(in srgb, var(--ax-ink) 75%, transparent); border:1px solid var(--ax-border); border-radius: var(--ax-radius); padding: 1rem; box-shadow: var(--ax-shadow); }
+.news-title { font-size: 1.05rem; margin-bottom: .3rem; }
+.news-meta { display:flex; gap:.5rem; align-items:center; color: var(--ax-muted); font-size: .85rem; }
+.news-tags { display:flex; gap:.35rem; flex-wrap: wrap; }
+.news-kind { font-family: var(--ax-font-mono); font-size: .78rem; padding:.12rem .4rem; border:1px solid var(--ax-border); border-radius:.4rem; color: var(--ax-muted); }
+
+@media (max-width: 960px){ .news-card { grid-column: span 12; } }
+
+/* ------------------------------
+   Terminal Boot (loading screen)
+--------------------------------*/
+.boot { max-width: 760px; margin: 10vh auto; border:1px solid var(--ax-border); border-radius: var(--ax-radius); background: #0a0b0f; box-shadow: var(--ax-shadow); }
+.boot-header { padding: .75rem 1rem; border-bottom:1px solid var(--ax-border); display:flex; align-items:center; justify-content:space-between; }
+.boot-title { font-family: var(--ax-font-mono); letter-spacing:.08em; }
+.boot-body { padding: .75rem 1rem; font-family: var(--ax-font-mono); font-size:.95rem; }
+.boot-log { display:grid; gap:.25rem; }
+.boot-line { display:flex; align-items:flex-start; gap:.5rem; }
+.boot-line .time { color: var(--ax-muted); min-width: 74px; text-align:right; }
+.boot-line .msg { flex:1; }
+.boot-line.ok .msg { color: var(--ax-ok); }
+.boot-line.warn .msg { color: var(--ax-warn); }
+.boot-line.err .msg { color: var(--ax-err); }
+
+/* ------------------------------
+   Utilities
+--------------------------------*/
+.row { display:flex; gap: var(--ax-gap); align-items:center; }
+.col { display:flex; flex-direction:column; gap: var(--ax-gap); }
+.hr { height:1px; background: var(--ax-border); border:0; margin: .75rem 0; }
+
+/* Print minimal */
+@media print {
+  .ax-topbar, .ax-ticker, .ax-status { display: none !important; }
+  .ax-main { padding: 0; }
+}

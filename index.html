@@ -1,203 +1,42 @@
-<!DOCTYPE html>
-<html lang="ru" data-theme="red">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AXIOM SYSTEM • Public Demo UI (Login + Main: Roadmap, Audit, Content)." />
-  <meta name="color-scheme" content="dark" />
-  <meta name="theme-color" content="#CF2E4A" />
-  <title>AXIOM • Public Demo UI</title>
+<!-- AXIOM_DEMO_UI — WEB CORE
+     Canvas: C34 — index.html
+     Purpose: Vite entry HTML (replaces legacy demo shell). Legacy notice preserved in comments.
+-->
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0c0d11" />
+    <title>AXIOM • UI</title>
+    <!-- Optional favicon placed in /public (served from root) -->
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-  <!-- Favicon (опционально, добавь файл в assets/ico/) -->
-  <link rel="icon" href="assets/ico/axiom_panel_icon.ico" />
+    <!--
+      LEGACY NOTICE
+      — Старый демо-файл `assets/js/app.js` и прежний `index.html` помечены как deprecated.
+      — Новый вход использует Vite и точку входа `/app/main.tsx` (React + TS).
+      — Если нужен откат, храните legacy-файлы в `legacy/` и НЕ подключайте их здесь.
+    -->
 
-  <!-- Styles: порядок важен -->
-  <link rel="stylesheet" href="assets/css/tokens.css" />
-  <link rel="stylesheet" href="assets/css/axiom.css" />
-  <link rel="stylesheet" href="assets/css/chrome.css" />
-</head>
-<body>
-  <noscript>
-    <div style="padding:16px; background:#2b1a1f; color:#fff; font-family:ui-monospace,Menlo,Consolas,monospace;">
-      AXIOM Demo UI требует включённый JavaScript.
+    <style>
+      /* Minimal paint before CSS bundles load */
+      html, body { margin:0; height:100%; background:#0c0d11; color:#ececf2; }
+      #root { min-height: 100dvh; display: grid; place-items: center; }
+      .boot-splash { font: 14px/1.4 ui-sans-serif, system-ui; opacity:.7 }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="boot-splash">AXIOM • UI загружается…</div>
     </div>
-  </noscript>
 
-  <!-- LOGIN VIEW -->
-  <section id="login" class="view">
-    <div class="login-wrap">
-      <div class="login-card" role="dialog" aria-labelledby="h-brand" aria-describedby="h-sub">
-        <div class="brand" id="h-brand"><span class="sig">AXIOM</span> SYSTEM</div>
-        <div class="sub" id="h-sub">Публичная демо‑оболочка интерфейса. Данные подгружаются из каталога <span class="mono">/data</span>.</div>
+    <noscript>
+      Для работы интерфейса требуется JavaScript. Пожалуйста, включите его в настройках браузера.
+    </noscript>
 
-        <!-- SVG sci‑fi ядро: идея сохранена (анимация), inline‑вариант в логине -->
-        <div style="margin-top:16px;display:flex;gap:12px;align-items:center;">
-          <div aria-hidden="true">
-            <svg class="axiom-cover-block__svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
-              <defs>
-                <radialGradient id="ax_crimson_aura" cx="0.5" cy="0.5" r="0.52">
-                  <stop offset="0%" stop-color="#ffede8" stop-opacity="0.24" />
-                  <stop offset="100%" stop-color="#ff2034" stop-opacity="0" />
-                </radialGradient>
-                <linearGradient id="ax_blade" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#fff6f4" stop-opacity="0.95" />
-                  <stop offset="58%" stop-color="#ff4a54" stop-opacity="0.9" />
-                  <stop offset="100%" stop-color="#5a0a12" stop-opacity="0.9" />
-                </linearGradient>
-                <linearGradient id="ax_ring" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stop-color="#ff2034" />
-                  <stop offset="100%" stop-color="#b10f1e" />
-                </linearGradient>
-              </defs>
-              <!-- Внешнее динамическое кольцо (аура) -->
-              <circle cx="32" cy="32" r="29" stroke="url(#ax_ring)" stroke-width="2.2" fill="url(#ax_crimson_aura)">
-                <animate attributeName="r" values="28.8;30;28.8" dur="2.8s" repeatCount="indefinite" />
-                <animate attributeName="stroke-width" values="2.2;2.6;2.2" dur="2.8s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.25;0.34;0.25" dur="2.8s" repeatCount="indefinite" />
-              </circle>
-              <!-- Орбитальные треки -->
-              <g opacity="0.36">
-                <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 32 32" to="360 32 32" dur="5.5s" repeatCount="indefinite" />
-                <ellipse cx="32" cy="32" rx="21" ry="7.6" fill="none" stroke="#ff6b75" stroke-width="1" />
-              </g>
-              <!-- Клинок / кристалл NIGHTMARE (вертикальный ромб) -->
-              <g>
-                <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 32 32" to="360 32 32" dur="3.2s" repeatCount="indefinite" />
-                <path d="M32 12 L40 32 L32 52 L24 32 Z" fill="url(#ax_blade)" fill-opacity="0.92" />
-              </g>
-              <!-- Внутреннее энергокольцо -->
-              <circle cx="32" cy="32" r="7.6" fill="#ff2034" fill-opacity="0.22">
-                <animate attributeName="r" values="7.6;10;7.6" dur="1.8s" repeatCount="indefinite" />
-                <animate attributeName="fill-opacity" values="0.22;0.40;0.22" dur="1.8s" repeatCount="indefinite" />
-              </circle>
-              <!-- Пульсирующее ядро -->
-              <circle cx="32" cy="32" r="3.2" fill="#fff2f2" opacity="0.96">
-                <animate attributeName="r" values="3.2;4.8;3.2" dur="1.2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.82;1;0.82" dur="1.2s" repeatCount="indefinite" />
-              </circle>
-            </svg>
-          </div>
-          <div class="muted" style="font-size:13px;">Активация протокола: <span class="mono">RED</span></div>
-        </div>
-
-        <form id="loginForm" class="form" autocomplete="off">
-          <div class="field">
-            <label for="login-uid">Логин</label>
-            <input id="login-uid" name="uid" inputmode="text" placeholder="guest" />
-          </div>
-          <div class="field">
-            <label for="login-pw">Пароль</label>
-            <input id="login-pw" name="pw" type="password" placeholder="••••••" />
-          </div>
-          <div class="row">
-            <div class="hint">Демо‑режим не хранит учётные данные.</div>
-            <div style="display:flex; gap:10px;">
-              <button class="btn alt" type="button" id="btn-skip">Войти без пароля</button>
-              <button class="btn" type="submit">Войти</button>
-            </div>
-          </div>
-        </form>
-        <div class="legal">Подсказка: <span class="kbd">F11</span> или <span class="kbd">Alt+Enter</span> — полноэкранный режим.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MAIN APP VIEW -->
-  <section id="main" class="view hidden" aria-hidden="true">
-    <div class="shell">
-      <header class="titlebar" role="banner">
-        <div class="brand"><span class="sig">AXIOM</span> USER INTERFACE</div>
-        <div class="spacer"></div>
-        <div class="controls">
-          <button class="iconbtn" id="btn-fullscreen" title="Полноэкранный режим (F11 / Alt+Enter)">⛶</button>
-          <button class="iconbtn danger" id="btn-logout" title="Выход">Выход</button>
-        </div>
-      </header>
-
-      <nav class="tabbar" role="tablist" aria-label="Main Tabs">
-        <button class="tab active" role="tab" aria-selected="true" aria-controls="panel-roadmap" id="tab-roadmap">ROADMAP</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-audit" id="tab-audit">AUDIT</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-content" id="tab-content">CONTENT</button>
-      </nav>
-
-      <main class="content" role="main">
-        <!-- ROADMAP → loads /data/roadmap.html (drop‑in из приватной системы) -->
-        <section id="panel-roadmap" class="panel active" role="tabpanel" aria-labelledby="tab-roadmap">
-          <iframe id="roadmap-frame" class="embed" title="Roadmap" src="data/roadmap.html"></iframe>
-        </section>
-
-        <!-- AUDIT → список + просмотр; список из /data/audits/manifest.json -->
-        <section id="panel-audit" class="panel" role="tabpanel" aria-labelledby="tab-audit">
-          <div class="audit-grid">
-            <aside class="panel-list">
-              <div class="list-head">AUDIT FILES</div>
-              <div id="audit-list" class="list" role="listbox" aria-label="Audit files list"></div>
-            </aside>
-            <section class="panel-view">
-              <div class="viewbar">
-                <div class="path" id="audit-path">data/audits/—</div>
-              </div>
-              <iframe id="audit-frame" class="embed" title="Audit Viewer" src="about:blank"></iframe>
-            </section>
-          </div>
-        </section>
-
-        <!-- CONTENT → категории через /data/content/manifest.json -->
-        <section id="panel-content" class="panel" role="tabpanel" aria-labelledby="tab-content">
-          <div class="content-grid">
-            <aside class="panel-list">
-              <div class="list-head">CONTENT</div>
-              <div class="search">
-                <input id="content-search" type="search" placeholder="Поиск… (Ctrl+K)" aria-label="Поиск контента" />
-              </div>
-              <div id="content-list" class="list" role="listbox" aria-label="Content list"></div>
-            </aside>
-            <section class="panel-view">
-              <div class="viewbar">
-                <div class="path" id="content-path">data/content/—</div>
-              </div>
-              <iframe id="content-frame" class="embed" title="Content Viewer" src="about:blank"></iframe>
-            </section>
-          </div>
-        </section>
-      </main>
-
-      <footer class="statusbar">
-        <div>Подсказки: <span class="kbd">F11</span> / <span class="kbd">Alt+Enter</span> — полноэкранный режим • Все материалы заменяемы в <span class="mono">/data</span></div>
-        <div class="muted">AXIOM • Public Demo UI</div>
-      </footer>
-    </div>
-  </section>
-
-  <!-- App -->
-  <script src="assets/js/app.js"></script>
-
-  <!--
-    ───────────────────────────────────────────────────────────────────────────
-    REPO STRUCTURE (drop‑in files)
-
-    /ui
-    ├─ index.html                 ← этот файл
-    ├─ assets/
-    │  ├─ css/
-    │  │  ├─ tokens.css
-    │  │  ├─ axiom.css
-    │  │  └─ chrome.css
-    │  ├─ js/app.js
-    │  ├─ svg/axiom_seal.svg      ← ШАГ 6: вынесем SVG‑ядро
-    │  └─ ico/axiom_panel_icon.ico
-    └─ data/
-       ├─ roadmap.html            ← копия 00.04.n_ROADMAP.html
-       ├─ audits/
-       │  ├─ manifest.json        ← [{ title, date, file }]
-       │  └─ ...                  ← audit html files
-       └─ content/
-          ├─ manifest.json        ← [{ title, group, file }]
-          └─ ...                  ← html pages
-
-    Примечания:
-    • Для локального прогона используйте простой сервер: `python -m http.server 8080` → http://localhost:8080/ui/
-    • Если открывать просто файлом (file://), fetch может быть заблокирован браузером.
-  -->
-</body>
+    <!-- Vite entry: React app mountpoint -->
+    <script type="module" src="/app/main.tsx"></script>
+  </body>
 </html>

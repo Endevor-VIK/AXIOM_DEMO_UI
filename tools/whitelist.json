@@ -1,0 +1,88 @@
+{
+    "version": 1,
+    "description": "AXIOM_DEMO_UI export whitelist",
+    "paths": {
+      "allow": [
+        "index.json",
+        "objects.json",
+        "logs.json",
+        "roadmap/**",
+        "audits/**",
+        "content/**",
+        "news/**",
+        "assets/**"
+      ],
+      "deny": [
+        "**/*.map",
+        "**/.DS_Store",
+        "**/Thumbs.db",
+        "**/.git/**",
+        "**/.env*",
+        "**/node_modules/**"
+      ]
+    },
+    "extensions": {
+      "allow": [
+        ".json",
+        ".html",
+        ".htm",
+        ".md",
+        ".txt",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".svg",
+        ".webp",
+        ".ico",
+        ".woff",
+        ".woff2",
+        ".ttf"
+      ],
+      "deny": [
+        ".exe",
+        ".bat",
+        ".sh",
+        ".ps1",
+        ".php",
+        ".py",
+        ".rb",
+        ".jar",
+        ".wasm"
+      ]
+    },
+    "fields": {
+      "news.manifest": ["id", "date", "title", "kind", "tags", "summary", "link"],
+      "audits.manifest": ["title", "date", "file", "tags"],
+      "content.manifest": ["title", "date", "file", "tags"]
+    },
+    "redact": {
+      "patterns": [
+        { "type": "regex", "pattern": "(?i)(api_key|token|secret|password)[=:]\\s*[^\\s\\\"']+", "replacement": "[REDACTED]" },
+        { "type": "regex", "pattern": "(?i)(Bearer\\s+[A-Za-z0-9\\-._~+/]+=*)", "replacement": "Bearer [REDACTED]" },
+        { "type": "regex", "pattern": "([A-Fa-f0-9]{32,64})", "replacement": "[HEXDIGITS]" },
+        { "type": "regex", "pattern": "([\\w\\-]{24,}:[\\w\\-]{24,})", "replacement": "[CREDENTIAL]" },
+        { "type": "regex", "pattern": "([A-Za-z]:\\\\[^\\n\\r]+|/[^\\n\\r\\s]+)", "replacement": "[PATH]" }
+      ]
+    },
+    "links": {
+      "external_allowlist": [
+        "https://github.com/Endevor-VIK",
+        "https://github.com/Endevor-VIK/AXIOM_DEMO_UI",
+        "https://github.com/Endevor-VIK/AXIOM_SYSTEM"
+      ],
+      "require_https": true
+    },
+    "limits": {
+      "max_file_size_kb": 5120,
+      "max_items_per_manifest": 1000
+    },
+    "security": {
+      "public_mode": {
+        "allow_write": false,
+        "allow_delete": false,
+        "allow_iframe_origins": ["self"]
+      }
+    }
+  }
+  

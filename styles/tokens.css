@@ -1,0 +1,69 @@
+/* AXIOM_DEMO_UI — WEB CORE
+   Canvas: C05 — styles/tokens.css
+   Purpose: Design tokens (Red Protocol). Centralize palette, typography, elevations.
+*/
+
+:root{
+    /* Palette — Red Protocol */
+    --ax-bg: #0c0d11;
+    --ax-ink: #10090c;
+    --ax-red: #ff2034;
+    --ax-red2: #b10f1e;
+    --ax-text: #ececf2;
+    --ax-muted: #a9a9b4;
+    --ax-border: #2a0d12;
+    --ax-elev: rgba(0,0,0,.35);
+  
+    /* Accent & Feedback */
+    --ax-accent: #00e7ff;
+    --ax-ok: #35c262;
+    --ax-warn: #f5a623;
+    --ax-err: #ff3860;
+  
+    /* Typography */
+    --ax-font-sans: ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    --ax-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --ax-text-size: 16px;
+    --ax-line: 1.55;
+  
+    /* Radius & Shadows */
+    --ax-radius: 12px;
+    --ax-shadow: 0 8px 24px rgba(0,0,0,.35);
+  
+    /* Layout */
+    --ax-gap: 12px;
+    --ax-gap-lg: 20px;
+  }
+  
+  @media (max-width: 480px){
+    :root{ --ax-text-size: 15px; }
+  }
+  
+  html, body { background: var(--ax-bg); color: var(--ax-text); font-family: var(--ax-font-sans); font-size: var(--ax-text-size); line-height: var(--ax-line); }
+  
+  /* Links */
+  :where(a){ color: var(--ax-accent); text-decoration: none; }
+  :where(a:hover){ text-decoration: underline; }
+  
+  /* Generic UI atoms */
+  .ax-card{ background: color-mix(in srgb, var(--ax-ink) 75%, transparent); border: 1px solid var(--ax-border); border-radius: var(--ax-radius); box-shadow: var(--ax-shadow); padding: 1rem; }
+  .ax-tag{ display:inline-block; padding:.15rem .5rem; border-radius: .5rem; border:1px solid var(--ax-border); color: var(--ax-muted); }
+  
+  /* Tabs */
+  .ax-tab{ color: var(--ax-text); border:1px solid transparent; }
+  .ax-tab:hover{ border-color: var(--ax-border); }
+  .ax-tab.active{ color:#fff; background: color-mix(in srgb, var(--ax-red) 14%, transparent); border-color: var(--ax-red2); }
+  
+  /* Buttons */
+  .ax-btn{ color: var(--ax-text); border:1px solid var(--ax-border); background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.15)); border-radius: .6rem; padding:.45rem .8rem; }
+  .ax-btn:hover{ border-color: var(--ax-red2); box-shadow: 0 0 0 1px var(--ax-red2); }
+  .ax-btn.primary{ border-color: var(--ax-red2); background: color-mix(in srgb, var(--ax-red) 18%, transparent); }
+  
+  /* Status coloring */
+  .ax-ok{ color: var(--ax-ok); }
+  .ax-warn{ color: var(--ax-warn); }
+  .ax-err{ color: var(--ax-err); }
+  
+  /* Terminal monospace */
+  .ax-mono{ font-family: var(--ax-font-mono); }
+  
