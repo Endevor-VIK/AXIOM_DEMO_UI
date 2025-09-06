@@ -10,6 +10,17 @@
 	"endLineNumber": 6,
 	"endColumn": 62
 },{
+	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/tests/redactor.spec.ts",
+	"owner": "typescript",
+	"code": "2307",
+	"severity": 8,
+	"message": "Не удается найти модуль \"vitest\" или связанные с ним объявления типов.",
+	"source": "ts",
+	"startLineNumber": 1,
+	"startColumn": 30,
+	"endLineNumber": 1,
+	"endColumn": 38
+},{
 	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/tests/vfs.spec.ts",
 	"owner": "typescript",
 	"code": "2307",
@@ -30,4 +41,15 @@
 	"startColumn": 1,
 	"endLineNumber": 1,
 	"endColumn": 2
+},{
+	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/vite.config.ts",
+	"owner": "typescript",
+	"code": "2307",
+	"severity": 8,
+	"message": "Не удается найти модуль \"vitest/config\" или связанные с ним объявления типов.",
+	"source": "ts",
+	"startLineNumber": 8,
+	"startColumn": 32,
+	"endLineNumber": 8,
+	"endColumn": 47
 }]
