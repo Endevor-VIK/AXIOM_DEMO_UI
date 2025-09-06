@@ -5,6 +5,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
+import { configDefaults } from 'vitest/config';
 
 // NOTE on base path:
 // - Local dev:        "/"
@@ -68,5 +69,11 @@ export default defineConfig(({ mode }) => {
 
     // Avoid injecting non‑deterministic compile‑time constants here to keep builds reproducible
     define: {},
+
+    test: {
+      globals: true,
+      environment: 'node',
+      exclude: [...configDefaults.exclude, 'node_modules'],
+    },
   };
 });
