@@ -32,6 +32,7 @@ export type CommandCtx = {
       const clean = input.trim();
       if (!clean){ ctx.help(); return; }
       const [name, ...args] = tokenize(clean);
+      if (!name) { ctx.help(); return; }
       const cmd = this.get(name);
       if (!cmd){ ctx.error(`unknown command: ${name}`); ctx.help(); return; }
       try {

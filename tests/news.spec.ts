@@ -40,8 +40,8 @@ describe('News schema', () => {
   });
 
   it('JSON schema kind enum matches newsKinds', () => {
-    // @ts-expect-error readonly enum in schema is typed as any
-    expect(NewsJsonSchema.items.properties.kind.enum).toEqual(newsKinds);
+    // schema typing uses any, so cast for comparison
+    expect((NewsJsonSchema as any).items.properties.kind.enum).toEqual(newsKinds);
   });
 });
 
@@ -63,9 +63,9 @@ describe('News provider', () => {
   });
 
   it('find() filters by kind', async () => {
-    const rel = await news.find({ kind: 'release' });
-    expect(rel).toHaveLength(1);
-    expect(rel[0].id).toBe('2');
+      const rel = await news.find({ kind: 'release' });
+      expect(rel).toHaveLength(1);
+      expect(rel[0]!.id).toBe('2');
   });
 
   it('find() applies free-text search', async () => {
