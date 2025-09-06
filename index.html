@@ -1,27 +1,10 @@
-<!-- AXIOM_DEMO_UI — WEB CORE
-     Canvas: C34 — index.html
-     Purpose: Vite entry HTML (replaces legacy demo shell). Legacy notice preserved in comments.
--->
 <!doctype html>
 <html lang="ru">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0c0d11" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>AXIOM • UI</title>
-    <!-- Optional favicon placed in /public (served from root) -->
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-
-    <!--
-      LEGACY NOTICE
-      — Старый демо-файл `assets/js/app.js` и прежний `index.html` помечены как deprecated.
-      — Новый вход использует Vite и точку входа `/app/main.tsx` (React + TS).
-      — Если нужен откат, храните legacy-файлы в `legacy/` и НЕ подключайте их здесь.
-    -->
-
     <style>
-      /* Minimal paint before CSS bundles load */
       html, body { margin:0; height:100%; background:#0c0d11; color:#ececf2; }
       #root { min-height: 100dvh; display: grid; place-items: center; }
       .boot-splash { font: 14px/1.4 ui-sans-serif, system-ui; opacity:.7 }
@@ -29,14 +12,10 @@
   </head>
   <body>
     <div id="root">
-      <div class="boot-splash">AXIOM • UI загружается…</div>
+      <div class="boot-splash">AXIOM • UI загружается…<br/>Для работы интерфейса требуется JavaScript.</div>
     </div>
-
-    <noscript>
-      Для работы интерфейса требуется JavaScript. Пожалуйста, включите его в настройках браузера.
-    </noscript>
-
-    <!-- Vite entry: React app mountpoint -->
+    <!-- Vite обработает этот импорт и положит бандл в правильную base -->
     <script type="module" src="/app/main.tsx"></script>
   </body>
 </html>
+

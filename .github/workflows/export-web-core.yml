@@ -1,7 +1,3 @@
-# AXIOM_DEMO_UI — WEB CORE
-# Canvas: C33 — .github/workflows/export-web-core.yml
-# Purpose: CI for deterministic build + redaction export and GitHub Pages deploy
-
 name: Export & Deploy — WEB CORE
 
 on:
@@ -10,7 +6,6 @@ on:
     tags: [ 'v*' ]
   workflow_dispatch:
 
-# Required for Pages
 permissions:
   contents: read
   pages: write
@@ -22,8 +17,8 @@ concurrency:
 
 env:
   NODE_VERSION: '20'
-  # Set base for GitHub Pages project site: /<owner>/<repo>/ when served under pages
-  VITE_BASE: "/${{ github.repository }}/"
+  # База строго под Project Pages (имя репозитория)
+  VITE_BASE: "/${{ github.event.repository.name }}/"
 
 jobs:
   build:
@@ -44,7 +39,6 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
-      # Optional: run tests with Vitest if present; uses npx so repo isn't forced to include vitest deps
       - name: Run tests (Vitest if any specs)
         if: ${{ hashFiles('**/*.spec.ts') != '' }}
         run: npx -y vitest run --passWithNoTests
@@ -74,3 +68,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+

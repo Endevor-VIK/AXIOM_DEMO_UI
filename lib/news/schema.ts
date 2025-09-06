@@ -2,18 +2,18 @@
 // Canvas: C23 — lib/news/schema.ts
 // Purpose: Types and runtime guards for News manifest; AJV-ready JSON schema export.
 
-import type { NewsKind } from '@/lib/vfs';
+import type { NewsKind } from '@/lib/vfs'
 
-export const newsKinds: ReadonlyArray<NewsKind> = ['update','release','roadmap','heads-up'] as const;
+export const newsKinds = ['update', 'release', 'roadmap', 'heads-up'] as const
 
 export interface NewsRecord {
-  id: string;
-  date: string;   // YYYY-MM-DD
-  title: string;
-  kind: NewsKind;
-  tags?: string[];
-  summary?: string;
-  link?: string;
+  id: string
+  date: string // YYYY-MM-DD
+  title: string
+  kind: NewsKind
+  tags?: string[]
+  summary?: string
+  link?: string
 }
 
 export const NewsJsonSchema = {
@@ -21,7 +21,7 @@ export const NewsJsonSchema = {
   type: 'array',
   items: {
     type: 'object',
-    required: ['id','date','title','kind'],
+    required: ['id', 'date', 'title', 'kind'],
     additionalProperties: true,
     properties: {
       id: { type: 'string', minLength: 1 },
@@ -33,11 +33,11 @@ export const NewsJsonSchema = {
       link: { type: 'string' }
     }
   }
-} as const;
+} as const
 
-// Minimal runtime guard if AJV is not connected
 export function isNewsRecord(x: unknown): x is NewsRecord {
-  if (!x || typeof x !== 'object') return false;
-  const o = x as any;
-  return typeof o.id === 'string' && typeof o.date === 'string' && typeof o.title === 'string' && typeof o.kind === 'string';
+  if (!x || typeof x !== 'object') return false
+  const o = x as any
+  return typeof o.id === 'string' && typeof o.date === 'string' && typeof o.title === 'string' && typeof o.kind === 'string'
 }
+
