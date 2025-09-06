@@ -29,6 +29,11 @@ export function buildExport(root = process.cwd()){
 
   copyDir(dist, siteDir);
 
+  // SPA fallback for GitHub Pages
+  const indexHtml = fs.readFileSync(path.join(siteDir, 'index.html'), 'utf8');
+  fs.writeFileSync(path.join(siteDir, '404.html'), indexHtml);
+  fs.writeFileSync(path.join(siteDir, '.nojekyll'), '');
+
   // 4) Write export meta
   const meta = {
     at: new Date().toISOString(),
