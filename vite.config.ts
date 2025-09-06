@@ -14,6 +14,8 @@ import { configDefaults } from 'vitest/config';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const isProd = mode === 'production';
+  const rawBase = env.VITE_BASE && env.VITE_BASE.trim() !== '' ? env.VITE_BASE : '/';
+  const normalizedBase = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 
   return {
     plugins: [react()],
@@ -26,7 +28,7 @@ export default defineConfig(({ mode }) => {
     },
 
     // Base URL can be overridden for Pages; default to '/'
-    base: env.VITE_BASE && env.VITE_BASE.trim() !== '' ? env.VITE_BASE : '/',
+    base: normalizedBase,
 
     server: {
       host: true,
