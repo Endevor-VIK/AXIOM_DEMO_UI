@@ -1,59 +1,4 @@
 [{
-	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/lib/auth/crypto.ts",
-	"owner": "typescript",
-	"code": "2339",
-	"severity": 8,
-	"message": "Свойство \"timingSafeEqual\" не существует в типе \"Crypto\".",
-	"source": "ts",
-	"startLineNumber": 44,
-	"startColumn": 49,
-	"endLineNumber": 44,
-	"endColumn": 64
-},{
-	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/lib/auth/crypto.ts",
-	"owner": "typescript",
-	"code": "2339",
-	"severity": 8,
-	"message": "Свойство \"timingSafeEqual\" не существует в типе \"Crypto\".",
-	"source": "ts",
-	"startLineNumber": 45,
-	"startColumn": 12,
-	"endLineNumber": 45,
-	"endColumn": 27
-},{
-	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/lib/command-router/index.ts",
-	"owner": "typescript",
-	"code": "2345",
-	"severity": 8,
-	"message": "Аргумент типа \"string | undefined\" нельзя назначить параметру типа \"string\".\n  Тип \"undefined\" не может быть назначен для типа \"string\".",
-	"source": "ts",
-	"startLineNumber": 35,
-	"startColumn": 28,
-	"endLineNumber": 35,
-	"endColumn": 32
-},{
-	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/lib/vfs/index.ts",
-	"owner": "typescript",
-	"code": "4115",
-	"severity": 8,
-	"message": "Это свойство параметра должно иметь модификатор \"override\", так как он переопределяет элемент базового класса \"Error\".",
-	"source": "ts",
-	"startLineNumber": 57,
-	"startColumn": 32,
-	"endLineNumber": 57,
-	"endColumn": 54
-},{
-	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/lib/vfs/index.ts",
-	"owner": "typescript",
-	"code": "2379",
-	"severity": 8,
-	"message": "Невозможно назначить аргумент типа \"{ id: string; date: string; title: string; kind: NewsKind; tags: string[] | undefined; summary: string | undefined; link: string | undefined; }\" параметру типа \"NewsItem\", когда свойство \"exactOptionalPropertyTypes\" имеет значение \"true\". Рассмотрите возможность добавления типа \"undefined\" к типам свойств цели.\n  Типы свойства \"tags\" несовместимы.\n    Тип \"string[] | undefined\" не может быть назначен для типа \"string[]\".\n      Тип \"undefined\" не может быть назначен для типа \"string[]\".",
-	"source": "ts",
-	"startLineNumber": 164,
-	"startColumn": 14,
-	"endLineNumber": 164,
-	"endColumn": 167
-},{
 	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/tests/news.spec.ts",
 	"owner": "typescript",
 	"code": "2307",
@@ -64,39 +9,6 @@
 	"startColumn": 54,
 	"endLineNumber": 6,
 	"endColumn": 62
-},{
-	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/tests/news.spec.ts",
-	"owner": "typescript",
-	"code": "2307",
-	"severity": 8,
-	"message": "Не удается найти модуль \"@/lib/news\" или связанные с ним объявления типов.",
-	"source": "ts",
-	"startLineNumber": 25,
-	"startColumn": 22,
-	"endLineNumber": 25,
-	"endColumn": 34
-},{
-	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/tests/news.spec.ts",
-	"owner": "typescript",
-	"code": "2307",
-	"severity": 8,
-	"message": "Не удается найти модуль \"@/lib/news/schema\" или связанные с ним объявления типов.",
-	"source": "ts",
-	"startLineNumber": 26,
-	"startColumn": 74,
-	"endLineNumber": 26,
-	"endColumn": 93
-},{
-	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/tests/news.spec.ts",
-	"owner": "typescript",
-	"code": "2578",
-	"severity": 8,
-	"message": "Unused '@ts-expect-error' directive.",
-	"source": "ts",
-	"startLineNumber": 43,
-	"startColumn": 5,
-	"endLineNumber": 43,
-	"endColumn": 64
 },{
 	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/tests/vfs.spec.ts",
 	"owner": "typescript",
@@ -109,14 +21,13 @@
 	"endLineNumber": 6,
 	"endColumn": 46
 },{
-	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/tests/vfs.spec.ts",
+	"resource": "/E:/ENDEAVOR/AXIOM WEB CORE/ui/tsconfig.json",
 	"owner": "typescript",
-	"code": "2307",
 	"severity": 8,
-	"message": "Не удается найти модуль \"@/lib/vfs\" или связанные с ним объявления типов.",
+	"message": "Не удается найти файл определения типа для \"vitest\".\n  Файл включен в программу по следующей причине:\n    Точка входа для библиотеки типов \"vitest\", указанная в compilerOptions",
 	"source": "ts",
-	"startLineNumber": 7,
-	"startColumn": 27,
-	"endLineNumber": 7,
-	"endColumn": 38
+	"startLineNumber": 1,
+	"startColumn": 1,
+	"endLineNumber": 1,
+	"endColumn": 2
 }]
