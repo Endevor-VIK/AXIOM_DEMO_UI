@@ -2,7 +2,7 @@
 // Canvas: C14 — components/AuthGate.tsx
 // Purpose: Route guard. Blocks access to protected routes if not authenticated.
 
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { type PropsWithChildren, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
 function isAuthed(): boolean {

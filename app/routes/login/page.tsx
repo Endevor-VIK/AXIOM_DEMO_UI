@@ -4,7 +4,7 @@
 
 import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { hashPassword, verifyPassword, loadUsers, saveUser, AuthUser } from '@/lib/auth';
+import { hashPassword, verifyPassword, loadUsers, saveUser, type AuthUser } from '@/lib/auth';
 
 export default function LoginPage(){
   const nav = useNavigate();
