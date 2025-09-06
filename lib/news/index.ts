@@ -2,50 +2,53 @@
 // Canvas: C24 — lib/news/index.ts
 // Purpose: News data provider over VFS with helpers for filtering and sorting.
 
-import { vfs, type NewsItem, type NewsKind } from '@/lib/vfs';
-import { newsKinds, type NewsRecord, isNewsRecord } from '@/lib/news/schema';
+import { vfs, type NewsItem, type NewsKind } from '@/lib/vfs'
+import { newsKinds, type NewsRecord, isNewsRecord } from '@/lib/news/schema'
 
-export type { NewsKind, NewsItem, NewsRecord };
+export type { NewsKind, NewsItem, NewsRecord }
 
 export interface NewsQuery {
-  kind?: NewsKind | '';
-  q?: string;           // free text
-  limit?: number;       // max items
+  kind?: NewsKind | ''
+  q?: string
+  limit?: number
 }
 
 export interface NewsApi {
-  /** Load all news records (desc by date) */
-  all(): Promise<NewsItem[]>;
-  /** Filter by kind/text/limit */
-  find(q: NewsQuery): Promise<NewsItem[]>;
-  /** Find by id */
-  byId(id: string): Promise<NewsItem | undefined>;
+  all(): Promise<NewsItem[]>
+  find(q: NewsQuery): Promise<NewsItem[]>
+  byId(id: string): Promise<NewsItem | undefined>
 }
 
 export function createNewsApi(): NewsApi {
   async function all(): Promise<NewsItem[]> {
-    const arr = await vfs.readNewsManifest();
-    return arr;
+    const arr = await vfs.readNewsManifest()
+    return arr
   }
 
   async function find(q: NewsQuery): Promise<NewsItem[]> {
-    const arr = await all();
-    let out = arr;
-    if (q.kind) out = out.filter(x => x.kind === q.kind);
-    if (q.q && q.q.trim()){
-      const term = q.q.trim().toLowerCase();
-      out = out.filter(x => x.title.toLowerCase().includes(term) || (x.summary||'').toLowerCase().includes(term) || x.tags?.some(t => t.toLowerCase().includes(term)));
+    const arr = await all()
+    let out = arr
+    if (q.kind) out = out.filter((x) => x.kind === q.kind)
+    if (q.q && q.q.trim()) {
+      const term = q.q.trim().toLowerCase()
+      out = out.filter(
+        (x) =>
+          x.title.toLowerCase().includes(term) ||
+          (x.summary || '').toLowerCase().includes(term) ||
+          x.tags?.some((t) => t.toLowerCase().includes(term))
+      )
     }
-    if (q.limit && q.limit > 0) out = out.slice(0, q.limit);
-    return out;
+    if (q.limit && q.limit > 0) out = out.slice(0, q.limit)
+    return out
   }
 
   async function byId(id: string): Promise<NewsItem | undefined> {
-    const arr = await all();
-    return arr.find(x => x.id === id);
+    const arr = await all()
+    return arr.find((x) => x.id === id)
   }
 
-  return { all, find, byId };
+  return { all, find, byId }
 }
 
-export const news = createNewsApi();
+export const news = createNewsApi()
+
