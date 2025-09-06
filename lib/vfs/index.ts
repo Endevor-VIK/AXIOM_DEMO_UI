@@ -54,7 +54,9 @@ export interface NewsItem {
 const cache = new Map<string, unknown>();
 
 export class VfsError extends Error {
-  constructor(message: string, public cause?: unknown) { super(message); }
+  constructor(message: string, cause?: unknown) {
+    super(message, { cause });
+  }
 }
 
 function ensureTrailingSlash(s: string): string { return s.endsWith('/') ? s : s + '/'; }
@@ -161,7 +163,11 @@ function validateNewsArray(data: unknown): NewsItem[] {
     // kind check (soft)
     const okKinds: NewsKind[] = ['update','release','roadmap','heads-up'];
     if (!okKinds.includes(kind as NewsKind)) throw new VfsError(`[VFS] news.kind must be one of ${okKinds.join(', ')}`);
-    out.push({ id, date, title, kind: kind as NewsKind, tags: tags as string[] | undefined, summary: summary as string | undefined, link: link as string | undefined });
+    const item: NewsItem = { id, date, title, kind: kind as NewsKind };
+    if (tags != null) item.tags = tags as string[];
+    if (summary != null) item.summary = summary as string;
+    if (link != null) item.link = link as string;
+    out.push(item);
   }
   // Sort desc by date by default (YYYY-MM-DD assumed)
   out.sort((a,b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));

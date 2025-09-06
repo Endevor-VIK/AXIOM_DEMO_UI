@@ -58,6 +58,6 @@ describe('VFS', () => {
     });
     const arr = await vfs.readNewsManifest();
     expect(arr.length).toBe(2);
-    expect(arr[0].id).toBe('b');
+    expect(arr[0]!.id).toBe('b');
   });
 });

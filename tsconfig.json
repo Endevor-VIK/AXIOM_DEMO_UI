@@ -30,12 +30,13 @@
       },
   
       /* Vite ambient types */
-      "types": ["vite/client", "node"]
+      "types": ["vite/client", "node", "vitest"]
     },
     "include": [
       "app/**/*",
       "components/**/*",
       "lib/**/*",
+      "tests/**/*",
       "styles/**/*",
       "*.ts",
       "*.tsx"
