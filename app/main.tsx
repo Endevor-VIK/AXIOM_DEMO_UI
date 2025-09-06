@@ -24,28 +24,31 @@ import AuthGate from '@/components/AuthGate'
 import TerminalBoot from '@/components/TerminalBoot'
 
 // Boot gate: show TerminalBoot first, then /login
-const BootRedirect = () => <Navigate to="/login" replace />
+const BootRedirect = () => <Navigate to="login" replace />
 
-const router = createBrowserRouter([
-  { path: '/', element: <BootRedirect /> },
-  { path: '/login', element: <LoginPage /> },
-  {
-    path: '/dashboard',
-    element: (
-      <AuthGate>
-        <Layout />
-      </AuthGate>
-    ),
-    children: [
-      { index: true, element: <DashboardPage /> },
-      { path: 'roadmap', element: <RoadmapPage /> },
-      { path: 'audit', element: <AuditPage /> },
-      { path: 'content', element: <ContentPage /> },
-      { path: 'news', element: <NewsPage /> },
-    ],
-  },
-  { path: '*', element: <Navigate to="/" replace /> },
-])
+const router = createBrowserRouter(
+  [
+    { path: '/', element: <BootRedirect /> },
+    { path: '/login', element: <LoginPage /> },
+    {
+      path: '/dashboard',
+      element: (
+        <AuthGate>
+          <Layout />
+        </AuthGate>
+      ),
+      children: [
+        { index: true, element: <DashboardPage /> },
+        { path: 'roadmap', element: <RoadmapPage /> },
+        { path: 'audit', element: <AuditPage /> },
+        { path: 'content', element: <ContentPage /> },
+        { path: 'news', element: <NewsPage /> },
+      ],
+    },
+    { path: '*', element: <Navigate to="/" replace /> },
+  ],
+  { basename: import.meta.env.BASE_URL }
+)
 
 function mount() {
   const el = document.getElementById('root')
