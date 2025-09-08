@@ -4,6 +4,7 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 interface WhiteList {
   version: number
@@ -45,7 +46,14 @@ function redactContent(text: string, wl: WhiteList): string {
   let out = text
   for (const r of wl.redact.patterns) {
     if (r.type !== 'regex') continue
-    const re = new RegExp(r.pattern, 'g')
+    let pattern = r.pattern
+    let flags = 'g'
+    // Support simple inline case-insensitive flag (?i) used in JSON patterns
+    if (pattern.startsWith('(?i)')) {
+      flags += 'i'
+      pattern = pattern.slice(4)
+    }
+    const re = new RegExp(pattern, flags)
     out = out.replace(re, r.replacement)
   }
   return out
@@ -139,7 +147,18 @@ export function redactExport(root = process.cwd()) {
   return results
 }
 
-if (require.main === module) {
+function isMain(meta: ImportMeta): boolean {
+  try {
+    const thisPath = fileURLToPath(meta.url)
+    const entry = process.argv[1]
+    if (!entry) return false
+    return path.resolve(entry) === path.resolve(thisPath)
+  } catch {
+    return false
+  }
+}
+
+if (isMain(import.meta)) {
   const res = redactExport()
   // eslint-disable-next-line no-console
   console.log(`[redactor] processed ${res.length} files`)

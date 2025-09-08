@@ -44,7 +44,7 @@ jobs:
         run: npx -y vitest run --passWithNoTests
 
       - name: Build & export (redacted)
-        run: node tools/export.ts
+        run: npm run export
 
       - name: Merge redacted data into site bundle
         run: |

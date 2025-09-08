@@ -3,6 +3,7 @@
 // Purpose: Create reproducible export bundle: run Vite build, run redactor, and assemble `/export`.
 
 import { execSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import path from 'node:path';
 import { redactExport } from './redactor';
@@ -61,6 +62,17 @@ function copyDir(src: string, dst: string){
   }
 }
 
-if (require.main === module){
+function isMain(meta: ImportMeta): boolean {
+  try {
+    const thisPath = fileURLToPath(meta.url);
+    const entry = process.argv[1];
+    if (!entry) return false;
+    return path.resolve(entry) === path.resolve(thisPath);
+  } catch {
+    return false;
+  }
+}
+
+if (isMain(import.meta)){
   buildExport();
 }
