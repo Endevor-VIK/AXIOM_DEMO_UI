@@ -7,8 +7,8 @@ import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 
 // Global styles
-import '@/styles/tokens.css'
-import '@/styles/app.css'
+import '@styles/tokens.css'
+import '@styles/app.css'
 
 // Routes
 import Layout from '@/app/routes/_layout'
