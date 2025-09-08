@@ -1,8 +1,6 @@
-.vscode
 node_modules/
 dist/
 export/
+.vite/
+*.log
 .DS_Store
-Thumbs.db
-npm-debug.log*
-.env*
