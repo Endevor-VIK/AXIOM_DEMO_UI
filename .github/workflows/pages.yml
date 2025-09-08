@@ -26,16 +26,15 @@ jobs:
 
       - run: npm ci
 
-      # Vite сам соберёт с учётом base="/AXIOM_DEMO_UI/"
-      - run: npm run build
+      # Экспорт в export/site: сборка + 404.html + .nojekyll
+      - run: node tools/export.mjs
         env:
-          # на CI это не обязательно, base вычислится в конфиге по GITHUB_ACTIONS,
-          # оставляю как пример, если захочешь рулить из env
-          VITE_BASE: /AXIOM_DEMO_UI/
+          # export.mjs вызывает vite build, base=/${REPO}/ включается по GITHUB_ACTIONS
+          GITHUB_ACTIONS: 'true'
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: export/site
 
   deploy:
     needs: build
