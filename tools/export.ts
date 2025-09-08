@@ -1,78 +1,37 @@
-// AXIOM_DEMO_UI — WEB CORE
-// Canvas: C30 — tools/export.ts
-// Purpose: Create reproducible export bundle: run Vite build, run redactor, and assemble `/export`.
+import { build } from 'vite';
+import { cpSync, writeFileSync, existsSync } from 'fs';
+import { rmSync, mkdirSync } from 'fs';
+import { join } from 'path';
 
-import { execSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
-import fs from 'node:fs';
-import path from 'node:path';
-import { redactExport } from './redactor';
+const OUT = 'dist';
+const TARGET = 'export/site';
 
-function run(cmd: string){
-  execSync(cmd, { stdio: 'inherit', env: process.env });
-}
+async function main() {
+  // Clean previous build outputs
+  rmSync(OUT, { recursive: true, force: true });
+  // Build via Vite using vite.config.ts
+  await build();
 
-export function buildExport(root = process.cwd()){
-  const dist = path.join(root, 'dist');
-  const out = path.join(root, 'export');
+  // Prepare export target
+  rmSync(TARGET, { recursive: true, force: true });
+  mkdirSync(TARGET, { recursive: true });
+  cpSync(OUT, TARGET, { recursive: true });
 
-  // 1) Vite build with deterministic base (can be overridden by CI)
-  if (!process.env.VITE_BASE) process.env.VITE_BASE = '/';
-  run('npm run build');
+  // SPA fallback + disable Jekyll processing on Pages
+  const fallback = '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=./">';
+  writeFileSync(join(TARGET, '404.html'), fallback);
+  writeFileSync(join(TARGET, '.nojekyll'), '');
 
-  // 2) Redact/copy data → export/data
-  const results = redactExport(root);
-
-  // 3) Copy dist → export/site
-  const siteDir = path.join(out, 'site');
-  fs.rmSync(siteDir, { recursive: true, force: true });
-  fs.mkdirSync(siteDir, { recursive: true });
-
-  copyDir(dist, siteDir);
-
-  // SPA fallback for GitHub Pages
-  const indexHtml = fs.readFileSync(path.join(siteDir, 'index.html'), 'utf8');
-  fs.writeFileSync(path.join(siteDir, '404.html'), indexHtml);
-  fs.writeFileSync(path.join(siteDir, '.nojekyll'), '');
-
-  // 4) Write export meta
-  const meta = {
-    at: new Date().toISOString(),
-    env: process.env.NODE_ENV || 'production',
-    base: process.env.VITE_BASE,
-    filesProcessed: results.length
-  };
-  fs.writeFileSync(path.join(out, 'export.meta.json'), JSON.stringify(meta, null, 2));
-
-  // 5) Done
-  // eslint-disable-next-line no-console
-  console.log('[export] bundle ready in ./export');
-}
-
-function copyDir(src: string, dst: string){
-  for (const entry of fs.readdirSync(src, { withFileTypes: true })){
-    const s = path.join(src, entry.name);
-    const d = path.join(dst, entry.name);
-    if (entry.isDirectory()){
-      fs.mkdirSync(d, { recursive: true });
-      copyDir(s, d);
-    } else if (entry.isFile()){
-      fs.copyFileSync(s, d);
-    }
+  // Basic sanity check
+  if (!existsSync(join(TARGET, 'index.html'))) {
+    throw new Error('Export failed: missing index.html in export/site');
   }
+
+  console.log('[export] done →', TARGET);
 }
 
-function isMain(meta: ImportMeta): boolean {
-  try {
-    const thisPath = fileURLToPath(meta.url);
-    const entry = process.argv[1];
-    if (!entry) return false;
-    return path.resolve(entry) === path.resolve(thisPath);
-  } catch {
-    return false;
-  }
-}
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
 
-if (isMain(import.meta)){
-  buildExport();
-}

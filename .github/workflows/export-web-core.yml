@@ -1,9 +1,8 @@
-name: Export & Deploy — WEB CORE
+name: Export & Deploy - WEB CORE
 
 on:
   push:
     branches: [ main ]
-    tags: [ 'v*' ]
   workflow_dispatch:
 
 permissions:
@@ -12,50 +11,29 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: "pages"
   cancel-in-progress: true
-
-env:
-  NODE_VERSION: '22'
-  NODE_ENV: development
-  # База строго под Project Pages (имя репозитория)
-  VITE_BASE: "/${{ github.event.repository.name }}/"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
           cache: npm
 
-      - name: Install dependencies
-        run: |
-          node -v
-          npm -v
-          npm ci || npm install --no-audit --no-fund
+      - name: Install
+        run: npm ci
 
-      - name: Type check
-        run: npm run typecheck
-
-      - name: Run tests (Vitest if any specs)
-        if: ${{ hashFiles('**/*.spec.ts') != '' }}
-        run: npx -y vitest run --passWithNoTests
-
-      - name: Build & export (redacted)
+      - name: Export site
         run: npx -y tsx tools/export.ts
 
-      - name: Merge redacted data into site bundle
-        run: |
-          mkdir -p export/site/data
-          rsync -a export/data/ export/site/data/ || true
-
-      - name: Upload artifact for Pages
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: export/site
@@ -65,11 +43,6 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v4
 

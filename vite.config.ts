@@ -1,15 +1,16 @@
-﻿import dns from 'node:dns';
+import dns from 'node:dns';
 import { defineConfig } from 'vite';
 
-// чтобы 'localhost' не резолвился хитро и не вёл на другой адрес
+// Ensure consistent DNS result order (prevents localhost resolution issues)
 dns.setDefaultResultOrder('verbatim');
 
 export default defineConfig(({ command }) => {
   const isDev = command === 'serve';
   return {
-    root: '.',                                // явно корень репо
-    base: isDev ? '/' : '/AXIOM_DEMO_UI/',    // dev='/', prod='/AXIOM_DEMO_UI/'
-    server: { host: true, port: 5173, strictPort: true },  // доступ по LAN
-    preview:{ port: 5174, strictPort: true },
+    root: '.',
+    base: isDev ? '/' : '/AXIOM_DEMO_UI/',
+    server: { host: true, port: 5173, strictPort: true },
+    preview: { port: 5174, strictPort: true }
   };
 });
+
