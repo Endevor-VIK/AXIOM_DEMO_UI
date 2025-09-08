@@ -46,15 +46,25 @@ def main() -> int:
     port = args.port or default_ports[args.mode]
 
     # Compose command
+    npm_exe = "npm.cmd" if os.name == "nt" else "npm"
     if args.mode == "dev":
-        cmd = ["npm", "run", "dev", "--", "--strictPort", "--port", str(port)]
+        cmd = [npm_exe, "run", "dev", "--", "--strictPort", "--port", str(port)]
     elif args.mode == "preview":
-        cmd = ["npm", "run", "preview", "--", "--strictPort", "--port", str(port)]
+        cmd = [npm_exe, "run", "preview", "--", "--strictPort", "--port", str(port)]
     else:  # export
-        cmd = ["npm", "run", "preview:export", "--", "--strictPort", "--port", str(port)]
+        cmd = [npm_exe, "run", "preview:export", "--", "--strictPort", "--port", str(port)]
 
     print(f"[run_local] starting: {' '.join(cmd)}")
-    proc = subprocess.Popen(cmd, env=os.environ)
+    # ensure we run from repo root (parent of scripts/)
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+    try:
+        proc = subprocess.Popen(cmd, env=os.environ, cwd=repo_root)
+    except FileNotFoundError:
+        if os.name == "nt":
+            # Minimal fallback: try through shell to resolve npm via PATHEXT
+            proc = subprocess.Popen(" ".join(cmd), env=os.environ, cwd=repo_root, shell=True)
+        else:
+            raise
 
     url = f"http://{args.host}:{port}/"
     print(f"[run_local] waiting for {url} ...")
@@ -84,4 +94,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

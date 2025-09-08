@@ -17,6 +17,7 @@ concurrency:
 
 env:
   NODE_VERSION: '20'
+  NODE_ENV: development
   # База строго под Project Pages (имя репозитория)
   VITE_BASE: "/${{ github.event.repository.name }}/"
 
@@ -44,7 +45,7 @@ jobs:
         run: npx -y vitest run --passWithNoTests
 
       - name: Build & export (redacted)
-        run: npm run export
+        run: npx -y tsx tools/export.ts
 
       - name: Merge redacted data into site bundle
         run: |
