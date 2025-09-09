@@ -23,12 +23,11 @@ import NewsPage from '@/app/routes/dashboard/news/page'
 import AuthGate from '@/components/AuthGate'
 import TerminalBoot from '@/components/TerminalBoot'
 
-// Boot gate: show TerminalBoot first, then /login
-const BootRedirect = () => <Navigate to="login" replace />
+// Terminal boot is shown via the root route so hooks work under Router
 
 const router = createBrowserRouter(
   [
-    { path: '/', element: <BootRedirect /> },
+    { path: '/', element: <TerminalBoot /> },
     { path: '/login', element: <LoginPage /> },
     {
       path: '/dashboard',
@@ -57,19 +56,9 @@ function mount() {
     const fallback = document.createElement('div')
     fallback.id = 'root'
     document.body.appendChild(fallback)
-    return createRoot(fallback).render(
-      <>
-        <TerminalBoot />
-        {app}
-      </>
-    )
+    return createRoot(fallback).render(app)
   }
-  createRoot(el).render(
-    <>
-      <TerminalBoot />
-      {app}
-    </>
-  )
+  createRoot(el).render(app)
 }
 
 mount()

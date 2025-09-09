@@ -3,12 +3,13 @@
 // Purpose: Shared dashboard layout with PanelNav, StatusLine, Ticker and responsive shell.
 
 import React from 'react'
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import Ticker from '@/components/Ticker'
 import StatusLine from '@/components/StatusLine'
 
 export default function Layout() {
   const loc = useLocation()
+  const nav = useNavigate()
 
   return (
     <div className="ax-shell">
@@ -36,10 +37,8 @@ export default function Layout() {
           <button
             className="ax-btn"
             onClick={() => {
-              try {
-                localStorage.removeItem('axiom.auth')
-              } catch {}
-              window.location.href = '/login'
+              try { localStorage.removeItem('axiom.auth') } catch {}
+              nav('/login', { replace: true })
             }}
           >
             Выйти
