@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <title>Sigma (Σ) — Filled</title>
+  <!-- Filled geometric Σ; uses currentColor -->
+  <path fill="currentColor" d="
+    M4 5.25 H20 A1.25 1.25 0 1 1 20 7.75 H7.9 L9.9 10.6 H16 A1.25 1.25 0 1 1 16 13.1 H9.9 L7.9 15.95 H20
+    A1.25 1.25 0 1 1 20 18.45 H4 a1.25 1.25 0 0 1 -1 -2.02 L7 12 3 7.57 A1.25 1.25 0 0 1 4 5.25 Z"/>
+</svg>
