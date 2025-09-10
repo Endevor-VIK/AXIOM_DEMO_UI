@@ -31,7 +31,7 @@ export async function hashPassword(password: string): Promise<string> {
 
   // DEV fallback (only for demo): primitive 32-bit hash -> hex(8)
   let h = 0;
-  for (let i = 0; i < data.length; i++) h = ((h << 5) - h + data[i]) | 0;
+  for (const b of data) h = ((h << 5) - h + b) | 0;
   return ('00000000' + (h >>> 0).toString(16)).slice(-8);
 }
 
