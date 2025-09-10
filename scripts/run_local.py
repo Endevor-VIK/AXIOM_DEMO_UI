@@ -1,96 +1,115 @@
 #!/usr/bin/env python3
 """
-AXIOM_DEMO_UI — local launcher
+Lightweight local runner with robust readiness wait.
 
-Starts Vite in selected mode and opens the browser when the server is ready.
+Usage:
+  python scripts/run_local.py
 
-Usage examples:
-  python scripts/run_local.py                # dev on http://localhost:5173
-  python scripts/run_local.py --mode export  # preview export on http://localhost:5174
-  python scripts/run_local.py --mode preview --port 5178
+Environment:
+  PORT           Dev server port (default: 5173)
+  HOST           Host to probe (default: 127.0.0.1)
+
+Notes:
+  - Uses HEAD requests with backoff to avoid early timeouts.
+  - Cross-platform npm dev spawn (npm.cmd on Windows).
 """
 
-import argparse
+from __future__ import annotations
+
 import os
 import sys
 import time
+import signal
+import urllib.request
 import subprocess
-import webbrowser
-from urllib.request import urlopen
-from urllib.error import URLError
 
 
-def wait_for_http(url: str, timeout: float = 60.0, interval: float = 0.5) -> bool:
-    deadline = time.time() + timeout
-    while time.time() < deadline:
+def wait_for_http(url: str, attempts: int = 40) -> bool:
+    """Probe URL with HEAD requests, up to N attempts with small backoff."""
+    for i in range(attempts):
         try:
-            with urlopen(url, timeout=2) as resp:  # noqa: S310 (stdlib only)
-                if 200 <= resp.status < 500:
+            req = urllib.request.Request(url, method='HEAD')
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                if 200 <= resp.status < 400:
                     return True
-        except URLError:
+        except Exception:
             pass
-        time.sleep(interval)
+        time.sleep(0.5 + i * 0.02)
     return False
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run local dev/preview and open browser")
-    parser.add_argument("--mode", choices=["dev", "preview", "export"], default="dev")
-    parser.add_argument("--port", type=int, default=0)
-    parser.add_argument("--host", default="localhost")
-    parser.add_argument("--no-open", action="store_true", help="do not open a browser")
-    args = parser.parse_args()
+    port = int(os.environ.get('PORT') or 5173)
+    host = os.environ.get('HOST') or '127.0.0.1'
+    url = f"http://{host}:{port}/"
 
-    # Defaults per mode
-    default_ports = {"dev": 5173, "preview": 5173, "export": 5174}
-    port = args.port or default_ports[args.mode]
+    # Choose platform-appropriate npm executable
+    npm = 'npm.cmd' if os.name == 'nt' else 'npm'
 
-    # Compose command
-    npm_exe = "npm.cmd" if os.name == "nt" else "npm"
-    if args.mode == "dev":
-        cmd = [npm_exe, "run", "dev", "--", "--strictPort", "--port", str(port)]
-    elif args.mode == "preview":
-        cmd = [npm_exe, "run", "preview", "--", "--strictPort", "--port", str(port)]
-    else:  # export
-        cmd = [npm_exe, "run", "preview:export", "--", "--strictPort", "--port", str(port)]
+    # Start dev server
+    proc = subprocess.Popen(
+        [npm, 'run', 'dev'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+        env=os.environ.copy(),
+    )
 
-    print(f"[run_local] starting: {' '.join(cmd)}")
-    # ensure we run from repo root (parent of scripts/)
-    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-    try:
-        proc = subprocess.Popen(cmd, env=os.environ, cwd=repo_root)
-    except FileNotFoundError:
-        if os.name == "nt":
-            # Minimal fallback: try through shell to resolve npm via PATHEXT
-            proc = subprocess.Popen(" ".join(cmd), env=os.environ, cwd=repo_root, shell=True)
+    print(f"Dev server starting (PID {proc.pid}). Waiting for {url} ...", flush=True)
+
+    # Stream early output while waiting, to aid debugging
+    ready = False
+    start = time.time()
+    while True:
+        if proc.poll() is not None:
+            # Server exited early
+            sys.stdout.write("\n[dev] exited early with code %s\n" % proc.returncode)
+            sys.stdout.flush()
+            break
+
+        # Interleave readiness probe and log streaming
+        if not ready and wait_for_http(url, attempts=1):
+            ready = True
+            elapsed = time.time() - start
+            print(f"Ready in {elapsed:.1f}s → {url}", flush=True)
+            # continue streaming logs
+
+        # Stream any available lines without blocking too long
+        if proc.stdout is not None:
+            line = proc.stdout.readline()
+            if line:
+                sys.stdout.write(line)
+                sys.stdout.flush()
+        
+        if ready:
+            # After ready, just stream output until interrupted
+            time.sleep(0.1)
         else:
-            raise
+            # Not ready yet, small wait before next probe
+            time.sleep(0.2)
 
-    url = f"http://{args.host}:{port}/"
-    print(f"[run_local] waiting for {url} ...")
-    ready = wait_for_http(url)
-    if ready:
-        print(f"[run_local] server is up at {url}")
-        if not args.no_open:
-            print("[run_local] opening default browser…")
-            try:
-                webbrowser.open(url)
-            except Exception as e:  # noqa: BLE001
-                print(f"[run_local] failed to open browser: {e}")
-    else:
-        print("[run_local] server did not respond in time. Check console output.")
+        # Give up if it takes too long (hard cap ~40 attempts * ~0.7s ≈ 28s)
+        if not ready and (time.time() - start) > 30:
+            print("Timeout waiting for dev server.", flush=True)
+            break
 
+    # Ensure process is terminated when we exit
     try:
-        proc.wait()
-        return proc.returncode or 0
-    except KeyboardInterrupt:
-        print("\n[run_local] stopping…")
-        try:
-            proc.terminate()
-        except Exception:
-            pass
-        return 0
+        if proc.poll() is None:
+            if os.name == 'nt':
+                proc.terminate()
+            else:
+                proc.send_signal(signal.SIGINT)
+                time.sleep(0.5)
+                if proc.poll() is None:
+                    proc.terminate()
+    except Exception:
+        pass
+
+    return 0
 
 
-if __name__ == "__main__":
-    sys.exit(main())
+if __name__ == '__main__':
+    raise SystemExit(main())
+
