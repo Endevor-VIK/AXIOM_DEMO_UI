@@ -7,6 +7,7 @@ import { fileURLToPath, URL } from 'node:url'
 const REPO = 'AXIOM_DEMO_UI'
 const isCI = process.env.GITHUB_ACTIONS === 'true'
 
+const DEV_HTTPS = process.env.VITE_DEV_HTTPS === '1';
 export default defineConfig({
   plugins: [react()],
   // на GH Pages ВСЕГДА под /<repo>/, локально — под /
@@ -23,6 +24,7 @@ export default defineConfig({
     }
   },
   server: {
+    https: DEV_HTTPS || undefined,
     host: true,        // слушает 0.0.0.0 — будет и localhost, и сеть
     port: 5173,
     strictPort: true,

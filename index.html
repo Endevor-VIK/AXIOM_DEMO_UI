@@ -5,10 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>AXIOM DEMO UI</title>
-  </head>
+  <base href="%BASE_URL%">
+  <link rel="icon" href="%BASE_URL%assets/ico/axiom_panel_icon.ico">
+  <link rel="icon" type="image/svg+xml" href="%BASE_URL%assets/svg/axiom_seal.svg">
+  <meta name="theme-color" content="#0c0d11">
+</head>
   <body>
     <div id="root"></div>
     <script type="module" src="/app/main.tsx"></script>
-  </body>
-</html>
+  <script>
+    (function () {
+      try {
+        var baseEl = document.querySelector('base');
+        var base = (baseEl && baseEl.getAttribute('href')) || '/';
+        function normalizeBase(b) {
+          return String(b || '/').replace(/\/*$/, '/');
+        }
+        base = normalizeBase(base);
 
+        function withBase(p) {
+          p = String(p || '');
+          if (!p) return base;
+          p = p.replace(/^\/+/, '');
+          return base + p;
+        }
+
+        function fixEl(el, attr) {
+          var v = el.getAttribute(attr);
+          if (typeof v === 'string' && /^data\//.test(v)) {
+            el.setAttribute(attr, withBase(v));
+          }
+        }
+
+        // Patch fetch for 'data/...'
+        if (typeof window.fetch === 'function') {
+          var origFetch = window.fetch.bind(window);
+          window.fetch = function (input, init) {
+            try {
+              if (typeof input === 'string' && /^data\//.test(input)) {
+                input = withBase(input);
+              }
+            } catch (_) {}
+            return origFetch(input, init);
+          };
+        }
+
+        // Initial sweep
+        try {
+          document
+            .querySelectorAll('iframe[src^="data/"],a[href^="data/"]')
+            .forEach(function (el) {
+              fixEl(el, el.tagName === 'IFRAME' ? 'src' : 'href');
+            });
+        } catch (_) {}
+
+        // Observe new nodes
+        try {
+          var mo = new MutationObserver(function (list) {
+            for (var i = 0; i < list.length; i++) {
+              var m = list[i];
+              for (var j = 0; j < m.addedNodes.length; j++) {
+                var node = m.addedNodes[j];
+                if (node && node.nodeType === 1) {
+                  if (node.tagName === 'IFRAME') fixEl(node, 'src');
+                  if (node.querySelectorAll) {
+                    node
+                      .querySelectorAll('iframe[src^="data/"],a[href^="data/"]')
+                      .forEach(function (el) {
+                        fixEl(el, el.tagName === 'IFRAME' ? 'src' : 'href');
+                      });
+                  }
+                }
+              }
+            }
+          });
+          mo.observe(document.documentElement, { childList: true, subtree: true });
+        } catch (_) {}
+      } catch (_) {}
+    })();
+  </script>
+</body>
+</html>
