@@ -24,14 +24,16 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: npm
 
       - name: Install
         run: npm ci
 
       - name: Export site
-        run: npx -y tsx tools/export.ts
+        run: npm run export
+        env:
+          GITHUB_ACTIONS: 'true'
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
