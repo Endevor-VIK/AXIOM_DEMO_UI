@@ -14,8 +14,8 @@
 <body>
   <div id="root"></div>
 
-  <!-- App entry: must use %BASE_URL% so nested routes work -->
-  <script type="module" src="%BASE_URL%app/main.tsx"></script>
+  <!-- App entry: Vite injects correct base during build -->
+  <script type="module" src="/app/main.tsx"></script>
 
   <!-- Lightweight helper to keep fetch('data/...') working under nested routes -->
   <script>
