@@ -1,33 +1,27 @@
-﻿// vite.config.ts
-import { defineConfig } from 'vite'
+﻿import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
-// важно: имя репозитория для base на GitHub Pages
 const REPO = 'AXIOM_DEMO_UI'
 const isCI = process.env.GITHUB_ACTIONS === 'true'
 
-const DEV_HTTPS = process.env.VITE_DEV_HTTPS === '1';
 export default defineConfig({
   plugins: [react()],
-  // на GH Pages ВСЕГДА под /<repo>/, локально — под /
-  // (официальная рекомендация Vite для Pages)
-  base: isCI ? `/${REPO}/` : '/', // :contentReference[oaicite:0]{index=0}
+  base: isCI ? `/${REPO}/` : '/',
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./', import.meta.url)),         // корень проекта
+      '@': fileURLToPath(new URL('./', import.meta.url)),
       '@app': fileURLToPath(new URL('./app', import.meta.url)),
       '@styles': fileURLToPath(new URL('./styles', import.meta.url)),
       '@assets': fileURLToPath(new URL('./assets', import.meta.url)),
       '@components': fileURLToPath(new URL('./components', import.meta.url)),
       '@lib': fileURLToPath(new URL('./lib', import.meta.url)),
-    }
+    },
   },
   server: {
-    https: DEV_HTTPS || undefined,
-    host: true,        // слушает 0.0.0.0 — будет и localhost, и сеть
+    host: true,
     port: 5173,
     strictPort: true,
-    open: false
-  }
+    open: false,
+  },
 })
