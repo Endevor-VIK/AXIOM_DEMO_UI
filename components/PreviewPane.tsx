@@ -18,6 +18,8 @@ export interface PreviewPaneProps {
   reloadToken?: string | number
   onReload?: () => void
   reloadDisabled?: boolean
+  externalHref?: string | null
+  children?: React.ReactNode
 }
 
 export function PreviewPane({
@@ -30,8 +32,14 @@ export function PreviewPane({
   reloadToken,
   onReload,
   reloadDisabled,
+  externalHref: externalOverride,
+  children,
 }: PreviewPaneProps) {
   const safeSrc = useMemo(() => (src && src.trim() ? src.trim() : null), [src])
+  const externalHref = useMemo(() => {
+    if (externalOverride && externalOverride.trim()) return externalOverride.trim()
+    return safeSrc
+  }, [externalOverride, safeSrc])
   const [zoom, setZoom] = useState<ZoomValue>(1)
 
   useEffect(() => {
@@ -42,7 +50,7 @@ export function PreviewPane({
     setZoom(value)
   }, [])
 
-  const showControls = Boolean(safeSrc && (leadingControls || controls || onReload))
+  const showControls = Boolean(leadingControls || onReload || (controls && (safeSrc || externalHref)))
 
   return (
     <section className='ax-card ax-preview' aria-label={title} data-has-src={Boolean(safeSrc)}>
@@ -54,32 +62,36 @@ export function PreviewPane({
               type='button'
               className='ax-btn ghost ax-preview__refresh'
               onClick={onReload}
-              disabled={Boolean(reloadDisabled) || !safeSrc}
+              disabled={Boolean(reloadDisabled) || (!safeSrc && !externalHref)}
             >
               Refresh
             </button>
           )}
-          {controls && safeSrc && (
-            <>
-              <div role='group' aria-label='Preview zoom' className='ax-preview__zoom'>
-                {ZOOM_LEVELS.map((value) => (
-                  <button
-                    key={value}
-                    type='button'
-                    className='ax-chip'
-                    data-variant='ghost'
-                    data-zoom={Math.round(value * 100)}
-                    data-active={zoom === value ? 'true' : undefined}
-                    onClick={() => handleZoom(value)}
-                  >
-                    {Math.round(value * 100)}%
-                  </button>
-                ))}
-              </div>
-              <a className='ax-btn ghost' href={safeSrc} target='_blank' rel='noreferrer'>
-                {externalLabel}
-              </a>
-            </>
+          {controls && (safeSrc || externalHref) && (
+            <div className='ax-preview__trail'>
+              {safeSrc && (
+                <div role='group' aria-label='Preview zoom' className='ax-preview__zoom'>
+                  {ZOOM_LEVELS.map((value) => (
+                    <button
+                      key={value}
+                      type='button'
+                      className='ax-chip'
+                      data-variant='ghost'
+                      data-zoom={Math.round(value * 100)}
+                      data-active={zoom === value ? 'true' : undefined}
+                      onClick={() => handleZoom(value)}
+                    >
+                      {Math.round(value * 100)}%
+                    </button>
+                  ))}
+                </div>
+              )}
+              {externalHref && (
+                <a className='ax-btn ghost' href={externalHref} target='_blank' rel='noreferrer'>
+                  {externalLabel}
+                </a>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -91,6 +103,8 @@ export function PreviewPane({
       >
         {safeSrc ? (
           <iframe key={reloadToken ?? safeSrc} className='ax-embed' src={safeSrc} title={title} loading='lazy' />
+        ) : children ? (
+          <div className='ax-preview__custom'>{children}</div>
         ) : (
           <div className='ax-preview__empty' role='presentation'>
             {emptyMessage}

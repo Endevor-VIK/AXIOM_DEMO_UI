@@ -1,5 +1,5 @@
 /*
- AXIOM — Design Tokens (RED PROTOCOL)
+ AXIOM ï¿½ Design Tokens (RED PROTOCOL)
  File: ax-design/tokens.css
  Status: v0.4 (2025-09-19)
  Purpose: Single source of truth for colors, radii, shadows, motion, type, layout.
@@ -10,7 +10,7 @@
    0) Base & Theme Switch
    ============================ */
 :root {
-  /* Color — Core */
+  /* Color ï¿½ Core */
   --ax-bg: #0c0d11;          /* base canvas (dark) */
   --ax-ink: #10090c;         /* red-tinted glass */
   --ax-red: #ff2034;         /* primary accent */
@@ -82,7 +82,7 @@
   --font-display: "Oxanium", "Rajdhani", var(--font-sans);
 
   /* Density preset (RED-XS) */
-  --ax-scale: .80;
+  --ax-scale: .86;
 
   /* Type scale */
   --fs-base: calc(14px * var(--ax-scale));
@@ -139,13 +139,13 @@
    ============================ */
 :root {
   /* Button sizing */
-  --btn-h: calc(36px * var(--ax-scale));
-  --btn-px: calc(14px * var(--ax-scale));
-  --btn-gap: calc(8px * var(--ax-scale));
+  --btn-h: calc(32px * var(--ax-scale));
+  --btn-px: var(--space-3);
+  --btn-gap: var(--space-2);
 
   /* Input sizing */
-  --input-h: calc(38px * var(--ax-scale));
-  --input-px: calc(12px * var(--ax-scale));
+  --input-h: calc(36px * var(--ax-scale));
+  --input-px: var(--space-3);
   --input-radius: var(--r-lg);
 
   /* Card sizing */

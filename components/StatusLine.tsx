@@ -1,6 +1,6 @@
 // AXIOM_DEMO_UI - WEB CORE
 // Canvas: C07 - components/StatusLine.tsx
-// Purpose: Compact status footer using minimal Red Protocol chips.
+// Purpose: Compact status footer with environment/time indicators for Red Protocol shell.
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -37,13 +37,6 @@ function timeStr(date = new Date()) {
 export default function StatusLine({ meta }: StatusLineProps) {
   const location = useLocation()
   const route = useMemo(() => location.pathname || '/', [location.pathname])
-  const section = useMemo(() => {
-    const parts = route.split('/').filter(Boolean)
-    if (parts[0] !== 'dashboard') return route.toUpperCase()
-    const key = parts[1] || 'home'
-    return key === 'home' ? 'HOME' : key.replace(/-/g, ' ').toUpperCase()
-  }, [route])
-
   const online = useOnlineStatus()
   const [now, setNow] = useState<string>(timeStr())
 
@@ -59,22 +52,16 @@ export default function StatusLine({ meta }: StatusLineProps) {
   return (
     <div className='ax-status-line' role='status' aria-live='polite' aria-atomic='true'>
       <div className='ax-status-line__group'>
-        <span className='ax-chip' data-variant='level'>RED PROTOCOL</span>
-        <span className='ax-chip' data-variant='info'>SECTION :: {section}</span>
-        <span className='ax-chip' data-variant='info'>ROUTE :: {route}</span>
-        {meta?.zone && <span className='ax-chip' data-variant='info'>ZONE :: {meta.zone}</span>}
-      </div>
-
-      <div className='ax-status-line__group ax-status-line__group--right'>
         <span className='ax-chip' data-variant='info'>ENV :: {envTag}</span>
+        {meta?.zone && <span className='ax-chip' data-variant='info'>ZONE :: {meta.zone}</span>}
         {meta?.version && <span className='ax-chip' data-variant='level'>VER :: {meta.version}</span>}
         {buildTs && <span className='ax-chip' data-variant='info'>BUILD :: {buildTs}</span>}
         <span className='ax-chip' data-variant={online ? 'online' : 'error'} aria-live='off'>
           {online ? 'ONLINE' : 'OFFLINE'}
         </span>
         <span className='ax-status-line__time'>{now}</span>
+        <span className='ax-status-line__route'>{route}</span>
       </div>
     </div>
   )
 }
-

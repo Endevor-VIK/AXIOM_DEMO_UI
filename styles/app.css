@@ -6,8 +6,8 @@
 * { box-sizing: border-box; }
 
 :root {
-  --ax-gap: 18px;
-  --ax-gap-lg: 28px;
+  --ax-gap: var(--space-4);
+  --ax-gap-lg: calc(var(--space-5) + var(--space-3));
   --ax-accent: var(--ax-red);
 }
 
@@ -21,8 +21,8 @@ html, body {
 
 body {
   font-family: var(--font-sans);
-  font-size: var(--fs-16);
-  line-height: 1.65;
+  font-size: var(--fs-base);
+  line-height: 1.6;
 }
 
 #root {
@@ -71,16 +71,16 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
-  padding-block: var(--space-3);
+  gap: var(--space-2);
+  padding-block: var(--space-2);
   flex-wrap: wrap;
 }
 
 
 .ax-brand {
   font-family: var(--font-display);
-  font-size: var(--fs-20);
-  letter-spacing: 0.16em;
+  font-size: var(--fs-18);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ax-text);
 }
@@ -91,26 +91,37 @@ a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
-.ax-cover-bar {
-  margin-top: 1rem;
+.ax-ribbon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 215, 220, 0.78);
 }
+
+.ax-ribbon__item { white-space: nowrap; }
+.ax-ribbon__sep { opacity: 0.45; }
 
 .ax-ticker {
   border-block: 1px solid rgba(255, 32, 52, 0.16);
-  background: linear-gradient(180deg, rgba(16, 9, 12, 0.8), rgba(10, 13, 16, 0.65));
+  background: linear-gradient(180deg, rgba(16, 9, 12, 0.82), rgba(10, 13, 16, 0.68));
 }
 
 .ax-ticker .ax-container {
-  padding-block: 0.6rem;
+  padding-block: var(--space-2);
 }
 
 .ax-main {
   flex: 1 1 auto;
-  padding-block: 2.5rem;
+  padding-block: calc(var(--space-5) + var(--space-4));
   background: var(--ax-bg);
 }
 
@@ -122,7 +133,7 @@ a:hover {
 }
 
 .ax-status .ax-container {
-  padding-block: 0.6rem;
+  padding-block: var(--space-2);
 }
 
 /* ------------------------------
@@ -183,10 +194,10 @@ a:hover {
    Login Screen
 --------------------------------*/
 .ax-login {
-  min-height: calc(100dvh - 180px);
+  min-height: calc(100dvh - 160px);
   display: flex;
   align-items: center;
-  padding-block: 8vh;
+  padding-block: calc(6vh + var(--space-5));
 }
 
 .ax-login .ax-container {
@@ -196,18 +207,16 @@ a:hover {
 
 .ax-login-card {
   display: grid;
-  gap: 1rem;
-  max-width: 420px;
+  gap: var(--space-3);
+  width: min(460px, calc(100% - 2 * var(--gutter)));
   margin-inline: auto;
-  padding: 2.5rem;
+  padding: calc(var(--space-5) + var(--space-2));
   text-align: center;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
-  border: 1px solid rgba(255, 32, 52, 0.25);
-  box-shadow: var(--ax-shadow-mid);
+  justify-items: center;
 }
 
 .ax-login-card.is-error {
-  animation: ax-shake var(--t-std) var(--ease-ax2);
+  animation: ax-shake 0.36s var(--ease-ax2);
 }
 
 .ax-login-sub {
@@ -216,34 +225,45 @@ a:hover {
   color: var(--ax-muted);
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  font-family: var(--font-mono);
 }
 
 .ax-login-meta {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-3);
 }
 
-.logo-spin {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 1.5rem;
+.ax-login-emblem {
+  position: relative;
+  width: calc(120px * var(--ax-scale));
+  height: calc(120px * var(--ax-scale));
+  margin: 0 auto var(--space-3);
   border-radius: 50%;
-  border: 1px solid rgba(255, 32, 52, 0.45);
-  background: radial-gradient(60% 60% at 50% 50%, rgba(255, 32, 52, 0.35), rgba(12, 13, 17, 0));
-  box-shadow: inset 0 0 28px rgba(255, 32, 52, 0.45), 0 0 32px rgba(255, 32, 52, 0.25);
-  animation: logo-spin 6s linear infinite;
+  border: 1px solid rgba(255, 32, 52, 0.35);
+  background: radial-gradient(58% 58% at 50% 50%, rgba(255, 32, 52, 0.32), transparent 72%);
+  box-shadow: inset 0 0 36px rgba(255, 32, 52, 0.32), 0 0 42px rgba(255, 32, 52, 0.18);
+  animation: ax-login-spin 9s linear infinite;
 }
 
-@keyframes logo-spin {
+.ax-login-emblem::after {
+  content: '';
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background: radial-gradient(60% 60% at 50% 50%, rgba(255, 32, 52, 0.45), transparent 85%);
+  box-shadow: inset 0 0 18px rgba(255, 32, 52, 0.35);
+}
+
+@keyframes ax-login-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .logo-spin { animation: none; }
+  .ax-login-emblem { animation: none; }
 }
 
 .ax-login .ax-input {
@@ -257,7 +277,7 @@ a:hover {
 }
 
 .ax-login-error {
-  padding: 0.8rem 1rem;
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--r-lg);
   border: 1px solid rgba(255, 64, 86, 0.45);
   background: rgba(255, 64, 86, 0.12);
@@ -268,12 +288,13 @@ a:hover {
 }
 
 .ax-login-actions {
-  justify-content: flex-end;
+  justify-content: center;
+  gap: var(--space-2);
 }
 
 .ax-login-foot {
   display: block;
-  margin-top: 0.85rem;
+  margin-top: var(--space-3);
   color: var(--ax-muted);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -303,23 +324,31 @@ a:hover {
 .ax-dashboard__grid {
   display: grid;
   gap: var(--ax-gap-lg);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
 }
 
-@media (max-width: 960px) {
-  .ax-dashboard__grid { grid-template-columns: minmax(0, 1fr); }
+.ax-dashboard__panel--status,
+.ax-dashboard__panel--news {
+  grid-column: span 12;
+}
+
+@media (min-width: 1180px) {
+  .ax-dashboard__panel--status,
+  .ax-dashboard__panel--news {
+    grid-column: span 6;
+  }
 }
 
 .ax-dashboard__panel {
   display: grid;
-  gap: 1.25rem;
+  gap: var(--space-3);
 }
 
 .ax-dashboard__panel-head {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -327,26 +356,83 @@ a:hover {
   margin: 0;
   color: var(--ax-muted);
   font-size: var(--fs-12);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-family: var(--font-mono);
 }
 
-.ax-dashboard__chips {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+.ax-dashboard__dials {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  justify-items: center;
+}
+
+.ax-dashboard__dial {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: var(--space-1);
+  width: clamp(110px, 22vw, 160px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 32, 52, 0.25);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(18, 12, 15, 0.78));
+  color: var(--ax-text);
+  text-decoration: none;
+  transition: transform var(--t-fast) var(--ease-ax2), box-shadow var(--t-std) var(--ease-ax2), border-color var(--t-std) var(--ease-ax2);
+}
+
+.ax-dashboard__dial:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ax-glow-accent);
+}
+
+.ax-dashboard__dial[data-variant='warn'] {
+  border-color: rgba(255, 64, 86, 0.45);
+}
+
+.ax-dashboard__dial[data-variant='online'] {
+  border-color: rgba(46, 204, 113, 0.35);
+}
+
+.ax-dashboard__dial-value {
+  font: 700 var(--fs-28)/1 var(--font-display);
+  letter-spacing: 0.08em;
+}
+
+.ax-dashboard__dial-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.75;
 }
 
 .ax-dashboard__actions {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
   justify-content: flex-start;
+  align-items: center;
+}
+
+.ax-dashboard__action {
+  min-height: var(--btn-h);
+  padding-inline: var(--space-3);
+  font-size: var(--fs-12);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ax-dashboard__action[data-variant='accent'] {
+  border-color: rgba(255, 32, 52, 0.4);
+  box-shadow: var(--ax-glow-accent);
 }
 
 .ax-dashboard__see-all {
-  height: 32px;
-  padding-inline: 14px;
+  min-height: var(--btn-h);
+  padding-inline: var(--btn-px);
   font-size: var(--fs-12);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -365,22 +451,58 @@ a:hover {
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 1.25rem;
+  gap: var(--space-3);
 }
 
 .ax-dashboard__news {
   display: grid;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  border-radius: var(--r-lg);
-  border: 1px solid rgba(255, 32, 52, 0.15);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(18, 12, 15, 0.85));
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--r-xl);
+  border: 1px solid rgba(255, 32, 52, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(18, 12, 15, 0.82));
+}
+
+.ax-dashboard__news-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.ax-dashboard__news-chip {
+  min-height: calc(26px * var(--ax-scale));
+  padding-inline: var(--space-2);
+  font-size: var(--fs-12);
+}
+
+.ax-dashboard__news-open {
+  min-height: var(--btn-h);
+  padding-inline: var(--space-3);
+  font-size: var(--fs-12);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ax-dashboard__news-tags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.ax-dashboard__tag {
+  min-height: calc(24px * var(--ax-scale));
+  padding-inline: var(--space-2);
+  font-size: var(--fs-12);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
 }
 
 .ax-dashboard__news-meta {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -393,9 +515,9 @@ a:hover {
 }
 
 .ax-dashboard__news-title {
-  font-size: var(--fs-18);
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  margin: 0;
+  font: 600 var(--fs-18)/1.1 var(--font-display);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ax-text);
 }
@@ -404,11 +526,7 @@ a:hover {
   margin: 0;
   color: var(--ax-muted);
   font-size: var(--fs-14);
-}
-
-.ax-dashboard__news-actions {
-  display: flex;
-  justify-content: flex-end;
+  line-height: 1.5;
 }
 
 /* ------------------------------
@@ -478,7 +596,19 @@ a:hover {
   flex-wrap: wrap;
 }
 
-.ax-module__actions {\n  display: flex;\n  gap: 0.75rem;\n  flex-wrap: wrap;\n}\n\n.ax-module__preview {\n  display: grid;\n  gap: 1rem;\n  align-content: start;\n}\n\n.ax-module__note {
+.ax-module__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.ax-module__preview {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.ax-module__note {
   margin: 0;
   color: var(--ax-muted);
   font-size: var(--fs-12);
@@ -500,17 +630,39 @@ a:hover {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.6rem;
+  gap: var(--space-2);
 }
 
-.ax-module__source {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 0.75rem;\n  flex-wrap: wrap;\n  text-align: left;\n  transition: box-shadow var(--t-std) var(--ease-ax);\n}
+.ax-module__source {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  text-align: left;
+  transition: box-shadow var(--t-std) var(--ease-ax);
+}
 
 .ax-module__source.is-active {
   box-shadow: var(--ax-glow-accent);
 }
 
-.ax-module__source[disabled] {\n  opacity: 0.45;\n  cursor: not-allowed;\n}\n\n.ax-module__source-meta {\n  font-family: var(--font-mono);\n  font-size: var(--fs-12);\n  color: var(--ax-muted);\n  letter-spacing: 0.08em;\n  text-transform: uppercase;\n}\n\n.ax-module__iframe {
-  height: 60dvh;
+.ax-module__source[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ax-module__source-meta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  color: var(--ax-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ax-module__iframe {
+  height: 72vh;
 }
 
 .ax-module__iframe iframe {
@@ -522,7 +674,7 @@ a:hover {
 
 .ax-module__zoom {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -552,4 +704,7 @@ a:hover {
 
 
 
+
+
+.ax-status-line__route { font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: 0.08em; color: var(--ax-muted); white-space: nowrap; }
 

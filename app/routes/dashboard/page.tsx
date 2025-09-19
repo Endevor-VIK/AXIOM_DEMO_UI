@@ -80,28 +80,35 @@ export default function DashboardPage() {
       )}
 
       <div className='ax-dashboard__grid'>
-        <section className='ax-card ax-dashboard__panel' data-noise='on' aria-label='Status overview'>
+        <section className='ax-card ax-dashboard__panel ax-dashboard__panel--status' data-noise='on' aria-label='Status overview'>
           <header className='ax-dashboard__panel-head'>
             <h2 className='ax-blade-head'>CONTROL STATUS</h2>
             <p className='ax-dashboard__panel-note'>Live counters from audit, content and news manifests.</p>
           </header>
-          <div className='ax-dashboard__chips'>
+          <div className='ax-dashboard__dials'>
             {statusChips.map((chip) => (
-              <span key={chip.label} className='ax-chip' data-variant={resolveCountVariant(chip.value)}>
-                {chip.label} :: {chip.value}
-              </span>
+              <Link
+                key={chip.label}
+                to={chip.to}
+                className='ax-dashboard__dial'
+                data-variant={resolveCountVariant(chip.value)}
+                aria-label={`${chip.label} total ${chip.value}`}
+              >
+                <span className='ax-dashboard__dial-value'>{chip.value}</span>
+                <span className='ax-dashboard__dial-label'>{chip.label}</span>
+              </Link>
             ))}
           </div>
           <div className='ax-hr-blade' aria-hidden='true' />
           <div className='ax-dashboard__actions'>
-            <Link to='/dashboard/roadmap' className='ax-btn ghost'>OPEN ROADMAP</Link>
-            <Link to='/dashboard/audit' className='ax-btn ghost'>OPEN AUDIT</Link>
-            <Link to='/dashboard/content' className='ax-btn ghost'>OPEN CONTENT</Link>
-            <Link to='/dashboard/news' className='ax-btn primary'>VIEW NEWS</Link>
+            <Link to='/dashboard/roadmap' className='ax-btn ghost ax-dashboard__action'>OPEN ROADMAP</Link>
+            <Link to='/dashboard/audit' className='ax-btn ghost ax-dashboard__action'>OPEN AUDIT</Link>
+            <Link to='/dashboard/content' className='ax-btn ghost ax-dashboard__action'>OPEN CONTENT</Link>
+            <Link to='/dashboard/news' className='ax-btn ghost ax-dashboard__action' data-variant='accent'>VIEW NEWS</Link>
           </div>
         </section>
 
-        <section className='ax-card ax-dashboard__panel' data-noise='on' aria-label='Latest news'>
+        <section className='ax-card ax-dashboard__panel ax-dashboard__panel--news' data-noise='on' aria-label='Latest news'>
           <header className='ax-dashboard__panel-head'>
             <h2 className='ax-blade-head'>LATEST BRIEFINGS</h2>
             <Link to='/dashboard/news' className='ax-btn ghost ax-dashboard__see-all'>SEE ALL</Link>
@@ -112,15 +119,26 @@ export default function DashboardPage() {
             <ul className='ax-dashboard__news-list'>
               {latest.map((item) => (
                 <li key={item.id} className='ax-dashboard__news'>
-                  <div className='ax-dashboard__news-meta'>
-                    <span className='ax-chip' data-variant={resolveKindVariant(item.kind)}>{(item.kind || 'news').toUpperCase()}</span>
-                    <span className='ax-dashboard__news-date'>{item.date}</span>
+                  <div className='ax-dashboard__news-head'>
+                    <div className='ax-dashboard__news-meta'>
+                      <span className='ax-chip ax-dashboard__news-chip' data-variant={resolveKindVariant(item.kind)}>{(item.kind || 'news').toUpperCase()}</span>
+                      <span className='ax-dashboard__news-date'>{item.date}</span>
+                    </div>
+                    <Link to={item.link || '/dashboard/news'} className='ax-btn ghost ax-dashboard__news-open'>
+                      OPEN
+                    </Link>
                   </div>
-                  <div className='ax-dashboard__news-title'>{item.title}</div>
+                  <h3 className='ax-dashboard__news-title'>{item.title}</h3>
+                  {item.tags?.length ? (
+                    <div className='ax-dashboard__news-tags'>
+                      {item.tags.slice(0, 3).map((tag) => (
+                        <span key={tag} className='ax-chip ax-dashboard__tag'>
+                          {tag.toUpperCase()}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
                   {item.summary && <p className='ax-dashboard__news-summary'>{item.summary}</p>}
-                  <div className='ax-dashboard__news-actions'>
-                    <Link to={item.link || '/dashboard/news'} className='ax-btn ghost'>OPEN</Link>
-                  </div>
                 </li>
               ))}
             </ul>

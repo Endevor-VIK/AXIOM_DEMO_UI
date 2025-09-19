@@ -2,8 +2,8 @@
 // Canvas: C04 - app/routes/_layout.tsx
 // Purpose: Shared dashboard layout with Red Protocol navigation and system status shell.
 
-import React, { useCallback } from 'react'
-import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import React, { useCallback, useMemo } from 'react'
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import Ticker from '@/components/Ticker'
 import StatusLine from '@/components/StatusLine'
@@ -23,7 +23,18 @@ const NAV_ITEMS: NavItem[] = [
 ]
 
 export default function Layout() {
+  const location = useLocation()
   const navigate = useNavigate()
+  const route = location.pathname || '/'
+
+  const section = useMemo(() => {
+    const parts = route.split('/').filter(Boolean)
+    if (parts[0] !== 'dashboard') return route.toUpperCase()
+    const key = parts[1] || 'home'
+    return key === 'home' ? 'HOME' : key.replace(/-/g, ' ').toUpperCase()
+  }, [route])
+
+  const ribbonTokens = useMemo(() => ['MODE :: RED PROTOCOL', `SECTION :: ${section}`], [section])
 
   const handleLogout = useCallback(() => {
     try {
@@ -57,6 +68,17 @@ export default function Layout() {
             <button type='button' className='ax-btn ghost ax-action-logout' onClick={handleLogout}>
               EXIT
             </button>
+          </div>
+          <div className='ax-ribbon' role='status' aria-live='polite'>
+            {ribbonTokens.map((token, index) => (
+              <React.Fragment key={token}>
+                {index > 0 && (
+                  <span className='ax-ribbon__sep' aria-hidden='true'>//</span>
+                )}
+                <span className='ax-ribbon__item'>{token}</span>
+              </React.Fragment>
+            ))}
+            <span className='visually-hidden'>Active route {route}</span>
           </div>
         </div>
       </header>

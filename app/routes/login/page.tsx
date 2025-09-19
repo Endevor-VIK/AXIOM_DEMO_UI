@@ -70,7 +70,7 @@ export default function LoginPage() {
     [busy, login, password, mode, nav]
   )
 
-  const cardClasses = ['ax-card', 'ax-login-card']
+  const cardClasses = ['ax-card', 'low', 'ax-login-card']
   if (hasError) cardClasses.push('is-error')
 
   return (
@@ -93,7 +93,7 @@ export default function LoginPage() {
             </span>
             <span className='ax-chip' data-variant='level'>RED PROTOCOL</span>
           </div>
-          <div aria-hidden='true' className='logo-spin' />
+          <div aria-hidden='true' className='ax-login-emblem' />
           <label className='ax-visually-hidden' htmlFor='login'>User ID</label>
           <input
             id='login'
