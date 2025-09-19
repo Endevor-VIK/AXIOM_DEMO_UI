@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 
 import { useContentHub } from '@/app/routes/dashboard/content/context'
 
@@ -13,14 +13,12 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
   return (
     <section className='ax-content-filters' aria-live='polite'>
       <div className='ax-filter-row'>
-        <label className='visually-hidden' htmlFor='content-search'>
-          Search content
-        </label>
+        <label className='visually-hidden' htmlFor='content-search'>Search content</label>
         <input
           id='content-search'
           className='ax-input'
           type='search'
-          placeholder='Search by title, summary, tags'
+          placeholder='Search title, summary, tags'
           value={filters.query}
           onChange={(event) => filters.setQuery(event.target.value)}
           disabled={isDisabled}
@@ -72,10 +70,10 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
           ))}
         </select>
 
-        <div className='ax-view-toggle' role='group' aria-label='Change layout'>
+        <div className='ax-filter-actions' role='group' aria-label='Change layout'>
           <button
             type='button'
-            className={`ax-btn ${filters.view === 'cards' ? 'primary' : ''}`.trim()}
+            className='ax-btn ghost' data-active={filters.view === 'cards' ? 'true' : undefined}
             onClick={() => filters.setView('cards')}
             disabled={isDisabled}
           >
@@ -83,7 +81,7 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
           </button>
           <button
             type='button'
-            className={`ax-btn ${filters.view === 'list' ? 'primary' : ''}`.trim()}
+            className='ax-btn ghost' data-active={filters.view === 'list' ? 'true' : undefined}
             onClick={() => filters.setView('list')}
             disabled={isDisabled}
           >
@@ -93,7 +91,7 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
 
         <button
           type='button'
-          className='ax-btn subtle'
+          className='ax-btn ghost'
           onClick={() => filters.reset()}
           disabled={isDisabled}
         >
@@ -105,3 +103,4 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
 }
 
 export default ContentFilters
+

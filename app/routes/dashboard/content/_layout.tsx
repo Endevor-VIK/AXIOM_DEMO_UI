@@ -267,11 +267,13 @@ const ContentLayout: React.FC = () => {
 
   return (
     <ContentHubContext.Provider value={contextValue}>
-      <section className="ax-content-hub" aria-busy={loading}>
-        <ContentCategoryTiles items={categoryTiles} active={activeTab} loading={loading} />
-        <ContentFilters disabled={Boolean(error)} />
-        <div className="ax-content-outlet">
-          {error ? <div className="ax-err" role="alert">{error}</div> : <Outlet />}
+      <section className='ax-section'>
+        <div className='ax-container ax-content-hub' aria-busy={loading}>
+          <ContentCategoryTiles items={categoryTiles} active={activeTab} loading={loading} />
+          <ContentFilters disabled={Boolean(error)} />
+          <div className='ax-content-outlet'>
+            {error ? <div className='ax-dashboard__alert' role='alert'>{error}</div> : <Outlet />}
+          </div>
         </div>
       </section>
     </ContentHubContext.Provider>

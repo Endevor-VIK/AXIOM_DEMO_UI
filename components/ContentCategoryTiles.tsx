@@ -98,8 +98,6 @@ const iconMap: Record<CategoryKey, React.ReactElement> = {
   ),
 }
 
-const SKELETON_PLACEHOLDERS = 6
-
 export default function ContentCategoryTiles({ items, active, loading = false }: ContentCategoryTilesProps) {
   const navigate = useNavigate()
   const tileRefs = useRef<(HTMLButtonElement | null)[]>([])
@@ -161,27 +159,35 @@ export default function ContentCategoryTiles({ items, active, loading = false }:
 
   if (loading && entries.length === 0) {
     return (
-      <div className='ax-tiles' role='presentation' aria-hidden='true'>
-        {Array.from({ length: SKELETON_PLACEHOLDERS }).map((_, index) => (
-          <div key={index} className='ax-tile skeleton'>
-            <div className='ax-tile-title skeleton-bar' />
-            <div className='ax-tile-count skeleton-bar' />
+      <div className='ax-cats' role='status'>
+        <div className='ax-card cat'>
+          <div className='cat-ico' aria-hidden='true'>{iconMap.all}</div>
+          <div className='cat-title'>Loading…</div>
+          <div className='cat-meta'>
+            <span className='ax-chip' data-variant='info'>WAIT</span>
           </div>
-        ))}
+        </div>
       </div>
     )
   }
 
   if (!entries.length) {
     return (
-      <div className='ax-tiles-empty' role='status'>
-        <p>No categories available yet.</p>
+      <div className='ax-cats' role='status'>
+        <div className='ax-card cat'>
+          <div className='cat-ico' aria-hidden='true'>{iconMap.all}</div>
+          <div className='cat-title'>No categories yet</div>
+          <div className='cat-meta'>
+            <span className='ax-chip' data-variant='warn'>EMPTY</span>
+          </div>
+          <p className='cat-empty'>Заполнится скоро</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className='ax-tiles' role='tablist' aria-label='Content categories'>
+    <div className='ax-cats' role='tablist' aria-label='Content categories'>
       {entries.map((item, index) => {
         const selected = item.key === selectedKey
         return (
@@ -191,22 +197,24 @@ export default function ContentCategoryTiles({ items, active, loading = false }:
               tileRefs.current[index] = node
             }}
             type='button'
-            className={`ax-tile${selected ? ' active' : ''}`}
+            className={`ax-card cat${selected ? ' active' : ''}`}
             role='tab'
             aria-selected={selected}
             tabIndex={selected ? 0 : -1}
             onClick={() => handleActivate(item.to)}
             onKeyDown={(event) => handleKeyDown(event, index)}
           >
-            <span className='ax-tile-title'>
-              <span className='ax-tile-icon' aria-hidden='true'>
-                {item.icon}
+            <div className='cat-ico' aria-hidden='true'>
+              {item.icon}
+            </div>
+            <div className='cat-title'>{item.title}</div>
+            <div className='cat-meta'>
+              <span className='ax-chip' data-variant='level'>
+                {item.count}
               </span>
-              {item.title}
-            </span>
-            <span className='ax-tile-count' aria-label={`Items: ${item.count}`}>
-              {item.count}
-            </span>
+              {item.count === 0 ? <span className='ax-chip' data-variant='info'>EMPTY</span> : null}
+            </div>
+            {item.count === 0 ? <p className='cat-empty'>Заполнится скоро</p> : null}
           </button>
         )
       })}

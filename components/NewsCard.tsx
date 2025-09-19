@@ -1,29 +1,59 @@
-// AXIOM_DEMO_UI — WEB CORE
-// Canvas: C20 — components/NewsCard.tsx
-// Purpose: Present a single news item with kind/date/tags, summary and deeplink button.
+// AXIOM_DEMO_UI � WEB CORE
+// Canvas: C20 � components/NewsCard.tsx
+// Purpose: Red Protocol news card with kind/date/tags and external link.
 
-import React from 'react';
-import type { NewsItem } from '@/lib/vfs';
+import React from 'react'
+import type { NewsItem } from '@/lib/vfs'
 
-export default function NewsCard({ item }: { item: NewsItem }){
+const KIND_VARIANT: Record<string, 'info' | 'good' | 'warn'> = {
+  release: 'good',
+  update: 'info',
+  'heads-up': 'warn',
+}
+
+function variantFor(kind?: string): 'info' | 'good' | 'warn' {
+  if (!kind) return 'info'
+  const key = kind.toLowerCase()
+  return KIND_VARIANT[key] || 'info'
+}
+
+export default function NewsCard({ item }: { item: NewsItem }) {
+  const variant = variantFor(item.kind)
+  const kindLabel = (item.kind || 'news').toUpperCase()
+
   return (
-    <article className="news-card" aria-labelledby={`news-${item.id}`}>
-      <header className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <h3 id={`news-${item.id}`} className="news-title">{item.title}</h3>
-        <small>{item.date}</small>
+    <article className='ax-card ax-news-card' aria-labelledby={`news-${item.id}`}>
+      <header className='ax-news-card__head'>
+        <h3 id={`news-${item.id}`} className='ax-news-card__title'>
+          {item.title}
+        </h3>
+        <span className='ax-news-card__date'>{item.date}</span>
       </header>
-      <div className="news-meta">
-        <span className="news-kind" aria-label="Тип записи">{item.kind}</span>
+
+      <div className='ax-news-card__meta'>
+        <span className='ax-chip' data-variant={variant}>{kindLabel}</span>
         {item.tags?.length ? (
-          <div className="news-tags" aria-label="Теги">
-            {item.tags.map(t => <span key={t} className="ax-tag">{t}</span>)}
+          <div className='ax-news-card__tags' aria-label='tags'>
+            {item.tags.map((tag) => (
+              <span key={tag} className='ax-chip' data-variant='info'>
+                {tag.toUpperCase()}
+              </span>
+            ))}
           </div>
         ) : null}
       </div>
-      {item.summary && <p style={{ marginTop: '.35rem' }}>{item.summary}</p>}
-      <div className="row" style={{ justifyContent: 'flex-end', marginTop: '.35rem' }}>
-        <a className="ax-btn" href={item.link || '#'}>{item.link ? 'Открыть' : 'Подробнее скоро'}</a>
+
+      {item.summary && <p className='ax-news-card__summary'>{item.summary}</p>}
+
+      <div className='ax-news-card__actions'>
+        {item.link ? (
+          <a className='ax-btn ghost' href={item.link} target='_blank' rel='noopener noreferrer'>
+            Open
+          </a>
+        ) : (
+          <span className='ax-chip' data-variant='warn'>COMING SOON</span>
+        )}
       </div>
     </article>
-  );
+  )
 }
