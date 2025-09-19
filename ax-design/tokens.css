@@ -1,0 +1,175 @@
+/*
+ AXIOM — Design Tokens (RED PROTOCOL)
+ File: ax-design/tokens.css
+ Status: v0.2 (2025‑09‑19)
+ Purpose: Single source of truth for colors, radii, shadows, motion, type, layout.
+ Notes: Dark‑first. Keep values in sync with ax-design/compat/ refs until F4 cleanup.
+*/
+
+/* ============================
+   0) Base & Theme Switch
+   ============================ */
+   :root {
+    /* Color — Core */
+    --ax-bg: #0c0d11;          /* base canvas (dark) */
+    --ax-ink: #10090c;         /* red‑tinted glass */
+    --ax-red: #ff2034;         /* primary accent */
+    --ax-red-2: #b10f1e;       /* deep accent (borders) */
+    --ax-red-3: #5a0a12;       /* shadow/edge */
+    --ax-white: #ffffff;
+    --ax-black: #0a0d10;
+  
+    /* Greys / Ink scale */
+    --ax-ink-50:  #f6f7f9;
+    --ax-ink-100: #e9edf2;
+    --ax-ink-200: #cdd5df;
+    --ax-ink-300: #aab4c2;
+    --ax-ink-400: #7c8796;
+    --ax-ink-500: #566070;
+    --ax-ink-600: #3d4552;
+    --ax-ink-700: #2c333e;
+    --ax-ink-800: #1f252d;
+    --ax-ink-900: #12161b;
+  
+    /* Semantic Text/Border */
+    --ax-text:  #ececf2;       /* primary text */
+    --ax-muted: #a9a9b4;       /* secondary text */
+    --ax-border: #2a0d12;      /* subtle red border */
+    --ax-border-strong: #3a1216;
+  
+    /* Status (semantic accents) */
+    --ax-info:   #17a2b8;
+    --ax-warn:   #f1c40f;
+    --ax-good:   #2ecc71;
+    --ax-bad:    #ff4056;
+  
+    /* Surfaces */
+    --ax-surface-0: var(--ax-bg);
+    --ax-surface-1: #0f0f14;   /* neutral overlay */
+    --ax-surface-2: #12080a;   /* red‑ink overlay */
+    --ax-surface-3: #171015;   /* elevated */
+  
+    /* Gradients */
+    --grad-blade: linear-gradient(135deg, #ff2034 0%, #ff6a7d 45%, #ffe5e8 100%);
+    --grad-plasma: radial-gradient(120% 120% at 0% 0%, #ff2034 0%, rgba(255,32,52,0) 55%),
+                   radial-gradient(120% 120% at 100% 100%, #860e1a 0%, rgba(134,14,26,0) 60%);
+    --grad-ink: linear-gradient(180deg, #0a0d10 0%, #12161b 40%, #1f252d 100%);
+  
+    /* Radii */
+    --r-xs: 8px;
+    --r-sm: 10px;
+    --r-md: 12px;
+    --r-lg: 14px;    /* buttons */
+    --r-xl: 18px;
+    --r-2xl: 24px;   /* cards/panels */
+    --r-round: 999px;/* chips/pills */
+  
+    /* Elevation / Shadow */
+    --ax-shadow-low: 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px -18px rgba(0,0,0,0.5);
+    --ax-shadow-mid: 0 1px 0 rgba(255,255,255,0.06), 0 24px 60px -24px rgba(0,0,0,0.55);
+    --ax-glow-accent: 0 0 0 1px rgba(255,32,52,0.6), 0 0 28px rgba(255,32,52,0.35);
+  
+    /* Motion */
+    --t-fast: 120ms;
+    --t-std:  220ms;
+    --t-slow: 360ms;
+    --ease-ax: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --ease-ax2: cubic-bezier(0.16, 1, 0.3, 1);
+  
+    /* Typography */
+    --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --font-display: "Oxanium", "Rajdhani", var(--font-sans);
+  
+    /* Type scale (px) */
+    --fs-10: 10px;
+    --fs-12: 12px;
+    --fs-14: 14px;
+    --fs-16: 16px; /* body */
+    --fs-18: 18px;
+    --fs-22: 22px; /* h4 */
+    --fs-28: 28px; /* h3 */
+    --fs-36: 36px; /* h2 */
+    --fs-48: 48px; /* h1 */
+  
+    /* Layout */
+    --container-max: 1080px;   /* main content width */
+    --gutter: 20px;
+    --section-vspace: 24px;    /* vertical rhythm */
+  
+    /* Z‑index map */
+    --z-below: -1;
+    --z-base: 0;
+    --z-raised: 10;
+    --z-overlay: 1000;
+    --z-max: 2147483647;
+  }
+  
+  /* Optional light theme hook (values mirror, but project is dark‑first) */
+  [data-theme="light"] {
+    --ax-bg: #f6f7f9;
+    --ax-ink: #ffffff;
+    --ax-text: #0a0d10;
+    --ax-muted: #3d4552;
+    --ax-border: #dde2ea;
+    --ax-border-strong: #c7cfdb;
+    --ax-surface-0: #ffffff;
+    --ax-surface-1: #f9fbff;
+    --ax-surface-2: #fff0f2;
+    --ax-surface-3: #ffe7eb;
+  }
+  
+  /* ============================
+     1) System Primitives
+     ============================ */
+  :root {
+    /* Button sizing */
+    --btn-h: 38px;      /* default height */
+    --btn-px: 14px;     /* x padding */
+    --btn-gap: 8px;     /* icon + label gap */
+  
+    /* Input sizing */
+    --input-h: 40px;
+    --input-px: 12px;
+    --input-radius: var(--r-lg);
+  
+    /* Card sizing */
+    --card-p: 16px;
+    --card-radius: var(--r-2xl);
+  }
+  
+  /* ============================
+     2) Global Surface & Type
+     ============================ */
+  html, body {
+    background: var(--ax-bg);
+    color: var(--ax-text);
+    font-family: var(--font-sans);
+    font-size: var(--fs-16);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* ============================
+     3) Motion Preferences
+     ============================ */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --t-fast: 0.01ms;
+      --t-std:  0.01ms;
+      --t-slow: 0.01ms;
+      --ease-ax: linear;
+      --ease-ax2: linear;
+    }
+  }
+  
+  /* ============================
+     4) Utility Custom Props
+     ============================ */
+  :root {
+    /* Blade underline mask for headers (consumed by components.css) */
+    --blade-mask: linear-gradient(90deg, black 0%, black 95%, transparent 96%);
+    /* Subtle noise layer (use with background-blend-mode) */
+    --noise-alpha: rgba(255,255,255,0.03);
+  }
+  

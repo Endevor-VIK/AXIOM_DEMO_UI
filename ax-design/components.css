@@ -1,0 +1,119 @@
+/*
+ AXIOM — UI Components (RED PROTOCOL)
+ File: ax-design/components.css
+ Status: v0.2 (2025‑09‑19)
+ Requires: ax-design/tokens.css
+*/
+
+/* ============================
+   1) Containers & Layout
+   ============================ */
+   .ax-container { width: min(calc(100% - 2*var(--gutter)), var(--container-max)); margin-inline: auto; padding-inline: var(--gutter); }
+   .ax-section { margin-block: var(--section-vspace); }
+   .ax-stack { display: grid; gap: var(--section-vspace); }
+   .ax-row { display: flex; gap: var(--gutter); align-items: center; flex-wrap: wrap; }
+   
+   /* ============================
+      2) Card / Panel
+      ============================ */
+   .ax-card { position: relative; padding: var(--card-p); border-radius: var(--card-radius); background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.005)), var(--ax-surface-2); border: 1px solid var(--ax-border); box-shadow: var(--ax-shadow-mid); color: var(--ax-text); }
+   .ax-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(255,32,52,.10), inset 0 0 24px rgba(255,32,52,.05); }
+   .ax-card[data-noise="on"]::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: .22; mix-blend-mode: overlay; background: repeating-linear-gradient(0deg, transparent 0 2px, var(--noise-alpha) 2px 3px), repeating-linear-gradient(90deg, transparent 0 2px, var(--noise-alpha) 2px 3px); }
+   .ax-card:focus-within { box-shadow: var(--ax-shadow-mid), 0 0 0 2px rgba(255,32,52,.4); }
+   .ax-card.low { box-shadow: var(--ax-shadow-low); }
+   .ax-card.ghost { background: linear-gradient(180deg, rgba(255,255,255,.01), rgba(255,255,255,.002)), var(--ax-surface-0); border-color: var(--ax-border); }
+   
+   /* ============================
+      3) Blade Headings & Dividers
+      ============================ */
+   .ax-blade-head { position: relative; margin: 0 0 12px; font: 700 var(--fs-14)/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: #ffd7dc; }
+   .ax-blade-head::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; background: linear-gradient(90deg, var(--ax-red), transparent 70%); -webkit-mask: var(--blade-mask); mask: var(--blade-mask); }
+   
+   .ax-hr-blade { --edge: 12px; height: 2px; position: relative; background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent); border-radius: 2px; }
+   .ax-hr-blade::before, .ax-hr-blade::after { content: ""; position: absolute; top: 50%; width: var(--edge); height: 2px; transform: translateY(-50%) skewX(-24deg); background: linear-gradient(90deg, var(--ax-red), transparent); }
+   .ax-hr-blade::before { left: -6px; }
+   .ax-hr-blade::after { right: -6px; transform: translateY(-50%) scaleX(-1) skewX(-24deg); }
+   
+   /* ============================
+      4) Chips / Status Pills
+      ============================ */
+   .ax-chip { --bg-top: #1a1012; --bg-bot: #12080a; --bd: var(--ax-border-strong); position: relative; display: inline-flex; align-items: center; gap: .5rem; height: 32px; padding: 0 12px; border-radius: var(--r-round); border: 1px solid var(--bd); background: linear-gradient(180deg, var(--bg-top), var(--bg-bot)); color: var(--ax-text); font: 600 11px/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; box-shadow: inset 0 0 16px rgba(255,32,52,.12), 0 0 18px rgba(255,32,52,.08); transition: box-shadow var(--t-std) var(--ease-ax2), transform var(--t-fast) var(--ease-ax2); }
+   .ax-chip:hover { box-shadow: inset 0 0 16px rgba(255,32,52,.18), 0 0 26px rgba(255,32,52,.16); }
+   .ax-chip:active { transform: translateY(1px); }
+   .ax-chip:focus-visible { outline: 2px solid rgba(255,32,52,.7); outline-offset: 2px; border-radius: var(--r-lg); }
+   .ax-chip::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; background: linear-gradient(90deg, transparent, rgba(255,32,52,.18), transparent); transition: opacity var(--t-std) var(--ease-ax2); }
+   .ax-chip:active::after { opacity: 1; animation: ax-chip-sweep .28s linear both; }
+   
+   /* variants */
+   .ax-chip[data-variant="level"] { --bd: #3a1216; }
+   .ax-chip[data-variant="online"] { --bd: #43141a; box-shadow: inset 0 0 12px rgba(46,204,113,.12), 0 0 18px rgba(46,204,113,.08); }
+   .ax-chip[data-variant="armed"] { --bd: #4a1418; box-shadow: inset 0 0 16px rgba(255,32,52,.16), 0 0 22px rgba(255,32,52,.12); }
+   .ax-chip[data-variant="info"]  { --bd: rgba(23,162,184,.35); }
+   .ax-chip[data-variant="warn"]  { --bd: rgba(241,196,15,.35); }
+   .ax-chip[data-variant="error"] { --bd: rgba(255,64,86,.35); }
+   
+   @keyframes ax-chip-sweep { 0% { transform: translateX(-30%);} 100% { transform: translateX(30%);} }
+   
+   /* ============================
+      5) Buttons (minimal set)
+      ============================ */
+   .ax-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--btn-gap); height: var(--btn-h); padding: 0 var(--btn-px); border-radius: var(--r-lg); border: 1px solid var(--ax-border); background: linear-gradient(180deg, #1f252d 0%, #12161b 100%); color: var(--ax-text); font-weight: 600; transition: transform var(--t-fast) var(--ease-ax2), box-shadow var(--t-std) var(--ease-ax2), background var(--t-std) var(--ease-ax2); box-shadow: var(--ax-shadow-low); }
+   .ax-btn:hover { box-shadow: var(--ax-glow-accent); }
+   .ax-btn:active { transform: translateY(1px); }
+   .ax-btn:focus-visible { outline: 2px solid rgba(255,32,52,.7); outline-offset: 2px; }
+   .ax-btn.primary { background: linear-gradient(90deg, var(--ax-red), var(--ax-red-2) 85%); color: #1b0a0c; border-color: rgba(255,32,52,.35); text-shadow: 0 1px 0 rgba(255,255,255,.08); }
+   .ax-btn.ghost { background: transparent; border-color: var(--ax-border); }
+   .ax-btn.danger { background: linear-gradient(180deg, #2a0d12, #1a0a0d); border-color: #43141a; color: #ffd7dc; }
+   
+   /* sweep flash */
+   .ax-btn::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, rgba(255,32,52,.18), transparent); opacity: 0; transition: opacity var(--t-std) var(--ease-ax2); }
+   .ax-btn:active::after { opacity: 1; animation: ax-chip-sweep .32s linear both; }
+   
+   /* ============================
+      6) Inputs (text/select)
+      ============================ */
+   .ax-input { display: inline-flex; width: 100%; height: var(--input-h); padding-inline: var(--input-px); border-radius: var(--input-radius); border: 1px solid var(--ax-border-strong); background: linear-gradient(180deg, var(--ax-surface-1), var(--ax-surface-2)); color: var(--ax-text); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+   .ax-input::placeholder { color: var(--ax-muted); }
+   .ax-input:focus { outline: none; box-shadow: 0 0 0 2px rgba(255,32,52,.4), inset 0 1px 0 rgba(255,255,255,.06); border-color: rgba(255,32,52,.35); }
+   .ax-input[aria-invalid="true"], .ax-input.is-invalid { border-color: var(--ax-bad); animation: ax-shake .24s var(--ease-ax2); }
+   
+   /* ============================
+      7) Tabs (top navigation)
+      ============================ */
+   .ax-tabs { display: flex; gap: 8px; align-items: center; }
+   .ax-tab { position: relative; display: inline-flex; align-items: center; padding: 8px 14px; border-radius: var(--r-lg); color: var(--ax-text); border: 1px solid transparent; background: transparent; transition: color var(--t-std) var(--ease-ax2), border-color var(--t-std) var(--ease-ax2); }
+   .ax-tab:hover { border-color: var(--ax-border); }
+   .ax-tab[aria-current="page"], .ax-tab.is-active { color: #ffd7dc; }
+   .ax-tab[aria-current="page"]::after, .ax-tab.is-active::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: -4px; height: 2px; background: linear-gradient(90deg, var(--ax-red), transparent 70%); -webkit-mask: var(--blade-mask); mask: var(--blade-mask); }
+   
+   /* ============================
+      8) Cover Bar (hero/section header)
+      ============================ */
+   .ax-cover-bar { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-top: 22px; }
+   .ax-cover-main { background: linear-gradient(90deg, var(--ax-red), var(--ax-red-2) 85%); color: #1b0a0c; font-weight: 800; font-size: var(--fs-14); padding: 6px 18px; border-radius: 9px; box-shadow: 0 0 14px rgba(255,32,52,.28); background-size: 120% 100%; transition: background-position .6s var(--ease-ax2); }
+   .ax-cover-main:hover { background-position: 100% 0%; }
+   .ax-cover-main:focus-visible { outline: 2px solid rgba(255,32,52,.7); outline-offset: 3px; border-radius: 12px; }
+   .ax-cover-tracker { font-size: var(--fs-14); color: var(--ax-red); text-transform: uppercase; letter-spacing: .06em; font-family: var(--font-mono); }
+   
+   /* ============================
+      9) Scrollable preview (iframe wrappers)
+      ============================ */
+   .ax-scroll { position: relative; overflow: hidden; border-radius: var(--card-radius); border: 1px solid var(--ax-border); background: var(--ax-surface-0); }
+   .ax-scroll > iframe { display: block; width: 100%; height: 100%; border: 0; background: var(--ax-surface-0); }
+   
+   /* ============================
+      10) Utilities
+      ============================ */
+   .ax-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+   .ax-focus-ring { outline: 2px solid rgba(255,32,52,.7); outline-offset: 2px; border-radius: var(--r-lg); }
+   
+   /* error shake */
+   @keyframes ax-shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+   
+   /* Reduced motion */
+   @media (prefers-reduced-motion: reduce) {
+     .ax-btn, .ax-chip { transition: none; }
+     .ax-btn:active, .ax-chip:active { transform: none; }
+     .ax-btn::after, .ax-chip::after { animation: none; }
+   }
+   
