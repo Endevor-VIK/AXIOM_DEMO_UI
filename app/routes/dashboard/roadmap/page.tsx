@@ -124,7 +124,10 @@ export default function RoadmapPage() {
         src={previewSrc ?? undefined}
         title='AXIOM Roadmap'
         reloadToken={`${reloadKey}-${selected ?? 'none'}`}
-        leadingControls={sourceControls}\n        onReload={handleRefresh}\n        reloadDisabled={!previewSrc}\n        emptyMessage={<p className='ax-preview__placeholder'>Roadmap source is missing.</p>}
+        leadingControls={sourceControls}
+        onReload={handleRefresh}
+        reloadDisabled={!previewSrc}
+        emptyMessage={<p className='ax-preview__placeholder'>Roadmap source is missing.</p>}
       />
     </section>
   )

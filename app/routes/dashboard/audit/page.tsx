@@ -64,7 +64,10 @@ export default function AuditPage() {
 
   useEffect(() => {
     if (!selected && filtered.length > 0) {
-      setSelected(filtered[0])
+      const nextSelected = filtered[0]
+      if (nextSelected) {
+        setSelected(nextSelected)
+      }
     }
   }, [filtered, selected])
 
@@ -72,7 +75,7 @@ export default function AuditPage() {
     if (!selected?.file) {
       return { src: undefined, note: 'This entry does not include a file.' }
     }
-    const rel = String(selected.file).replace(/^\\/+/, '')
+    const rel = String(selected.file).replace(/^\/+/, '')
     if (isHtml(rel)) {
       return { src: dataBase + rel, note: undefined }
     }
@@ -152,7 +155,7 @@ export default function AuditPage() {
           )}
 
           <PreviewPane
-            src={previewInfo.src}
+            src={previewInfo.src ?? null}
             title={`AUDIT :: ${selected?.title || selected?.file || 'Preview'}`}
             controls={Boolean(previewInfo.src)}
             leadingControls={metaChips}
@@ -176,5 +179,10 @@ export default function AuditPage() {
     </section>
   )
 }
+
+
+
+
+
 
 
