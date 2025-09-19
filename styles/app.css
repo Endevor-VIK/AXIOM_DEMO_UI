@@ -71,18 +71,20 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
-  padding-block: 1rem;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
   flex-wrap: wrap;
 }
 
+
 .ax-brand {
   font-family: var(--font-display);
-  font-size: var(--fs-18);
-  letter-spacing: 0.18em;
+  font-size: var(--fs-20);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ax-text);
 }
+
 
 .ax-tabs {
   flex: 1 1 auto;
@@ -91,41 +93,6 @@ a:hover {
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
-}
-
-.ax-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.ax-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  height: 36px;
-  padding: 0 12px;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: var(--fs-12);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: inherit;
-  background: none;
-  border: none;
-}
-
-.ax-action.ax-chip {
-  border: 1px solid var(--ax-border);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(10, 10, 12, 0.4));
-  box-shadow: inset 0 0 16px rgba(255, 32, 52, 0.14), 0 0 18px rgba(255, 32, 52, 0.12);
-}
-
-.ax-action-logout {
-  height: 36px;
-  padding-inline: 18px;
-  letter-spacing: 0.12em;
 }
 
 .ax-cover-bar {
@@ -450,27 +417,21 @@ a:hover {
 .ax-status-line {
   display: flex;
   align-items: center;
-  gap: var(--ax-gap);
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
+
 .ax-status-line__group {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
+
 
 .ax-status-line__group--right {
   margin-left: auto;
-}
-
-.ax-status-line__route {
-  font-family: var(--font-mono);
-  font-size: var(--fs-12);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ax-text);
 }
 
 .ax-status-line__time {
@@ -583,6 +544,9 @@ a:hover {
     padding: 0;
   }
 }
+
+
+
 
 
 

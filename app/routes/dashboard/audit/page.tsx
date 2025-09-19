@@ -1,8 +1,10 @@
 // AXIOM_DEMO_UI - WEB CORE
 // Canvas: C17 - app/routes/dashboard/audit/page.tsx
-// Purpose: Audit module with Red Protocol two-column layout and zoomable preview.
+// Purpose: Audit module with compact list and shared PreviewPane for reports.
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+
+import { PreviewPane } from '@/components/PreviewPane'
 import { vfs, type ManifestItem } from '@/lib/vfs'
 
 function ensureSlash(value: string) {
@@ -19,8 +21,6 @@ function isText(file?: string) {
 
 type AuditItem = ManifestItem & { _idx: number }
 
-const ZOOM_LEVELS = [1, 1.25, 1.5]
-
 export default function AuditPage() {
   const dataBase = ensureSlash(((import.meta as any).env?.VITE_DATA_BASE as string) || 'data/')
 
@@ -29,7 +29,6 @@ export default function AuditPage() {
   const [selected, setSelected] = useState<AuditItem | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(true)
-  const [zoom, setZoom] = useState(1)
 
   useEffect(() => {
     let alive = true
@@ -55,10 +54,6 @@ export default function AuditPage() {
     }
   }, [])
 
-  useEffect(() => {
-    setZoom(1)
-  }, [selected?._idx])
-
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase()
     if (!term) return items
@@ -73,11 +68,41 @@ export default function AuditPage() {
     }
   }, [filtered, selected])
 
-  const previewSrc = useMemo(() => {
-    if (!selected?.file) return null
-    const rel = String(selected.file).replace(/^\/+/, '')
-    return isHtml(rel) ? dataBase + rel : null
+  const previewInfo = useMemo(() => {
+    if (!selected?.file) {
+      return { src: undefined, note: 'This entry does not include a file.' }
+    }
+    const rel = String(selected.file).replace(/^\\/+/, '')
+    if (isHtml(rel)) {
+      return { src: dataBase + rel, note: undefined }
+    }
+    if (isText(rel)) {
+      return {
+        src: undefined,
+        note: 'Text and Markdown previews are not yet supported. Use Open External to view the file.'
+      }
+    }
+    return { src: undefined, note: 'Preview is not available for this file type.' }
   }, [selected, dataBase])
+
+  const metaChips = useMemo(() => {
+    if (!selected) return null
+    const variant = selected.file ? (previewInfo.src ? 'online' : 'info') : 'warn'
+    return (
+      <>
+        <span className='ax-chip' data-variant={variant}>
+          {selected.file ? selected.file.toUpperCase() : 'NO FILE'}
+        </span>
+        {selected.date && <span className='ax-chip' data-variant='info'>DATE :: {selected.date}</span>}
+      </>
+    )
+  }, [previewInfo.src, selected])
+
+  const [reloadKey, setReloadKey] = useState(0)
+
+  const handleReload = useCallback(() => {
+    setReloadKey((value) => value + 1)
+  }, [])
 
   return (
     <section className='ax-container ax-section' aria-busy={busy}>
@@ -119,65 +144,37 @@ export default function AuditPage() {
           </ul>
         </aside>
 
-        <section className='ax-card' role='region' aria-label='Audit preview'>
-          <div className='ax-module__panel-head'>
-            <h2 className='ax-blade-head'>Preview</h2>
-            <div className='ax-module__actions'>
-              <div className='ax-module__zoom' role='group' aria-label='Zoom level'>
-                {ZOOM_LEVELS.map((level) => (
-                  <button
-                    key={level}
-                    type='button'
-                    className={`ax-chip${zoom === level ? ' is-active' : ''}`}
-                    data-variant={zoom === level ? 'online' : 'info'}
-                    onClick={() => setZoom(level)}
-                  >
-                    {Math.round(level * 100)}%
-                  </button>
-                ))}
-              </div>
-              {previewSrc && (
-                <a className='ax-btn primary' href={previewSrc} target='_blank' rel='noopener noreferrer'>
-                  Open External
-                </a>
-              )}
-            </div>
-          </div>
-
+        <div className='ax-preview-panel'>
           {error && (
             <div className='ax-dashboard__alert' role='alert'>
               {error}
             </div>
           )}
 
-          {selected ? (
-            <div className='ax-module__preview'>
-              <div className='ax-dashboard__chips'>
-                <span className='ax-chip' data-variant={selected.file ? (isHtml(selected.file) ? 'online' : 'info') : 'warn'}>
-                  {selected.file ? selected.file.toUpperCase() : 'NO FILE'}
-                </span>
-                {selected.date && <span className='ax-chip' data-variant='info'>DATE :: {selected.date}</span>}
-              </div>
-              {previewSrc ? (
-                <div
-                  className='ax-scroll ax-viewport ax-scroll-thin ax-module__iframe'
-                  style={{ '--ax-preview-zoom': zoom } as React.CSSProperties}
-                >
-                  <iframe src={previewSrc} title={`AUDIT :: ${selected.title || selected.file}`} />
-                </div>
-              ) : isText(selected.file) ? (
-                <p className='ax-module__note'>Text and Markdown previews are not yet supported. Use Open External to view the file.</p>
-              ) : selected.file ? (
-                <p className='ax-module__note'>Preview is not available for this file type.</p>
-              ) : (
-                <p className='ax-module__note'>This entry does not include a file.</p>
-              )}
+          <PreviewPane
+            src={previewInfo.src}
+            title={`AUDIT :: ${selected?.title || selected?.file || 'Preview'}`}
+            controls={Boolean(previewInfo.src)}
+            leadingControls={metaChips}
+            emptyMessage={
+              <p className='ax-preview__placeholder'>
+                {previewInfo.note || 'Select an audit entry to view details.'}
+              </p>
+            }
+          />
+
+          {!previewInfo.src && previewInfo.note && selected?.file && (
+            <div className='ax-preview__note'>
+              <p>{previewInfo.note}</p>
+              <a className='ax-btn ghost' href={dataBase + String(selected.file)} target='_blank' rel='noreferrer'>
+                Open External
+              </a>
             </div>
-          ) : (
-            <p className='ax-module__note'>Select an audit entry to view details.</p>
           )}
-        </section>
+        </div>
       </div>
     </section>
   )
 }
+
+
