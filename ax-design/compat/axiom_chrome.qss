@@ -1,0 +1,72 @@
+/* ui/style/axiom_chrome.qss
+   Palette — derived from axiom_red.qss (Login) to keep visual consistency.
+   NOTE: Selectors are scoped to IDs used by the shared window chrome only.
+*/
+:root {
+  /* pseudo-palette comments for reference */
+  /* red */ /* #c31732 */
+  /* red_dark */ /* #95152a */
+  /* border */ /* #36151f */
+  /* bg_top */ /* #0f0e13 */
+  /* bg_mid */ /* #0c0d11 */
+  /* bg_bot */ /* #09080c */
+  /* text */ /* #f1f1f6 */
+}
+
+/* Title bar wrapper */
+#AxiomTitleBar {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                                stop:0   #0f0e13,
+                                stop:0.6 #0c0d11,
+                                stop:1.0 #09080c);
+    border-bottom: 1px solid #36151f;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+/* Icon + Title */
+#AxiomTBIcon {
+    color: #c31732;
+    font-size: 18px;
+}
+
+#AxiomTBTitle {
+    color: #f1f1f6;
+    letter-spacing: 0.06em;
+}
+
+/* Control buttons */
+QToolButton#minButton, QToolButton#maxButton, QToolButton#closeButton {
+    min-width: 36px;
+    min-height: 28px;
+    padding-bottom: 2px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: #f1f1f6;
+    background: transparent;
+}
+QToolButton#minButton:hover, QToolButton#maxButton:hover {
+    background: rgba(195, 23, 50, 0.09);        /* #c31732 @ 9% */
+    border-color: #36151f;
+}
+QToolButton#minButton:pressed, QToolButton#maxButton:pressed {
+    background: rgba(195, 23, 50, 0.16);
+}
+
+QToolButton#closeButton:hover {
+    background: #c31732;
+    color: #1e1015;
+    border-color: #36151f;
+}
+QToolButton#closeButton:pressed {
+    background: #95152a;
+    color: #110a0e;
+}
+
+/* Body frame draws the outer window border to mimic login frame */
+#AxiomBodyFrame {
+    background: transparent;
+    border: 1px solid #36151f;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}

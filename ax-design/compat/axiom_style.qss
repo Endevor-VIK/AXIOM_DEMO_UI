@@ -1,0 +1,205 @@
+/* PALETTE
+   --bg-deep:        #0c0b0f;
+   --bg-panel-top:   #131218;
+   --bg-panel-bot:   #0e0d12;
+   --accent-red:     #CF2E4A;     // основной алый
+   --accent-red-2:   #B10F1E;     // тёмный край градиента
+   --border-dim:     #2a2028;     // тонкая рамка
+   --text-main:      #ECECF2;
+   --text-dim:       #B6B6C2;
+   --shadow:         rgba(0,0,0,0.35);
+*/
+
+QMainWindow#AxiomMainWindow {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0  #111015, stop:1  #0c0b0f);
+    color: #ECECF2;
+}
+
+/* Главная карточка панели */
+QMainWindow#AxiomMainWindow QFrame#MainCard {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0  #131218, stop:1  #0e0d12);
+    border: 1px solid #2a2028;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+QMainWindow#AxiomMainWindow QLabel,
+QMainWindow#AxiomMainWindow QGroupBox,
+QMainWindow#AxiomMainWindow QPushButton,
+QMainWindow#AxiomMainWindow QCheckBox,
+QMainWindow#AxiomMainWindow QRadioButton,
+QMainWindow#AxiomMainWindow QTabBar,
+QMainWindow#AxiomMainWindow QListWidget,
+QMainWindow#AxiomMainWindow QTreeWidget,
+QMainWindow#AxiomMainWindow QTableWidget {
+    color: #ECECF2;
+}
+
+QMainWindow#AxiomMainWindow QLabel#AxiomTitle {
+    color: #ECECF2;
+    font-family: "Orbitron", "JetBrains Mono", monospace;
+    font-size: 22px;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+/* Остроконечный разделитель */
+QMainWindow#AxiomMainWindow QFrame#AxiomDivider {
+    background: none;
+    border: none;
+    min-height: 2px;
+    max-height: 2px;
+}
+QMainWindow#AxiomMainWindow QFrame#AxiomDivider:!vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0    transparent,
+        stop:0.12 rgba(207,46,74,0.15),
+        stop:0.50 rgba(207,46,74,0.85),
+        stop:0.88 rgba(207,46,74,0.15),
+        stop:1.0  transparent);
+    border-radius: 1px;
+}
+
+QMainWindow#AxiomMainWindow QPushButton {
+    background: #14131a;
+    border: 1px solid #2a2028;
+    border-radius: 10px;
+    color: #ECECF2;
+    padding: 8px 12px;
+}
+QMainWindow#AxiomMainWindow QPushButton:hover {
+    border-color: #3a2832;
+}
+
+/* primary action */
+QMainWindow#AxiomMainWindow QPushButton#PrimaryButton {
+    background: qlineargradient(x1:0,y1:0,x2:1,y2:0,
+        stop:0 #CF2E4A, stop:1 #B10F1E);
+    border: 1px solid #451822;
+    border-radius: 12px;
+    color: #ECECF2;
+    padding: 10px 14px;
+    font-family: "Orbitron", "JetBrains Mono", monospace;
+    letter-spacing: 0.5px;
+}
+QMainWindow#AxiomMainWindow QPushButton#PrimaryButton:hover { filter: brightness(1.08); }
+QMainWindow#AxiomMainWindow QPushButton#PrimaryButton:pressed { filter: brightness(0.92); }
+
+QMainWindow#AxiomMainWindow QLineEdit,
+QMainWindow#AxiomMainWindow QSpinBox,
+QMainWindow#AxiomMainWindow QDoubleSpinBox,
+QMainWindow#AxiomMainWindow QComboBox {
+    background: #0f0e14;
+    border: 1.5px solid #36151f;
+    border-radius: 12px;
+    padding: 8px 12px;
+    color: #ECECF2;
+    selection-background-color: rgba(207,46,74,0.35);
+}
+QMainWindow#AxiomMainWindow QLineEdit:focus,
+QMainWindow#AxiomMainWindow QComboBox:focus {
+    border-color: #CF2E4A;
+}
+QMainWindow#AxiomMainWindow QLineEdit::placeholder {
+    color: #8f8e98;
+}
+
+QMainWindow#AxiomMainWindow QPlainTextEdit,
+QMainWindow#AxiomMainWindow QTextEdit {
+    background: #0b0b0f;
+    border: 1px solid #2a2028;
+    border-radius: 10px;
+    color: #E2E4EC;
+    selection-background-color: rgba(207,46,74,0.35);
+}
+
+QMainWindow#AxiomMainWindow QFrame#Sidebar {
+    background: #0e0d12;
+    border-right: 1px solid #201820;
+}
+QMainWindow#AxiomMainWindow QPushButton#SidebarButton {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: #CFCFE2;
+    padding: 8px 10px;
+    text-align: left;
+}
+QMainWindow#AxiomMainWindow QPushButton#SidebarButton:hover {
+    background: rgba(207,46,74,0.08);
+    border-color: rgba(207,46,74,0.25);
+}
+QMainWindow#AxiomMainWindow QPushButton#SidebarButton:checked {
+    background: rgba(207,46,74,0.16);
+    border-color: rgba(207,46,74,0.55);
+}
+
+QMainWindow#AxiomMainWindow QLabel#FooterChip {
+    background: qlineargradient(x1:0,y1:0,x2:1,y2:0,
+        stop:0 rgba(207,46,74,0.10),
+        stop:1 rgba(207,46,74,0.04));
+    border: 1px solid rgba(207,46,74,0.25);
+    color: #D8D8E2;
+    padding: 8px 14px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+}
+/* === AXIOM_QSS_APPEND — AI • AXIOM CORE header emphasis === */
+#AIAxiomCorePanel QLabel#axiomTitle {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+/* === AXIOM_QSS_APPEND — AI CORE table (AX‑Scarlet, dark) ==================== */
+/* общий фон виджета/вьюпорта — чтобы не было белых пустот */
+#AIAxiomCorePanel QAbstractScrollArea,
+#AIAxiomCorePanel QAbstractItemView,
+#AIAxiomCorePanel QTableWidget,
+#AIAxiomCorePanel QTableWidget::viewport {
+  background: #0b0c11; /* глубокий тёмный */
+  color: #ffffff;
+}
+
+/* сетка и рамки — алый, но более тёмный */
+#AIAxiomCorePanel QTableWidget {
+  gridline-color: #a31621;         /* AX‑Scarlet */
+  border: 1px solid #a31621;       /* внешняя рамка */
+  alternate-background-color: #11141a; /* «зебра» под setAlternatingRowColors(True) */
+}
+
+/* заголовки */
+#AIAxiomCorePanel QHeaderView::section {
+  background: #161a22;             /* контрастный тёмный */
+  color: #ffffff;
+  border: 1px solid #a31621;       /* алые границы */
+  padding: 6px 8px;
+  font-weight: 600;
+}
+#AIAxiomCorePanel QHeaderView::section:vertical {
+  background: #13161d;
+  border-right: 1px solid #a31621;
+}
+
+/* левый «уголок» таблицы и все возможные пустые зоны */
+#AIAxiomCorePanel QTableCornerButton::section {
+  background: #161a22;
+  border: 1px solid #a31621;
+}
+
+/* выделения строк: алый с прозрачностью — мягко, как на левой кнопке */
+#AIAxiomCorePanel QTableWidget::item:selected {
+  background: rgba(163, 22, 33, 0.40); /* AX‑Scarlet 40% */
+  color: #ffffff;
+}
+#AIAxiomCorePanel QTableWidget::item:selected:!active {
+  background: rgba(163, 22, 33, 0.28); /* когда таблица не в фокусе */
+}
+
+/* скроллбары под тёмный фон */
+#AIAxiomCorePanel QTableWidget QScrollBar:vertical,
+#AIAxiomCorePanel QTableWidget QScrollBar:horizontal { background: #0b0c11; }
+#AIAxiomCorePanel QTableWidget QScrollBar::handle:vertical,
+#AIAxiomCorePanel QTableWidget QScrollBar::handle:horizontal { background: #2a2f3a; }
+/* ========================================================================= */

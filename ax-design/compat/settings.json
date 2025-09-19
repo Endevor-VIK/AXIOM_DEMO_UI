@@ -1,0 +1,108 @@
+{
+  // === AXIOM · VS Code settings (icons → RED; Explorer text softened) ===
+  "errorLens.enabled": true,
+  "errorLens.gutterIconsEnabled": true,
+  "errorLens.statusBarMessagesEnabled": true,
+  "errorLens.onSaveTimeout": 50,
+
+  "markdown.validate.enabled": true,
+  "markdown.validate.ignoredLinks": [
+    "AXIOM_SYSTEM_V2/02_LOCATIONS/02.d_DOCX/02.d.04_ECHELON/02.d.04.10_UPPER_ECHELON",
+    "#block-00-intro-scope",
+    "#block-01-use-case-matrix",
+    "#block-02-module-a-libaxiom_rt",
+    "#block-03-module-b-axiom_sim",
+    "#block-04-module-c-axiom_cipherd",
+    "#block-05-module-d-axiom_crt_renderer",
+    "#bblock-06-embedded-bridge-firmware",
+    "#block-07-language-bindings",
+    "#block-08-build-ci-cd",
+    "#block-09-roadmap-milestones",
+    "#block-10-risks-mitigation",
+    "#block-11-resources-dependencies",
+    "#block-12-glossary-references",
+    "ссылка"
+  ],
+
+  "workbench.colorTheme": "Default Dark+",
+
+  "workbench.colorCustomizations": {
+    // базовые цвета интерфейса
+    "editor.background": "#0c0d11",
+    "editor.foreground": "#ececf2",
+    "sideBar.background": "#0c0d11",
+    "sideBar.foreground": "#a9a9b4",
+    "activityBar.dropBackground": "#00000000",
+    "activityBar.activeBackground": "#00000000",   // убрать заливку у активной иконки
+    "activityBar.activeBorder": "#ff2034",         // оставить тонкую границу слева
+    "activityBar.activeFocusBorder": "#ff2034",
+
+
+
+
+    // Activity Bar — иконки красные
+    "activityBar.background": "#10090c",
+    "activityBar.foreground": "#ff2034",
+    "activityBar.inactiveForeground": "#b10f1e",
+    "activityBarBadge.background": "#ff2034",
+    "activityBarBadge.foreground": "#0c0d11",
+
+    // Статус-бар и вкладки
+    "statusBar.background": "#10090c",
+    "statusBar.foreground": "#ececf2",
+    "tab.activeBackground": "#10090c",
+    "tab.inactiveBackground": "#0c0d11",
+    "tab.activeForeground": "#ececf2",
+    "tab.inactiveForeground": "#a9a9b4",
+
+    // Акценты и линии
+    "tab.activeBorder": "#ff2034",
+    "tab.activeBorderTop": "#ff2034",
+    "editorGroup.border": "#2a0d12",
+    "sideBarSectionHeader.border": "#2a0d12",
+    "tab.activeBorderLeft": "#ff2034",
+    "tab.unfocusedActiveBorder": "#b10f1e",
+    "tab.unfocusedActiveBorderTop": "#b10f1e",
+    "sideBar.border": "#2a0d12",
+
+    // Курсор и выделения
+    "editorCursor.foreground": "#ff2034",
+    "editor.selectionBackground": "#ff203433",
+    "editor.lineHighlightBackground": "#ff203420",
+
+    // Системные цвета списков (Explorer/общее) — читабельность
+    "list.foreground": "#b9bbc4",
+    "list.hoverForeground": "#e4e6ec",
+    "list.activeSelectionForeground": "#ff2034",
+    "list.inactiveSelectionForeground": "#b10f1e",
+    "list.focusForeground": "#ff2034"
+  },
+
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      { "scope": "comment",  "settings": { "foreground": "#a9a9b4" } },
+      { "scope": "string",   "settings": { "foreground": "#ececf2" } },
+      { "scope": "keyword",  "settings": { "foreground": "#ff2034" } },
+      { "scope": "number",   "settings": { "foreground": "#b10f1e" } }
+    ]
+  },
+
+  // Кастомные CSS/JS (градиент сайдбара и правки индикатора — в axiom-custom.css)
+  "vscode_custom_css.imports": [
+    "file:///e:/ENDEAVOR/AXIOM_SYSTEM/.vscode/axiom-custom.css",
+    "file:///e:/ENDEAVOR/AXIOM_SYSTEM/.vscode/inject.js"
+
+
+  ],
+  "vscode_custom_css.policy": true,
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "json.schemas": [
+    {
+      "fileMatch": ["/.devcontainer/devcontainer.json", "/devcontainer.json"],
+      "url": "./.vscode/schemas/devcontainer.override.schema.json"
+    }
+  ],
+  "dev.containers.defaultUserEnvProbe": "none"
+}
+  
+
