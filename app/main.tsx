@@ -1,9 +1,10 @@
-﻿import React from 'react'
+import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 
-import '@styles/tokens.css'
-import '@styles/app.css'
+import '../ax-design/tokens.css'
+import '../ax-design/components.css'
+import '../styles/app.css'
 
 import Layout from '@/app/routes/_layout'
 import LoginPage from '@/app/routes/login/page'
@@ -65,3 +66,6 @@ function mount() {
 }
 
 mount()
+
+
+
