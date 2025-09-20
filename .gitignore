@@ -4,3 +4,7 @@ export/
 .vite/
 *.log
 .DS_Store
+.env
+api/
+app/services/
+requirements.txt
