@@ -1,8 +1,15 @@
 /*
  AXIOM — UI Components (RED PROTOCOL)
  File: ax-design/components.css
- Status: v0.2 (2025‑09‑19)
+ Version: v0.5 (2025‑09‑20)
+ Status: STABLE • additive update (compatible with v0.2)
  Requires: ax-design/tokens.css
+
+ Changelog v0.5:
+ - Added full LOGIN LAYOUT block (web parity with desktop UI)
+ - Fixed invalid token reference (--ax-bad → --ax-danger)
+ - Strengthened focus rings and error states; compacted densities
+ - Kept all existing class names to avoid breaking changes
 */
 
 /* ============================
@@ -19,9 +26,10 @@
    .ax-card { position: relative; padding: var(--card-p); border-radius: var(--card-radius); background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.005)), var(--ax-surface-2); border: 1px solid var(--ax-border); box-shadow: var(--ax-shadow-mid); color: var(--ax-text); }
    .ax-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(255,32,52,.10), inset 0 0 24px rgba(255,32,52,.05); }
    .ax-card[data-noise="on"]::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: .22; mix-blend-mode: overlay; background: repeating-linear-gradient(0deg, transparent 0 2px, var(--noise-alpha) 2px 3px), repeating-linear-gradient(90deg, transparent 0 2px, var(--noise-alpha) 2px 3px); }
-   .ax-card:focus-within { box-shadow: var(--ax-shadow-mid), 0 0 0 2px rgba(255,32,52,.4); }
+   .ax-card:focus-within { box-shadow: var(--ax-shadow-mid), var(--ax-shadow-focus); }
    .ax-card.low { padding: var(--space-4); box-shadow: var(--ax-shadow-low); }
    .ax-card.ghost { background: linear-gradient(180deg, rgba(255,255,255,.01), rgba(255,255,255,.002)), var(--ax-surface-0); border-color: var(--ax-border); }
+   .ax-card.is-error { border-color: color-mix(in srgb, var(--ax-danger) 40%, var(--ax-border)); box-shadow: var(--ax-shadow-mid), 0 0 0 1px color-mix(in srgb, var(--ax-danger) 45%, transparent) inset, 0 0 24px var(--ax-red-a12) inset; }
    
    /* ============================
       3) Blade Headings & Dividers
@@ -75,7 +83,7 @@
    .ax-input { display: inline-flex; width: 100%; min-height: var(--input-h); padding-inline: var(--input-px); border-radius: var(--input-radius); border: 1px solid var(--ax-border-strong); background: linear-gradient(180deg, var(--ax-surface-1), var(--ax-surface-2)); color: var(--ax-text); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); font-size: var(--fs-14); }
    .ax-input::placeholder { color: var(--ax-muted); }
    .ax-input:focus { outline: none; box-shadow: 0 0 0 2px rgba(255,32,52,.4), inset 0 1px 0 rgba(255,255,255,.06); border-color: rgba(255,32,52,.35); }
-   .ax-input[aria-invalid="true"], .ax-input.is-invalid { border-color: var(--ax-bad); animation: ax-shake .24s var(--ease-ax2); }
+   .ax-input[aria-invalid="true"], .ax-input.is-invalid { border-color: var(--ax-danger); box-shadow: 0 0 0 1px color-mix(in srgb, var(--ax-danger) 55%, transparent), inset 0 1px 0 rgba(255,255,255,.06); }
    
    /* ============================
       7) Tabs (top navigation)
@@ -125,15 +133,14 @@
    .ax-card.cat .cat-ico svg { width: 100%; height: 100%; stroke: currentColor; fill: none; }
    .ax-card.cat .cat-title { font: 700 var(--fs-14)/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: #ffd7dc; margin-bottom: 8px; }
    .ax-card.cat .cat-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-
+   
    /* Content filters */
    .ax-content-filters { display: grid; gap: var(--gutter); margin-bottom: var(--section-vspace); }
    .ax-filter-row { display: flex; gap: var(--gutter); align-items: stretch; flex-wrap: wrap; }
    .ax-filter-row .ax-input { min-width: 180px; flex: 1 1 200px; }
    .ax-filter-actions { display: inline-flex; gap: var(--space-2); flex-wrap: wrap; }
    .ax-filter-actions .ax-btn { min-height: calc(32px * var(--ax-scale)); padding-inline: calc(12px * var(--ax-scale)); font-size: var(--fs-12); letter-spacing: .08em; text-transform: uppercase; }
-
-
+   
    /* News ticker */
    .ax-ticker-strip { position: relative; display: flex; align-items: center; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
    .ax-ticker-track { display: flex; align-items: center; gap: var(--space-2); min-width: max-content; animation: ax-ticker-scroll var(--ticker-speed, 38s) linear infinite; will-change: transform; }
@@ -144,21 +151,19 @@
    .ax-ticker__divider { font-family: var(--font-mono); opacity: .6; }
    .ax-ticker__title { font-family: var(--font-display); letter-spacing: .08em; }
    @keyframes ax-ticker-scroll { to { transform: translateX(-50%); } }
-   @media (prefers-reduced-motion: reduce) {
-     .ax-ticker-track { animation: none !important; transform: translate3d(0, 0, 0) !important; }
-   }
-
+   @media (prefers-reduced-motion: reduce) { .ax-ticker-track { animation: none !important; transform: translate3d(0, 0, 0) !important; } }
+   
    /* Layout helpers for module pages */
    .ax-two-col { display: grid; grid-template-columns: 360px 1fr; gap: var(--gutter); align-items: start; }
    @media (max-width: 1100px) { .ax-two-col { grid-template-columns: 1fr; } }
-
+   
    .ax-viewport { height: 72vh; min-height: 520px; }
-
+   
    .ax-scroll-thin { scrollbar-width: thin; }
    .ax-scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
    .ax-scroll-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,.16); border-radius: 8px; }
    .ax-scroll-thin::-webkit-scrollbar-track { background: transparent; }
-
+   
    .ax-card.cat.active { box-shadow: var(--ax-glow-accent); }
    .ax-card.cat:focus-visible { outline: 2px solid rgba(255,32,52,.6); outline-offset: 3px; }
    .ax-card.cat .cat-empty { margin-top: 12px; color: var(--ax-muted); font-size: var(--fs-12); letter-spacing: .06em; text-transform: uppercase; }
@@ -175,7 +180,7 @@
    .ax-news-card__tags { display: flex; gap: var(--space-2); flex-wrap: wrap; }
    .ax-news-card__summary { margin: 0; color: var(--ax-muted); font-size: var(--fs-14); }
    .ax-news-card__actions { display: flex; justify-content: flex-end; }
-
+   
    /* Preview pane */
    .ax-preview { position: relative; display: grid; gap: var(--space-2); }
    .ax-preview__controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); justify-content: flex-end; }
@@ -199,4 +204,35 @@
    .ax-preview::after { display: none; }
    .ax-input:focus-visible { outline: 2px solid rgba(255,32,52,.7); outline-offset: 2px; }
    .ax-tab:focus-visible { outline: 2px solid rgba(255,32,52,.7); outline-offset: 2px; border-radius: var(--r-lg); }
-   a:focus-visible { outline: 2px solid rgba(255,32,52,.7); outline-offset: 2px; }
+   .a:focus-visible, a:focus-visible { outline: 2px solid rgba(255,32,52,.7); outline-offset: 2px; }
+   
+   /* ============================
+      11) LOGIN LAYOUT (Web parity)
+      ============================ */
+   .ax-login { min-height: 100dvh; display: grid; place-items: center; background: var(--ax-login-grad); padding: var(--space-6); }
+   .ax-login-card { width: min(92vw, 520px); border-radius: var(--r-2xl); border: 2px solid var(--ax-red); background: radial-gradient(1200px 600px at 80% 100%, #17060a 0%, transparent 55%), linear-gradient(180deg, #111015 0%, #0c0b0f 100%), var(--ax-ink); box-shadow: 0 0 40px var(--ax-login-glow), 0 4px 52px #12070b99 inset; }
+   .ax-login-emblem { display: grid; place-items: center; margin-top: var(--space-2); filter: drop-shadow(0 0 22px rgba(255,32,52,.22)); }
+   .ax-login-sub { margin: 2px 0 14px; text-align: center; color: #d9d9e2; letter-spacing: .06em; font-size: var(--fs-12); text-transform: uppercase; }
+   .ax-login-meta { display: flex; gap: var(--space-2); align-items: center; justify-content: center; margin-bottom: var(--space-3); flex-wrap: wrap; }
+   .ax-login-hint { margin-top: 2px; color: #ffd7dc; font-size: var(--fs-12); letter-spacing: .06em; text-transform: uppercase; }
+   .ax-login-error { margin-top: 6px; color: #ff98a1; font-size: var(--fs-12); letter-spacing: .04em; }
+   .ax-login-actions { justify-content: space-between; }
+   .ax-login-foot { margin-top: 10px; display: block; text-align: center; font-size: var(--fs-12); color: #ff7a85aa; letter-spacing: .09em; }
+   
+   /* Seal + orbits */
+   .ax-seal { animation: ax-rot 9s linear infinite; }
+   .ax-seal__orbit { animation: ax-rot 5.5s linear infinite; transform-origin: 50% 50%; }
+   .ax-seal__blade { animation: ax-rot 3.2s linear infinite; transform-origin: 50% 50%; }
+   @keyframes ax-rot { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+   
+   /* Shake on error (applied to card) */
+   .is-shake { animation: ax-shake .36s cubic-bezier(.36,.07,.19,.97) both; }
+   
+   /* Edge polish */
+   .ax-login input::-ms-reveal { filter: invert(1); }
+   
+   /* Motion respect */
+   @media (prefers-reduced-motion: reduce) {
+     .ax-seal, .ax-seal__orbit, .ax-seal__blade, .is-shake { animation: none !important; }
+   }
+   

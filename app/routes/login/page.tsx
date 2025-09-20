@@ -1,10 +1,24 @@
-// AXIOM_DEMO_UI - WEB CORE
+// AXIOM_DEMO_UI — WEB CORE
 // Canvas: C11 - app/routes/login/page.tsx
-// Purpose: Red Protocol login with animated emblem and dual mode (login/register).
+// Purpose: RED PROTOCOL login with emblem, dual-mode (login/register),
+// compact a11y-first form, shake-on-error, reduced-motion support.
+// Deps: react, react-router-dom, '@/lib/auth' (hash/verify/load/save)
 
-import React, { useCallback, useMemo, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useState,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
-import { hashPassword, verifyPassword, loadUsers, saveUser, type AuthUser } from '@/lib/auth'
+import {
+  hashPassword,
+  verifyPassword,
+  loadUsers,
+  saveUser,
+  type AuthUser,
+} from '@/lib/auth'
 
 type Mode = 'login' | 'register'
 
@@ -18,13 +32,78 @@ const SUBTITLES: Record<Mode, string> = {
   register: 'PROVISION ACCESS KEY',
 }
 
+function SealDisk({ size = 84 }: { size?: number }) {
+  const s = size
+  return (
+    <svg
+      width={s}
+      height={s}
+      viewBox="0 0 88 88"
+      className="ax-seal"
+      aria-hidden
+    >
+      <defs>
+        <radialGradient id="axAura" cx="0.5" cy="0.5" r="0.55">
+          <stop offset="0%" stopColor="#ffede8" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="var(--ax-red)" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="axRing" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="var(--ax-red)" />
+          <stop offset="100%" stopColor="var(--ax-red-2)" />
+        </linearGradient>
+        <linearGradient id="axBlade" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#fff6f4" stopOpacity="0.95" />
+          <stop offset="58%" stopColor="#ff4a54" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#5a0a12" stopOpacity="0.9" />
+        </linearGradient>
+      </defs>
+      <circle
+        cx="44"
+        cy="44"
+        r="40"
+        fill="url(#axAura)"
+        stroke="url(#axRing)"
+        strokeWidth="2"
+      />
+      <g className="ax-seal__orbit">
+        <ellipse
+          cx="44"
+          cy="44"
+          rx="29"
+          ry="10"
+          fill="none"
+          stroke="#ff6b75"
+          strokeWidth="1"
+          opacity="0.36"
+        />
+      </g>
+      <g className="ax-seal__blade">
+        <path d="M44 16 L54 44 L44 72 L34 44 Z" fill="url(#axBlade)" />
+      </g>
+      <circle cx="44" cy="44" r="10" fill="var(--ax-red)" opacity="0.24" />
+      <circle cx="44" cy="44" r="4" fill="#fff2f2" opacity="0.96" />
+    </svg>
+  )
+}
+
+function safeSetAuth(payload: unknown) {
+  try {
+    localStorage.setItem('axiom.auth', JSON.stringify(payload))
+  } catch {
+    /* ignore storage errors gracefully */
+  }
+}
+
 export default function LoginPage() {
   const nav = useNavigate()
+
   const [mode, setMode] = useState<Mode>('login')
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
+  const [caps, setCaps] = useState(false)
+  const [shake, setShake] = useState(false)
 
   const title = useMemo(() => TITLES[mode], [mode])
   const subtitle = useMemo(() => SUBTITLES[mode], [mode])
@@ -32,10 +111,31 @@ export default function LoginPage() {
   const chipVariant = mode === 'login' ? 'online' : 'info'
   const hasError = Boolean(err)
 
+  const idUser = useId()
+  const idKey = useId()
+  const idErr = useId()
+  const idCaps = useId()
+
+  useEffect(() => {
+    if (!err) return
+    setShake(true)
+    const t = setTimeout(() => setShake(false), 420)
+    return () => clearTimeout(t)
+  }, [err])
+
   const handleToggleMode = useCallback(() => {
     setMode((prev) => (prev === 'login' ? 'register' : 'login'))
     setErr(null)
     setPassword('')
+  }, [])
+
+  const handleCaps = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    // CapsLock hint (best-effort)
+    // getModifierState exists in modern browsers; guard for safety
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const on = typeof e.getModifierState === 'function' && e.getModifierState('CapsLock')
+    setCaps(Boolean(on))
   }, [])
 
   const handleSubmit = useCallback(
@@ -44,21 +144,33 @@ export default function LoginPage() {
       if (busy) return
       setBusy(true)
       setErr(null)
+      const user = login.trim()
+      const key = password
+
       try {
+        if (!user || !key) {
+          throw new Error('Fill both fields')
+        }
+
         if (mode === 'register') {
-          const exists = (await loadUsers()).find((u) => u.login === login)
+          const exists = (await loadUsers()).find((u) => u.login === user)
           if (exists) throw new Error('User already exists')
-          const hashed = await hashPassword(password)
-          const user: AuthUser = { login, password: hashed, createdAt: new Date().toISOString() }
-          await saveUser(user)
+          const hashed = await hashPassword(key)
+          const newUser: AuthUser = {
+            login: user,
+            password: hashed,
+            createdAt: new Date().toISOString(),
+          }
+          await saveUser(newUser)
         } else {
           const users = await loadUsers()
-          const user = users.find((u) => u.login === login)
-          if (!user) throw new Error('Invalid credentials')
-          const ok = await verifyPassword(password, user.password)
+          const found = users.find((u) => u.login === user)
+          if (!found) throw new Error('Invalid credentials')
+          const ok = await verifyPassword(key, found.password)
           if (!ok) throw new Error('Invalid credentials')
         }
-        localStorage.setItem('axiom.auth', JSON.stringify({ login, ts: Date.now() }))
+
+        safeSetAuth({ login: user, ts: Date.now() })
         nav('/dashboard', { replace: true })
       } catch (error: any) {
         const message = (error && error.message) || 'Unable to authenticate'
@@ -72,70 +184,103 @@ export default function LoginPage() {
 
   const cardClasses = ['ax-card', 'low', 'ax-login-card']
   if (hasError) cardClasses.push('is-error')
+  if (shake) cardClasses.push('is-shake')
 
   return (
-    <section className='ax-login ax-section'>
-      <div className='ax-container'>
+    <section className="ax-login ax-section">
+      <div className="ax-container">
         <form
           className={cardClasses.join(' ')}
           onSubmit={handleSubmit}
           aria-busy={busy}
-          aria-labelledby='login-title'
-          aria-describedby={hasError ? 'login-error' : undefined}
+          aria-labelledby="login-title"
+          aria-describedby={
+            hasError ? idErr : caps ? idCaps : undefined
+          }
+          noValidate
         >
-          <h1 id='login-title' className='ax-blade-head'>
+          <div className="ax-login-emblem" aria-hidden="true">
+            <SealDisk />
+          </div>
+
+          <h1 id="login-title" className="ax-blade-head">
             {title}
           </h1>
-          <p className='ax-login-sub'>{subtitle}</p>
-          <div className='ax-login-meta'>
-            <span className='ax-chip' data-variant={chipVariant}>
+          <p className="ax-login-sub">{subtitle}</p>
+
+          <div className="ax-login-meta">
+            <span className="ax-chip" data-variant={chipVariant}>
               {chipLabel}
             </span>
-            <span className='ax-chip' data-variant='level'>RED PROTOCOL</span>
+            <span className="ax-chip" data-variant="level">
+              RED PROTOCOL
+            </span>
           </div>
-          <div aria-hidden='true' className='ax-login-emblem' />
-          <label className='ax-visually-hidden' htmlFor='login'>User ID</label>
+
+          <label className="ax-visually-hidden" htmlFor={idUser}>
+            User ID
+          </label>
           <input
-            id='login'
+            id={idUser}
             className={`ax-input${hasError ? ' is-invalid' : ''}`}
-            name='user'
-            placeholder='USER ID'
+            name="user"
+            placeholder="USER ID"
             value={login}
-            onChange={(event) => setLogin(event.target.value)}
-            autoComplete='username'
+            onChange={(e) => setLogin(e.target.value)}
+            autoComplete="username"
             required
             aria-invalid={hasError ? 'true' : undefined}
             disabled={busy}
           />
-          <label className='ax-visually-hidden' htmlFor='key'>Access Key</label>
+
+          <label className="ax-visually-hidden" htmlFor={idKey}>
+            Access Key
+          </label>
           <input
-            id='key'
+            id={idKey}
             className={`ax-input${hasError ? ' is-invalid' : ''}`}
-            name='key'
-            placeholder='ACCESS KEY'
-            type='password'
+            name="key"
+            placeholder="ACCESS KEY"
+            type="password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyUp={handleCaps}
             autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             required
             aria-invalid={hasError ? 'true' : undefined}
             disabled={busy}
           />
+
+          {caps && !hasError && (
+            <div id={idCaps} className="ax-login-hint" role="status" aria-live="polite">
+              Caps Lock is ON
+            </div>
+          )}
+
           {err && (
-            <div id='login-error' role='alert' aria-live='assertive' className='ax-login-error'>
+            <div id={idErr} role="alert" aria-live="assertive" className="ax-login-error">
               {err}
             </div>
           )}
-          <div className='ax-row ax-login-actions'>
-            <button type='button' className='ax-btn ghost' onClick={handleToggleMode} disabled={busy}>
+
+          <div className="ax-row ax-login-actions">
+            <button
+              type="button"
+              className="ax-btn ghost"
+              onClick={handleToggleMode}
+              disabled={busy}
+            >
               {mode === 'login' ? 'REQUEST ACCESS' : 'BACK TO LOGIN'}
             </button>
-            <button type='submit' className='ax-btn primary' disabled={busy}>
-              {mode === 'login' ? 'ENTRANCE' : 'REGISTER'}
+            <button type="submit" className="ax-btn primary" disabled={busy}>
+              {busy ? 'CHECKING…' : mode === 'login' ? 'ENTRANCE' : 'REGISTER'}
             </button>
           </div>
-          <div className='ax-hr-blade' aria-hidden='true' />
-          <small className='ax-login-foot'>AXIOM DESIGN (C) 2025 - RED PROTOCOL</small>
+
+          <div className="ax-hr-blade" aria-hidden="true" />
+          <small className="ax-login-foot">
+            AXIOM DESIGN © 2025 • RED PROTOCOL
+          </small>
         </form>
       </div>
     </section>

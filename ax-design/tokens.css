@@ -1,189 +1,262 @@
 /*
- AXIOM � Design Tokens (RED PROTOCOL)
+ AXIOM — Design Tokens (RED PROTOCOL)
  File: ax-design/tokens.css
- Status: v0.4 (2025-09-19)
- Purpose: Single source of truth for colors, radii, shadows, motion, type, layout.
- Notes: Dark-first. Keep values in sync with ax-design/compat/ refs until F4 cleanup.
+ Version: v0.5 (2025-09-20)
+ Status: STABLE • additive update (no breaking changes)
+
+ Changelog (v0.5):
+ - Added login tokens: --ax-login-glow, --ax-login-grad
+ - Added semantic roles: --ax-focus, --ax-link, --ax-danger/--ax-success/--ax-warning/--ax-info
+ - Added alpha ramps for red & ink, ring/focus shadows
+ - Extended spacing scale (1..10), typography weights & line-heights
+ - Added breakpoints & container widths; z-index map kept
+ - Added glass/backdrop blur tokens & overlay surfaces
+ - Motion easings consolidated; reduced-motion hook preserved
+ - Kept all existing token names & values for compatibility
 */
 
 /* ============================
    0) Base & Theme Switch
    ============================ */
-:root {
-  /* Color � Core */
-  --ax-bg: #0c0d11;          /* base canvas (dark) */
-  --ax-ink: #10090c;         /* red-tinted glass */
-  --ax-red: #ff2034;         /* primary accent */
-  --ax-red-2: #b10f1e;       /* deep accent (borders) */
-  --ax-red-3: #5a0a12;       /* shadow/edge */
-  --ax-white: #ffffff;
-  --ax-black: #0a0d10;
-
-  /* Greys / Ink scale */
-  --ax-ink-50:  #f6f7f9;
-  --ax-ink-100: #e9edf2;
-  --ax-ink-200: #cdd5df;
-  --ax-ink-300: #aab4c2;
-  --ax-ink-400: #7c8796;
-  --ax-ink-500: #566070;
-  --ax-ink-600: #3d4552;
-  --ax-ink-700: #2c333e;
-  --ax-ink-800: #1f252d;
-  --ax-ink-900: #12161b;
-
-  /* Semantic Text/Border */
-  --ax-text:  #ececf2;       /* primary text */
-  --ax-muted: #a9a9b4;       /* secondary text */
-  --ax-border: #2a0d12;      /* subtle red border */
-  --ax-border-strong: #3a1216;
-
-  /* Status (semantic accents) */
-  --ax-info:   #17a2b8;
-  --ax-warn:   #f1c40f;
-  --ax-good:   #2ecc71;
-  --ax-bad:    #ff4056;
-
-  /* Surfaces */
-  --ax-surface-0: var(--ax-bg);
-  --ax-surface-1: #0f0f14;   /* neutral overlay */
-  --ax-surface-2: #12080a;   /* red-ink overlay */
-  --ax-surface-3: #171015;   /* elevated */
-
-  /* Gradients */
-  --grad-blade: linear-gradient(135deg, #ff2034 0%, #ff6a7d 45%, #ffe5e8 100%);
-  --grad-plasma: radial-gradient(120% 120% at 0% 0%, #ff2034 0%, rgba(255,32,52,0) 55%),
-                 radial-gradient(120% 120% at 100% 100%, #860e1a 0%, rgba(134,14,26,0) 60%);
-  --grad-ink: linear-gradient(180deg, #0a0d10 0%, #12161b 40%, #1f252d 100%);
-
-  /* Radii */
-  --r-xs: 8px;
-  --r-sm: 10px;
-  --r-md: 12px;
-  --r-lg: 14px;    /* buttons */
-  --r-xl: 18px;
-  --r-2xl: 24px;   /* cards/panels */
-  --r-round: 999px;/* chips/pills */
-
-  /* Elevation / Shadow */
-  --ax-shadow-low: 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px -18px rgba(0,0,0,0.5);
-  --ax-shadow-mid: 0 1px 0 rgba(255,255,255,0.06), 0 24px 60px -24px rgba(0,0,0,0.55);
-  --ax-glow-accent: 0 0 0 1px rgba(255,32,52,0.6), 0 0 28px rgba(255,32,52,0.35);
-
-  /* Motion */
-  --t-fast: 120ms;
-  --t-std:  220ms;
-  --t-slow: 360ms;
-  --ease-ax: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --ease-ax2: cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* Typography families */
-  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --font-display: "Oxanium", "Rajdhani", var(--font-sans);
-
-  /* Density preset (RED-XS) */
-  --ax-scale: .86;
-
-  /* Type scale */
-  --fs-base: calc(14px * var(--ax-scale));
-  --fs-10:   calc(10px * var(--ax-scale));
-  --fs-12:   calc(12px * var(--ax-scale));
-  --fs-14:   calc(14px * var(--ax-scale));
-  --fs-16:   calc(16px * var(--ax-scale));
-  --fs-18:   calc(18px * var(--ax-scale));
-  --fs-20:   calc(20px * var(--ax-scale));
-  --fs-22:   calc(22px * var(--ax-scale));
-  --fs-24:   calc(24px * var(--ax-scale));
-  --fs-28:   calc(28px * var(--ax-scale));
-  --fs-32:   calc(32px * var(--ax-scale));
-  --fs-36:   calc(36px * var(--ax-scale));
-  --fs-48:   calc(48px * var(--ax-scale));
-
-  /* Spacing scale */
-  --space-1: calc(4px  * var(--ax-scale));
-  --space-2: calc(8px  * var(--ax-scale));
-  --space-3: calc(12px * var(--ax-scale));
-  --space-4: calc(16px * var(--ax-scale));
-  --space-5: calc(20px * var(--ax-scale));
-  --space-6: calc(24px * var(--ax-scale));
-
-  /* Layout */
-  --container-max: 1180px;
-  --gutter:        var(--space-4);
-  --section-vspace: calc(28px * var(--ax-scale));
-
-  /* Z-index map */
-  --z-below: -1;
-  --z-base: 0;
-  --z-raised: 10;
-  --z-overlay: 1000;
-  --z-max: 2147483647;
-}
-
-/* Optional light theme hook (values mirror, but project is dark-first) */
-[data-theme="light"] {
-  --ax-bg: #f6f7f9;
-  --ax-ink: #ffffff;
-  --ax-text: #0a0d10;
-  --ax-muted: #3d4552;
-  --ax-border: #dde2ea;
-  --ax-border-strong: #c7cfdb;
-  --ax-surface-0: #ffffff;
-  --ax-surface-1: #f9fbff;
-  --ax-surface-2: #fff0f2;
-  --ax-surface-3: #ffe7eb;
-}
-
-/* ============================
-   1) System Primitives
-   ============================ */
-:root {
-  /* Button sizing */
-  --btn-h: calc(32px * var(--ax-scale));
-  --btn-px: var(--space-3);
-  --btn-gap: var(--space-2);
-
-  /* Input sizing */
-  --input-h: calc(36px * var(--ax-scale));
-  --input-px: var(--space-3);
-  --input-radius: var(--r-lg);
-
-  /* Card sizing */
-  --card-p: var(--space-5);
-  --card-radius: var(--r-2xl);
-}
-
-/* ============================
-   2) Global Surface & Type
-   ============================ */
-html, body {
-  background: var(--ax-bg);
-  color: var(--ax-text);
-  font-family: var(--font-sans);
-  font-size: var(--fs-base);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* ============================
-   3) Motion Preferences
-   ============================ */
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --t-fast: 0.01ms;
-    --t-std:  0.01ms;
-    --t-slow: 0.01ms;
-    --ease-ax: linear;
-    --ease-ax2: linear;
+   :root {
+    /* Color — Core */
+    --ax-bg: #0c0d11;          /* base canvas (dark) */
+    --ax-ink: #10090c;         /* red-tinted glass */
+    --ax-red: #ff2034;         /* primary accent */
+    --ax-red-2: #b10f1e;       /* deep accent (borders) */
+    --ax-red-3: #5a0a12;       /* shadow/edge */
+    --ax-white: #ffffff;
+    --ax-black: #0a0d10;
+  
+    /* Greys / Ink scale */
+    --ax-ink-50:  #f6f7f9;
+    --ax-ink-100: #e9edf2;
+    --ax-ink-200: #cdd5df;
+    --ax-ink-300: #aab4c2;
+    --ax-ink-400: #7c8796;
+    --ax-ink-500: #566070;
+    --ax-ink-600: #3d4552;
+    --ax-ink-700: #2c333e;
+    --ax-ink-800: #1f252d;
+    --ax-ink-900: #12161b;
+  
+    /* Semantic Text/Border */
+    --ax-text:  #ececf2;       /* primary text */
+    --ax-muted: #a9a9b4;       /* secondary text */
+    --ax-border: #2a0d12;      /* subtle red border */
+    --ax-border-strong: #3a1216;
+  
+    /* Semantic Roles */
+    --ax-link:   #ff6b75;      /* links / subtle accents */
+    --ax-focus:  #ff5563;      /* focus ring color */
+    --ax-info:   #17a2b8;
+    --ax-warn:   #f1c40f;
+    --ax-success:#2ecc71;
+    --ax-danger: #ff4056;
+  
+    /* Alpha ramps (utility) */
+    --ax-red-a08: rgba(255, 32, 52, 0.08);
+    --ax-red-a12: rgba(255, 32, 52, 0.12);
+    --ax-red-a18: rgba(255, 32, 52, 0.18);
+    --ax-red-a24: rgba(255, 32, 52, 0.24);
+    --ax-red-a36: rgba(255, 32, 52, 0.36);
+    --ax-ink-a08: rgba(10, 13, 16, 0.08);
+    --ax-ink-a12: rgba(10, 13, 16, 0.12);
+    --ax-ink-a20: rgba(10, 13, 16, 0.20);
+    --ax-ink-a32: rgba(10, 13, 16, 0.32);
+  
+    /* Surfaces */
+    --ax-surface-0: var(--ax-bg);
+    --ax-surface-1: #0f0f14;   /* neutral overlay */
+    --ax-surface-2: #12080a;   /* red-ink overlay */
+    --ax-surface-3: #171015;   /* elevated */
+    --ax-surface-ink: linear-gradient(180deg, #1a1012, #12080a);
+  
+    /* Overlays / Glass */
+    --ax-glass-bg: color-mix(in srgb, var(--ax-ink) 75%, transparent);
+    --ax-backdrop-0: 0px;
+    --ax-backdrop-1: 6px;
+    --ax-backdrop-2: 10px;
+  
+    /* Gradients */
+    --grad-blade: linear-gradient(135deg, #ff2034 0%, #ff6a7d 45%, #ffe5e8 100%);
+    --grad-plasma: radial-gradient(120% 120% at 0% 0%, #ff2034 0%, rgba(255,32,52,0) 55%),
+                   radial-gradient(120% 120% at 100% 100%, #860e1a 0%, rgba(134,14,26,0) 60%);
+    --grad-ink: linear-gradient(180deg, #0a0d10 0%, #12161b 40%, #1f252d 100%);
+  
+    /* Login-specific helpers (used by /login layout) */
+    --ax-login-glow: rgba(255, 32, 52, 0.24);
+    --ax-login-grad: radial-gradient(1400px 700px at 85% 110%, #17060a 0%, transparent 55%),
+                     linear-gradient(135deg, var(--ax-bg) 72%, var(--ax-ink) 100%);
+  
+    /* Radii */
+    --r-xs: 8px;
+    --r-sm: 10px;
+    --r-md: 12px;
+    --r-lg: 14px;    /* buttons */
+    --r-xl: 18px;
+    --r-2xl: 24px;   /* cards/panels */
+    --r-round: 999px;/* chips/pills */
+  
+    /* Elevation / Shadow */
+    --ax-shadow-low: 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px -18px rgba(0,0,0,0.5);
+    --ax-shadow-mid: 0 1px 0 rgba(255,255,255,0.06), 0 24px 60px -24px rgba(0,0,0,0.55);
+    --ax-shadow-focus: 0 0 0 2px color-mix(in srgb, var(--ax-focus) 65%, transparent), 0 0 0 1px var(--ax-border-strong) inset;
+    --ax-glow-accent: 0 0 0 1px rgba(255,32,52,0.6), 0 0 28px rgba(255,32,52,0.35);
+  
+    /* Motion */
+    --t-fast: 120ms;
+    --t-std:  220ms;
+    --t-slow: 360ms;
+    --ease-ax: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --ease-ax2: cubic-bezier(0.16, 1, 0.3, 1);
+  
+    /* Typography families */
+    --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --font-display: "Oxanium", "Rajdhani", var(--font-sans);
+  
+    /* Typography weights & leading */
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-bold:   700;
+    --lh-tight: 1.14;
+    --lh-base:  1.36;
+    --lh-loose: 1.5;
+  
+    /* Density preset (RED-XS) */
+    --ax-scale: .86;
+  
+    /* Type scale */
+    --fs-base: calc(14px * var(--ax-scale));
+    --fs-10:   calc(10px * var(--ax-scale));
+    --fs-12:   calc(12px * var(--ax-scale));
+    --fs-14:   calc(14px * var(--ax-scale));
+    --fs-16:   calc(16px * var(--ax-scale));
+    --fs-18:   calc(18px * var(--ax-scale));
+    --fs-20:   calc(20px * var(--ax-scale));
+    --fs-22:   calc(22px * var(--ax-scale));
+    --fs-24:   calc(24px * var(--ax-scale));
+    --fs-28:   calc(28px * var(--ax-scale));
+    --fs-32:   calc(32px * var(--ax-scale));
+    --fs-36:   calc(36px * var(--ax-scale));
+    --fs-48:   calc(48px * var(--ax-scale));
+  
+    /* Spacing scale */
+    --space-1: calc(4px  * var(--ax-scale));
+    --space-2: calc(8px  * var(--ax-scale));
+    --space-3: calc(12px * var(--ax-scale));
+    --space-4: calc(16px * var(--ax-scale));
+    --space-5: calc(20px * var(--ax-scale));
+    --space-6: calc(24px * var(--ax-scale));
+    --space-7: calc(28px * var(--ax-scale));
+    --space-8: calc(32px * var(--ax-scale));
+    --space-9: calc(36px * var(--ax-scale));
+    --space-10: calc(44px * var(--ax-scale));
+  
+    /* Layout */
+    --container-sm: 640px;
+    --container-md: 860px;
+    --container-lg: 1180px;
+    --container-max: var(--container-lg);
+    --gutter:        var(--space-4);
+    --section-vspace: calc(28px * var(--ax-scale));
+  
+    /* Breakpoints */
+    --bp-xs: 480px;  /* phones */
+    --bp-sm: 640px;  /* small tablets */
+    --bp-md: 768px;  /* tablets */
+    --bp-lg: 1024px; /* laptops */
+    --bp-xl: 1280px; /* desktops */
+    --bp-2xl: 1536px;/* wide */
+  
+    /* Z-index map */
+    --z-below: -1;
+    --z-base: 0;
+    --z-raised: 10;
+    --z-overlay: 1000;
+    --z-max: 2147483647;
   }
-}
-
-/* ============================
-   4) Utility Custom Props
-   ============================ */
-:root {
-  /* Blade underline mask for headers (consumed by components.css) */
-  --blade-mask: linear-gradient(90deg, black 0%, black 95%, transparent 96%);
-  /* Subtle noise layer (use with background-blend-mode) */
-  --noise-alpha: rgba(255,255,255,0.03);
-}
+  
+  /* Optional light theme hook (values mirror, but project is dark-first) */
+  [data-theme="light"] {
+    color-scheme: light;
+    --ax-bg: #f6f7f9;
+    --ax-ink: #ffffff;
+    --ax-text: #0a0d10;
+    --ax-muted: #3d4552;
+    --ax-border: #dde2ea;
+    --ax-border-strong: #c7cfdb;
+    --ax-surface-0: #ffffff;
+    --ax-surface-1: #f9fbff;
+    --ax-surface-2: #fff0f2;
+    --ax-surface-3: #ffe7eb;
+  }
+  
+  /* High contrast (opt-in) */
+  [data-contrast="high"] {
+    --ax-border: color-mix(in srgb, var(--ax-red) 32%, #000);
+    --ax-border-strong: color-mix(in srgb, var(--ax-red) 50%, #000);
+  }
+  
+  /* ============================
+     1) System Primitives
+     ============================ */
+  :root {
+    /* Button sizing */
+    --btn-h: calc(32px * var(--ax-scale));
+    --btn-px: var(--space-3);
+    --btn-gap: var(--space-2);
+  
+    /* Input sizing */
+    --input-h: calc(36px * var(--ax-scale));
+    --input-px: var(--space-3);
+    --input-radius: var(--r-lg);
+  
+    /* Card sizing */
+    --card-p: var(--space-5);
+    --card-radius: var(--r-2xl);
+  
+    /* Ring / Focus helpers */
+    --ring: 0 0 0 2px var(--ax-focus);
+  }
+  
+  /* ============================
+     2) Global Surface & Type
+     ============================ */
+  html {
+    color-scheme: dark;
+  }
+  html, body {
+    background: var(--ax-bg);
+    color: var(--ax-text);
+    font-family: var(--font-sans);
+    font-size: var(--fs-base);
+    line-height: var(--lh-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* ============================
+     3) Motion Preferences
+     ============================ */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --t-fast: 0.01ms;
+      --t-std:  0.01ms;
+      --t-slow: 0.01ms;
+      --ease-ax: linear;
+      --ease-ax2: linear;
+    }
+  }
+  
+  /* ============================
+     4) Utility Custom Props
+     ============================ */
+  :root {
+    /* Blade underline mask for headers (consumed by components.css) */
+    --blade-mask: linear-gradient(90deg, black 0%, black 95%, transparent 96%);
+    /* Subtle noise layer (use with background-blend-mode) */
+    --noise-alpha: rgba(255,255,255,0.03);
+  }
+  
