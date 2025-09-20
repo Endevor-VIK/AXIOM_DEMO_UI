@@ -121,7 +121,7 @@ export default function RoadmapPage() {
       )}
 
       <PreviewPane
-        src={previewSrc ?? undefined}
+        src={previewSrc ?? null}
         title='AXIOM Roadmap'
         reloadToken={`${reloadKey}-${selected ?? 'none'}`}
         leadingControls={sourceControls}
