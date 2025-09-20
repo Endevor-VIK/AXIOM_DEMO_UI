@@ -8,6 +8,9 @@ import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { hashPassword, verifyPassword, loadUsers, saveUser, type AuthUser } from "@/lib/auth";
 
+// ⬇️ важно: подключаем фон отдельно
+import "@/styles/login-bg.css";
+
 type Mode = "login" | "register";
 
 const TITLES: Record<Mode, string> = {
@@ -134,7 +137,7 @@ export default function LoginPage() {
 
   return (
     <section className="ax-login ax-section" aria-labelledby="login-title">
-      {/* фон как независимые слои */}
+      {/* independent layered background (edited in styles/login-bg.css) */}
       <div className="ax-login__bg" aria-hidden />
 
       <div className="ax-container">
@@ -143,6 +146,7 @@ export default function LoginPage() {
           <div className="ax-login-head">
             <div className="ax-login-emblem" aria-hidden><SealDisk /></div>
             <h1 id="login-title" className="ax-blade-head">{title}</h1>
+            {/* Viktor blade HR */}
             <div className="ax-hr ax-hr--viktor" aria-hidden />
             <p className="ax-login-sub">{subtitle}</p>
             <div className="ax-login-meta">
@@ -200,7 +204,7 @@ export default function LoginPage() {
         </form>
       </div>
 
-      {/* нижний выезжающий док: watermark + комментарий */}
+      {/* bottom dock (raised from OS taskbar) */}
       <div className="ax-dock" role="complementary" aria-label="Axiom watermark dock">
         <button className="ax-dock__handle" type="button" aria-label="Open watermark panel" />
         <div className="ax-dock__panel">

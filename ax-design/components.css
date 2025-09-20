@@ -57,7 +57,7 @@
    .ax-hr-blade--center::after { right: -8px; transform: translateY(-50%) scaleX(-1) skewX(-24deg); }
    .ax-hr-blade--center.slim { width: 64%; opacity: .8; }
 
-   /* ===== Viktor blade HR (symmetric, with central tip) ===================== */
+   /* ===== Viktor blade HR (симметричный с «жалом») ===================== */
    .ax-hr {
      position: relative;
      height: 2px;
@@ -67,7 +67,6 @@
    .ax-hr--viktor {
      width: clamp(220px, 64%, 620px);
      margin: 6px auto var(--space-2);
-     /* центральное «жало» в самом элементе */
      background:
        radial-gradient(16px 3px at 50% 50%, rgba(255,32,52,.85), transparent 62%),
        linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
@@ -271,6 +270,7 @@
    .ax-login-head { display: grid; justify-items: center; gap: var(--space-2); }
    .ax-stack-sm { display: grid; gap: var(--space-2); }
    .ax-login-fields { margin-top: var(--space-1); }
+   .ax-login-fields .ax-input + .ax-input { margin-top: var(--space-2); }
    .ax-login__bg {
      position: absolute; inset: 0; z-index: 0; pointer-events: none;
    }
@@ -328,9 +328,17 @@
    /* ==== Bottom hover dock (watermark + note) ================================== */
    .ax-dock {
      --dock-h: 64px;
-     position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-overlay);
-     transform: translateY(calc(var(--dock-h) - 10px));
+     position: fixed; left: 0; right: 0;
+     bottom: max(16px, env(safe-area-inset-bottom)); /* подняли выше OS taskbar */
+     z-index: var(--z-overlay);
+     transform: translateY(calc(var(--dock-h) - 12px));
      transition: transform var(--t-std) var(--ease-ax2), box-shadow var(--t-std) var(--ease-ax2);
+   }
+   .ax-dock::before {
+     /* мягкая растушёвка над доком, чтобы не было «пустоты» */
+     content: ""; position: absolute; left: 0; right: 0; bottom: 100%;
+     height: 120px; pointer-events: none;
+     background: linear-gradient(180deg, transparent, rgba(10,10,12,.9));
    }
    .ax-dock:hover,
    .ax-dock:focus-within { transform: translateY(0); }
@@ -344,7 +352,7 @@
      color: #ffd7dc; text-transform: uppercase; letter-spacing: .08em; font-size: var(--fs-12); font-family: var(--font-mono);
    }
    .ax-dock__handle {
-     position: absolute; left: 50%; bottom: calc(var(--dock-h) - 12px); transform: translateX(-50%);
+     position: absolute; left: 50%; bottom: calc(var(--dock-h) - 10px); transform: translateX(-50%);
      width: 86px; height: 8px; border-radius: 999px; border: 1px solid #3a1216;
      background: linear-gradient(90deg, var(--ax-red), var(--ax-red-2)); color: transparent;
      box-shadow: 0 0 16px rgba(255,32,52,.22);
