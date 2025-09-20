@@ -1,14 +1,16 @@
 // AXIOM_DEMO_UI — WEB CORE
 // File: app/routes/login/page.tsx
 
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback, useEffect, useId, useMemo, useRef, useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import {
   hashPassword, verifyPassword, loadUsers, saveUser, type AuthUser,
 } from "@/lib/auth";
 
-import "@/styles/login-bg.css";     // фон
-import "@/styles/login-cyber.css";  // кибер-оверлей
+import "@/styles/login-bg.css";
+import "@/styles/login-cyber.css";
 
 type Mode = "login" | "register";
 
@@ -53,156 +55,126 @@ function SealDisk({ size = 84 }: { size?: number }) {
   );
 }
 
-/* ---------------- CYBER OVERLAY ---------------- */
+/* ---------- упрощённый «терминал» поверх фона ---------- */
 
-function useReducedMotion() {
-  const [pref, setPref] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const set = () => setPref(mq.matches);
-    set();
-    mq.addEventListener?.("change", set);
-    return () => mq.removeEventListener?.("change", set);
-  }, []);
-  return pref;
-}
-
-type ConsolePreset = { title: string; lines: string[] };
-
-const PRESETS: ConsolePreset[] = [
-  {
-    title: "NETSEC://INTRUSION_MONITOR",
-    lines: [
-      "watchdog: integrity_ok",
-      "vault: checksum 0xA1F • sealed",
-      "secmesh: uplink=stable latency=4ms",
-      "ai: hello, operative. keep quiet.",
-    ],
-  },
-  {
-    title: "OPS://TELEMETRY",
-    lines: [
-      "core-temp 43.7°C • fans=quiet",
-      "quantum-slot #2 idle • standby",
-      "logistics: convoy ALFA synced",
-      "ai: i see you. credentials, please.",
-    ],
-  },
-  {
-    title: "BLACKBOX://WHISPER",
-    lines: [
-      "entropy rising • signal: clean",
-      "sentry keys rotated (Δ+1)",
-      "mirror nodes: 6/6 handshake ok",
-      "ai: don't blink.",
-    ],
-  },
+type Preset = { title: string; lines: string[] };
+const PRESETS: Preset[] = [
+  { title: "OPS://AUTH_GATEWAY", lines: [
+    "mesh: uplink ok • latency 5ms",
+    "vault: checksum a1f • sealed",
+    "ai: credentials required.",
+  ]},
+  { title: "NETSEC://WATCHDOG", lines: [
+    "sentry: nodes 6/6 • green",
+    "keys: rotation Δ+1",
+    "ai: i see you, operative.",
+  ]},
 ];
 
-function rand(min: number, max: number) {
-  return Math.floor(min + Math.random() * (max - min + 1));
+function useReducedMotion() {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const mq = matchMedia("(prefers-reduced-motion: reduce)");
+    const upd = () => setOn(mq.matches);
+    upd(); mq.addEventListener?.("change", upd);
+    return () => mq.removeEventListener?.("change", upd);
+  }, []);
+  return on;
 }
 
-function CyberDeckOverlay() {
+function CyberDeckOverlay({ root }: { root: React.RefObject<HTMLElement> }) {
   const reduced = useReducedMotion();
   const [visible, setVisible] = useState(false);
   const [side, setSide] = useState<"left" | "right">("left");
   const [top, setTop] = useState(120);
-  const [preset, setPreset] = useState<ConsolePreset>(PRESETS[0] ?? { title: "", lines: [] });
-  const lineRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const [preset, setPreset] = useState<Preset>(PRESETS[0] ?? { title: "", lines: [] });
+  const [typed, setTyped] = useState<string[]>(["", "", ""]);
+  const typingTimer = useRef<number | null>(null);
+  const cycleTimer = useRef<number | null>(null);
 
-  const typeLine = useCallback(
-    async (el: HTMLSpanElement | null, text: string, speed = 14) => {
-      if (!el) return;
-      el.textContent = "";
-      for (let i = 0; i < text.length; i++) {
-        el.textContent += text[i];
-        await new Promise((r) => setTimeout(r, speed + rand(0, 25)));
+  // печать 3 коротких строк — лёгко и дёшево
+  const startTyping = useCallback(() => {
+    let li = 0, ci = 0;
+    setTyped(["", "", ""]);
+    if (typingTimer.current) { clearInterval(typingTimer.current); typingTimer.current = null; }
+    typingTimer.current = window.setInterval(() => {
+      const line = preset.lines[li] ?? "";
+      setTyped((old) => {
+        const next = [...old];
+        next[li] = line.slice(0, ci + 1);
+        return next;
+      });
+      ci++;
+      if (ci >= line.length) { li++; ci = 0; }
+      if (li >= preset.lines.length) {
+        if (typingTimer.current) { clearInterval(typingTimer.current); typingTimer.current = null; }
       }
-    },
-    []
-  );
+    }, 14);
+  }, [preset]);
 
-  const runTyping = useCallback(async () => {
-    for (let i = 0; i < preset.lines.length; i++) {
-      const span = lineRefs.current[i];
-      if (span) {
-        await typeLine(span, preset.lines[i] ?? "", 10 + rand(0, 12));
-        await new Promise((r) => setTimeout(r, 80 + rand(0, 150)));
-      }
-    }
-  }, [preset, typeLine]);
+  // безопасный короткий глитч: только внутри .ax-login, только для оверлея
+  const runGlitch = useCallback(() => {
+    const host = root.current;
+    if (!host) return;
+    host.classList.add("ax-glitch");
+    window.setTimeout(() => host.classList.remove("ax-glitch"), 180);
+  }, [root]);
 
-  // цикл случайных показов
+  // цикл показов
   useEffect(() => {
-    if (reduced) return; // уважаем reduced motion
-
-    let showTimer: number | undefined;
-    let hideTimer: number | undefined;
-
+    if (reduced) return;
     const schedule = () => {
-      showTimer = window.setTimeout(async () => {
-        const idx = PRESETS.length > 0 ? rand(0, PRESETS.length - 1) : 0;
+      if (document.hidden) {
+        cycleTimer.current = window.setTimeout(schedule, 6000);
+        return;
+      }
+      cycleTimer.current = window.setTimeout(() => {
+        const idx = PRESETS.length > 0 ? Math.floor(Math.random() * PRESETS.length) : 0;
         setPreset(PRESETS[idx] ?? { title: "", lines: [] });
-        setSide(Math.random() > 0.5 ? "left" : "right");
-        setTop(rand(100, 260)); // позиция по высоте
+        setSide(Math.random() > 0.5 ? "right" : "left");
+        setTop(100 + Math.floor(Math.random() * 180));
         setVisible(true);
-
-        document.body.classList.add("ax-glitch");
-        setTimeout(() => document.body.classList.remove("ax-glitch"), 220);
-
-        await new Promise((r) => setTimeout(r, 120));
-        runTyping();
-
-        hideTimer = window.setTimeout(() => {
-          setVisible(false);
-          schedule(); // планируем следующее появление
-        }, rand(4000, 7000));
-      }, rand(6000, 14000)); // пауза между появлениями
+        runGlitch();
+        window.setTimeout(startTyping, 100);
+        window.setTimeout(() => setVisible(false), 4000 + Math.floor(Math.random() * 2000));
+        schedule();
+      }, 9000 + Math.floor(Math.random() * 6000));
     };
-
     schedule();
     return () => {
-      clearTimeout(showTimer);
-      clearTimeout(hideTimer);
+      if (cycleTimer.current) clearTimeout(cycleTimer.current);
+      if (typingTimer.current) clearInterval(typingTimer.current);
+      root.current?.classList.remove("ax-glitch");
     };
-  }, [reduced, runTyping]);
+  }, [reduced, root, runGlitch, startTyping]);
 
   return (
     <div className="ax-cyber" aria-hidden>
       <div
-        className={`ax-console ${visible ? "is-show" : ""}`}
-        style={{ top: `${top}px`, [side]: "24px" } as React.CSSProperties}
+        className={`ax-console is-lite ${visible ? "is-show" : ""}`}
+        style={{ top, [side]: 24 } as React.CSSProperties}
       >
         <div className="ax-console__head">
-          <span className="ax-led ax-led--red" />
-          <span className="ax-led ax-led--green" />
           <span className="ax-console__title">{preset.title}</span>
         </div>
         <div className="ax-console__body">
           <pre className="ax-console__pre">
-            {preset.lines.map((_, i) => (
+            {typed.map((t, i) => (
               <div key={i} className="ax-console__line">
-                <span className="ax-console__prompt">›</span>
-                <span
-                  ref={(el) => (lineRefs.current[i] = el)}
-                  className="ax-console__typed"
-                />
+                <span className="ax-console__prompt">$</span>
+                <span className="ax-console__typed">{t}</span>
                 <span className="ax-console__cursor" />
               </div>
             ))}
           </pre>
         </div>
       </div>
-
-      {/* скан-линии + шум поверх сцены (не трогают карточку) */}
+      {/* лёгкие scanlines; эффекты строго под карточкой */}
       <div className="ax-cyber__scanlines" />
-      <div className="ax-cyber__noise" />
     </div>
   );
 }
-
-/* ---------------- LOGIN PAGE (как было) ---------------- */
+/* ---------- /overlay ---------- */
 
 function safeSetAuth(payload: unknown) {
   try { localStorage.setItem("axiom.auth", JSON.stringify(payload)); } catch {}
@@ -210,6 +182,8 @@ function safeSetAuth(payload: unknown) {
 
 export default function LoginPage() {
   const nav = useNavigate();
+  const rootRef = useRef<HTMLElement>(null);
+
   const [mode, setMode] = useState<Mode>("login");
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -254,13 +228,15 @@ export default function LoginPage() {
     } catch (error: any) { setErr(error?.message || "Unable to authenticate"); } finally { setBusy(false); }
   }, [busy, login, password, mode, nav]);
 
-  const cardClasses = ["ax-card", "low", "ax-login-card"]; if (err) cardClasses.push("is-error"); if (shake) cardClasses.push("is-shake");
+  const cardClasses = ["ax-card", "low", "ax-login-card"];
+  if (err) cardClasses.push("is-error");
+  if (shake) cardClasses.push("is-shake");
 
   return (
-    <section className="ax-login ax-section" aria-labelledby="login-title">
+    <section ref={rootRef} className="ax-login ax-section" aria-labelledby="login-title">
+      {/* фон и кибер-слой строго позади карточки */}
       <div className="ax-login__bg" aria-hidden />
-      {/* ⬇️ КИБЕР-ОВЕРЛЕЙ: живые эффекты вокруг карточки */}
-      <CyberDeckOverlay />
+      <CyberDeckOverlay root={rootRef} />
 
       <div className="ax-container">
         <form className={cardClasses.join(" ")} onSubmit={handleSubmit} aria-busy={busy} noValidate>
