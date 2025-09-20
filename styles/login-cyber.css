@@ -1,0 +1,89 @@
+/* ============================================================================
+   styles/login-cyber.css — CYBER OVERLAY (console + scanlines + glitches)
+   Без зависимостей; все эффекты вне карточки, pointer-events: none.
+   ============================================================================ */
+
+   .ax-cyber{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+
+   /* --- лёгкие scanlines поверх сцены --- */
+   .ax-cyber__scanlines{
+     position:absolute; inset:0; opacity:.12; mix-blend-mode: soft-light;
+     background:
+       repeating-linear-gradient(180deg, rgba(255,255,255,.08) 0 1px, transparent 1px 3px);
+     animation: ax-scanline-shift 6s linear infinite;
+   }
+   @keyframes ax-scanline-shift { to { background-position-y: 100%; } }
+   
+   /* --- зерно/шум --- */
+   .ax-cyber__noise{
+     position:absolute; inset:0; opacity:.05; mix-blend-mode: overlay;
+     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width=\"64\" height=\"64\" viewBox=\"0 0 64 64\"><filter id=\"n\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.9\" numOctaves=\"2\" stitchTiles=\"stitch\"/></filter><rect width=\"64\" height=\"64\" filter=\"url(%23n)\" opacity=\"0.8\"/></svg>');
+     background-size: 220px 220px;
+     animation: ax-noise-move 1.8s steps(6) infinite;
+   }
+   @keyframes ax-noise-move { to { background-position: 100% 100%; } }
+   
+   /* --- глобальный краткий glitch: добавляется на body .ax-glitch --- */
+   .ax-glitch *{
+     text-shadow:
+       0 0 0 rgba(255,255,255,0),
+       0 0 0 rgba(255,0,76,0),
+       0 0 0 rgba(0,128,255,0);
+     animation: ax-glitch-pop .22s steps(2) both;
+   }
+   @keyframes ax-glitch-pop {
+     0% { filter:none; transform:none; }
+     30%{ filter:contrast(1.15) saturate(1.2);
+          text-shadow: 1px 0 rgba(255,0,76,.6), -1px 0 rgba(0,128,255,.6);
+          transform: translate(0.5px,-0.5px) skewX(-0.5deg);}
+     60%{ text-shadow: -1px 0 rgba(255,0,76,.5), 1px 0 rgba(0,128,255,.5);
+          transform: translate(-0.5px,0.5px) skewX(0.5deg);}
+     100%{ filter:none; transform:none; }
+   }
+   
+   /* ------------------ ВСПЛЫВАЮЩАЯ КОНСОЛЬ ------------------ */
+   
+   .ax-console{
+     position:absolute; min-width: 340px; max-width: 520px; pointer-events: none;
+     opacity:0; transform: translateY(8px) scale(.985);
+     transition: opacity .22s ease, transform .38s cubic-bezier(.2,.8,.2,1);
+     /* стекло + неон */
+     background: linear-gradient(180deg, rgba(26,16,18,.92), rgba(18,10,12,.94));
+     border:1px solid #3a1216; border-radius: 14px;
+     box-shadow:
+       0 0 0 1px rgba(255,32,52,.22) inset,
+       0 14px 44px rgba(0,0,0,.55),
+       0 0 36px rgba(255,32,52,.18);
+     backdrop-filter: blur(10px);
+   }
+   .ax-console.is-show{ opacity:1; transform: translateY(0) scale(1); }
+   
+   .ax-console__head{
+     display:flex; align-items:center; gap:10px; padding:8px 12px 6px;
+     border-bottom:1px solid rgba(255,32,52,.16);
+     font: 700 12px/1 var(--font-mono); letter-spacing:.1em; text-transform:uppercase; color:#ffd7dc;
+   }
+   .ax-led{ width:8px; height:8px; border-radius:999px; display:inline-block; filter: blur(.2px); }
+   .ax-led--red{ background: radial-gradient(circle, #ff3a52 0%, #a10e1e 70%); box-shadow: 0 0 8px #ff3a52; }
+   .ax-led--green{ background: radial-gradient(circle, #2ecc71 0%, #135f34 70%); box-shadow: 0 0 8px #2ecc71; }
+   
+   .ax-console__body{ padding:10px 12px 12px; }
+   .ax-console__pre{ margin:0; font: 500 12.5px/1.55 var(--font-mono); color:#e8e8f0; }
+   .ax-console__line{ display:flex; align-items:center; gap:8px; }
+   .ax-console__prompt{ color:#ff8792; }
+   .ax-console__typed{ white-space:pre; }
+   .ax-console__cursor{
+     width:8px; height:12px; background:#ff8792; display:inline-block; margin-left:2px; opacity:.9;
+     animation: ax-caret .9s steps(1) infinite;
+   }
+   @keyframes ax-caret { 50% { opacity: .1; } }
+   
+   /* адаптация для узких экранов */
+   @media (max-width: 520px){ .ax-console{ min-width: 280px; } }
+   @media (prefers-reduced-motion: reduce){
+     .ax-cyber__scanlines, .ax-cyber__noise{ animation: none !important; }
+     .ax-console{ transition: opacity .2s ease; }
+   }
+   
+   /* ===================================================================== */
+   
