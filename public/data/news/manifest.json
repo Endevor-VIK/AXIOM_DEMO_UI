@@ -1,28 +1,29 @@
 [
   {
-    "id": "2025-09-06-webcore",
-    "date": "2025-09-06",
-    "title": "WEB CORE: старт работ",
-    "kind": "update",
-    "tags": ["webcore", "release"],
-    "summary": "Инициализация архитектуры, терминальная загрузка, строгий логин.",
-    "link": "/dashboard/news"
-  },
-  {
-    "id": "2025-09-06-roadmap",
-    "date": "2025-09-06",
-    "title": "Roadmap: добавлен iframe-рендер",
-    "kind": "update",
-    "tags": ["roadmap", "ui"],
-    "summary": "Страница Roadmap теперь рендерит HTML из data/roadmap/index.html",
-    "link": "/dashboard/roadmap"
+    "id": "NEWS-2025-09-17-CONTENT-HUB",
+    "date": "2025-09-17",
+    "title": "Content Hub v2: категории, LORE, предпросмотры",
+    "kind": "release",
+    "tags": [
+      "update",
+      "content",
+      "lore",
+      "ui"
+    ],
+    "summary": "Запущен Content Hub: уровневое меню, Cards/List, предпросмотр HTML/Markdown, дерево LORE и CI-проверки.",
+    "file": "items/2025-09-17-content-hub.md",
+    "type": "release"
   },
   {
     "id": "2025-09-10-audit",
     "date": "2025-09-10",
     "title": "AUDIT: добавлен раздел и первый демо-отчёт",
     "kind": "update",
-    "tags": ["audit", "data", "iframe"],
+    "tags": [
+      "audit",
+      "data",
+      "iframe"
+    ],
     "summary": "Запущена вкладка Audit: манифест читает список, iframe открывает HTML из data/audits/…",
     "link": "/dashboard/audit"
   },
@@ -31,8 +32,36 @@
     "date": "2025-09-10",
     "title": "Сайт: идёт улучшение и оптимизация, готовится глобальное обновление",
     "kind": "update",
-    "tags": ["webcore", "optimization", "ui"],
+    "tags": [
+      "webcore",
+      "optimization",
+      "ui"
+    ],
     "summary": "Фикс путей и base-URL, подключение фавиконки, улучшение загрузки статических HTML; готовим крупное обновление UI и контента.",
     "link": "/dashboard/news"
+  },
+  {
+    "id": "2025-09-06-webcore",
+    "date": "2025-09-06",
+    "title": "WEB CORE: старт работ",
+    "kind": "update",
+    "tags": [
+      "webcore",
+      "release"
+    ],
+    "summary": "Инициализация архитектуры, терминальная загрузка, строгий логин.",
+    "link": "/dashboard/news"
+  },
+  {
+    "id": "2025-09-06-roadmap",
+    "date": "2025-09-06",
+    "title": "Roadmap: добавлен iframe-рендер",
+    "kind": "update",
+    "tags": [
+      "roadmap",
+      "ui"
+    ],
+    "summary": "Страница Roadmap теперь рендерит HTML из data/roadmap/index.html",
+    "link": "/dashboard/roadmap"
   }
 ]

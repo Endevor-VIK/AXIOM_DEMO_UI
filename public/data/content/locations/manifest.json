@@ -1,0 +1,25 @@
+[
+  {
+    "id": "LOC-0001",
+    "category": "locations",
+    "subCategory": "demo",
+    "title": "Central Node Plaza",
+    "summary": "Demo scene for the content hub redesign.",
+    "date": "2025-09-06",
+    "tags": [
+      "intro",
+      "demo"
+    ],
+    "file": "locations/2025-09-06__content-demo.html",
+    "format": "html",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 0,
+    "lang": "ru",
+    "links": [],
+    "meta": {
+      "v": 2
+    }
+  }
+]

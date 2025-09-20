@@ -1,7 +1,8 @@
-// lib/auth/crypto.ts
+﻿// lib/auth/crypto.ts
 // Minimal, safe-for-demo crypto helpers.
 // Do NOT use the insecure fallback in production.
 
+export type HashedPassword = string
 export function isCryptoReady(): boolean {
   try {
     return (
@@ -18,7 +19,7 @@ export function isCryptoReady(): boolean {
  * In insecure contexts where WebCrypto isn't available, uses a simple
  * 32-bit hash fallback so demo login does not crash. Only for local/demo!
  */
-export async function hashPassword(password: string): Promise<string> {
+export async function hashPassword(password: string): Promise<HashedPassword> {
   const enc = new TextEncoder();
   const data = enc.encode(password ?? '');
 
@@ -39,7 +40,7 @@ export async function hashPassword(password: string): Promise<string> {
  * Compares a plain password with an expected hex hash using the same
  * hashing method available in the current context. Returns true if equal.
  */
-export async function verifyPassword(password: string, expectedHex: string): Promise<boolean> {
+export async function verifyPassword(password: string, expectedHex: HashedPassword): Promise<boolean> {
   try {
     if (typeof expectedHex !== 'string' || expectedHex.length === 0) return false;
     const actual = await hashPassword(password);

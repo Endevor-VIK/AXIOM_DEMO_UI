@@ -1,0 +1,36 @@
+/* styles/login-bg.css — minimal layered background for /login */
+
+:root{
+    /* простые ручки для дальнейшей настройки */
+    --login-bg-grid-opacity: .0;     /* старт: без сетки */
+    --login-bg-vignette-opacity: .22;
+  }
+  
+  /* контейнер /login уже имеет position:relative */
+  .ax-login__bg{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+  
+  /* базовый градиент — аккуратный и не конфликтует с карточкой */
+  .ax-login__bg::before{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(1400px 700px at 85% 110%, #17060a 0%, transparent 55%),
+      linear-gradient(135deg, var(--ax-bg) 72%, var(--ax-ink) 100%);
+  }
+  
+  /* дополнительная виньетка (мягкая) */
+  .ax-login__bg::after{
+    content:""; position:absolute; inset:0; opacity:var(--login-bg-vignette-opacity);
+    background:
+      radial-gradient(1200px 360px at 50% 115%, rgba(255,32,52,.10), transparent 60%);
+  }
+  
+  /* опциональная сетка — просто включи класс .ax-login--grid на секции */
+  .ax-login.ax-login--grid .ax-login__bg::after{
+    background:
+      linear-gradient(0deg, rgba(255,255,255,.03) 1px, transparent 1px) 0 0/100% 22px,
+      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px) 0 0/22px 100%,
+      radial-gradient(1200px 360px at 50% 115%, rgba(255,32,52,.10), transparent 60%);
+    mix-blend-mode: soft-light;
+    opacity: max(var(--login-bg-grid-opacity), .25);
+  }
+  

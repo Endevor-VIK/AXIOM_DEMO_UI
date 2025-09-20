@@ -1,0 +1,389 @@
+/*
+  AXIOM SYSTEM — CUSTOM CSS OVERLAY
+  THEME: RED PROTOCOL v2.5
+  ENGINE: be5invis.vscode-custom-css (Reload Custom CSS and JS)
+  GOAL:
+    • Сохранить фирменный стиль (красно‑чёрный), убрать «красный квадрат» на Activity Bar
+    • Читаемость: мягкие светлые тексты (не белые), контурные акценты, плавные градиенты
+    • Минимальная инвазивность: только стабильные селекторы VS Code UI
+
+  NOTE:
+    — Этот файл самодостаточный: не требует правок settings.json
+    — При конфликте всегда побеждают правила из БЛОКА [F—FINAL OVERRIDES]
+    — Используются CSS‑переменные для глобальной палитры (см. :root)
+
+  © AXIOM 2025 — Аксиометричный стандарт оформления
+*/
+
+/* -------------------------------------------------------------------------- */
+/* [A] PALETTE / TOKENS                                                        */
+/* -------------------------------------------------------------------------- */
+:root {
+    /* Базовые цвета */
+    --ax-bg:      #0c0d11;  /* глубокий графит */
+    --ax-ink:     #10090c;  /* тёмное красное стекло */
+    --ax-red:     #ff2034;  /* основной акцент */
+    --ax-red2:    #b10f1e;  /* вторичный акцент */
+    --ax-red3:    #5a0a12;  /* глубокий красный (тени) */
+    --ax-text:    #ececf2;  /* светлый текст */
+    --ax-muted:   #a9a9b4;  /* приглушённый */
+    --ax-muted2:  #cfd0d8;  /* мягко‑светлый (для имён файлов) */
+    --ax-border:  #2a0d12;  /* границы */
+    --ax-elev:    rgba(0,0,0,.35); /* подъём/тень */
+  
+    /* Градиенты */
+    --ax-grad-sidebar: linear-gradient(
+      90deg,
+      rgba(255, 32, 52, 0.12) 0%,
+      rgba(177, 15, 30, 0.10) 22%,
+      rgba(236, 236, 242, 0.04) 55%,
+      var(--ax-bg) 100%
+    );
+  
+    --ax-grad-row: linear-gradient(
+      90deg,
+      rgba(255, 32, 52, 0.10) 0%,
+      rgba(177, 15, 30, 0.08) 18%,
+      rgba(236, 236, 242, 0.04) 100%
+    );
+  
+    --ax-grad-row-hover: linear-gradient(
+      90deg,
+      rgba(255, 32, 52, 0.14) 0%,
+      rgba(177, 15, 30, 0.12) 22%,
+      rgba(236, 236, 242, 0.06) 100%
+    );
+  
+    --ax-grad-row-focus: linear-gradient(
+      90deg,
+      rgba(255, 32, 52, 0.20) 0%,
+      rgba(177, 15, 30, 0.16) 26%,
+      rgba(16, 9, 12, 0.78) 100%
+    );
+  }
+  
+  /* Уровень переменных VS Code (приглушаем плитки темы) */
+  .monaco-workbench {
+    --vscode-activityBar-activeBackground: transparent !important;
+    --vscode-activityBar-dropBackground: transparent !important;
+    --vscode-activityBar-foreground: var(--ax-red) !important;
+    --vscode-scrollbarSlider-background: rgba(236,236,242,.18) !important;
+    --vscode-scrollbarSlider-hoverBackground: rgba(236,236,242,.28) !important;
+  }
+  
+  /* -------------------------------------------------------------------------- */
+  /* [B] WORKBENCH CHROME                                                        */
+  /* -------------------------------------------------------------------------- */
+  /* Titlebar */
+  .monaco-workbench .part.titlebar { background: var(--ax-ink) !important; color: var(--ax-text) !important; }
+  .monaco-workbench .part.titlebar .window-title { color: var(--ax-text) !important; opacity: .92; }
+  /* Command Center / Menubar */
+  .monaco-workbench .menubar, .monaco-workbench .menubar .menubar-menu-button { background: transparent !important; color: var(--ax-muted) !important; }
+  .monaco-workbench .menubar .menubar-menu-button:hover { color: var(--ax-text) !important; }
+  
+  /* Activity Bar */
+  .monaco-workbench .part.activitybar { background: var(--ax-ink) !important; }
+  .monaco-workbench .activitybar .action-item .codicon,
+  .monaco-workbench .activitybar .action-label.codicon { color: var(--ax-red) !important; opacity: 1 !important; }
+  /* убираем любые фоновые заливки пунктов */
+  .monaco-workbench .activitybar .action-item,
+  .monaco-workbench .activitybar .action-item::before,
+  .monaco-workbench .activitybar .action-item::after,
+  .monaco-workbench .activitybar .action-item .action-label,
+  .monaco-workbench .activitybar .action-item .action-label::before,
+  .monaco-workbench .activitybar .action-item .action-label::after { background: transparent !important; box-shadow: none !important; }
+  /* тонкий 2px индикатор слева, всегда под иконкой */
+  .activitybar .monaco-action-bar .active-item-indicator { background: transparent !important; left: 0 !important; right: auto !important; width: 2px !important; border-radius: 1px !important; z-index: 0 !important; }
+  .activitybar .monaco-action-bar .active-item-indicator::before { background: var(--ax-red) !important; width: 2px !important; height: 22px !important; left: 0 !important; top: 50% !important; transform: translateY(-50%) !important; border-radius: 1px !important; z-index: 0 !important; }
+  .monaco-workbench .activitybar .action-item .action-label,
+  .monaco-workbench .activitybar .action-item .codicon { position: relative !important; z-index: 1 !important; }
+  
+  /* Sidebar */
+  .monaco-workbench .part.sidebar { background: var(--ax-grad-sidebar) !important; color: var(--ax-muted) !important; border-right: 2px solid var(--ax-border) !important; }
+  
+  /* Panel (Problems/Output/Terminal container) */
+  .part.panel { background: var(--ax-bg) !important; border-top: 1px solid var(--ax-border) !important; }
+  
+  /* Status Bar */
+  .part.statusbar { background: var(--ax-ink) !important; color: var(--ax-text) !important; border-top: 1px solid var(--ax-border) !important; }
+  .part.statusbar .statusbar-item, .part.statusbar .statusbar-item a { color: var(--ax-text) !important; opacity: .92; }
+  .part.statusbar .statusbar-item:hover { color: var(--ax-red) !important; }
+  
+  /* Scrollbars */
+  .monaco-scrollable-element > .scrollbar > .slider { background: rgba(236, 236, 242, 0.18) !important; }
+  .monaco-scrollable-element > .scrollbar > .slider:hover { background: rgba(236, 236, 242, 0.28) !important; }
+  
+  /* Sashes (split) */
+  .monaco-workbench { --vscode-sash-size: 1px !important; --vscode-sash-hover-size: 2px !important; --vscode-sash-hoverBorder: var(--ax-red) !important; }
+  .monaco-sash.vertical { background: none !important; border: none !important; box-shadow: none !important; opacity: .9 !important; width: 1px !important; min-width: 1px !important; max-width: 2px !important; }
+  .monaco-sash.vertical:hover, .monaco-sash.vertical.active { border-right: 2px solid var(--ax-red) !important; opacity: 1 !important; }
+  
+  /* -------------------------------------------------------------------------- */
+  /* [C] EXPLORER / FILES                                                        */
+  /* -------------------------------------------------------------------------- */
+  /* Левый заголовок "OPEN EDITORS" и разделители */
+  .open-editors .title { background: var(--ax-ink) !important; color: var(--ax-text) !important; font-weight: 600 !important; border-bottom: 1px solid var(--ax-border) !important; }
+  
+  /* Ряды файлов */
+  .explorer-folders-view .monaco-list-row { background: var(--ax-grad-row) !important; border-bottom: 1px solid var(--ax-border) !important; }
+  .explorer-folders-view .monaco-list-row:hover:not(.focused):not(.selected) { background: var(--ax-grad-row-hover) !important; }
+  .explorer-folders-view .monaco-list-row.focused, .explorer-folders-view .monaco-list-row.selected { background: var(--ax-grad-row-focus) !important; outline: 1px solid var(--ax-red) !important; border-radius: 2px !important; }
+  
+  /* Иконки/твисти */
+  .explorer-viewlet .monaco-tl-contents .codicon { color: var(--ax-red) !important; background: transparent !important; }
+  .monaco-tl-twistie { color: var(--ax-red) !important; }
+  
+  /* Имена файлов/папок — мягкие, не белые; акцент на hover/selected */
+  .explorer-viewlet .monaco-tl-contents .label-name { color: var(--ax-muted2) !important; font-weight: 500 !important; }
+  .explorer-folders-view .monaco-list-row:hover .label-name { color: #e1e2e8 !important; }
+  .explorer-folders-view .monaco-list-row.selected .label-name, .explorer-folders-view .monaco-list-row.focused .label-name { color: var(--ax-red) !important; }
+  .monaco-workbench:not(.focused) .explorer-folders-view .monaco-list-row.selected .label-name { color: var(--ax-red2) !important; }
+  /* Подчистим возможные жёсткие цвета тем */
+  .explorer-item .label-name { color: inherit !important; }
+  
+  /* Outline‑акцент вместо синего */
+  .monaco-list-row.focused { outline: 1px solid var(--ax-red) !important; outline-offset: -1px !important; border-radius: 2px !important; }
+  .monaco-list .monaco-list-row.focused { outline: 1px solid var(--ax-red) !important; outline-offset: -1px !important; border-radius: 2px !important; }
+  
+  /* -------------------------------------------------------------------------- */
+  /* [D] TABS / EDITOR CHROME                                                    */
+  /* -------------------------------------------------------------------------- */
+  .tabs-container { background: var(--ax-ink) !important; border-bottom: 1px solid var(--ax-border) !important; }
+  .tab { background: var(--ax-bg) !important; color: var(--ax-muted) !important; }
+  .tab:hover:not(.active) { background: var(--ax-bg) !important; color: var(--ax-text) !important; }
+  .tab.active { background: var(--ax-ink) !important; color: var(--ax-red) !important; font-weight: 600 !important; }
+  .tab .tab-border-bottom { border-bottom: 1px solid var(--ax-border) !important; }
+  .tab .tab-label { color: var(--ax-red) !important; }
+  .tab.dirty .tab-label:after { content: "●"; margin-left: 6px; color: var(--ax-red2); }
+  /* Убираем возможные фоновые изображения */
+  .tabs-container, .tab, .open-editors .title, .explorer-folders-view .monaco-list-rows { background-image: none !important; }
+  
+  /* -------------------------------------------------------------------------- */
+  /* [E] MONACO EDITOR                                                           */
+  /* -------------------------------------------------------------------------- */
+  /* Подсветка текущей строки и выделений */
+  .monaco-editor .current-line { outline: 1px solid rgba(177, 15, 30, 0.35) !important; }
+  .monaco-editor .view-overlays .current-line ~ .current-line { outline: 1px solid rgba(177, 15, 30, 0.35) !important; }
+  .monaco-editor .selected-text { background-color: rgba(255, 32, 52, 0.20) !important; }
+  
+  /* Поиск/замена */
+  .monaco-editor .findMatch { background-color: rgba(255, 32, 52, 0.22) !important; outline: 1px solid var(--ax-red) !important; }
+  .monaco-editor .currentFindMatch { background-color: rgba(255, 32, 52, 0.30) !important; outline: 1px solid var(--ax-red) !important; }
+  
+  /* Hover‑подсказки */
+  .monaco-editor .monaco-hover { background: var(--ax-ink) !important; color: var(--ax-text) !important; border: 1px solid var(--ax-border) !important; }
+  .monaco-editor .monaco-hover .hover-row:hover { background: rgba(255, 32, 52, 0.10) !important; }
+  
+  /* Миникарта */
+  .minimap { filter: contrast(1.05); opacity: .9; }
+  
+  /* -------------------------------------------------------------------------- */
+  /* [F] QUICK INPUT / MENUS / TOOLTIPS / NOTIFICATIONS                         */
+  /* -------------------------------------------------------------------------- */
+  /* Command Palette / Quick Open */
+  .quick-input-widget { background: var(--ax-ink) !important; color: var(--ax-text) !important; border: 1px solid var(--ax-border) !important; }
+  .quick-input-list .monaco-list-row.focused, .quick-input-list .monaco-list-row.selected { background: rgba(255, 32, 52, 0.10) !important; }
+  
+  /* Контекстные меню */
+  .context-view .monaco-menu { background: var(--ax-ink) !important; color: var(--ax-text) !important; border: 1px solid var(--ax-border) !important; }
+  .context-view .monaco-menu .action-item.focused, .context-view .monaco-menu .action-item:hover { background: rgba(255, 32, 52, 0.10) !important; }
+  
+  /* Уведомления */
+  .notifications-toasts .monaco-list-row, .notifications-list-container .monaco-list-row { background: var(--ax-ink) !important; color: var(--ax-text) !important; border-bottom: 1px solid var(--ax-border) !important; }
+  
+  /* Тултипы UI (не редакторские) */
+  .monaco-editor-hover, .monaco-workbench .hoverWidget { background: var(--ax-ink) !important; color: var(--ax-text) !important; border: 1px solid var(--ax-border) !important; }
+  
+  /* Кнопки */
+  .monaco-text-button, .monaco-button { background: var(--ax-red2) !important; color: var(--ax-text) !important; border: 1px solid var(--ax-border) !important; }
+  .monaco-text-button:hover, .monaco-button:hover { background: var(--ax-red) !important; }
+  
+  /* Индикаторы прогресса */
+  .monaco-progress-container .progress-bit { background: var(--ax-red) !important; }
+  
+  /* Бейджи */
+  .badge, .badge .badge-content { background: var(--ax-red2) !important; color: var(--ax-text) !important; }
+  
+  /* Breadcrumbs */
+  .breadcrumbs { color: var(--ax-muted) !important; }
+  .breadcrumbs .monaco-breadcrumb-item:hover { color: var(--ax-red) !important; }
+  
+  /* Peek View */
+  .peekViewWidget, .peekview-widget { background: var(--ax-ink) !important; border: 1px solid var(--ax-border) !important; }
+  .peekview-widget .head { background: var(--ax-ink) !important; border-bottom: 1px solid var(--ax-border) !important; }
+  .peekview-widget .body { background: var(--ax-bg) !important; }
+  
+  /* -------------------------------------------------------------------------- */
+  /* [G] TERMINAL                                                                */
+  /* -------------------------------------------------------------------------- */
+  .terminal.xterm .xterm-screen, .terminal .xterm-viewport { background: var(--ax-bg) !important; }
+  .terminal .xterm-rows { color: var(--ax-text) !important; }
+  .terminal .xterm-cursor-block { background: var(--ax-red) !important; }
+  
+  /* -------------------------------------------------------------------------- */
+  /* [H] VIEWS: SEARCH / SCM / EXTENSIONS / DEBUG / SETTINGS                     */
+  /* -------------------------------------------------------------------------- */
+  /* Search */
+  .search-view .search-widget, .search-view .query-details { background: var(--ax-ink) !important; border: 1px solid var(--ax-border) !important; }
+  .search-view .results .monaco-list-row.selected { background: rgba(255, 32, 52, 0.12) !important; }
+  
+  /* SCM */
+  .panel#workbench.view.scm, .scm-view { background: var(--ax-bg) !important; }
+  .scm-view .monaco-list-row:hover { background: rgba(255, 32, 52, 0.06) !important; }
+  
+  /* Extensions */
+  .extension-editor, .extensions-view { background: var(--ax-bg) !important; }
+  .extensions-view .monaco-list-row:hover { background: rgba(255, 32, 52, 0.06) !important; }
+  .extensions-view .monaco-list-row.selected { background: rgba(255, 32, 52, 0.12) !important; outline: 1px solid var(--ax-red) !important; }
+  
+  /* Debug */
+  .debug-viewlet { background: var(--ax-bg) !important; }
+  .debug-actions-widget { background: var(--ax-ink) !important; border: 1px solid var(--ax-border) !important; }
+  
+  /* Settings editor */
+  .settings-editor .settings-header { background: var(--ax-ink) !important; border-bottom: 1px solid var(--ax-border) !important; }
+  .settings-editor .settings-body { background: var(--ax-bg) !important; }
+  .settings-editor .setting-item { background: transparent !important; border-bottom: 1px dashed var(--ax-border) !important; }
+  .settings-editor .setting-item:hover { background: rgba(255, 32, 52, 0.06) !important; }
+  .settings-editor .setting-item .setting-item-label { color: var(--ax-text) !important; }
+  .settings-editor .setting-item .setting-item-label:hover { color: var(--ax-red) !important; }
+  
+  /* Welcome page */
+  .monaco-workbench .part.editor > .content .welcomePageContainer { background: var(--ax-bg) !important; }
+  
+  /* Outline / Problems */
+  .panel .markers-panel .monaco-list-row:hover { background: rgba(255, 32, 52, 0.06) !important; }
+  .panel .markers-panel .monaco-list-row.selected { background: rgba(255, 32, 52, 0.12) !important; outline: 1px solid var(--ax-red) !important; }
+  
+  /* -------------------------------------------------------------------------- */
+  /* [I] MICRO‑DETAILS / POLISH                                                   */
+  /* -------------------------------------------------------------------------- */
+  /* Тонкие разделители и скругления списков */
+  .explorer-viewlet { padding-top: 8px !important; }
+  .monaco-list-rows { border-radius: 4px !important; }
+  
+  /* Ссылки в UI */
+  .monaco-link, .pane-body a { color: var(--ax-red) !important; }
+  .pane-body a:hover { text-decoration: underline; }
+  
+  /* Checkbox / radio в Settings */
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--ax-red); }
+  
+  /* Notifications actions */
+  .notifications-toasts .message-actions .monaco-button, .notification-button { background: var(--ax-red2) !important; border: 1px solid var(--ax-border) !important; color: var(--ax-text) !important; }
+  .notifications-toasts .message-actions .monaco-button:hover, .notification-button:hover { background: var(--ax-red) !important; }
+  
+  /* Input fields */
+  .monaco-inputbox, .monaco-inputbox input, .monaco-findInput, .monaco-filteredSuggestWidget { background: var(--ax-bg) !important; color: var(--ax-text) !important; border-color: var(--ax-border) !important; }
+  
+  /* Dropdowns */
+  .select-box, .monaco-select-box { background: var(--ax-bg) !important; color: var(--ax-text) !important; border-color: var(--ax-border) !important; }
+  
+  /* Groups drag‑overlay */
+  .monaco-workbench .editor-group-container .overlay { background: rgba(255, 32, 52, 0.08) !important; border: 1px dashed var(--ax-red) !important; }
+  
+  /* Problems markers colors (subtle) */
+  .problem-severity.error .codicon, .markers-panel .severity-error { color: #ff4456 !important; }
+  .problem-severity.warning .codicon, .markers-panel .severity-warning { color: #ff9f1c !important; }
+  .problem-severity.info .codicon, .markers-panel .severity-info { color: #58c4ff !important; }
+  
+  /* -------------------------------------------------------------------------- */
+  /* [J] LEGACY THEME CLEANUP                                                     */
+  /* -------------------------------------------------------------------------- */
+  /* убираем возможные «жёсткие» цвета сторонних тем */
+  .explorer-viewlet .monaco-tl-contents .monaco-highlighted-label .highlight { color: inherit !important; }
+  .monaco-list .monaco-list-row:hover { background: rgba(255, 32, 52, 0.06) !important; }
+  
+  /* Нейтрализуем редкие фоновые наливки у вкладок старых тем */
+  .tab .tab-actions, .tab .tab-close-icon, .tab .tab-status { background: transparent !important; }
+  
+  /* -------------------------------------------------------------------------- */
+  /* [K] F—FINAL OVERRIDES (всегда в самом конце файла)                           */
+  /* -------------------------------------------------------------------------- */
+  /* Страховка против «красного квадрата»: нулевая плитка + индикатор 2px */
+  .monaco-workbench .activitybar .monaco-action-bar .action-item,
+  .monaco-workbench .activitybar .monaco-action-bar .action-item:hover,
+  .monaco-workbench .activitybar .monaco-action-bar .action-item.active,
+  .monaco-workbench .activitybar .monaco-action-bar .action-item.checked,
+  .monaco-workbench .activitybar .monaco-action-bar .action-item[aria-selected="true"],
+  .monaco-workbench .activitybar .monaco-action-bar .action-item[aria-checked="true"] {
+    background: transparent !important; box-shadow: none !important;
+  }
+  .activitybar .monaco-action-bar .active-item-indicator { background: transparent !important; left: 0 !important; right: auto !important; width: 2px !important; border-radius: 1px !important; z-index: 0 !important; }
+  .activitybar .monaco-action-bar .active-item-indicator::before { background: var(--ax-red) !important; left: 0 !important; right: auto !important; width: 2px !important; height: 22px !important; top: 50% !important; transform: translateY(-50%) !important; border-radius: 1px !important; z-index: 0 !important; }
+  .monaco-workbench .activitybar .action-item .action-label, .monaco-workbench .activitybar .action-item .codicon { position: relative !important; z-index: 1 !important; }
+  
+  /* На случай инъекций слоёв поверх (редкие темы) */
+  .monaco-workbench .activitybar .content, .monaco-workbench .activitybar .content * { background-image: none !important; }
+  
+  /* Дублируем мягкий текст для файлов (если тема принудительно красит белым) */
+  .explorer-viewlet .monaco-tl-contents .label-name { color: var(--ax-muted2) !important; }
+  /* Усиленно сбрасываем фон и border для SCM badge и action-item */
+  .monaco-workbench .activitybar .action-item .badge,
+  .monaco-workbench .activitybar .action-item .badge-content {
+    background: transparent !important;
+    color: var(--ax-red) !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  
+  /* Сброс для активных/выбранных action-item (любые состояния) */
+  .monaco-workbench .activitybar .monaco-action-bar .action-item,
+  .monaco-workbench .activitybar .monaco-action-bar .action-item.active,
+  .monaco-workbench .activitybar .monaco-action-bar .action-item.checked,
+  .monaco-workbench .activitybar .monaco-action-bar .action-item[aria-selected="true"],
+  .monaco-workbench .activitybar .monaco-action-bar .action-item[aria-checked="true"] {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  /* ===== AXIOM :: App Icon (inline SVG, no JS, no file path) ===== */
+  :root{
+    --ax-appicon-size: 20px;
+    /* Встроенный SVG (красная заливка) */
+    --ax-appicon-url: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <path fill='%23ff2034' d='M4 5.25H20A1.25 1.25 0 1 1 20 7.75H7.9L9.9 10.6H16A1.25 1.25 0 1 1 16 13.1H9.9L7.9 15.95H20A1.25 1.25 0 1 1 20 18.45H4a1.25 1.25 0 0 1-1-2.02L7 12 3 7.57A1.25 1.25 0 0 1 4 5.25Z'/>\
+  </svg>");
+  }
+  
+  /* Целевые узлы и сброс «красного квадрата» */
+  .monaco-workbench .part.titlebar .window-appicon,
+  .monaco-workbench .part.titlebar .app-icon{
+    width: var(--ax-appicon-size) !important;
+    height: var(--ax-appicon-size) !important;
+    margin-left: 6px !important;
+    margin-right: 8px !important;
+  
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  
+    background-image: var(--ax-appicon-url) !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: contain !important;
+  }
+  
+  /* Прячем возможные вложенные системные img/svg */
+  .monaco-workbench .part.titlebar .window-appicon img,
+  .monaco-workbench .part.titlebar .window-appicon svg,
+  .monaco-workbench .part.titlebar .window-appicon canvas{
+    display:none !important;
+  }
+  
+  /* Фоллбэк, если у левого контейнера нет нативной иконки */
+  .monaco-workbench .part.titlebar .titlebar-left:not(:has(.window-appicon)):not(:has(.app-icon))::before{
+    content:"";
+    display:inline-block;
+    width: var(--ax-appicon-size);
+    height: var(--ax-appicon-size);
+    margin-left:6px; margin-right:8px; vertical-align:middle;
+  
+    background-image: var(--ax-appicon-url);
+    background-repeat:no-repeat; background-position:center; background-size:contain;
+  }
+  
+  /* Конец файла */

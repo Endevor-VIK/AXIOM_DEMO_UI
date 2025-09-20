@@ -1,0 +1,52 @@
+/* styles/login-cyber.css — lightweight cyber overlay
+   Слои строго ПОЗАДИ карточки: z-index управляется в components.css */
+
+   .ax-cyber{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+
+   /* scanlines (очень лёгкие) */
+   .ax-cyber__scanlines{
+     position:absolute; inset:0; opacity:.075; mix-blend-mode: soft-light;
+     background: repeating-linear-gradient(180deg, rgba(255,255,255,.10) 0 1px, transparent 1px 3px);
+     animation: ax-scanline 8s linear infinite;
+   }
+   @keyframes ax-scanline { to { background-position-y: 100%; } }
+   
+   /* консоль (терминал) */
+   .ax-console{
+     position:absolute; min-width: 300px; max-width: 520px;
+     background: linear-gradient(180deg, rgba(18,10,12,.88), rgba(10,8,10,.90));
+     border:1px solid #3a1216; border-radius: 10px;
+     box-shadow: 0 0 0 1px rgba(255,32,52,.16) inset, 0 12px 32px rgba(0,0,0,.45);
+     backdrop-filter: blur(6px);
+     transform: translateY(8px) scale(.985); opacity: 0;
+     transition: transform .26s cubic-bezier(.2,.8,.2,1), opacity .18s ease;
+     pointer-events:none;
+   }
+   .ax-console.is-lite .ax-console__title{ color:#ffd7dc; letter-spacing:.08em; opacity:.9; }
+   .ax-console.is-show{ transform: translateY(0) scale(1); opacity:1; }
+   
+   .ax-console__head{ padding:6px 10px; border-bottom:1px solid rgba(255,32,52,.14);
+     font: 700 12px/1 var(--font-mono); text-transform: uppercase; }
+   .ax-console__body{ padding:10px; }
+   .ax-console__pre{ margin:0; font: 500 12.5px/1.55 var(--font-mono); color:#e8e8f0; }
+   .ax-console__line{ display:flex; align-items:center; gap:8px; }
+   .ax-console__prompt{ color:#6aff9f; }
+   .ax-console__typed{ white-space: pre; }
+   .ax-console__cursor{ width:8px; height:12px; background:#6aff9f; display:inline-block; opacity:.9; animation: ax-caret .9s steps(1) infinite; }
+   @keyframes ax-caret{ 50% { opacity:.1; } }
+   
+   /* локальный глитч — только для оверлея и только пока секция .ax-login.ax-glitch */
+   .ax-login.ax-glitch .ax-cyber .ax-console{
+     animation: ax-glitch .18s steps(2) both;
+   }
+   @keyframes ax-glitch{
+     0% { filter:none; transform: translateY(0) scale(1); }
+     50%{ filter: contrast(1.1) saturate(1.1); transform: translateY(-0.5px) scale(1.002) skewX(-0.2deg); }
+     100%{ filter:none; transform: translateY(0) scale(1); }
+   }
+   
+   @media (prefers-reduced-motion: reduce){
+     .ax-cyber__scanlines{ animation:none !important; }
+     .ax-console{ transition: opacity .15s ease; }
+   }
+   

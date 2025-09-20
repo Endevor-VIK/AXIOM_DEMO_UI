@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://axiom.local/schemas/content-item.json",
+  "title": "AXIOM Content Item v2",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id",
+      "category",
+      "title",
+      "date",
+      "file",
+      "format",
+      "status",
+      "meta"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^(LOC|CHR|TEC|FAC|EVT|LORE|CNT)-[A-Z0-9-]+$"
+      },
+      "category": {
+        "type": "string",
+        "enum": [
+          "all",
+          "locations",
+          "characters",
+          "technologies",
+          "factions",
+          "events",
+          "lore"
+        ]
+      },
+      "subCategory": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string",
+        "minLength": 1
+      },
+      "summary": {
+        "type": "string"
+      },
+      "date": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "file": {
+        "type": "string",
+        "pattern": "^[^\\\\%*:|\"<>?]+$"
+      },
+      "format": {
+        "type": "string",
+        "enum": [
+          "html",
+          "md",
+          "markdown",
+          "txt"
+        ]
+      },
+      "cover": {
+        "type": "string"
+      },
+      "author": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "published",
+          "archived"
+        ]
+      },
+      "visibility": {
+        "type": "string",
+        "enum": [
+          "public",
+          "internal"
+        ]
+      },
+      "weight": {
+        "type": "number"
+      },
+      "lang": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 5
+      },
+      "links": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "type",
+            "ref"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "ref": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "href": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "object",
+        "required": [
+          "v"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "v": {
+            "const": 2
+          }
+        }
+      }
+    }
+  }
+}
