@@ -1,16 +1,241 @@
-<!doctype html><html><head>
-    <meta charset="utf-8" />
-    <meta http-equiv="refresh" content="0;url=/AXIOM_DEMO_UI/" />
-    <script>
-      // SPA redirect trick for GitHub Pages
-      (function () {
-        var repo = '/AXIOM_DEMO_UI';
-        var l = window.location;
-        var path = l.pathname.startsWith(repo) ? l.pathname.slice(repo.length) : l.pathname;
-        if (path && path !== '/') {
-          l.replace(repo + '/#' + path + l.search + l.hash); // или заменить на query-fallback, если нужен BrowserRouter
-        }
-      })();
-    </script>
-  </head><body></body></html>
-  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ACCESS RESTRICTED · AXIOM 404</title>
+  <meta name="description" content="AXIOM RED PROTOCOL · Node not found / access restricted" />
+  <style>
+    /* reset to remove white gutters */
+    html,body{height:100%;margin:0;background:#0b0b0c}
+
+    /*
+      AXIOM — 404 quick static prototype
+      — One-file, self-contained.
+      — All effects scoped under .axiom-404 to avoid leaks if embedded.
+      — RED PROTOCOL palette.
+    */
+
+    :where(.axiom-404) {
+      --red: #ff2034;
+      --ink: #0b0b0c;
+      --ink-2: #101113;
+      --text: #f4f5f7;
+      --muted: #c7c9cf;
+      --card-bg: rgba(10, 10, 12, 0.66);
+      --border: color-mix(in oklab, var(--red) 65%, #6a0b14);
+      --shadow: 0 10px 40px rgba(255, 32, 52, 0.12);
+      --radius: 18px;
+    }
+
+    .axiom-404 {
+      position: relative;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(1200px 600px at 75% 10%, rgba(255,32,52,.06), transparent 60%),
+                  radial-gradient(900px 500px at 10% 90%, rgba(255,32,52,.05), transparent 55%),
+                  linear-gradient(180deg, var(--ink), var(--ink-2));
+      color: var(--text);
+      isolation: isolate; /* contain blending */
+      overflow: hidden;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    /* LAYER: scanlines */
+    .axiom-404::before {
+      content: "";
+      position: absolute; inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 1px,
+        transparent 2px, transparent 3px
+      );
+      mix-blend-mode: soft-light;
+      opacity: .06;
+    }
+
+    /* LAYER: subtle grid */
+    .grid-field {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        linear-gradient(transparent 0 98%, rgba(255,255,255,0.06) 99%) 0 0/100% 40px,
+        linear-gradient(90deg, transparent 0 98%, rgba(255,255,255,0.06) 99%) 0 0/40px 100%;
+      transform: perspective(800px) rotateX(18deg) translateY(12%);
+      opacity: .18;
+      filter: drop-shadow(0 0 20px rgba(255,32,52,.08));
+    }
+
+    /* LAYER: glitch aura behind content */
+    .glitch-aura {
+      position: absolute; inset: 0; pointer-events: none; opacity: .22;
+      background: conic-gradient(from 0deg at 50% 50%, rgba(255,32,52,.0), rgba(255,32,52,.25), rgba(255,32,52,.0) 35%);
+      mix-blend-mode: plus-lighter;
+      animation: auraPulse 6s ease-in-out infinite;
+    }
+    @keyframes auraPulse { 0%,100% { filter: blur(14px); opacity:.15 } 50% { filter: blur(22px); opacity:.28 } }
+
+    main.card {
+      position: relative;
+      width: min(860px, 92vw);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-bottom: 2px solid var(--red); /* persistent, visible bottom border */
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3.6vw, 32px);
+      backdrop-filter: blur(6px) saturate(120%);
+      -webkit-backdrop-filter: blur(6px) saturate(120%);
+    }
+
+    .sup {
+      display: inline-flex; gap: 10px; align-items: center;
+      letter-spacing: .12em; text-transform: uppercase;
+      font-size: 12px; color: var(--muted);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 99px; background: var(--red); box-shadow: 0 0 12px rgba(255,32,52,.5) }
+
+    h1.title {
+      margin: 8px 0 6px; font-size: clamp(28px, 4.8vw, 46px);
+      line-height: 1.1; font-weight: 800; letter-spacing: .02em;
+      text-shadow: 0 0 22px rgba(255,32,52,.18);
+    }
+    .title .accent { color: var(--red); }
+
+    p.sub {
+      margin: 0 0 18px; color: var(--muted); max-width: 70ch;
+    }
+
+    .console {
+      --bg: rgba(6,6,8,.75);
+      background: var(--bg);
+      border: 1px dashed rgba(255,255,255,.14);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      color: #e8e9ed;
+      max-height: 40vh; overflow: auto;
+    }
+    .console b { color: var(--red); font-weight: 700 }
+    .console .line { white-space: pre-wrap; }
+
+    .actions {
+      margin-top: 18px; display: flex; flex-wrap: wrap; gap: 10px;
+    }
+    .btn {
+      --b: color-mix(in oklab, var(--red) 80%, #000);
+      position: relative;
+      appearance: none; border: 1px solid var(--b);
+      background: linear-gradient(180deg, rgba(255,32,52,.18), rgba(255,32,52,.08));
+      color: var(--text); border-radius: 12px; padding: 10px 14px;
+      font-weight: 600; letter-spacing: .02em; cursor: pointer;
+      transition: transform .12s ease, box-shadow .2s ease, background .2s ease;
+      box-shadow: 0 4px 22px rgba(255,32,52,.12);
+    }
+    .btn:hover { transform: translateY(-1px) }
+    .btn:focus-visible { outline: 2px solid var(--red); outline-offset: 2px }
+    .btn.secondary { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.18); }
+
+    footer.meta {
+      margin-top: 14px; color: #9aa0a6; font-size: 12px; display:flex; gap:14px; flex-wrap:wrap
+    }
+
+    /* Reduced motion: tone it down */
+    @media (prefers-reduced-motion: reduce) {
+      .axiom-404::before, .glitch-aura { animation: none !important; opacity: .08 }
+      .grid-field { transform: none }
+    }
+  </style>
+</head>
+<body>
+<div class="axiom-404">
+  <div class="grid-field" aria-hidden="true"></div>
+  <div class="glitch-aura" aria-hidden="true"></div>
+
+  <main class="card" role="main" aria-labelledby="t">
+    <div class="sup"><span class="dot" aria-hidden="true"></span> RED PROTOCOL · SYSTEM NOTICE</div>
+    <h1 id="t" class="title"><span class="accent">ACCESS</span> RESTRICTED</h1>
+    <p class="sub">You’ve reached a node that is offline or outside your clearance. The route below could not be resolved.</p>
+
+    <section class="console" aria-live="polite" aria-atomic="false" id="console"></section>
+
+    <div class="actions">
+      <a class="btn" id="homeBtn" href="/">Return to Nexus</a>
+      <a class="btn secondary" id="mapBtn" href="#/map">Open Map</a>
+      <a class="btn secondary" id="reportBtn" href="#" title="Not your flavor? You may abstain.">Not your flavor? You may abstain.</a>
+    </div>
+
+    <footer class="meta" id="meta"></footer>
+  </main>
+</div>
+
+<script>
+  /* === AXIOM 404 — minimal behavior config === */
+  const CONFIG = {
+    HOME: '/AXIOM_DEMO_UI/',                // correct base for GH Pages project site (https://endevor-vik.github.io/AXIOM_DEMO_UI/)
+    MAP: '#/map',             // Adapt to your router
+    ENABLE_SPA_REDIRECT: false, // If true: auto-redirect missing path -> HOME + '#<path>'
+    REDIRECT_DELAY_MS: 800,   // Only used if ENABLE_SPA_REDIRECT
+    REPORT_URL_BASE: 'https://github.com/Endevor-VIK/AXIOM_DEMO_UI/issues/new?title=Dead%20link%3A%20'
+  };
+
+  const $ = (sel) => document.querySelector(sel);
+  const $console = $('#console');
+  const $meta = $('#meta');
+  const $homeBtn = $('#homeBtn');
+  const $mapBtn = $('#mapBtn');
+  const $reportBtn = $('#reportBtn');
+
+  // Resolve missing path (keeps full original URL parts)
+  const missingPath = [location.pathname, location.search, location.hash].join('');
+
+  // Wire CTAs (auto-detect GH Pages vs local)
+  const isGitHubPages = /\.github\.io$/.test(location.hostname);
+  const HOME_BASE = isGitHubPages ? CONFIG.HOME : '/';
+  $homeBtn.href = HOME_BASE;
+  $mapBtn.href = CONFIG.MAP.startsWith('#') ? HOME_BASE + CONFIG.MAP : CONFIG.MAP;
+  // $reportBtn: cheeky/no-op per spec
+  $reportBtn.removeAttribute('href');
+  $reportBtn.setAttribute('role','button');
+  $reportBtn.addEventListener('click', (e)=> e.preventDefault());
+
+  // Telemetry-ish meta (static for the static page)
+  $meta.textContent = `route: ${missingPath}  •  status: 404_NOT_FOUND  •  firewall: BLACK-ICE engaged`;
+
+  const lines = [
+    `> route: ${missingPath}`,
+    `> status: 404_NOT_FOUND`,
+    `> firewall: BLACK-ICE engaged`,
+    `> hint: check the address or return to a safe node`,
+  ];
+
+  // Simple typewriter
+  async function typeLine(text, container) {
+    const line = document.createElement('div');
+    line.className = 'line';
+    container.appendChild(line);
+    const speed = 12 + Math.random() * 18; // ms per char
+    for (let i = 0; i < text.length; i++) {
+      line.textContent = text.slice(0, i + 1);
+      await new Promise(r => setTimeout(r, speed));
+    }
+  }
+
+  (async function boot() {
+    for (const t of lines) {
+      await typeLine(t, $console);
+      await new Promise(r => setTimeout(r, 120));
+    }
+
+    if (CONFIG.ENABLE_SPA_REDIRECT) {
+      const target = CONFIG.HOME.replace(/\/$/, '') + '/#' + missingPath.replace(/^\//, '');
+      const info = document.createElement('div');
+      info.className = 'line';
+      info.innerHTML = `> redirect: <b>${target}</b> in ${CONFIG.REDIRECT_DELAY_MS}ms`;
+      $console.appendChild(info);
+      setTimeout(() => location.replace(target), CONFIG.REDIRECT_DELAY_MS);
+    }
+  })();
+</script>
+</body>
+</html>
