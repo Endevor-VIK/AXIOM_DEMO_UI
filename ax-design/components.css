@@ -42,6 +42,57 @@
    .ax-hr-blade::before { left: -6px; }
    .ax-hr-blade::after { right: -6px; transform: translateY(-50%) scaleX(-1) skewX(-24deg); }
    
+   .ax-hr-blade--center {
+     width: 76%;
+     margin: 4px auto var(--space-2);
+     background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+     position: relative; height: 2px; border-radius: 2px;
+   }
+   .ax-hr-blade--center::before,
+   .ax-hr-blade--center::after {
+     content: ""; position: absolute; top: 50%; width: 14px; height: 2px;
+     transform: translateY(-50%) skewX(-24deg); background: linear-gradient(90deg, var(--ax-red), transparent);
+   }
+   .ax-hr-blade--center::before { left: -8px; }
+   .ax-hr-blade--center::after { right: -8px; transform: translateY(-50%) scaleX(-1) skewX(-24deg); }
+   .ax-hr-blade--center.slim { width: 64%; opacity: .8; }
+
+   /* ===== Viktor blade HR (symmetric, with central tip) ===================== */
+   .ax-hr {
+     position: relative;
+     height: 2px;
+     border-radius: 2px;
+     background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+   }
+   .ax-hr--viktor {
+     width: clamp(220px, 64%, 620px);
+     margin: 6px auto var(--space-2);
+     /* центральное «жало» в самом элементе */
+     background:
+       radial-gradient(16px 3px at 50% 50%, rgba(255,32,52,.85), transparent 62%),
+       linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+     box-shadow: 0 0 20px rgba(255,32,52,.12);
+   }
+   .ax-hr--viktor.slim {
+     width: clamp(200px, 54%, 520px);
+     opacity: .9;
+   }
+   .ax-hr--viktor::before,
+   .ax-hr--viktor::after {
+     content: "";
+     position: absolute;
+     top: 50%;
+     width: 14px;
+     height: 2px;
+     transform: translateY(-50%) skewX(-24deg);
+     background: linear-gradient(90deg, var(--ax-red), transparent);
+   }
+   .ax-hr--viktor::before { left: -8px; }
+   .ax-hr--viktor::after {
+     right: -8px;
+     transform: translateY(-50%) scaleX(-1) skewX(-24deg);
+   }
+   
    /* ============================
       4) Chips / Status Pills
       ============================ */
@@ -209,15 +260,37 @@
    /* ============================
       11) LOGIN LAYOUT (Web parity)
       ============================ */
-   .ax-login { min-height: 100dvh; display: grid; place-items: center; background: var(--ax-login-grad); padding: var(--space-6); }
-   .ax-login-card { width: min(92vw, 520px); border-radius: var(--r-2xl); border: 2px solid var(--ax-red); background: radial-gradient(1200px 600px at 80% 100%, #17060a 0%, transparent 55%), linear-gradient(180deg, #111015 0%, #0c0b0f 100%), var(--ax-ink); box-shadow: 0 0 40px var(--ax-login-glow), 0 4px 52px #12070b99 inset; }
+   .ax-login { min-height: 100dvh; display: grid; place-items: center; background: var(--ax-login-grad); padding: var(--space-6); position: relative; }
+   .ax-login-card { width: min(92vw, 520px); border-radius: var(--r-2xl); border: 2px solid var(--ax-red); background: radial-gradient(1200px 600px at 80% 100%, #17060a 0%, transparent 55%), linear-gradient(180deg, #111015 0%, #0c0b0f 100%), var(--ax-ink); box-shadow: 0 0 40px var(--ax-login-glow), 0 4px 52px #12070b99 inset; display: grid; gap: var(--space-3); }
    .ax-login-emblem { display: grid; place-items: center; margin-top: var(--space-2); filter: drop-shadow(0 0 22px rgba(255,32,52,.22)); }
    .ax-login-sub { margin: 2px 0 14px; text-align: center; color: #d9d9e2; letter-spacing: .06em; font-size: var(--fs-12); text-transform: uppercase; }
    .ax-login-meta { display: flex; gap: var(--space-2); align-items: center; justify-content: center; margin-bottom: var(--space-3); flex-wrap: wrap; }
    .ax-login-hint { margin-top: 2px; color: #ffd7dc; font-size: var(--fs-12); letter-spacing: .06em; text-transform: uppercase; }
    .ax-login-error { margin-top: 6px; color: #ff98a1; font-size: var(--fs-12); letter-spacing: .04em; }
-   .ax-login-actions { justify-content: space-between; }
-   .ax-login-foot { margin-top: 10px; display: block; text-align: center; font-size: var(--fs-12); color: #ff7a85aa; letter-spacing: .09em; }
+   .ax-login-actions { justify-content: space-between; margin-top: var(--space-2); }
+   .ax-login-head { display: grid; justify-items: center; gap: var(--space-2); }
+   .ax-stack-sm { display: grid; gap: var(--space-2); }
+   .ax-login-fields { margin-top: var(--space-1); }
+   .ax-login__bg {
+     position: absolute; inset: 0; z-index: 0; pointer-events: none;
+   }
+   .ax-login__bg::before {
+     content: ""; position: absolute; inset: 0;
+     /* base radial+linear gradient */
+     background:
+       radial-gradient(1400px 700px at 85% 110%, #17060a 0%, transparent 55%),
+       linear-gradient(135deg, var(--ax-bg) 72%, var(--ax-ink) 100%);
+   }
+   .ax-login__bg::after {
+     content: ""; position: absolute; inset: 0;
+     /* subtle grid & vignette — не трогает карточку */
+     background:
+       linear-gradient(0deg, rgba(255,32,52,.045) 1px, transparent 1px) 0 0/100% 22px,
+       linear-gradient(90deg, rgba(255,32,52,.045) 1px, transparent 1px) 0 0/22px 100%,
+       radial-gradient(1200px 360px at 50% 115%, rgba(255,32,52,.12), transparent 60%);
+     mix-blend-mode: screen;
+     opacity: .4;
+   }
    
    /* Seal + orbits */
    .ax-seal { animation: ax-rot 9s linear infinite; }
@@ -235,4 +308,47 @@
    @media (prefers-reduced-motion: reduce) {
      .ax-seal, .ax-seal__orbit, .ax-seal__blade, .is-shake { animation: none !important; }
    }
+
+   /* ===== Foot box (small squared container) =============================== */
+   .ax-login-foot { text-align: center; margin-top: 10px; }
+   .ax-foot-box {
+     display: inline-flex;
+     align-items: center;
+     gap: .6ch;
+     padding: 6px 12px;
+     border-radius: 10px;
+     border: 1px solid #3a1216;
+     background: linear-gradient(180deg, #1a1012, #12080a);
+     box-shadow: inset 0 0 16px rgba(255,32,52,.10), 0 0 18px rgba(255,32,52,.08);
+     color: #ff7a85cc;
+     letter-spacing: .09em;
+     font-size: var(--fs-12);
+   }
    
+   /* ==== Bottom hover dock (watermark + note) ================================== */
+   .ax-dock {
+     --dock-h: 64px;
+     position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-overlay);
+     transform: translateY(calc(var(--dock-h) - 10px));
+     transition: transform var(--t-std) var(--ease-ax2), box-shadow var(--t-std) var(--ease-ax2);
+   }
+   .ax-dock:hover,
+   .ax-dock:focus-within { transform: translateY(0); }
+   .ax-dock__panel {
+     height: var(--dock-h);
+     display: flex; align-items: center; justify-content: center; gap: var(--space-4); flex-wrap: wrap;
+     border-top: 1px solid rgba(255,32,52,.35);
+     background: linear-gradient(180deg, rgba(12,13,17,.92), rgba(16,8,12,.98));
+     box-shadow: 0 -10px 28px rgba(0,0,0,.45), 0 0 40px rgba(255,32,52,.12) inset;
+     backdrop-filter: blur(var(--backdrop-2));
+     color: #ffd7dc; text-transform: uppercase; letter-spacing: .08em; font-size: var(--fs-12); font-family: var(--font-mono);
+   }
+   .ax-dock__handle {
+     position: absolute; left: 50%; bottom: calc(var(--dock-h) - 12px); transform: translateX(-50%);
+     width: 86px; height: 8px; border-radius: 999px; border: 1px solid #3a1216;
+     background: linear-gradient(90deg, var(--ax-red), var(--ax-red-2)); color: transparent;
+     box-shadow: 0 0 16px rgba(255,32,52,.22);
+   }
+   .ax-dock__handle:focus-visible { outline: 2px solid rgba(255,32,52,.7); outline-offset: 2px; }
+   .ax-dock__brand { opacity: .9; }
+   .ax-dock__note { color: var(--ax-muted); }
