@@ -58,7 +58,7 @@ export default function Layout() {
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  end={item.end}
+                  end={Boolean(item.end)}
                   className={({ isActive }) => (isActive ? 'ax-tab is-active' : 'ax-tab')}
                 >
                   {item.label}
