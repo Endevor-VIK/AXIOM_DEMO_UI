@@ -1,81 +1,102 @@
-// AXIOM_DEMO_UI — WEB CORE
-// Canvas: C04 — app/routes/_layout.tsx
-// Purpose: Shared dashboard layout with PanelNav, StatusLine, Ticker and responsive shell.
+// AXIOM_DEMO_UI - WEB CORE
+// Canvas: C04 - app/routes/_layout.tsx
+// Purpose: Shared dashboard layout with Red Protocol navigation and system status shell.
 
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
+
 import Ticker from '@/components/Ticker'
 import StatusLine from '@/components/StatusLine'
 
+type NavItem = {
+  to: string
+  label: string
+  end?: boolean
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { to: '/dashboard', label: 'HOME', end: true },
+  { to: '/dashboard/roadmap', label: 'ROADMAP' },
+  { to: '/dashboard/audit', label: 'AUDIT' },
+  { to: '/dashboard/content', label: 'CONTENT' },
+  { to: '/dashboard/news', label: 'NEWS' },
+]
+
 export default function Layout() {
-  const loc = useLocation()
-  const nav = useNavigate()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const route = location.pathname || '/'
+
+  const section = useMemo(() => {
+    const parts = route.split('/').filter(Boolean)
+    if (parts[0] !== 'dashboard') return route.toUpperCase()
+    const key = parts[1] || 'home'
+    return key === 'home' ? 'HOME' : key.replace(/-/g, ' ').toUpperCase()
+  }, [route])
+
+  const ribbonTokens = useMemo(() => ['MODE :: RED PROTOCOL', `SECTION :: ${section}`], [section])
+
+  const handleLogout = useCallback(() => {
+    try {
+      localStorage.removeItem('axiom.auth')
+    } catch {
+      // storage unavailable
+    }
+    navigate('/login', { replace: true })
+  }, [navigate])
 
   return (
-    <div className="ax-shell">
-      {/* Top bar */}
-      <div className="ax-topbar">
-        <div className="ax-brand">AXIOM • UI</div>
-        <nav className="ax-nav">
-          <NavLink to="/dashboard" className={({ isActive }) => (isActive ? 'ax-tab active' : 'ax-tab')}>
-            HOME
-          </NavLink>
-          <NavLink to="/dashboard/roadmap" className={({ isActive }) => (isActive ? 'ax-tab active' : 'ax-tab')}>
-            ROADMAP
-          </NavLink>
-          <NavLink to="/dashboard/audit" className={({ isActive }) => (isActive ? 'ax-tab active' : 'ax-tab')}>
-            AUDIT
-          </NavLink>
-          <NavLink to="/dashboard/content" className={({ isActive }) => (isActive ? 'ax-tab active' : 'ax-tab')}>
-            CONTENT
-          </NavLink>
-          <NavLink to="/dashboard/news" className={({ isActive }) => (isActive ? 'ax-tab active' : 'ax-tab')}>
-            NEWS
-          </NavLink>
-        </nav>
-        <div className="ax-actions">
-          <button
-            className="ax-btn"
-            onClick={() => {
-              try { localStorage.removeItem('axiom.auth') } catch {}
-              nav('/login', { replace: true })
-            }}
-          >
-            Выйти
-          </button>
+    <div className='ax-shell'>
+      <header className='ax-topbar'>
+        <div className='ax-container'>
+          <div className='ax-topbar__inner'>
+            <div className='ax-brand' aria-label='AXIOM Panel'>
+              AXIOM PANEL
+            </div>
+            <nav className='ax-tabs' aria-label='Primary navigation'>
+              {NAV_ITEMS.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) => (isActive ? 'ax-tab is-active' : 'ax-tab')}
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
+            <button type='button' className='ax-btn ghost ax-action-logout' onClick={handleLogout}>
+              EXIT
+            </button>
+          </div>
+          <div className='ax-ribbon' role='status' aria-live='polite'>
+            {ribbonTokens.map((token, index) => (
+              <React.Fragment key={token}>
+                {index > 0 && (
+                  <span className='ax-ribbon__sep' aria-hidden='true'>//</span>
+                )}
+                <span className='ax-ribbon__item'>{token}</span>
+              </React.Fragment>
+            ))}
+            <span className='visually-hidden'>Active route {route}</span>
+          </div>
+        </div>
+      </header>
+      <div className='ax-ticker'>
+        <div className='ax-container'>
+          <Ticker />
         </div>
       </div>
-
-      {/* Ticker bar */}
-      <div className="ax-ticker">
-        <Ticker />
-      </div>
-
-      {/* Main content */}
-      <main className="ax-main">
-        <Outlet />
+      <main className='ax-main'>
+        <div className='ax-container'>
+          <Outlet />
+        </div>
       </main>
-
-      {/* Status line (GMS meta / system hints) */}
-      <div className="ax-status">
-        <StatusLine />
-      </div>
+      <footer className='ax-status'>
+        <div className='ax-container'>
+          <StatusLine />
+        </div>
+      </footer>
     </div>
   )
 }
-
-/*
-  Minimal CSS expectations (in styles/app.css):
-
-  .ax-shell { display:flex; flex-direction:column; min-height:100dvh; }
-  .ax-topbar { display:flex; align-items:center; justify-content:space-between; padding:0.5rem 1rem; border-bottom:1px solid var(--ax-border); background:var(--ax-bg); position:sticky; top:0; z-index:10; }
-  .ax-brand { font-weight:700; letter-spacing:.08em; }
-  .ax-nav { display:flex; gap:.5rem; overflow:auto; }
-  .ax-tab { padding:.5rem .75rem; border-radius:.5rem; text-decoration:none; }
-  .ax-tab.active { outline:1px solid var(--ax-red); background:color-mix(in srgb, var(--ax-red) 12%, transparent); }
-  .ax-actions .ax-btn { padding:.45rem .8rem; border:1px solid var(--ax-border); border-radius:.5rem; background:transparent; }
-  .ax-ticker { border-bottom:1px dashed var(--ax-border); padding:.25rem .75rem; font-size:.9rem; }
-  .ax-main { flex:1 1 auto; padding:1rem; }
-  .ax-status { border-top:1px solid var(--ax-border); padding:.35rem .75rem; font-size:.85rem; color:var(--ax-muted); }
-*/
-

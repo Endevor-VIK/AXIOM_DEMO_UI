@@ -1,0 +1,188 @@
+/*
+  AXIOM PANEL — Login: Red Protocol Theme (v2.1)
+
+  Этот QSS-файл задаёт стили для окна логина и его компонентов.
+  Акцент на тёмных градиентах, красных линиях и компактной верстке,
+  вдохновлён дизайном «RED PROTOCOL» из вселенной AXIOM.
+
+  Чтобы подключить этот стиль, убедитесь, что путь к файлу указан
+  в параметре `qss_path` конструктору LoginWindow или файл лежит
+  по умолчанию в директории ui/style/axiom_red.qss рядом с login_window.py.
+*/
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Основа диалога: не имеет собственного фона, фон рисуется на frame */
+QDialog#AxiomLoginWindow {
+    background: transparent;
+}
+
+/* Внешний контейнер с рамкой и тенью */
+/* Ограничиваем область: стиль применяется только в окне логина.
+   Префикс QDialog#AxiomLoginWindow гарантирует, что эти правила
+   не будут влиять на другие окна с таким же objectName. */
+QDialog#AxiomLoginWindow QFrame#AxiomWindowFrame {
+    /* Тёмный градиент: сверху слегка светлее, к низу насыщеннее */
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                               stop:0   #0f0e13,
+                               stop:0.6 #0c0d11,
+                               stop:1   #09080c);
+    border: 2px solid #c31732;      /* ярко-красная рамка */
+    border-radius: 20px;
+}
+
+/* Карточка авторизации */
+QDialog#AxiomLoginWindow QFrame#AxiomCard {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                               stop:0   #141218,
+                               stop:1   #0f0e13);
+    border: 1px solid #36151f;
+    border-radius: 16px;
+    padding: 26px;
+}
+
+/* Заголовок и подзаголовок */
+QDialog#AxiomLoginWindow QLabel#AxiomTitle {
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    margin-top: 6px;
+    margin-bottom: 2px;
+}
+
+QDialog#AxiomLoginWindow QLabel#AxiomSubtitle {
+    color: #f1f1f6;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+}
+
+/* Разделитель: тонкая линия с симметричным градиентом */
+QDialog#AxiomLoginWindow QFrame#AxiomDivider {
+    min-height: 2px;
+    max-height: 2px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    /*
+      Заостренные (прозрачные) концы: переходы в прозрачность с обеих сторон,
+      ярко-красная середина создаёт ощущение остроты.
+    */
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                               stop:0.0 transparent,
+                               stop:0.15 #c31732,
+                               stop:0.85 #c31732,
+                               stop:1.0 transparent);
+    border-radius: 1px;
+}
+
+/* Поля ввода */
+QDialog#AxiomLoginWindow QLineEdit#UserField, QDialog#AxiomLoginWindow QLineEdit#PassField {
+    background: #0d0c11;
+    border: 1px solid #4d202f;          /* более заметная рамка */
+    border-radius: 14px;                /* округляем углы */
+    padding: 10px 14px;
+    color: #f5f5fa;                     /* светлый текст ввода */
+    font-size: 14px;
+    letter-spacing: 0.04em;
+}
+
+/* Цвет плейсхолдера и поведение фокуса */
+QDialog#AxiomLoginWindow QLineEdit#UserField::placeholder,
+QDialog#AxiomLoginWindow QLineEdit#PassField::placeholder {
+    color: #8a848e;
+    font-style: italic;
+    letter-spacing: 0.04em;
+}
+
+QDialog#AxiomLoginWindow QLineEdit#UserField:focus, QDialog#AxiomLoginWindow QLineEdit#PassField:focus {
+    border: 1px solid #c31732;
+}
+
+/* Ошибка в поле (property error=true ставится кодом) */
+QDialog#AxiomLoginWindow QLineEdit[error="true"] {
+    border: 1px solid #c31732;
+}
+
+/* Сообщение об ошибке */
+QDialog#AxiomLoginWindow QLabel#AxiomError {
+    color: #c31732;
+    font-size: 12px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+/* Кнопка входа */
+QDialog#AxiomLoginWindow QPushButton#LoginButton {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                               stop:0   #c31732,
+                               stop:1   #95152a);
+    border: 1px solid #36151f;
+    border-radius: 16px;
+    padding: 10px 20px;
+    color: #140c10;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+QDialog#AxiomLoginWindow QPushButton#LoginButton:hover {
+    background: #c31732;
+}
+
+QDialog#AxiomLoginWindow QPushButton#LoginButton:pressed {
+    background: #95152a;
+}
+
+QDialog#AxiomLoginWindow QPushButton#LoginButton:disabled {
+    background: #4a0e19;
+    color: #76636a;
+}
+
+/* Футер: фраза AXIOM DESIGN ... оформлена как «чип» */
+QDialog#AxiomLoginWindow QLabel#AxiomFooter {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                               stop:0   #1e1015,
+                               stop:1   #110a0e);
+    border: 1px solid #36151f;
+    border-radius: 14px;
+    padding: 4px 14px;
+    color: #e2576f;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+}
+
+/* Заголовок в title bar */
+QDialog#AxiomLoginWindow QWidget#AxiomTitleBar {
+    background: transparent;
+    border-bottom: 1px solid #36151f;
+}
+
+QDialog#AxiomLoginWindow QLabel#AxiomTBIcon {
+    color: #c31732;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+QDialog#AxiomLoginWindow QLabel#AxiomTBTitle {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+/* Кнопки title bar */
+QDialog#AxiomLoginWindow QPushButton#TBMin, QDialog#AxiomLoginWindow QPushButton#TBClose {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: #c31732;
+}
+
+QDialog#AxiomLoginWindow QPushButton#TBMin:hover {
+    color: #e2576f;
+}
+
+QDialog#AxiomLoginWindow QPushButton#TBClose:hover {
+    color: #e2576f;
+}

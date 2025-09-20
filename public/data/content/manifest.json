@@ -1,8 +1,93 @@
-[
+{
+  "meta": {
+    "version": 2,
+    "generatedAt": "2025-09-17T16:56:32Z",
+    "source": "manual-run"
+  },
+  "items": [
     {
-      "title": "Content демо: приветствие",
+      "id": "LOC-0001",
+      "category": "locations",
+      "subCategory": "demo",
+      "title": "Central Node Plaza",
+      "summary": "Demo scene for the content hub redesign.",
       "date": "2025-09-06",
-      "tags": ["intro","demo"],
-      "file": "content/2025-09-06__content-demo.html"
+      "tags": [
+        "intro",
+        "demo"
+      ],
+      "file": "locations/2025-09-06__content-demo.html",
+      "format": "html",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 0,
+      "lang": "ru",
+      "links": [],
+      "meta": {
+        "v": 2
+      }
     }
-  ]
+  ],
+  "categories": {
+    "all": {
+      "count": 1,
+      "manifest": "content/manifest.json"
+    },
+    "locations": {
+      "count": 1,
+      "manifest": "content/locations/manifest.json"
+    },
+    "characters": {
+      "count": 0,
+      "manifest": "content/characters/manifest.json"
+    },
+    "technologies": {
+      "count": 0,
+      "manifest": "content/technologies/manifest.json"
+    },
+    "factions": {
+      "count": 0,
+      "manifest": "content/factions/manifest.json"
+    },
+    "events": {
+      "count": 0,
+      "manifest": "content/events/manifest.json"
+    },
+    "lore": {
+      "count": 1,
+      "manifest": "content/lore/_index.json"
+    }
+  },
+  "lore": {
+    "index": "content/lore/_index.json",
+    "roots": [
+      {
+        "id": "VOL-1",
+        "title": "Volume I — Foundations",
+        "path": "volume-i",
+        "order": 1,
+        "summary": "Establishing the factions and core timeline.",
+        "children": [
+          {
+            "id": "CH-1",
+            "title": "Chapter 1 — First Contact",
+            "path": "chapter-1",
+            "order": 1,
+            "summary": "AXIOM probes encounter the unknown signal.",
+            "children": [
+              {
+                "id": "SC-1",
+                "title": "Scene 1 — Signal at Dawn",
+                "path": "scene-1",
+                "order": 1,
+                "summary": "Transcript of the first decoded burst.",
+                "file": "lore/demo/scene-1.html"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

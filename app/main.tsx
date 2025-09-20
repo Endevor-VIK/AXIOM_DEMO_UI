@@ -1,29 +1,24 @@
-// AXIOM_DEMO_UI — WEB CORE
-// Canvas: C03 — app/main.tsx
-// Purpose: React root, Router, providers, global styles.
-
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 
-// Global styles
-import '@styles/tokens.css'
-import '@styles/app.css'
+import '../ax-design/tokens.css'
+import '../ax-design/components.css'
+import '../styles/app.css'
 
-// Routes
 import Layout from '@/app/routes/_layout'
 import LoginPage from '@/app/routes/login/page'
 import DashboardPage from '@/app/routes/dashboard/page'
 import RoadmapPage from '@/app/routes/dashboard/roadmap/page'
 import AuditPage from '@/app/routes/dashboard/audit/page'
-import ContentPage from '@/app/routes/dashboard/content/page'
+import ContentLayout from '@/app/routes/dashboard/content/_layout'
+import AllRoute from '@/app/routes/dashboard/content/AllRoute'
+import CategoryRoute from '@/app/routes/dashboard/content/CategoryRoute'
+import LoreRoute from '@/app/routes/dashboard/content/LoreRoute'
 import NewsPage from '@/app/routes/dashboard/news/page'
 
-// Guards / system
 import AuthGate from '@/components/AuthGate'
 import TerminalBoot from '@/components/TerminalBoot'
-
-// Terminal boot is shown via the root route so hooks work under Router
 
 const router = createBrowserRouter(
   [
@@ -40,11 +35,20 @@ const router = createBrowserRouter(
         { index: true, element: <DashboardPage /> },
         { path: 'roadmap', element: <RoadmapPage /> },
         { path: 'audit', element: <AuditPage /> },
-        { path: 'content', element: <ContentPage /> },
+        {
+          path: 'content',
+          element: <ContentLayout />,
+          children: [
+            { index: true, element: <Navigate to='all' replace /> },
+            { path: 'all', element: <AllRoute /> },
+            { path: 'lore/*', element: <LoreRoute /> },
+            { path: ':category', element: <CategoryRoute /> },
+          ],
+        },
         { path: 'news', element: <NewsPage /> },
       ],
     },
-    { path: '*', element: <Navigate to="/" replace /> },
+    { path: '*', element: <Navigate to='/' replace /> },
   ],
   { basename: import.meta.env.BASE_URL }
 )
@@ -62,4 +66,6 @@ function mount() {
 }
 
 mount()
+
+
 

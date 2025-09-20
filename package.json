@@ -15,9 +15,14 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "validate:content": "tsx tools/validate-content.ts"
   },
   "dependencies": {
+    "@types/dompurify": "^3.0.5",
+    "ajv": "^8.17.1",
+    "dompurify": "^3.2.7",
+    "marked": "^12.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.0"

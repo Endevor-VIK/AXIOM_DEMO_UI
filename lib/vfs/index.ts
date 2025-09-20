@@ -1,6 +1,9 @@
-// AXIOM_DEMO_UI — WEB CORE
-// Canvas: C09 — lib/vfs/index.ts
+﻿// AXIOM_DEMO_UI :: WEB CORE
+// Canvas: C09 :: lib/vfs/index.ts
 // Purpose: Read-only VFS layer for static data snapshots under /data.
+
+import Ajv from 'ajv'
+import type { ValidateFunction } from 'ajv'
 
 export type Json = unknown
 
@@ -17,7 +20,83 @@ export interface ManifestItem {
   title?: string
   date?: string // ISO-like
   file?: string // relative path under data/
+  tags?: string[]
   [k: string]: unknown
+}
+
+export const contentCategories = [
+  'locations',
+  'characters',
+  'technologies',
+  'factions',
+  'events',
+  'lore',
+] as const
+
+export type ContentCategory = (typeof contentCategories)[number]
+export type ContentStatus = 'draft' | 'published' | 'archived'
+export type ContentVisibility = 'public' | 'internal'
+export type ContentFormat = 'html' | 'md' | 'markdown' | 'txt'
+
+export interface ContentLink {
+  type: string
+  ref: string
+  label?: string
+  href?: string
+}
+
+export interface ContentMeta {
+  v: number
+  [key: string]: unknown
+}
+
+export interface ContentItem extends ManifestItem {
+  id: string
+  category: ContentCategory | 'all'
+  subCategory?: string
+  title: string
+  summary?: string
+  date: string
+  file: string
+  format: ContentFormat
+  author?: string
+  status: ContentStatus
+  visibility?: ContentVisibility
+  weight?: number
+  lang?: string
+  links?: ContentLink[]
+  meta: ContentMeta
+}
+
+export interface ContentCategorySummary {
+  count: number
+  manifest: string
+}
+
+export interface LoreIndexNode {
+  id: string
+  title: string
+  order?: number
+  summary?: string
+  path?: string
+  file?: string
+  children?: LoreIndexNode[]
+}
+
+export interface ContentLoreSummary {
+  index: string
+  roots: LoreIndexNode[]
+}
+
+export interface ContentAggregate {
+  meta: {
+    version: number
+    generatedAt?: string
+    source?: string
+  }
+  items: ContentItem[]
+  categories: Record<'all' | ContentCategory, ContentCategorySummary>
+  lore: ContentLoreSummary
 }
 
 export type NewsKind = 'update' | 'release' | 'roadmap' | 'heads-up'
@@ -30,26 +109,24 @@ export interface NewsItem {
   tags?: string[]
   summary?: string
   link?: string
+  file?: string
 }
 
 export interface VfsApi {
-  /** Read arbitrary JSON under /data */ json<T = Json>(relPath: string, opts?: FetchOptions): Promise<T>
-  /** Read arbitrary text (md/html/txt) under /data */ text(relPath: string, opts?: FetchOptions): Promise<string>
-  /** Convenience: read core snapshots */
+  json<T = Json>(relPath: string, opts?: FetchOptions): Promise<T>
+  text(relPath: string, opts?: FetchOptions): Promise<string>
   readIndex(opts?: FetchOptions): Promise<Record<string, unknown>>
   readObjects(opts?: FetchOptions): Promise<Record<string, unknown>>
   readLogs(opts?: FetchOptions): Promise<Record<string, unknown>>
-  /** Manifests */
   readAuditsManifest(opts?: FetchOptions): Promise<ManifestItem[]>
-  readContentManifest(opts?: FetchOptions): Promise<ManifestItem[]>
+  readContentManifest(opts?: FetchOptions): Promise<ContentItem[]>
+  readContentAggregate(opts?: FetchOptions): Promise<ContentAggregate>
+  readLoreIndex(relPath?: string, opts?: FetchOptions): Promise<LoreIndexNode>
   readNewsManifest(opts?: FetchOptions): Promise<NewsItem[]>
-  /** Raw fetch with base applied (no content-type checks) */
   fetchRaw(relPath: string, init?: RequestInit): Promise<Response>
-  /** Clear in-memory cache */
   clearCache(): void
 }
 
-/** Lightweight in-memory cache */
 const cache = new Map<string, unknown>()
 
 export class VfsError extends Error {
@@ -68,7 +145,7 @@ function stripLeadingSlash(s: string): string {
 function disallowTraversal(rel: string): void {
   const backslash = String.fromCharCode(92)
   if (rel.includes('..') || rel.startsWith('/') || rel.startsWith(backslash)) {
-    throw new VfsError(`[VFS] Illegal relative path: ${rel}`)
+    throw new VfsError('[VFS] Illegal relative path: ' + rel)
   }
 }
 
@@ -89,30 +166,129 @@ async function fetchExpect(
   init?: RequestInit
 ): Promise<Response> {
   const res = await fetch(url, { cache: 'no-store', ...init })
-  if (!res.ok) throw new VfsError(`[VFS] HTTP ${res.status} for ${url}`)
+  if (!res.ok) throw new VfsError('[VFS] HTTP ' + res.status + ' for ' + url)
   const ct = res.headers.get('content-type') || ''
   if (kind === 'json' && !ct.startsWith('application/json')) {
-    if (ct && !ct.includes('json')) throw new VfsError(`[VFS] Unexpected content-type ${ct} for ${url}`)
+    if (ct && !ct.includes('json')) throw new VfsError('[VFS] Unexpected content-type ' + ct + ' for ' + url)
   }
   if (kind === 'html' && !ct.includes('html') && !ct.includes('text/')) {
-    throw new VfsError(`[VFS] Unexpected content-type ${ct} for ${url}`)
+    throw new VfsError('[VFS] Unexpected content-type ' + ct + ' for ' + url)
   }
-  // text — best effort
   return res
 }
 
 function key(base: string, rel: string) {
-  return `vfs:${base}${rel}`
+  return 'vfs:' + base + rel
+}
+
+const ajvInstance = new Ajv({ allErrors: true, strict: false })
+const CONTENT_SCHEMA_PATH = 'content/_schema/content.schema.json'
+const CONTENT_MANIFEST_PATH = 'content/manifest.json'
+const DEFAULT_LORE_INDEX_REL = 'lore/_index.json'
+const DEFAULT_LORE_INDEX_PATH = 'content/' + DEFAULT_LORE_INDEX_REL
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function normalizeManifestPath(value: string): string {
+  const trimmed = value.trim().replace(/^\.\/?/, '')
+  if (!trimmed) return ''
+  return trimmed.startsWith('content/') ? trimmed : 'content/' + trimmed
+}
+
+function normalizeLoreSummaryPath(value: string): string {
+  const trimmed = value.trim().replace(/^\.\/?/, '')
+  const normalized = trimmed.startsWith('content/') ? trimmed : 'content/' + trimmed
+  return normalized.startsWith('content/lore/') ? normalized : DEFAULT_LORE_INDEX_PATH
+}
+
+function normalizeLoreRequestPath(input?: string): string {
+  const raw = (input ?? '').trim().replace(/^content\//, '').replace(/^\.\/?/, '')
+  if (!raw) return DEFAULT_LORE_INDEX_REL
+  if (!raw.startsWith('lore/')) {
+    throw new VfsError('[VFS] Lore index path must stay under lore/: ' + input)
+  }
+  disallowTraversal(raw)
+  return raw
+}
+
+function sortContentItems(items: ContentItem[]): ContentItem[] {
+  return [...items].sort((a, b) => {
+    const weightA = typeof a.weight === 'number' ? a.weight : 0
+    const weightB = typeof b.weight === 'number' ? b.weight : 0
+    if (weightA !== weightB) return weightA - weightB
+    const dateA = a.date || ''
+    const dateB = b.date || ''
+    if (dateA < dateB) return 1
+    if (dateA > dateB) return -1
+    return a.id.localeCompare(b.id)
+  })
+}
+
+function buildCategorySummary(items: ContentItem[]): Record<'all' | ContentCategory, ContentCategorySummary> {
+  const base: Record<'all' | ContentCategory, ContentCategorySummary> = {
+    all: { count: items.length, manifest: CONTENT_MANIFEST_PATH },
+    locations: { count: 0, manifest: 'content/locations/manifest.json' },
+    characters: { count: 0, manifest: 'content/characters/manifest.json' },
+    technologies: { count: 0, manifest: 'content/technologies/manifest.json' },
+    factions: { count: 0, manifest: 'content/factions/manifest.json' },
+    events: { count: 0, manifest: 'content/events/manifest.json' },
+    lore: { count: 0, manifest: DEFAULT_LORE_INDEX_PATH },
+  }
+  for (const item of items) {
+    if (contentCategories.includes(item.category as ContentCategory)) {
+      const cat = item.category as ContentCategory
+      base[cat].count += 1
+    }
+  }
+  return base
+}
+
+function mergeCategorySummaries(
+  source: unknown,
+  items: ContentItem[]
+): Record<'all' | ContentCategory, ContentCategorySummary> {
+  const summary = buildCategorySummary(items)
+  if (!isRecord(source)) return summary
+  for (const key of Object.keys(summary) as Array<'all' | ContentCategory>) {
+    const entry = source[key]
+    if (isRecord(entry)) {
+      const manifest = typeof entry.manifest === 'string' ? entry.manifest : undefined
+      const count = typeof entry.count === 'number' ? entry.count : undefined
+      if (manifest) summary[key].manifest = normalizeManifestPath(manifest)
+      if (typeof count === 'number' && !Number.isNaN(count)) summary[key].count = count
+    }
+  }
+  return summary
+}
+
+function extractAggregateMeta(source: unknown): ContentAggregate['meta'] {
+  if (!isRecord(source)) return { version: 2 }
+  const versionRaw = source.version
+  const version = typeof versionRaw === 'number' ? versionRaw : Number(versionRaw) || 2
+  const meta: ContentAggregate['meta'] = { version }
+  if (typeof source.generatedAt === 'string') meta.generatedAt = source.generatedAt
+  if (typeof source.source === 'string') meta.source = source.source
+  return meta
+}
+
+function extractLoreSummary(source: unknown): ContentLoreSummary {
+  if (!isRecord(source)) return { index: DEFAULT_LORE_INDEX_PATH, roots: [] }
+  const index = typeof source.index === 'string' ? normalizeLoreSummaryPath(source.index) : DEFAULT_LORE_INDEX_PATH
+  const roots = Array.isArray(source.roots) ? (source.roots as LoreIndexNode[]) : []
+  return { index, roots }
 }
 
 export function createVfs(config?: VfsConfig): VfsApi {
   const base = makeBase(config)
+  let contentValidator: ValidateFunction | null = null
 
   async function json<T = Json>(relPath: string, opts?: FetchOptions): Promise<T> {
     const k = key(base, relPath)
     if (!opts?.force && cache.has(k)) return cache.get(k) as T
     const url = joinBase(base, relPath)
-    const res = await fetchExpect(url, 'json')
+    const res = await fetchExpect(url, opts?.expect ?? 'json')
     const data = (await res.json()) as T
     cache.set(k, data)
     return data
@@ -122,7 +298,7 @@ export function createVfs(config?: VfsConfig): VfsApi {
     const k = key(base, relPath)
     if (!opts?.force && cache.has(k)) return cache.get(k) as string
     const url = joinBase(base, relPath)
-    const res = await fetchExpect(url, 'text')
+    const res = await fetchExpect(url, opts?.expect ?? 'text')
     const data = await res.text()
     cache.set(k, data)
     return data
@@ -133,14 +309,71 @@ export function createVfs(config?: VfsConfig): VfsApi {
     return fetch(url, { cache: 'no-store', ...init })
   }
 
-  // Core snapshots
   const readIndex = (opts?: FetchOptions) => json<Record<string, unknown>>('index.json', opts)
   const readObjects = (opts?: FetchOptions) => json<Record<string, unknown>>('objects.json', opts)
   const readLogs = (opts?: FetchOptions) => json<Record<string, unknown>>('logs.json', opts)
-
-  // Manifests
   const readAuditsManifest = (opts?: FetchOptions) => json<ManifestItem[]>('audits/manifest.json', opts)
-  const readContentManifest = (opts?: FetchOptions) => json<ManifestItem[]>('content/manifest.json', opts)
+
+  async function ensureContentValidator(): Promise<ValidateFunction> {
+    if (contentValidator) return contentValidator
+    const schema = await json<Json>(CONTENT_SCHEMA_PATH, { force: true })
+    if (!isRecord(schema) && !Array.isArray(schema)) {
+      throw new VfsError('[VFS] content schema has unexpected shape')
+    }
+    contentValidator = ajvInstance.compile(schema as Record<string, unknown>)
+    return contentValidator
+  }
+
+  async function validateContentItems(data: unknown): Promise<ContentItem[]> {
+    const validator = await ensureContentValidator()
+    if (!validator(data)) {
+      const detail = ajvInstance.errorsText(validator.errors ?? [], { separator: '; ' })
+      throw new VfsError('[VFS] content manifest invalid: ' + detail)
+    }
+    return data as ContentItem[]
+  }
+
+  async function readContentAggregate(opts?: FetchOptions): Promise<ContentAggregate> {
+    const cacheKey = key(base, CONTENT_MANIFEST_PATH + '#aggregate')
+    if (!opts?.force && cache.has(cacheKey)) return cache.get(cacheKey) as ContentAggregate
+
+    const raw = await json<unknown>(CONTENT_MANIFEST_PATH, opts)
+    let aggregate: ContentAggregate
+
+    if (Array.isArray(raw)) {
+      const items = sortContentItems(await validateContentItems(raw))
+      aggregate = {
+        meta: { version: 1, source: 'legacy' },
+        items,
+        categories: buildCategorySummary(items),
+        lore: { index: DEFAULT_LORE_INDEX_PATH, roots: [] },
+      }
+    } else if (isRecord(raw)) {
+      const items = sortContentItems(await validateContentItems(raw.items ?? []))
+      aggregate = {
+        meta: extractAggregateMeta(raw.meta),
+        items,
+        categories: mergeCategorySummaries(raw.categories, items),
+        lore: extractLoreSummary(raw.lore),
+      }
+    } else {
+      throw new VfsError('[VFS] content/manifest.json has unexpected shape')
+    }
+
+    cache.set(cacheKey, aggregate)
+    return aggregate
+  }
+
+  async function readLoreIndex(relPath?: string, opts?: FetchOptions): Promise<LoreIndexNode> {
+    const normalized = normalizeLoreRequestPath(relPath)
+    return json<LoreIndexNode>('content/' + normalized, opts)
+  }
+
+  const readContentManifest = async (opts?: FetchOptions) => {
+    const aggregate = await readContentAggregate(opts)
+    return aggregate.items
+  }
+
   const readNewsManifest = async (opts?: FetchOptions) => {
     const items = await json<unknown>('news/manifest.json', opts)
     return validateNewsArray(items)
@@ -148,6 +381,7 @@ export function createVfs(config?: VfsConfig): VfsApi {
 
   function clearCache() {
     cache.clear()
+    contentValidator = null
   }
 
   return {
@@ -158,13 +392,14 @@ export function createVfs(config?: VfsConfig): VfsApi {
     readLogs,
     readAuditsManifest,
     readContentManifest,
+    readContentAggregate,
+    readLoreIndex,
     readNewsManifest,
     fetchRaw,
     clearCache,
   }
 }
 
-/** Runtime guard for News manifest */
 function isString(x: unknown): x is string {
   return typeof x === 'string'
 }
@@ -185,6 +420,7 @@ function validateNewsArray(data: unknown): NewsItem[] {
     const tags = obj.tags
     const summary = obj.summary
     const link = obj.link
+    const file = obj.file
     if (!isString(id) || !isString(date) || !isString(title) || !isString(kind)) {
       throw new VfsError('[VFS] invalid news item')
     }
@@ -197,12 +433,16 @@ function validateNewsArray(data: unknown): NewsItem[] {
     if (isStringArray(tags)) item.tags = tags as string[]
     if (isString(summary)) item.summary = summary as string
     if (isString(link)) item.link = link as string
+    if (isString(file)) item.file = file as string
     out.push(item)
   }
-  // sort desc by date (YYYY-MM-DD)
   out.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
   return out
 }
 
 export const vfs = createVfs()
+
+
+
+
 
