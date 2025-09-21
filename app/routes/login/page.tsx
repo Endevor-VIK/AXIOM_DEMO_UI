@@ -296,3 +296,4 @@ export default function LoginPage() {
     </section>
   );
 }
+// стили «RED PROTOCOL ACCESS GATEWAY» и нижней плашки применяются через CSS (см. login-bg.css)

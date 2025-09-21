@@ -1,7 +1,7 @@
 /* styles/login-cyber.css — lightweight cyber overlay
    Слои строго ПОЗАДИ карточки: z-index управляется в components.css */
 
-   .ax-cyber{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+   .ax-cyber{ position:absolute; inset:0; z-index:1; pointer-events:none; contain: paint; }
 
    /* scanlines (очень лёгкие) */
    .ax-cyber__scanlines{
@@ -32,7 +32,13 @@
    .ax-console__line{ display:flex; align-items:center; gap:8px; }
    .ax-console__prompt{ color:#6aff9f; }
    .ax-console__typed{ white-space: pre; }
-   .ax-console__cursor{ width:8px; height:12px; background:#6aff9f; display:inline-block; opacity:.9; animation: ax-caret .9s steps(1) infinite; }
+   .ax-console__cursor{
+     width:8px; height:12px;
+     background: linear-gradient(180deg, #93ffbf, #37e98a);
+     display:inline-block; opacity:.9;
+     box-shadow: 0 0 8px rgba(55,233,138,.35);
+     animation: ax-caret .9s steps(1) infinite;
+   }
    @keyframes ax-caret{ 50% { opacity:.1; } }
    
    /* локальный глитч — только для оверлея и только пока секция .ax-login.ax-glitch */
@@ -48,4 +54,11 @@
    @media (prefers-reduced-motion: reduce){
      .ax-cyber__scanlines{ animation:none !important; }
      .ax-console{ transition: opacity .15s ease; }
+   }
+
+   /* мобильные ограничения консоли */
+   @media (max-width: 720px){
+     .ax-console{ max-width: 86vw; backdrop-filter: blur(3px); }
+     .ax-console__pre{ font-size: 12px; }
+     .ax-console__head{ padding:5px 8px; }
    }
