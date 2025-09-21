@@ -1,5 +1,13 @@
 [
   {
+    "id": "NEWS-2025-09-21-LOGIN-NO-SCROLL",
+    "date": "2025-09-21",
+    "title": "Login: нижняя плашка встроена, убран вертикальный скролл (Баг присутствует)",
+    "kind": "update",
+    "tags": ["webcore", "ui", "login", "grid", "bugfix"],
+    "summary": "Плашка встроена в .ax-login (grid: 1fr auto), высота секции 100dvh/100svh; --ax-hint-reserve вынесен в паддинги, убран margin у плашки, overflow: clip/hidden. Скроллбар исчез (На smartphone), hover‑панель стабильна."
+  },
+  {
     "id": "NEWS-2025-09-20-PATCH-RED-PROTOCOL",
     "date": "2025-09-20",
     "title": "Патч: RED PROTOCOL логин — чистые эффекты, фикс бордера",
