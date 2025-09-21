@@ -33,6 +33,18 @@
     /* Layout */
     --ax-gap: 12px;
     --ax-gap-lg: 20px;
+
+    /* aliases + accent glow */
+    --ax-red-2: var(--ax-red2);
+    --ax-glow-accent: 0 0 0 1px rgba(255,32,52,.18), 0 0 36px rgba(255,32,52,.22);
+
+    /* login bg gradient (used by wrappers if нужно) */
+    --ax-login-grad:
+      radial-gradient(1400px 720px at 80% 110%, #17060a 0%, transparent 55%),
+      linear-gradient(135deg, var(--ax-bg) 70%, var(--ax-ink) 100%);
+
+    /* safe areas */
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
   
   @media (max-width: 480px){
@@ -66,4 +78,3 @@
   
   /* Terminal monospace */
   .ax-mono{ font-family: var(--ax-font-mono); }
-  

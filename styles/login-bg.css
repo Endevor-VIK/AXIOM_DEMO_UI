@@ -7,21 +7,59 @@
   }
   
   /* контейнер /login уже имеет position:relative */
-  .ax-login__bg{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+  .ax-login__bg{ position:absolute; inset:0; z-index:0; pointer-events:none; contain: paint; overflow: hidden; }
   
-  /* базовый градиент — аккуратный и не конфликтует с карточкой */
+  /* БАЗА + ОБЪЁМ + СИЛУЭТ ГОРОДА */
   .ax-login__bg::before{
     content:""; position:absolute; inset:0;
+    /* Слои: туман низа → глубинный ореол → диагональные панели → СИЛУЭТ ГОРОДА → база */
     background:
+      /* мягкая дымка у горизонта */
+      radial-gradient(1200px 360px at 50% 115%, rgba(255,32,52,.08), transparent 60%),
+      /* объёмный ореол */
       radial-gradient(1400px 700px at 85% 110%, #17060a 0%, transparent 55%),
+      /* диагональные панели */
+      repeating-linear-gradient(135deg, rgba(255,255,255,.02) 0 2px, transparent 2px 22px),
+      /* СИЛУЭТ: набор «зданий» у низа (несколько прямоугольников с разной высотой) */
+      linear-gradient(#151016 0 0) bottom 0 left 6% / 50px 14% no-repeat,
+      linear-gradient(#151016 0 0) bottom 0 left 12%/ 28px 10% no-repeat,
+      linear-gradient(#1a1118 0 0) bottom 0 left 18%/ 36px 16% no-repeat,
+      linear-gradient(#151016 0 0) bottom 0 left 25%/ 46px 12% no-repeat,
+      linear-gradient(#1a1118 0 0) bottom 0 left 34%/ 38px 18% no-repeat,
+      linear-gradient(#151016 0 0) bottom 0 left 42%/ 52px 15% no-repeat,
+      linear-gradient(#1a1118 0 0) bottom 0 left 51%/ 40px 20% no-repeat,
+      linear-gradient(#151016 0 0) bottom 0 left 60%/ 44px 13% no-repeat,
+      linear-gradient(#1a1118 0 0) bottom 0 left 68%/ 34px 17% no-repeat,
+      linear-gradient(#151016 0 0) bottom 0 left 76%/ 48px 11% no-repeat,
+      linear-gradient(#1a1118 0 0) bottom 0 left 84%/ 30px 15% no-repeat,
+      /* база */
       linear-gradient(135deg, var(--ax-bg) 72%, var(--ax-ink) 100%);
+    filter: saturate(1.02);
   }
   
-  /* дополнительная виньетка (мягкая) */
+  /* ДОРОГИ ДАННЫХ + УЗЛЫ + ВИНЬЕТКА */
   .ax-login__bg::after{
-    content:""; position:absolute; inset:0; opacity:var(--login-bg-vignette-opacity);
+    content:""; position:absolute; inset:0;
     background:
-      radial-gradient(1200px 360px at 50% 115%, rgba(255,32,52,.10), transparent 60%);
+      /* «data lanes» — две диагональные световые трассы, мягко двигаются */
+      linear-gradient(110deg, transparent 0 46%, rgba(255,32,52,.10) 46% 47%, transparent 47% 100%) 0 0/ 100% 100%,
+      linear-gradient(70deg,  transparent 0 52%, rgba(255,32,52,.08) 52% 53%, transparent 53% 100%) 0 0/ 100% 100%,
+      /* редкие узлы‑огни */
+      radial-gradient(6px 6px at 18% 22%, rgba(255,64,86,.16), transparent 70%),
+      radial-gradient(8px 8px at 72% 32%, rgba(255,64,86,.12), transparent 70%),
+      radial-gradient(5px 5px at 64% 78%, rgba(255,64,86,.10), transparent 70%),
+      /* вертикальные «code runners» (очень лёгкие) */
+      linear-gradient(90deg, transparent 0, rgba(255,32,52,.10) 1px, transparent 2px) 0 0/ 120px 100%,
+      /* виньетка */
+      radial-gradient(1200px 360px at 50% 115%, rgba(255,32,52,.12), transparent 60%);
+    mix-blend-mode: soft-light;
+    opacity:.92;
+    animation: ax-bg-runners 18s linear infinite;
+    will-change: background-position;
+  }
+  @keyframes ax-bg-runners{
+    from{ background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+    to  { background-position: 8% 0, -6% 0, 0 0, 0 0, 0 0, 120px 0, 0 0; }
   }
   
   /* опциональная сетка — просто включи класс .ax-login--grid на секции */
@@ -33,4 +71,204 @@
     mix-blend-mode: soft-light;
     opacity: max(var(--login-bg-grid-opacity), .25);
   }
-  
+
+/* Сабтайтл по центру: красивый градиент + бегущий underline */
+.ax-login .ax-login-sub{
+  position: relative;
+  margin: 10px auto 8px;
+  text-align: center;
+  font: 600 12px/1.7 var(--ax-font-mono, "JetBrains Mono", monospace);
+  letter-spacing: .18em; text-transform: uppercase;
+  background: linear-gradient(90deg, #ffe9ec, #ffb4be);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 10px rgba(255,32,52,.18));
+}
+.ax-login .ax-login-sub::after{
+  content:"";
+  position:absolute; left:50%; bottom:-8px; transform:translateX(-50%);
+  width: min(60%, 420px); height: 2px; border-radius:999px;
+  background:
+    linear-gradient(90deg, transparent, rgba(255,64,86,.35) 6%, var(--ax-red) 50%, rgba(255,64,86,.35) 94%, transparent),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 8px, transparent 8px 16px);
+  mix-blend-mode: screen;
+  animation: ax-code-line 2.8s cubic-bezier(.2,.8,.2,1) infinite;
+  box-shadow: 0 0 18px rgba(255,32,52,.26);
+}
+@keyframes ax-code-line{
+  0%   { background-position: 0 0,   0 0;   opacity:.95; }
+  50%  { background-position: 0 0, -64px 0; opacity:.7; }
+  100% { background-position: 0 0, -128px 0; opacity:.95; }
+}
+
+/* --- VIKTOR HR (scoped to login) --- */
+
+/* базовый разделитель */
+.ax-login .ax-hr{
+  display:block;
+  position:relative;
+  width:100%;
+  height:1px;
+  margin:.5rem 0;
+  background: transparent;
+}
+
+/* линия + маска для острых концов, плавный центр */
+.ax-login .ax-hr.ax-hr--viktor{
+  --hr-red: var(--ax-red, #ff2034);
+  height:2px;
+  margin:10px 0 12px;
+  border:0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,64,86,.10) 14%,
+    rgba(255,64,86,.24) 28%,
+    var(--hr-red) 50%,
+    rgba(255,64,86,.24) 72%,
+    rgba(255,64,86,.10) 86%,
+    transparent 100%);
+  background-repeat: no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+}
+
+/* мягкий центральный блик */
+.ax-login .ax-hr.ax-hr--viktor::before{
+  content:"";
+  position:absolute;
+  left:50%; top:-6px; transform: translateX(-50%);
+  width: 72px; height: 14px; pointer-events:none;
+  background: radial-gradient(60% 100% at 50% 50%,
+    rgba(255,96,112,.42) 0%,
+    rgba(255,96,112,.14) 55%,
+    rgba(255,96,112,0) 100%);
+  filter: blur(.6px);
+  opacity:.66;
+}
+
+/* свечение — отдельный слой с маской */
+.ax-login .ax-hr.ax-hr--viktor::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; top:-7px; height:16px; pointer-events:none;
+  background: radial-gradient(60% 160% at 50% 50%,
+    rgba(255,32,52,.22) 0%,
+    rgba(255,32,52,0) 70%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+}
+
+/* узкий вариант — без ресэмплинга */
+.ax-login .ax-hr.ax-hr--viktor.slim{
+  clip-path: inset(0 7%);
+  opacity:.95;
+  margin:14px 0;
+}
+
+.ax-login .ax-login-head + .ax-hr.ax-hr--viktor{
+  margin-top:6px; margin-bottom:12px;
+}
+
+/* --- Hover-reveal bottom hint (pill-triggered) --- */
+/* встроена в низ секции (.ax-login — grid: 1fr auto) */
+.ax-login .ax-bottom-hint{
+  position: relative;          /* больше не absolute/fixed */
+  z-index: 2;                  /* над фоновыми слоями */
+  grid-row: 2;                 /* нижний ряд сетки */
+  justify-self: center;        /* по центру по горизонтали */
+  width: min(96vw, 1100px);
+  margin: 8px 0 0; /* без нижнего внешнего отступа — не увеличиваем высоту страницы */
+  display: grid; place-items: center;
+  pointer-events: auto;
+}
+
+/* красная плашка-триггер */
+.ax-login .ax-bottom-hint__pill{
+  all: unset;
+  width: 94px; height: 10px; border-radius: 999px;
+  background: linear-gradient(180deg, var(--ax-red), color-mix(in srgb, var(--ax-red-2) 70%, var(--ax-red) 30%));
+  box-shadow: 0 0 0 1px rgba(58,18,22,.85) inset, 0 0 22px rgba(255,32,52,.35);
+  cursor: pointer; pointer-events: auto;
+  transition: transform .18s ease, box-shadow .2s ease, filter .2s ease;
+}
+.ax-login .ax-bottom-hint__pill:hover,
+.ax-login .ax-bottom-hint__pill:focus-visible{
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(58,18,22,1) inset, 0 0 32px rgba(255,32,52,.45);
+  filter: saturate(1.05);
+}
+
+/* панель с подсказкой (раскрывается) */
+.ax-login .ax-bottom-hint__panel{
+  pointer-events: auto;
+  margin-top: 6px;
+  width: 100%;
+  max-width: 1100px;
+  border: 1px solid #3a1216; border-radius: 12px;
+  background: linear-gradient(180deg, #1a1012, #12080a);
+  box-shadow: 0 0 14px rgba(255,32,52,.10) inset, 0 12px 28px rgba(0,0,0,.30);
+  color: #ffdfe1;
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  overflow: hidden;
+  max-height: 0; padding: 0;
+  opacity: 0; transform: translateY(6px) scale(.995);
+  transition: max-height .26s cubic-bezier(.2,.8,.2,1), padding .22s cubic-bezier(.2,.8,.2,1), opacity .18s ease, transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s ease;
+}
+
+/* стабильное раскрытие: hover контейнера, фокус внутри, hover плашки или панели */
+.ax-login .ax-bottom-hint:hover .ax-bottom-hint__panel,
+.ax-login .ax-bottom-hint:focus-within .ax-bottom-hint__panel,
+.ax-login .ax-bottom-hint__pill:hover + .ax-bottom-hint__panel,
+.ax-login .ax-bottom-hint__pill:focus-visible + .ax-bottom-hint__panel,
+.ax-login .ax-bottom-hint__panel:hover{
+  max-height: 56px; padding: 8px 14px;
+  opacity: 1; transform: translateY(0) scale(1);
+  box-shadow: 0 0 0 1px rgba(255,32,52,.20) inset, 0 0 26px rgba(255,32,52,.18), 0 12px 28px rgba(0,0,0,.30);
+}
+
+.ax-login .ax-bottom-hint__brand{
+  font: 700 12px/1 var(--ax-font-mono, "JetBrains Mono", monospace);
+  letter-spacing: .12em; text-transform: uppercase; color: #ffdfe1; white-space: nowrap;
+}
+.ax-login .ax-bottom-hint__text{
+  font: 12.5px/1.5 var(--ax-font-mono, "JetBrains Mono", monospace);
+  letter-spacing: .08em; text-transform: uppercase; color: #ffdfe1; opacity:.95; text-align:center;
+}
+.ax-login .ax-bottom-hint__sep{
+  flex: 0 0 8px; height: 1px; align-self: stretch; opacity:.25;
+  background: linear-gradient(90deg, var(--ax-red), transparent);
+  box-shadow: 0 0 16px rgba(255,32,52,.26);
+}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .ax-login .ax-bottom-hint__pill,
+  .ax-login .ax-bottom-hint__panel{ transition: none; }
+  .ax-login__bg::after{ animation: none !important; }
+  .ax-login .ax-login-sub::after{ animation: none !important; }
+}
+
+/* Smartphone оптимизации */
+@media (max-width: 560px){
+  .ax-login__bg::before{
+    background:
+      radial-gradient(900px 360px at 80% 110%, #17060a 0%, transparent 55%),
+      repeating-linear-gradient(135deg, rgba(255,255,255,.02) 0 2px, transparent 2px 22px),
+      /* компактный силуэт */
+      linear-gradient(#151016 0 0) bottom 0 left 12%/ 28px 12% no-repeat,
+      linear-gradient(#1a1118 0 0) bottom 0 left 32%/ 36px 16% no-repeat,
+      linear-gradient(#151016 0 0) bottom 0 left 56%/ 30px 10% no-repeat,
+      linear-gradient(#1a1118 0 0) bottom 0 left 78%/ 34px 14% no-repeat,
+      linear-gradient(135deg, var(--ax-bg) 72%, var(--ax-ink) 100%);
+  }
+  .ax-login__bg::after{ opacity:.78; animation-duration: 22s; }
+  .ax-login .ax-login-sub{ font-size: 11px; letter-spacing:.16em; }
+  .ax-login .ax-login-sub::after{ width: 72%; opacity:.9; }
+  .ax-login .ax-bottom-hint__panel{
+    max-height: 64px;
+    padding: 8px 12px;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

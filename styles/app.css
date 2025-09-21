@@ -7,7 +7,7 @@
 
  Changelog v0.5:
  - Kept layout shell (topbar / ticker / main / status) and module/dashboard patterns
- - Moved heavy login styles to components.css → here остаются только обёртки
+ - Moved heavy login styles to components.css → здесь остаются только обёртки
  - Unified spacing/containers to token scale; normalized focus rings
  - Reduced duplicate rules, tightened selectors; kept class names
 */
@@ -71,9 +71,38 @@
    /* ============================
       3) Login Wrappers (visual lives in components.css)
       ============================ */
-   .ax-login { min-height: calc(100dvh - 160px); display: grid; place-items: center; padding-block: calc(6vh + var(--space-5)); background: var(--ax-login-grad); }
-   .ax-login .ax-container { display: flex; justify-content: center; }
+   .ax-login{
+     /* точная высота экрана без переполнения */
+     /* replace min-height -> height (включая паддинги за счёт border-box) */
+     height: 100dvh;
+     height: 100svh; /* iOS Safari fix */
+
+     position: relative;
+     display: grid; place-items: center;
+     /* добавляем второй ряд под нижнюю плашку */
+     grid-template-rows: 1fr auto;
+
+     /* компактные адаптивные отступы */
+     padding-block-start: clamp(12px, 4vh, 48px);
+     /* увеличенный резерв под нижнюю плашку (чтобы ховер не добавлял скролл) */
+     --ax-hint-reserve: 96px;
+     padding-block-end: calc(clamp(12px, 4vh, 48px) + var(--safe-bottom) + var(--ax-hint-reserve));
+     background: var(--ax-login-grad);
+     overflow: hidden;
+     overscroll-behavior: contain;
+   }
+   @supports (overflow: clip){
+     .ax-login{ overflow: clip; }
+   }
+   .ax-login .ax-container{ display:flex; justify-content:center; }
    /* Card visuals, emblem, errors, actions → defined in ax-design/components.css */
+   
+   /* мобильный резерв — панель раскрыта всегда, даём чуть больше места */
+   @media (max-width: 560px){
+     .ax-login{
+       --ax-hint-reserve: 104px;
+     }
+   }
    
    /* ============================
       4) Dashboard Home
@@ -152,4 +181,3 @@
       7) Utilities & Print
       ============================ */
    @media print { .ax-topbar, .ax-ticker, .ax-status { display: none !important; } .ax-main { padding: 0; } }
-   

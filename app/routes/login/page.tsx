@@ -276,6 +276,24 @@ export default function LoginPage() {
           <small className="ax-login-foot"><span className="ax-foot-box">AXIOM DESIGN © 2025 • RED PROTOCOL</span></small>
         </form>
       </div>
+
+      {/* hover-reveal hint bar at the bottom (triggered by red pill) */}
+      <div className="ax-bottom-hint" role="note" aria-label="AXIOM bottom hint">
+        <button
+          type="button"
+          className="ax-bottom-hint__pill"
+          aria-label="Show hint"
+          // aria-expanded булев флаг потребует JS — оставляем без него
+        />
+        <div className="ax-bottom-hint__panel">
+          <span className="ax-bottom-hint__brand">AXIOM DESIGN © 2025 • RED PROTOCOL</span>
+          <span className="ax-bottom-hint__sep"> </span>
+          <span className="ax-bottom-hint__text">
+            CHANNEL: LOGIN • STATUS: ONLINE • TIP: USE DEMO CREDS TO EXPLORE THE PANEL.
+          </span>
+        </div>
+      </div>
     </section>
   );
 }
+// стили «RED PROTOCOL ACCESS GATEWAY» и нижней плашки применяются через CSS (см. login-bg.css)
