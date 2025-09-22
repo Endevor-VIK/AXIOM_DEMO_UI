@@ -58,8 +58,8 @@
 .ax-news-card__summary,
 .ax-news-card .ax-summary {
   display: -webkit-box;
-  line-clamp: 3;            /* стандартное свойство для линтеров/совместимости */
-  -webkit-line-clamp: 3;    /* фактическая поддержка в Chromium/WebKit */
+  line-clamp: 3;         /* стандартное свойство */
+  -webkit-line-clamp: 3; /* поддержка Chromium/WebKit */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

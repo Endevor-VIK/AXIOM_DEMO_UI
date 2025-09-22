@@ -51,17 +51,16 @@ const routes = [
   { path: '*', element: <Navigate to='/' replace /> },
 ]
 
-// отдельный объект опций, приведённый к any из‑за отсутствия флага в типах текущей версии
-const routerOptions: any = {
-  basename: import.meta.env.BASE_URL,
-  future: { v7_startTransition: true },
-}
-
-const router = createBrowserRouter(routes as any, routerOptions)
+const router = createBrowserRouter(routes, { basename: import.meta.env.BASE_URL })
 
 function mount() {
   const el = document.getElementById('root')
-  const app = <RouterProvider router={router} />
+  const app = (
+    <RouterProvider
+      router={router}
+      future={{ v7_startTransition: true }}
+    />
+  )
   if (!el) {
     const fallback = document.createElement('div')
     fallback.id = 'root'
