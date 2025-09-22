@@ -187,13 +187,10 @@ const LoreRoute: React.FC = () => {
         )}
 
         {fileUrl && (
-          <div className='ax-lore-file'>
-            <iframe className='ax-frame' src={fileUrl} title={'LORE: ' + state.node.title} />
-            <div className='ax-lore-actions'>
-              <a className='ax-btn' href={fileUrl} target='_blank' rel='noopener noreferrer'>
-                Open source
-              </a>
-            </div>
+          <div className='ax-lore-actions'>
+            <a className='ax-btn' href={fileUrl} target='_blank' rel='noopener noreferrer'>
+              Open source
+            </a>
           </div>
         )}
       </div>

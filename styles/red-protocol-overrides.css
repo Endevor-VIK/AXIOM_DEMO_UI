@@ -1,0 +1,86 @@
+/* RED PROTOCOL — global shell, viewers, grids, accessibility */
+
+:root {
+  --ax-header-h: 68px;
+  --ax-footer-h: 44px;
+}
+
+/* Sticky header/footer with subtle gradients */
+.ax-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(6px);
+  background: linear-gradient(180deg, rgba(10,7,9,.78), rgba(10,7,9,.38));
+}
+.ax-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, rgba(10,7,9,0), rgba(10,7,9,.82));
+  border-top: 1px solid rgba(255,32,52,.2);
+}
+
+/* Compensate bars so content never hides under them */
+.ax-content {
+  min-height: calc(100dvh - var(--ax-header-h) - var(--ax-footer-h));
+  padding-block: 12px;
+}
+
+/* FX layer stays behind everything, non-interactive */
+#fx-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.ax-page   { position: relative; z-index: 1; }
+
+/* Viewer/Preview sizing and scrolling */
+.ax-preview { position: relative; }
+.ax-preview__frame {
+  min-height: calc(100dvh - var(--ax-header-h) - var(--ax-footer-h) - 140px);
+  overflow: auto;
+  background: radial-gradient(140% 120% at 50% 0, #12090c, #0a0607);
+  box-shadow: 0 0 0 1px rgba(255,32,52,.16) inset;
+}
+.ax-preview__iframe { display: block; width: 100%; height: calc(100dvh - var(--ax-header-h) - var(--ax-footer-h) - 180px); }
+
+/* Split content (list + sticky preview) */
+.ax-content-view .ax-content-column.preview .ax-card,
+.ax-preview-panel { position: sticky; top: calc(var(--ax-header-h) + 12px); }
+.ax-preview-panel { max-height: calc(100dvh - var(--ax-header-h) - var(--ax-footer-h) - 24px); overflow: auto; }
+
+/* News grid and summary clamp */
+.ax-news-grid {
+  display: grid;
+  gap: clamp(12px, 2vw, 20px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 960px) {
+  .ax-news-grid { grid-template-columns: 1fr; }
+}
+.ax-news-card__summary,
+.ax-news-card .ax-summary {
+  display: -webkit-box;
+  line-clamp: 3;            /* стандартное свойство для линтеров/совместимости */
+  -webkit-line-clamp: 3;    /* фактическая поддержка в Chromium/WebKit */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Lightweight cards on mobile */
+@media (max-width: 768px) {
+  .ax-card {
+    box-shadow: 0 0 0 1px rgba(255,32,52,.18) inset !important;
+  }
+}
+
+/* Reduced motion: calm down animations/ticker */
+@media (prefers-reduced-motion: reduce) {
+  .ax-ticker-track { transform: none !important; animation: none !important; }
+  .ax-anim, [data-anim] { animation: none !important; transition: none !important; }
+}
+
+/* Placeholder noise bar */
+.ax-noisebar {
+  height: 10px;
+  border-radius: 8px;
+  background: repeating-linear-gradient(90deg, rgba(255,32,52,.15) 0 8px, rgba(255,32,52,.05) 8px 16px);
+  box-shadow: inset 0 0 18px rgba(255,32,52,.12);
+}
