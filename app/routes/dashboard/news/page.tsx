@@ -64,80 +64,82 @@ export default function NewsPage() {
   const handleNext = () => setPage((prev) => Math.min(totalPages, prev + 1))
 
   return (
-    <section className='ax-container ax-section' aria-busy={busy}>
-      <div className='ax-stack'>
-        <div className='ax-card ghost ax-news-controls'>
-          <div className='ax-filter-row'>
-            <label className='visually-hidden' htmlFor='news-search'>Search news</label>
-            <input
-              id='news-search'
-              className='ax-input'
-              type='search'
-              placeholder='Search title, summary, tags'
-              value={q}
-              onChange={(event) => setQ(event.target.value)}
-              disabled={busy}
-            />
+    <>
+      <section className='ax-container ax-section' aria-busy={busy}>
+        <div className='ax-stack'>
+          <div className='ax-card ghost ax-news-controls'>
+            <div className='ax-filter-row'>
+              <label className='visually-hidden' htmlFor='news-search'>Search news</label>
+              <input
+                id='news-search'
+                className='ax-input'
+                type='search'
+                placeholder='Search title, summary, tags'
+                value={q}
+                onChange={(event) => setQ(event.target.value)}
+                disabled={busy}
+              />
 
-            <label className='visually-hidden' htmlFor='news-kind'>Filter by kind</label>
-            <select
-              id='news-kind'
-              className='ax-input'
-              value={kind}
-              onChange={(event) => setKind(event.target.value as '' | NewsKind)}
-              disabled={busy}
-            >
-              <option value=''>All kinds</option>
-              {KIND_FILTERS.filter(Boolean).map((value) => (
-                <option key={value} value={value}>
-                  {value?.toUpperCase()}
-                </option>
-              ))}
-            </select>
+              <label className='visually-hidden' htmlFor='news-kind'>Filter by kind</label>
+              <select
+                id='news-kind'
+                className='ax-input'
+                value={kind}
+                onChange={(event) => setKind(event.target.value as '' | NewsKind)}
+                disabled={busy}
+              >
+                <option value=''>All kinds</option>
+                {KIND_FILTERS.filter(Boolean).map((value) => (
+                  <option key={value} value={value}>
+                    {value?.toUpperCase()}
+                  </option>
+                ))}
+              </select>
 
-            <label className='visually-hidden' htmlFor='news-size'>Items per page</label>
-            <select
-              id='news-size'
-              className='ax-input'
-              value={pageSize}
-              onChange={(event) => setPageSize(Number(event.target.value))}
-              disabled={busy}
-            >
-              {PAGE_SIZES.map((size) => (
-                <option key={size} value={size}>
-                  {size} / page
-                </option>
-              ))}
-            </select>
+              <label className='visually-hidden' htmlFor='news-size'>Items per page</label>
+              <select
+                id='news-size'
+                className='ax-input'
+                value={pageSize}
+                onChange={(event) => setPageSize(Number(event.target.value))}
+                disabled={busy}
+              >
+                {PAGE_SIZES.map((size) => (
+                  <option key={size} value={size}>
+                    {size} / page
+                  </option>
+                ))}
+              </select>
 
-            <span className='ax-chip' data-variant='info'>TOTAL :: {items.length}</span>
-            <span className='ax-chip' data-variant='info'>VISIBLE :: {filtered.length}</span>
-          </div>
-
-          <div className='ax-filter-row ax-news-pagination'>
-            <button type='button' className='ax-btn ghost' onClick={handlePrev} disabled={page <= 1}>
-              Prev
-            </button>
-            <span className='ax-chip' data-variant='level'>PAGE :: {page} / {totalPages}</span>
-            <button type='button' className='ax-btn ghost' onClick={handleNext} disabled={page >= totalPages}>
-              Next
-            </button>
-          </div>
-        </div>
-
-        {err && <div className='ax-dashboard__alert' role='alert'>{err}</div>}
-
-        <div className='ax-news-grid'>
-          {pageItems.length === 0 ? (
-            <div className='ax-card ax-news-empty'>
-              <h3 className='ax-blade-head'>No items found</h3>
-              <p className='ax-news-card__summary'>Adjust filters or add new content in the NEWS module.</p>
+              <span className='ax-chip' data-variant='info'>TOTAL :: {items.length}</span>
+              <span className='ax-chip' data-variant='info'>VISIBLE :: {filtered.length}</span>
             </div>
-          ) : (
-            pageItems.map((item) => <NewsCard key={item.id} item={item} />)
-          )}
+
+            <div className='ax-filter-row ax-news-pagination'>
+              <button type='button' className='ax-btn ghost' onClick={handlePrev} disabled={page <= 1}>
+                Prev
+              </button>
+              <span className='ax-chip' data-variant='level'>PAGE :: {page} / {totalPages}</span>
+              <button type='button' className='ax-btn ghost' onClick={handleNext} disabled={page >= totalPages}>
+                Next
+              </button>
+            </div>
+          </div>
+
+          {err && <div className='ax-dashboard__alert' role='alert'>{err}</div>}
+
+          <div className='ax-news-grid'>
+            {pageItems.length === 0 ? (
+              <div className='ax-card ax-news-empty'>
+                <h3 className='ax-blade-head'>No items found</h3>
+                <p className='ax-news-card__summary'>Adjust filters or add new content in the NEWS module.</p>
+              </div>
+            ) : (
+              pageItems.map((item) => <NewsCard key={item.id} item={item} />)
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   )
 }

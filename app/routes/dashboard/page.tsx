@@ -49,7 +49,7 @@ export default function DashboardPage() {
         const newsArr = news.status === 'fulfilled' && Array.isArray(news.value) ? (news.value as NewsItem[]) : []
         if (!alive) return
         setCounts({ audits, content, news: newsArr.length })
-        setLatest(newsArr.slice(0, 3))
+        setLatest(newsArr.slice(0, 2)) // было 3 → делаем компактнее
         setErr(null)
       } catch (error: any) {
         if (!alive) return
@@ -116,7 +116,7 @@ export default function DashboardPage() {
           {latest.length === 0 ? (
             <p className='ax-dashboard__empty'>No news items yet. Head to NEWS to add the first briefing.</p>
           ) : (
-            <ul className='ax-dashboard__news-list'>
+            <ul className='ax-dashboard__news-list ax-dashboard__news-list--compact'>
               {latest.map((item) => (
                 <li key={item.id} className='ax-dashboard__news'>
                   <div className='ax-dashboard__news-head'>

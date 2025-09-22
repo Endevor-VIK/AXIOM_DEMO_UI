@@ -1,116 +1,77 @@
-// AXIOM_DEMO_UI - WEB CORE
-// Canvas: C30 - components/PreviewPane.tsx
-// Purpose: Shared iframe preview pane with zoom controls for Roadmap/Audit/Content modules.
+import type { ReactNode } from 'react'
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-
-const ZOOM_LEVELS = [1, 1.25, 1.5] as const
-
-type ZoomValue = (typeof ZOOM_LEVELS)[number]
-
-export interface PreviewPaneProps {
+type Props = {
   src?: string | null
-  title: string
-  controls?: boolean
-  externalLabel?: string
-  emptyMessage?: React.ReactNode
-  leadingControls?: React.ReactNode
-  reloadToken?: string | number
+  title?: string
   onReload?: () => void
   reloadDisabled?: boolean
-  externalHref?: string | null
-  children?: React.ReactNode
+  children?: ReactNode
+  externalHref?: string
+  zoom?: 100 | 125 | 150
+  leadingControls?: ReactNode
+  reloadToken?: string | number
 }
 
-export function PreviewPane({
+export default function PreviewPane({
   src,
-  title,
-  controls = true,
-  externalLabel = 'Open External',
-  emptyMessage = <p className='ax-preview__placeholder'>Select an item to preview.</p>,
-  leadingControls,
-  reloadToken,
+  title = 'Preview',
   onReload,
   reloadDisabled,
-  externalHref: externalOverride,
   children,
-}: PreviewPaneProps) {
-  const safeSrc = useMemo(() => (src && src.trim() ? src.trim() : null), [src])
-  const externalHref = useMemo(() => {
-    if (externalOverride && externalOverride.trim()) return externalOverride.trim()
-    return safeSrc
-  }, [externalOverride, safeSrc])
-  const [zoom, setZoom] = useState<ZoomValue>(1)
-
-  useEffect(() => {
-    setZoom(1)
-  }, [safeSrc])
-
-  const handleZoom = useCallback((value: ZoomValue) => {
-    setZoom(value)
-  }, [])
-
-  const showControls = Boolean(leadingControls || onReload || (controls && (safeSrc || externalHref)))
+  externalHref,
+  zoom = 100,
+  leadingControls,
+  reloadToken,
+}: Props) {
+  const scale = Math.max(0.5, (zoom || 100) / 100)
+  const openHref = externalHref || src || undefined
 
   return (
-    <section className='ax-card ax-preview' aria-label={title} data-has-src={Boolean(safeSrc)}>
-      {showControls && (
-        <div className='ax-preview__controls'>
-          {leadingControls && <div className='ax-preview__leading'>{leadingControls}</div>}
+    <section className='ax-preview' aria-label={title}>
+      <header className='ax-preview__bar'>
+        <div className='left'>{leadingControls}</div>
+        <div className='right'>
           {onReload && (
             <button
               type='button'
-              className='ax-btn ghost ax-preview__refresh'
+              className='ax-btn ghost'
               onClick={onReload}
-              disabled={Boolean(reloadDisabled) || (!safeSrc && !externalHref)}
+              disabled={!!reloadDisabled}
+              aria-label='Refresh preview'
+              title='Refresh preview'
             >
-              Refresh
+              REFRESH
             </button>
           )}
-          {controls && (safeSrc || externalHref) && (
-            <div className='ax-preview__trail'>
-              {safeSrc && (
-                <div role='group' aria-label='Preview zoom' className='ax-preview__zoom'>
-                  {ZOOM_LEVELS.map((value) => (
-                    <button
-                      key={value}
-                      type='button'
-                      className='ax-chip'
-                      data-variant='ghost'
-                      data-zoom={Math.round(value * 100)}
-                      data-active={zoom === value ? 'true' : undefined}
-                      onClick={() => handleZoom(value)}
-                    >
-                      {Math.round(value * 100)}%
-                    </button>
-                  ))}
-                </div>
-              )}
-              {externalHref && (
-                <a className='ax-btn ghost' href={externalHref} target='_blank' rel='noreferrer'>
-                  {externalLabel}
-                </a>
-              )}
-            </div>
+          <span className='ax-chip'>ZOOM :: {zoom}%</span>
+          {openHref && (
+            <a className='ax-btn ghost' href={openHref} target='_blank' rel='noopener noreferrer'>
+              OPEN SOURCE
+            </a>
           )}
         </div>
-      )}
+      </header>
 
       <div
-        className='ax-viewport ax-scroll ax-scroll-thin'
+        className='ax-preview__frame'
         data-zoom={zoom}
-        style={{ '--ax-preview-zoom': String(zoom) } as React.CSSProperties}
+        style={{ ['--ax-preview-zoom' as any]: String(scale) }}
       >
-        {safeSrc ? (
-          <iframe key={reloadToken ?? safeSrc} className='ax-embed' src={safeSrc} title={title} loading='lazy' />
-        ) : children ? (
-          <div className='ax-preview__custom'>{children}</div>
+        {src ? (
+          <iframe
+            key={`${reloadToken ?? '0'}::${src}`}
+            className='ax-preview__iframe'
+            src={src}
+            title={title}
+          />
         ) : (
-          <div className='ax-preview__empty' role='presentation'>
-            {emptyMessage}
-          </div>
+          children ?? <div className='ax-preview__placeholder'>No preview source.</div>
         )}
       </div>
     </section>
   )
 }
+
+// Именованный экспорт для совместимости со старыми импортами
+export { PreviewPane }
+export type PreviewPaneProps = Props
