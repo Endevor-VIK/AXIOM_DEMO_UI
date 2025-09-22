@@ -3,7 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AXIOM DEMO UI</title>
+
+  <!-- Кириллический шрифт -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <title>AXIOM PANEL</title>
   <base href="%BASE_URL%" />
 
   <!-- Favicons -->
@@ -13,6 +19,7 @@
 </head>
 <body>
   <div id="root"></div>
+  <div id="modal-root"></div>
 
   <!-- App entry: Vite injects correct base during build -->
   <script type="module" src="/app/main.tsx"></script>
@@ -27,7 +34,21 @@
       function withBase(p){ p = String(p||'').replace(/^\/+/, ''); return base + p; }
       var ofetch = window.fetch?.bind(window);
       if (ofetch) window.fetch = function(input, init){
-        try { if (typeof input === 'string' && /^data\//.test(input)) input = withBase(input); } catch(_){}
+        try {
+          if (typeof input === 'string' && /^(?:\/)?data\//.test(input)) {
+            // prepend <base> для 'data/...' и '/data/...'
+            input = withBase(input);
+            // cache-bust для ключевых статик-ресурсов
+            if (
+              /data\/content\/manifest\.json(?:\?|$)/.test(input) ||
+              /data\/audits\/.+\.(?:html|json)(?:\?|$)/.test(input) ||
+              /data\/roadmap\/.+\.(?:html|json)(?:\?|$)/.test(input)
+            ) {
+              var sep = input.includes('?') ? '&' : '?';
+              input = input + sep + 'v=' + (window.__AXIOM_BUILD_TS__ || Date.now());
+            }
+          }
+        } catch(_){}
         return ofetch(input, init);
       };
     } catch(_){}

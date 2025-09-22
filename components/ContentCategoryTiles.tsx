@@ -162,7 +162,7 @@ export default function ContentCategoryTiles({ items, active, loading = false }:
       <div className='ax-cats' role='status'>
         <div className='ax-card cat'>
           <div className='cat-ico' aria-hidden='true'>{iconMap.all}</div>
-          <div className='cat-title'>Loading…</div>
+          <div className='cat-title'>LoadingвЂ¦</div>
           <div className='cat-meta'>
             <span className='ax-chip' data-variant='info'>WAIT</span>
           </div>
@@ -180,7 +180,7 @@ export default function ContentCategoryTiles({ items, active, loading = false }:
           <div className='cat-meta'>
             <span className='ax-chip' data-variant='warn'>EMPTY</span>
           </div>
-          <p className='cat-empty'>Заполнится скоро</p>
+          <p className='cat-empty'>No entries</p>
         </div>
       </div>
     )
@@ -214,7 +214,7 @@ export default function ContentCategoryTiles({ items, active, loading = false }:
               </span>
               {item.count === 0 ? <span className='ax-chip' data-variant='info'>EMPTY</span> : null}
             </div>
-            {item.count === 0 ? <p className='cat-empty'>Заполнится скоро</p> : null}
+            {item.count === 0 ? <p className='cat-empty'>No entries</p> : null}
           </button>
         )
       })}

@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "FAC-PLACEHOLDER-0001",
+    "category": "factions",
+    "subCategory": "demo",
+    "title": "Шаблон фракции",
+    "summary": "Заглушка фракции для раздела Factions.",
+    "date": "2025-09-22",
+    "tags": ["placeholder", "faction"],
+    "file": "factions/2025-09-22__faction-placeholder.md",
+    "format": "md",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 100,
+    "lang": "ru",
+    "links": [],
+    "meta": { "v": 2 }
+  }
+]

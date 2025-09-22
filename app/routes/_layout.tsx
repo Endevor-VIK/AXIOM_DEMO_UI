@@ -103,6 +103,9 @@ export default function Layout() {
           <StatusLine />
         </div>
       </footer>
+
+      {/* Портал для модалок */}
+      <div id='modal-root' />
     </div>
   )
 }

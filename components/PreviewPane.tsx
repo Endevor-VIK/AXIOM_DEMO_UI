@@ -1,77 +1,54 @@
-import type { ReactNode } from 'react'
+import React from 'react';
+import { safeText, formatDate, classNames } from './utils';
+import type { ContentItem } from './ContentList';
 
-type Props = {
-  src?: string | null
-  title?: string
-  onReload?: () => void
-  reloadDisabled?: boolean
-  children?: ReactNode
-  externalHref?: string
-  zoom?: 100 | 125 | 150
-  leadingControls?: ReactNode
-  reloadToken?: string | number
-}
+type PreviewPaneProps = {
+  item: ContentItem | null;
+  onOpenExternal?: (id: string) => void;
+};
 
-export default function PreviewPane({
-  src,
-  title = 'Preview',
-  onReload,
-  reloadDisabled,
-  children,
-  externalHref,
-  zoom = 100,
-  leadingControls,
-  reloadToken,
-}: Props) {
-  const scale = Math.max(0.5, (zoom || 100) / 100)
-  const openHref = externalHref || src || undefined
-
+export const PreviewPane: React.FC<PreviewPaneProps> = ({ item, onOpenExternal }) => {
   return (
-    <section className='ax-preview' aria-label={title}>
-      <header className='ax-preview__bar'>
-        <div className='left'>{leadingControls}</div>
-        <div className='right'>
-          {onReload && (
-            <button
-              type='button'
-              className='ax-btn ghost'
-              onClick={onReload}
-              disabled={!!reloadDisabled}
-              aria-label='Refresh preview'
-              title='Refresh preview'
-            >
-              REFRESH
-            </button>
-          )}
-          <span className='ax-chip'>ZOOM :: {zoom}%</span>
-          {openHref && (
-            <a className='ax-btn ghost' href={openHref} target='_blank' rel='noopener noreferrer'>
-              OPEN SOURCE
-            </a>
-          )}
+    <aside className={classNames('ax-content-preview')}>
+      {!item ? (
+        <div aria-hidden="true">
+          <div className="ax-skeleton ax-skeleton--text" style={{ width: '72%', height: 20 }} />
+          <div className="ax-skeleton ax-skeleton--text" style={{ width: '40%', height: 16, marginTop: 8 }} />
+          <div className="ax-skeleton ax-skeleton--block" style={{ height: 160, marginTop: 16 }} />
+          <div className="ax-skeleton ax-skeleton--block" style={{ height: 16, marginTop: 8 }} />
+          <div className="ax-skeleton ax-skeleton--block" style={{ height: 16, marginTop: 8 }} />
         </div>
-      </header>
+      ) : (
+        <div className="ax-preview">
+          <h3 className="ax-preview__title">{safeText(item.title)}</h3>
+          <div className="ax-preview__meta">
+            <span className="ax-badge">{formatDate(item.createdAt)}</span>
+            {item.tags && item.tags.length > 0 ? (
+              <span className="ax-preview__tags">
+                {item.tags.slice(0, 5).map((t) => (
+                  <span key={t} className="ax-chip">
+                    {safeText(t)}
+                  </span>
+                ))}
+              </span>
+            ) : null}
+          </div>
+          <p className="ax-preview__summary">{safeText(item.summary || '', '—')}</p>
+          {onOpenExternal ? (
+            <div className="ax-preview__actions">
+              <button
+                type="button"
+                className="ax-btn ax-btn--primary"
+                onClick={() => onOpenExternal(item.id)}
+              >
+                Открыть
+              </button>
+            </div>
+          ) : null}
+        </div>
+      )}
+    </aside>
+  );
+};
 
-      <div
-        className='ax-preview__frame'
-        data-zoom={zoom}
-        style={{ ['--ax-preview-zoom' as any]: String(scale) }}
-      >
-        {src ? (
-          <iframe
-            key={`${reloadToken ?? '0'}::${src}`}
-            className='ax-preview__iframe'
-            src={src}
-            title={title}
-          />
-        ) : (
-          children ?? <div className='ax-preview__placeholder'>No preview source.</div>
-        )}
-      </div>
-    </section>
-  )
-}
-
-// Именованный экспорт для совместимости со старыми импортами
-export { PreviewPane }
-export type PreviewPaneProps = Props
+export default PreviewPane;

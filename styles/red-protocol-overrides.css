@@ -1,8 +1,23 @@
 /* RED PROTOCOL — global shell, viewers, grids, accessibility */
 
+/* Design tokens (fallbacks) */
 :root {
   --ax-header-h: 68px;
   --ax-footer-h: 44px;
+  --ax-gap: 16px;
+  --ax-gap-lg: 20px;
+  --ax-radius: 10px;
+  --ax-sticky-top: 84px;
+  --ax-pad: 16px;
+  --ax-z-modal: 1000;
+  --ax-color-bg: #0b0b0c;
+  --ax-color-surface: #121214;
+  --ax-color-border: #2a2a2e;
+  --ax-color-text: #e8e8ea;
+  --ax-color-subtle: #a2a2a8;
+  --ax-color-accent: #e11d2e; /* RED PROTOCOL */
+  --ax-color-accent-ghost: rgba(225, 29, 46, 0.16);
+  --ax-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
 
 /* Sticky header/footer with subtle gradients */
@@ -38,8 +53,43 @@
   overflow: auto;
   background: radial-gradient(140% 120% at 50% 0, #12090c, #0a0607);
   box-shadow: 0 0 0 1px rgba(255,32,52,.16) inset;
+  width: 100%;
 }
-.ax-preview__iframe { display: block; width: 100%; height: calc(100dvh - var(--ax-header-h) - var(--ax-footer-h) - 180px); }
+.ax-preview__iframe { 
+  display: block; 
+  width: 100%; 
+  height: calc(100dvh - var(--ax-header-h) - var(--ax-footer-h) - 180px); 
+  width: 100%;
+}
+
+/* HTML viewers (Roadmap/Audit) — 100% ширина/высота в доступной области */
+.ax-html-embed,
+.ax-preview__frame,
+.ax-preview__iframe {
+  width: 100%;
+}
+
+.ax-html-embed {
+  min-height: calc(100dvh - var(--ax-header-h) - var(--ax-footer-h) - 24px);
+  overflow: auto;
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius);
+  background: var(--ax-color-surface);
+}
+
+/* Если используется iframe внутри embed */
+.ax-html-embed > iframe {
+  display: block;
+  width: 100%;
+  min-height: calc(100dvh - var(--ax-header-h) - var(--ax-footer-h) - 40px);
+  border: 0;
+}
+
+/* Безопасные дефолты для встроенных HTML */
+.ax-html-embed :where(img, video, table) {
+  max-width: 100%;
+  height: auto;
+}
 
 /* Split content (list + sticky preview) */
 .ax-content-view .ax-content-column.preview .ax-card,
@@ -83,4 +133,271 @@
   border-radius: 8px;
   background: repeating-linear-gradient(90deg, rgba(255,32,52,.15) 0 8px, rgba(255,32,52,.05) 8px 16px);
   box-shadow: inset 0 0 18px rgba(255,32,52,.12);
+}
+
+/* Split layout */
+.ax-content-split {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  gap: var(--ax-gap-lg);
+  align-items: start;
+}
+
+@media (max-width: 1023px) {
+  .ax-content-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Content list */
+.ax-content-list {
+  overflow: auto;
+  display: grid;
+  gap: var(--ax-gap);
+  padding: 0;
+}
+
+.ax-content-card {
+  background: var(--ax-color-surface);
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius);
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+.ax-content-card.is-selected {
+  outline: 2px solid var(--ax-color-accent);
+  outline-offset: 0;
+}
+
+.ax-content-card__btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  color: var(--ax-color-text);
+  background: transparent;
+  border: 0;
+  border-radius: var(--ax-radius);
+}
+
+.ax-content-card__btn:hover,
+.ax-content-card__btn:focus-visible {
+  background: rgba(225, 29, 46, 0.06);
+}
+
+.ax-content-card__title {
+  font-weight: 600;
+}
+
+.ax-content-card__meta {
+  margin-top: 6px;
+  color: var(--ax-color-subtle);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ax-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 16px;
+  background: var(--ax-color-border);
+  color: var(--ax-color-text);
+}
+
+.ax-chip--more {
+  background: var(--ax-color-accent-ghost);
+  color: var(--ax-color-accent);
+}
+
+.ax-content-card__summary {
+  margin-top: 8px;
+  color: var(--ax-color-text);
+  opacity: 0.9;
+}
+
+/* Sticky preview pane (desktop) */
+.ax-content-preview {
+  position: sticky;
+  top: var(--ax-sticky-top);
+  max-height: calc(100dvh - var(--ax-sticky-top) - var(--ax-pad));
+  overflow: auto;
+  background: var(--ax-color-surface);
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius);
+  padding: 16px;
+}
+
+@media (max-width: 1023px) {
+  .ax-content-preview {
+    display: none; /* на мобиле превью только в модалке */
+  }
+}
+
+.ax-preview__title {
+  margin: 0 0 8px 0;
+  font-weight: 700;
+}
+
+.ax-preview__meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--ax-color-subtle);
+}
+
+.ax-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--ax-color-border);
+}
+
+.ax-preview__summary {
+  margin-top: 12px;
+}
+
+.ax-preview__actions {
+  margin-top: 16px;
+}
+
+/* Modal */
+.ax-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ax-z-modal);
+}
+
+.ax-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 10, 0.6);
+  opacity: 1;
+  transition: opacity 160ms ease;
+  will-change: opacity;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.ax-modal__panel {
+  background: var(--ax-color-surface);
+  color: var(--ax-color-text);
+  width: min(92vw, 640px);
+  border-radius: 14px;
+  border: 1px solid var(--ax-color-border);
+  box-shadow: var(--ax-shadow);
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 200ms ease, opacity 200ms ease;
+  will-change: transform, opacity;
+  max-height: calc(100dvh - 64px);
+  overflow: auto;
+  outline: none;
+}
+
+.ax-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 8px 16px;
+  border-bottom: 1px solid var(--ax-color-border);
+}
+
+.ax-modal__title {
+  margin: 0;
+  font-size: 18px;
+}
+
+.ax-modal__close {
+  color: var(--ax-color-text);
+}
+
+.ax-modal__close:hover,
+.ax-modal__close:focus-visible {
+  color: var(--ax-color-accent);
+}
+
+.ax-modal__body {
+  padding: 16px;
+}
+
+/* Buttons (red protocol) */
+.ax-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ax-btn--primary {
+  background: var(--ax-color-accent);
+  color: white;
+  box-shadow: 0 4px 16px rgba(225, 29, 46, 0.3);
+}
+
+.ax-btn--primary:hover,
+.ax-btn--primary:focus-visible {
+  filter: saturate(1.1); /* не тяжелый фильтр */
+}
+
+.ax-btn--ghost {
+  background: transparent;
+  border-color: var(--ax-color-border);
+}
+
+/* Skeletons */
+.ax-skeleton {
+  position: relative;
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+  background-size: 200% 100%;
+  border-radius: 6px;
+  animation: ax-shimmer 1.4s ease infinite;
+}
+
+.ax-skeleton--text {
+  height: 14px;
+}
+
+.ax-skeleton--block {
+  height: 24px;
+}
+
+@keyframes ax-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ax-modal__backdrop,
+  .ax-modal__panel {
+    transition: none !important;
+  }
+  .ax-skeleton {
+    animation: none !important;
+  }
+}
+
+/* Focus visibility */
+:where(button, [href], input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--ax-color-accent);
+  outline-offset: 2px;
+}
+
+/* Scroll lock */
+body.ax-scroll-lock {
+  overflow: hidden;
+}
+
+/* Ensure FX-layer doesn't intercept clicks, if present */
+.ax-fx-layer {
+  pointer-events: none;
 }
