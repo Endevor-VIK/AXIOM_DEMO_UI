@@ -393,8 +393,10 @@
 }
 
 /* Scroll lock */
-body.ax-scroll-lock {
+body.ax-scroll-lock,
+body.ax-no-scroll {
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* Ensure FX-layer doesn't intercept clicks, if present */

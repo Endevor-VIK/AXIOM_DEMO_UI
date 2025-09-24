@@ -184,6 +184,11 @@ export default function LoginPage() {
   const nav = useNavigate();
   const rootRef = useRef<HTMLElement>(null);
 
+  useEffect(() => {
+    document.body.classList.add("ax-no-scroll");
+    return () => document.body.classList.remove("ax-no-scroll");
+  }, []);
+
   const [mode, setMode] = useState<Mode>("login");
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -233,7 +238,7 @@ export default function LoginPage() {
   if (shake) cardClasses.push("is-shake");
 
   return (
-    <section ref={rootRef} className="ax-login ax-section" aria-labelledby="login-title">
+    <section ref={rootRef} className="ax-login" aria-labelledby="login-title">
       {/* фон и кибер-слой строго позади карточки */}
       <div className="ax-login__bg" aria-hidden />
       <CyberDeckOverlay root={rootRef} />
@@ -286,7 +291,7 @@ export default function LoginPage() {
           // aria-expanded булев флаг потребует JS — оставляем без него
         />
         <div className="ax-bottom-hint__panel">
-          <span className="ax-bottom-hint__brand">AXIOM DESIGN © 2025 • RED PROTOCOL</span>
+          <span className="ax-bottom-hint__brand">AXIOM SIGNAL © 2025 • RED PROTOCOL</span>
           <span className="ax-bottom-hint__sep"> </span>
           <span className="ax-bottom-hint__text">
             CHANNEL: LOGIN • STATUS: ONLINE • TIP: USE DEMO CREDS TO EXPLORE THE PANEL.

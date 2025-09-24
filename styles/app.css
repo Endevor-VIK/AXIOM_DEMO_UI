@@ -107,24 +107,23 @@
       3) Login Wrappers (visual lives in components.css)
       ============================ */
    .ax-login{
-     /* точная высота экрана без переполнения */
-     /* replace min-height -> height (включая паддинги за счёт border-box) */
-     height: 100dvh;
-     height: 100svh; /* iOS Safari fix */
-
+     min-height: 100vh;
+     min-height: 100svh;
+     min-height: 100dvh;
      position: relative;
-     display: grid; place-items: center;
-     /* добавляем второй ряд под нижнюю плашку */
-     grid-template-rows: 1fr auto;
-
-     /* компактные адаптивные отступы */
-     padding-block-start: clamp(12px, 4vh, 48px);
-     /* увеличенный резерв под нижнюю плашку (чтобы ховер не добавлял скролл) */
+     display: grid;
+     grid-template-rows: minmax(0, 1fr) auto;
+     align-items: center;
+     justify-items: center;
+     gap: clamp(12px, 3vh, 32px);
+     padding-block-start: clamp(16px, 4vh, 48px);
      --ax-hint-reserve: 96px;
-     padding-block-end: calc(clamp(12px, 4vh, 48px) + var(--safe-bottom) + var(--ax-hint-reserve));
+     padding-block-end: calc(clamp(16px, 4vh, 48px) + var(--safe-bottom) + var(--ax-hint-reserve));
+     padding-inline: clamp(16px, 5vw, 64px);
      background: var(--ax-login-grad);
      overflow: hidden;
-     overscroll-behavior: contain;
+     overscroll-behavior: none;
+     isolation: isolate;
    }
    @supports (overflow: clip){
      .ax-login{ overflow: clip; }
@@ -135,7 +134,9 @@
    /* мобильный резерв — панель раскрыта всегда, даём чуть больше места */
    @media (max-width: 560px){
      .ax-login{
-       --ax-hint-reserve: 104px;
+       --ax-hint-reserve: 120px;
+       padding-inline: clamp(12px, 6vw, 24px);
+       gap: clamp(10px, 5vh, 24px);
      }
    }
    

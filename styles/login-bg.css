@@ -7,7 +7,7 @@
   }
   
   /* контейнер /login уже имеет position:relative */
-  .ax-login__bg{ position:absolute; inset:0; z-index:0; pointer-events:none; contain: paint; overflow: hidden; }
+  .ax-login__bg{ position:fixed; inset:0; z-index:0; pointer-events:none; contain: paint; overflow: hidden; }
   
   /* БАЗА + ОБЪЁМ + СИЛУЭТ ГОРОДА */
   .ax-login__bg::before{

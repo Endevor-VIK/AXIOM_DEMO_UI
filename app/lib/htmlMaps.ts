@@ -1,11 +1,13 @@
 // Все html из статической папки маппим как строку (raw)
 export const ROADMAP_HTML = import.meta.glob('/app/static/roadmap/**/*.html', {
-  as: 'raw',
+  query: '?raw',
+  import: 'default',
   eager: true,
 }) as Record<string, string>;
 
 export const AUDIT_HTML = import.meta.glob('/app/static/audits/**/*.html', {
-  as: 'raw',
+  query: '?raw',
+  import: 'default',
   eager: true,
 }) as Record<string, string>;
 
