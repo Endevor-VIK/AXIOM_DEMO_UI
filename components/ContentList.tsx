@@ -31,7 +31,7 @@ export default function ContentList({ items, selectedId, onSelect }: ContentList
                 >
                   <div className='ax-content-card__title'>{safeText(item.title)}</div>
                   <div className='ax-content-card__meta'>
-                    <span className='ax-content-card__date'>{formatDate(item.date)}</span>
+                    <span className='ax-content-card__date'>{formatDate(item.date ?? item.createdAt)}</span>
                     {item.tags?.length ? (
                       <span className='ax-content-card__tags'>
                         {item.tags.slice(0, 3).map((tag) => (

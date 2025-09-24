@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import ContentList from '@/components/ContentList'
@@ -94,47 +94,35 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   }, [aggregate, category, filters])
 
   const ordered = useMemo(() => orderByPins(items, pinned), [items, pinned])
+  const orderedLength = ordered.length
 
-  const selectedParam = searchParams.get('item') ?? ''
-
+  const itemParam = searchParams.get('item') ?? ''
   const isDesktop = useMediaQuery('(min-width: 1024px)')
-  const [selected, setSelected] = useState<ContentItem | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     if (!ordered.length) {
-      setSelected(null)
-      setModalOpen(false)
       return
     }
 
-    if (selectedParam) {
-      const match = ordered.find((item) => item.id === selectedParam)
-      if (match && match.id !== selected?.id) {
-        setSelected(match)
-        return
-      }
+    if (itemParam && ordered.some((entry) => entry.id === itemParam)) {
+      return
     }
 
-    if (!selected || !ordered.some((item) => item.id === selected.id)) {
-      setSelected(ordered[0] ?? null)
-    }
-  }, [ordered, selectedParam, selected])
+    const fallbackId = ordered[0]?.id
+    if (!fallbackId) return
+
+    const next = new URLSearchParams(searchParams)
+    if (next.get('item') === fallbackId) return
+    next.set('item', fallbackId)
+    setSearchParams(next, { replace: true })
+  }, [ordered, itemParam, searchParams, setSearchParams])
 
   useEffect(() => {
-    if (!selected) {
-      if (!selectedParam) return
-      const next = new URLSearchParams(searchParams)
-      next.delete('item')
-      setSearchParams(next, { replace: true })
-      return
+    if (!orderedLength && modalOpen) {
+      setModalOpen(false)
     }
-
-    if (selectedParam === selected.id) return
-    const next = new URLSearchParams(searchParams)
-    next.set('item', selected.id)
-    setSearchParams(next, { replace: true })
-  }, [selected, selectedParam, searchParams, setSearchParams])
+  }, [orderedLength, modalOpen])
 
   useEffect(() => {
     if (isDesktop && modalOpen) {
@@ -142,22 +130,38 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     }
   }, [isDesktop, modalOpen])
 
-  useEffect(() => {
-    if (!selected) return
-    if (!isDesktop) return
-    setModalOpen(false)
-  }, [isDesktop, selected])
-
-  const handleSelect = (item: ContentItem) => {
-    setSelected(item)
-    if (!isDesktop) {
-      setModalOpen(true)
+  const selectedItem = useMemo(() => {
+    if (!ordered.length) return null
+    if (itemParam) {
+      const match = ordered.find((entry) => entry.id === itemParam)
+      if (match) return match
     }
-  }
+    return ordered[0] ?? null
+  }, [ordered, itemParam])
 
-  const handleModalChange = (open: boolean) => {
+  useEffect(() => {
+    if (!selectedItem && modalOpen) {
+      setModalOpen(false)
+    }
+  }, [selectedItem, modalOpen])
+
+  const handleSelect = useCallback(
+    (item: ContentItem) => {
+      const next = new URLSearchParams(searchParams)
+      if (next.get('item') !== item.id) {
+        next.set('item', item.id)
+        setSearchParams(next, { replace: true })
+      }
+      if (!isDesktop) {
+        setModalOpen(true)
+      }
+    },
+    [isDesktop, searchParams, setSearchParams]
+  )
+
+  const handleModalChange = useCallback((open: boolean) => {
     setModalOpen(open)
-  }
+  }, [])
 
   if (loading) {
     return (
@@ -185,18 +189,18 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   return (
     <div className='ax-content-split'>
       <div className='ax-content-column list'>
-        <ContentList items={ordered} selectedId={selected?.id ?? null} onSelect={handleSelect} />
+        <ContentList items={ordered} selectedId={selectedItem?.id ?? null} onSelect={handleSelect} />
       </div>
 
       {isDesktop ? (
         <aside className='ax-content-preview'>
-          <PreviewPane item={selected} dataBase={dataBase} />
+          <PreviewPane item={selectedItem} dataBase={dataBase} />
         </aside>
       ) : null}
 
       {!isDesktop ? (
-        <Modal open={modalOpen} onOpenChange={handleModalChange} title={selected ? selected.title : 'Preview'}>
-          <PreviewPane item={selected} dataBase={dataBase} />
+        <Modal open={modalOpen} onOpenChange={handleModalChange} title={selectedItem ? selectedItem.title : 'Preview'}>
+          <PreviewPane item={selectedItem} dataBase={dataBase} />
         </Modal>
       ) : null}
     </div>

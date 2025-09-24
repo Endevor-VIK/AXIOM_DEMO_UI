@@ -1,0 +1,191 @@
+<!doctype html>
+<!-- Integrated into app as components/news/HeadlinesTicker.tsx + styles/ticker.css -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AXIOM — Headlines Ticker (RED PROTOCOL)</title>
+  <style>
+    :root{
+      /* AXIOM tokens */
+      --ax-bg:#0a0a0b;           /* background */
+      --ax-panel:#0f0f12;        /* panel tone */
+      --ax-red:#ff2034;          /* RED PROTOCOL */
+      --ax-red-700:#d11828;      /* deep red */
+      --ax-accent:#a7b0c0;       /* cold steel */
+      --ax-fg:#e9eaf0;           /* foreground */
+      --ax-height:46px;          /* ticker height */
+      --ax-gap:44px;             /* space between items */
+      --ax-speed:96;             /* px per second (adjust in integration) */
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--ax-bg);
+      color:var(--ax-fg);
+      font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Inter,"Helvetica Neue",Arial,sans-serif;
+      display:grid;
+      place-items:start stretch;
+      padding:24px;
+      gap:16px;
+    }
+
+    /* ———————————————— Ticker ———————————————— */
+    .ax-ticker{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      height:var(--ax-height);
+      padding:0 16px;
+      background:linear-gradient(180deg,#111113,#0c0c0d);
+      border-top:1px solid rgba(255,255,255,.06);
+      border-bottom:1px solid var(--ax-red);
+      overflow:hidden;
+      /* Fade edges */
+      -webkit-mask-image:linear-gradient(to right, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+              mask-image:linear-gradient(to right, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+      isolation:isolate; /* keep glow under control */
+    }
+    .ax-crest{
+      position:relative;
+      font-size:11px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:#fff;
+      background:linear-gradient(90deg,var(--ax-red),var(--ax-red-700));
+      border:1px solid rgba(255,255,255,.25);
+      padding:4px 10px 4px 28px;
+      border-radius:999px;
+      text-shadow:0 0 8px rgba(255,32,52,.45);
+      white-space:nowrap;
+      user-select:none;
+    }
+    .ax-crest::before{ /* beacon */
+      content:""; position:absolute; left:8px; top:50%; translate:0 -50%;
+      width:10px; height:10px; border-radius:2px; background:var(--ax-fg);
+      box-shadow:0 0 0 0 rgba(255,255,255,.8);
+      animation:ax-beacon 2.2s ease-in-out infinite;
+    }
+    @keyframes ax-beacon{
+      0%,60%{box-shadow:0 0 0 0 rgba(255,255,255,.65)}
+      80%{box-shadow:0 0 0 10px rgba(255,255,255,0)}
+      100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}
+    }
+
+    .ax-viewport{position:relative;flex:1;overflow:hidden}
+    .ax-track{
+      position:absolute;left:0;top:50%;translate:0 -50%;
+      display:flex;align-items:center;gap:var(--ax-gap);
+      white-space:nowrap;will-change:transform;/* perf */
+    }
+    .ax-ticker:hover .ax-track,
+    .ax-ticker:focus-within .ax-track{animation-play-state:paused}
+
+    .ax-item{color:var(--ax-fg);opacity:.92; display:inline-flex; align-items:center; gap:10px}
+    .ax-item .ax-title{opacity:.95}
+    .ax-dot{width:6px;height:6px;border-radius:50%;display:inline-block;background:rgba(255,255,255,.35)}
+
+    .ax-pill{font-size:10px; letter-spacing:.16em; text-transform:uppercase; padding:3px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.22); color:var(--ax-accent)}
+    .ax-item[data-level="priority"] .ax-pill{background:linear-gradient(90deg,var(--ax-red),var(--ax-red-700)); color:#fff; text-shadow:0 0 6px rgba(255,32,52,.35)}
+    .ax-item[data-level="market"] .ax-pill{background:linear-gradient(90deg,#5aa7ff,#7dd3fc); color:#00111a}
+
+    /* Subtle decode flicker for priority titles */
+    .ax-item[data-level="priority"] .ax-title{animation:ax-flicker 2.6s steps(12) infinite}
+    @keyframes ax-flicker{ 0%,92%,100%{filter:none} 94%{filter:contrast(120%) brightness(1.1)} 96%{filter:contrast(80%) brightness(.9)} 98%{filter:none} }
+
+    @keyframes ax-scroll{to{transform:translateX(var(--ax-loop-to,-50%))}}
+
+    /* Reduced motion: disable animation, allow horizontal scroll */
+    @media (prefers-reduced-motion: reduce){
+      .ax-track{position:relative;translate:0;animation:none!important}
+      .ax-viewport{overflow:auto}
+      .ax-item[data-level="priority"] .ax-title{animation:none}
+      .ax-crest::before{animation:none}
+    }
+
+    /* Demo page chrome */
+    .demo-title{font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ax-accent);opacity:.8}
+    .demo-note{font-size:12px;color:var(--ax-accent);opacity:.7}
+  </style>
+</head>
+<body>
+  <div class="demo-title">AXIOM • RED PROTOCOL — Headlines Ticker (HTML prototype)</div>
+  
+  <div class="ax-ticker" role="region" aria-label="AXIOM wire — live headlines">
+    <span class="ax-crest">AXIOM WIRE</span>
+    <div class="ax-viewport">
+      <div class="ax-track" id="axTrack" aria-live="polite" role="list"></div>
+    </div>
+  </div>
+
+  <div class="demo-note">Hover / focus pauses the stream • Speed/loop computed from content width • Respects <code>prefers-reduced-motion</code>. — Adjust <code>--ax-speed</code>, <code>--ax-gap</code>, <code>--ax-height</code>.</div>
+
+  <script>
+  (()=>{
+    // Placeholder feed (can be replaced with app data)
+    const FEED = [
+      {level:'priority', title:'Tower lockdown in ECHELON-Δ'},
+      {level:'advisory', title:'Unscheduled key exchange intercepted'},
+      {level:'market',   title:'Σ-index +2.7% amid sector rally'},
+      {level:'restricted', title:'OMEGA‑0 anomaly ping reduced'},
+      {level:'advisory', title:'Checksum drift in OMEGA-0 ledger — no loss'},
+      {level:'priority', title:'AXIOM Echo — dormant node handshake prelude'},
+      {level:'market',   title:'Risk-on rotation: Gen-Cell equities lead'},
+      {level:'advisory', title:'Undercity relays: key-attempt rate spikes'},
+      {level:'market',   title:'Bond yields cool as appetite returns'},
+      {level:'advisory', title:'Firewall rules updated • Endeavor signature match'},
+      {level:'priority', title:'Sector-β quarantine corridor armed'},
+      {level:'market',   title:'Σ-volatility band narrows 12→8'}
+    ];
+
+    const speed = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ax-speed')) || 96; // px/s
+    const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ax-gap')) || 44;     // px
+    const track = document.getElementById('axTrack');
+    const viewport = track.parentElement;
+
+    function itemNode({level,title}){
+      const span = document.createElement('span');
+      span.className = 'ax-item';
+      span.setAttribute('data-level', level);
+      span.setAttribute('role','listitem');
+      span.innerHTML = `<span class="ax-dot"></span><span class="ax-pill">${(level||'news').toUpperCase()}</span> <span class="ax-title">${title}</span>`;
+      return span;
+    }
+
+    function populate(){
+      track.textContent = '';
+      FEED.forEach(it=> track.appendChild(itemNode(it)));
+    }
+
+    function contentWidth(){
+      const rects = Array.from(track.children).map(el=>el.getBoundingClientRect().width);
+      return rects.reduce((a,b)=>a+b,0) + (track.children.length-1)*gap;
+    }
+
+    function setup(){
+      populate();
+      // reset animation
+      track.style.animation = 'none';
+
+      // ensure >= 2× viewport width for seamless loop
+      const base = Array.from(track.children).map(n=>n.cloneNode(true));
+      let w = contentWidth();
+      const min = viewport.getBoundingClientRect().width * 2 + 1;
+      while (w < min) { base.forEach(n=>track.appendChild(n.cloneNode(true))); w = contentWidth(); }
+
+      // compute loop distance and duration
+      const dist = w / 2; // pixels (two identical halves)
+      track.style.setProperty('--ax-loop-to', `${-dist}px`);
+      const duration = dist / speed; // seconds
+      track.style.animation = `ax-scroll ${duration}s linear infinite`;
+    }
+
+    // Recompute on load / resize
+    const ro = new ResizeObserver(()=>setup());
+    ro.observe(viewport);
+    window.addEventListener('load', setup, { once:true });
+  })();
+  </script>
+</body>
+</html>
