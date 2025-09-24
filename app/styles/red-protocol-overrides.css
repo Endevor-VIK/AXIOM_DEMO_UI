@@ -1,0 +1,131 @@
+.ax-viewer{
+  min-height: calc(100dvh - var(--ax-header-h, 56px) - var(--ax-footer-h, 0px) - 140px);
+  overflow: auto;
+  background: radial-gradient(140% 120% at 50% 0, #12090c, #0a0607);
+  box-shadow: 0 0 0 1px rgba(255,32,52,.16) inset;
+  padding:18px 20px 40px;
+  position:relative;
+}
+
+/* Новый: тулбар у viewer */
+.ax-viewer__toolbar{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  padding:10px 12px;
+  position:sticky;
+  top:0;
+  background:linear-gradient(180deg,#12090cb0,#0a0607a0);
+  backdrop-filter: blur(4px);
+  z-index: 1;
+  border:1px solid rgba(255,32,52,.18);
+  margin-bottom: 8px;
+  border-radius: 8px;
+  box-shadow:0 0 0 1px #33050a inset,0 0 24px -8px #ff203422;
+}
+.ax-viewer__actions{ display:flex; gap:8px; }
+.ax-viewer__actions .ax-btn{ font-size:13px; padding:6px 12px; }
+.ax-viewer__scale-label select{ min-width:72px; }
+
+.ax-input--grow{ flex:1; min-width:180px; }
+.ax-input--sm{ font-size:12px; padding:5px 8px; }
+
+/* Документ внутри viewer */
+.ax-doc-wrapper{
+  transform-origin: top left;
+  transition: transform .18s ease;
+  will-change: transform;
+  margin-top:4px;
+  width:100%;
+  overflow:visible;
+}
+.ax-doc-wrapper[data-scale="1"]{ transform:scale(1); }
+.ax-doc-wrapper[data-scale="1.1"]{ transform:scale(1.1); }
+.ax-doc-wrapper[data-scale="1.25"]{ transform:scale(1.25); }
+.ax-doc-wrapper[data-scale="1.5"]{ transform:scale(1.5); }
+
+.ax-doc{
+  background:linear-gradient(135deg,#0e0a0c,#0c090a);
+  border:1px solid rgba(255,220,180,.08);
+  border-radius:14px;
+  padding:38px clamp(20px,2.6vw,44px) 60px;
+  line-height:1.55;
+  font-size:15px;
+  position:relative;
+  box-shadow:0 0 0 1px #2a0b10,0 0 32px -12px #ff5a5f20;
+  overflow:hidden;
+}
+.ax-viewer--audit .ax-doc:before{
+  content:"AUDIT V2";
+  position:absolute;
+  top:40%;
+  right:3%;
+  font-size:180px;
+  font-weight:800;
+  letter-spacing:-.04em;
+  color:#ffffff05;
+  pointer-events:none;
+}
+
+.ax-doc h1,h2,h3,h4{
+  font-weight:600;
+  letter-spacing:.02em;
+  position:relative;
+}
+.ax-doc code{
+  background:#241317;
+  padding:2px 5px;
+  border-radius:4px;
+  font-size:.92em;
+  color:#ffb347;
+}
+
+/* Roadmap специфичное */
+.ax-doc--roadmap{
+  font-size:14px;
+  padding:28px 24px 46px;
+}
+.ax-doc--roadmap details summary{
+  cursor:pointer;
+  user-select:none;
+}
+.ax-roadmap-filtering [data-hidden="true"]{
+  display:none !important;
+}
+
+/* Skeleton выравниваем с новыми паддингами */
+.ax-skeleton{
+  opacity:.75;
+  padding:14px;
+  border:1px dashed rgba(255,32,52,.25);
+  border-radius:8px;
+  background:linear-gradient(90deg,#140b0d,#1a0d10);
+  min-height:120px;
+}
+
+/* Тёмная полоса границы вокруг всего viewer (интеграция) */
+.ax-viewer:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border:1px solid rgba(255,32,52,.12);
+  border-radius:16px;
+  box-shadow:0 0 0 1px #2a0b10 inset;
+}
+
+/* iframe sandbox для аудита */
+.ax-audit-frame{
+  width:100%;
+  border:0;
+  display:block;
+  background:transparent;
+  /* базовая типографика по умолчанию сбрасывается внутри iframe собственным стилем */
+  color:inherit;
+}
+
+/* Адаптив: убираем масштаб >1.25 на узких экранах */
+@media (max-width: 860px){
+  .ax-doc-wrapper[data-scale="1.5"]{ transform:scale(1.25); }
+  .ax-doc{ padding:30px 18px 48px; font-size:14.5px; }
+}
