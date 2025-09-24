@@ -1,9 +1,9 @@
-﻿import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import ContentList from '@/components/ContentList'
-import ContentPreview from '@/components/ContentPreview'
 import Modal from '@/components/Modal'
+import PreviewPane from '@/components/PreviewPane'
 import type { ContentCategory, ContentItem, ContentStatus } from '@/lib/vfs'
 
 import { useContentHub } from './context'
@@ -42,7 +42,7 @@ function matchesLang(item: ContentItem, lang: string | 'any'): boolean {
 
 function filterByCategory(items: ContentItem[], category: 'all' | ContentCategory): ContentItem[] {
   if (category === 'all') return items
-  return items.filter((item) => item.category === category)
+  return items.filter((content) => content.category === category)
 }
 
 function orderByPins(items: ContentItem[], pinned: string[]): ContentItem[] {
@@ -50,9 +50,9 @@ function orderByPins(items: ContentItem[], pinned: string[]): ContentItem[] {
   const set = new Set(pinned)
   const pinnedItems: ContentItem[] = []
   const rest: ContentItem[] = []
-  for (const item of items) {
-    if (set.has(item.id)) pinnedItems.push(item)
-    else rest.push(item)
+  for (const entry of items) {
+    if (set.has(entry.id)) pinnedItems.push(entry)
+    else rest.push(entry)
   }
   return [...pinnedItems, ...rest]
 }
@@ -61,20 +61,24 @@ function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState<boolean>(() =>
     typeof window !== 'undefined' ? window.matchMedia(query).matches : true
   )
+
   useEffect(() => {
     if (typeof window === 'undefined') return
     const mq = window.matchMedia(query)
-    const onChange = (e: MediaQueryListEvent) => setMatches(e.matches)
+    const onChange = (event: MediaQueryListEvent) => setMatches(event.matches)
     setMatches(mq.matches)
     mq.addEventListener?.('change', onChange)
     return () => mq.removeEventListener?.('change', onChange)
   }, [query])
+
   return matches
 }
 
 export interface ContentCategoryViewProps {
   category: 'all' | ContentCategory
 }
+
+const noop = () => {}
 
 const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) => {
   const { aggregate, loading, error, filters, dataBase, pinned } = useContentHub()
@@ -91,43 +95,87 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
 
   const ordered = useMemo(() => orderByPins(items, pinned), [items, pinned])
 
-  const selectedId = useMemo(() => searchParams.get('item'), [searchParams])
-  const hasSelected = Boolean(selectedId) && ordered.some((item) => item.id === selectedId)
-  const effectiveSelectedId = hasSelected ? (selectedId as string) : ordered[0]?.id ?? null
+  const selectedParam = searchParams.get('item') ?? ''
 
   const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const [selected, setSelected] = useState<ContentItem | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
-    if (!ordered.length) return
-    if (!hasSelected) {
-      const next = new URLSearchParams(searchParams)
-      if (effectiveSelectedId) {
-        next.set('item', effectiveSelectedId)
-        setSearchParams(next, { replace: true })
+    if (!ordered.length) {
+      setSelected(null)
+      setModalOpen(false)
+      return
+    }
+
+    if (selectedParam) {
+      const match = ordered.find((item) => item.id === selectedParam)
+      if (match && match.id !== selected?.id) {
+        setSelected(match)
+        return
       }
     }
-  }, [effectiveSelectedId, hasSelected, ordered, searchParams, setSearchParams])
+
+    if (!selected || !ordered.some((item) => item.id === selected.id)) {
+      setSelected(ordered[0] ?? null)
+    }
+  }, [ordered, selectedParam, selected])
 
   useEffect(() => {
-    if (!isDesktop && hasSelected) setModalOpen(true)
-  }, [isDesktop, hasSelected])
+    if (!selected) {
+      if (!selectedParam) return
+      const next = new URLSearchParams(searchParams)
+      next.delete('item')
+      setSearchParams(next, { replace: true })
+      return
+    }
 
-  const closeModal = () => {
-    setModalOpen(false)
+    if (selectedParam === selected.id) return
     const next = new URLSearchParams(searchParams)
-    next.delete('item')
+    next.set('item', selected.id)
     setSearchParams(next, { replace: true })
+  }, [selected, selectedParam, searchParams, setSearchParams])
+
+  useEffect(() => {
+    if (isDesktop && modalOpen) {
+      setModalOpen(false)
+    }
+  }, [isDesktop, modalOpen])
+
+  useEffect(() => {
+    if (!selected) return
+    if (!isDesktop) return
+    setModalOpen(false)
+  }, [isDesktop, selected])
+
+  const handleSelect = (item: ContentItem) => {
+    setSelected(item)
+    if (!isDesktop) {
+      setModalOpen(true)
+    }
   }
 
-  const selectedItem = ordered.find((item) => item.id === effectiveSelectedId) ?? null
+  const handleModalChange = (open: boolean) => {
+    setModalOpen(open)
+  }
 
   if (loading) {
-    return <p className='ax-muted'>Loading content…</p>
+    return (
+      <div className='ax-content-split'>
+        <div className='ax-content-column list'>
+          <ContentList items={[]} selectedId={null} onSelect={noop} />
+        </div>
+        {isDesktop ? (
+          <aside className='ax-content-preview'>
+            <PreviewPane item={null} dataBase={dataBase} />
+          </aside>
+        ) : null}
+      </div>
+    )
   }
 
   if (error) {
-    return null
+    return <p className='ax-muted'>Unable to load content right now.</p>
   }
 
   if (!ordered.length) {
@@ -137,29 +185,18 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   return (
     <div className='ax-content-split'>
       <div className='ax-content-column list'>
-        <ContentList
-          items={ordered}
-          selectedId={effectiveSelectedId ?? ''} // всегда string
-          onSelect={(item) => {
-            const next = new URLSearchParams(searchParams)
-            next.set('item', item.id)
-            setSearchParams(next, { replace: true })
-            if (!isDesktop) setModalOpen(true)
-          }}
-        />
+        <ContentList items={ordered} selectedId={selected?.id ?? null} onSelect={handleSelect} />
       </div>
 
       {isDesktop ? (
-        <div className='ax-content-column preview'>
-          <div className='ax-content-preview'>
-            <ContentPreview item={selectedItem} dataBase={dataBase} />
-          </div>
-        </div>
+        <aside className='ax-content-preview'>
+          <PreviewPane item={selected} dataBase={dataBase} />
+        </aside>
       ) : null}
 
       {!isDesktop ? (
-        <Modal open={modalOpen} onOpenChange={(open) => (open ? setModalOpen(true) : closeModal())} title={selectedItem?.title || 'Preview'}>
-          <ContentPreview item={selectedItem} dataBase={dataBase} />
+        <Modal open={modalOpen} onOpenChange={handleModalChange} title={selected ? selected.title : 'Preview'}>
+          <PreviewPane item={selected} dataBase={dataBase} />
         </Modal>
       ) : null}
     </div>

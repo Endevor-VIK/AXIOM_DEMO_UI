@@ -2,15 +2,16 @@ export function safeText(value: unknown, fallback = '—'): string {
   if (value === null || value === undefined) return fallback;
   if (typeof value === 'number' && !Number.isNaN(value)) return String(value);
   if (typeof value === 'string') {
-    const s = value.replace(/[\u0000-\u001F\u007F]/g, '').trim();
-    if (!s || s.toLowerCase() === 'undefined' || s.toLowerCase() === 'nan') return fallback;
-    // sanitize obvious broken artifacts like "0a"
-    if (/^[\W_]+$/.test(s)) return fallback;
-    return s;
+    const cleaned = value.replace(/[\u0000-\u001F\u007F]/g, '').trim();
+    if (!cleaned || cleaned.toLowerCase() === 'undefined' || cleaned.toLowerCase() === 'nan') {
+      return fallback;
+    }
+    if (/^[\W_]+$/.test(cleaned)) return fallback;
+    return cleaned;
   }
   try {
-    const s = String(value).trim();
-    return s ? s : fallback;
+    const stringified = String(value).trim();
+    return stringified ? stringified : fallback;
   } catch {
     return fallback;
   }
