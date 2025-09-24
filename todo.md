@@ -24,104 +24,80 @@
 ```txt
 Архитектура
 AXIOM_DEMO_UI/
-├─ app/                                           # входные точки/маршруты (Vite + React)
-│  ├─ main.tsx                                    # C03
+├─ app/                                   # входные точки/маршруты UI
+│  ├─ main.tsx
 │  └─ routes/
-│     ├─ _layout.tsx                              # C04 общий каркас (PanelNav/StatusLine/Ticker slot)
 │     ├─ login/
-│     │  └─ page.tsx                              # C11
-│     └─ dashboard/                               # защищённая зона
-│        ├─ page.tsx                              # C15 hub (табы: roadmap/audit/content/news)
-│        ├─ roadmap/
-│        │  └─ page.tsx                           # C16 iframe + VFS
-│        ├─ audit/
-│        │  └─ page.tsx                           # C17 audits manifest render
-│        ├─ content/
-│        │  └─ page.tsx                           # C18 content manifest (filter/sort)
-│        └─ news/
-│           └─ page.tsx                           # C19 news feed page
+│     │  └─ page.tsx
+│     ├─ dashboard/
+│     │  ├─ page.tsx
+│     │  ├─ audit/
+│     │  │  └─ page.tsx
+│     │  ├─ content/
+│     │  │  └─ page.tsx
+│     │  ├─ news/
+│     │  │  └─ page.tsx
+│     │  └─ roadmap/
+│     │     └─ page.tsx
+│     └─ _layout.tsx
 ├─ components/
-│  ├─ TerminalBoot.tsx                            # C10 пошаговый preload
-│  ├─ AuthGate.tsx                                # C14 guard
-│  ├─ PanelNav.tsx                                # C08 навигация/моб. меню
-│  ├─ StatusLine.tsx                              # C07 gms-meta indicators
-│  ├─ Ticker.tsx                                  # C22 top‑N последних news
-│  ├─ NewsFeed.tsx                                # C21 список (пагинация/фильтр)
-│  ├─ NewsCard.tsx                                # C20 типизированные карточки
-│  ├─ GmsMeta.tsx                                 # вспомогательный вывод метаданных
+│  ├─ TerminalBoot.tsx
+│  ├─ PanelNav.tsx
+│  ├─ StatusLine.tsx
+│  ├─ GmsMeta.tsx
+│  ├─ AuthGate.tsx
+│  ├─ NewsFeed.tsx
+│  ├─ NewsCard.tsx
+│  ├─ Ticker.tsx
 │  └─ Form/
 │     ├─ Input.tsx
 │     └─ Button.tsx
 ├─ lib/
 │  ├─ auth/
-│  │  ├─ crypto.ts                                # C12 WebCrypto hash/verify
-│  │  └─ index.ts                                 # C13 token/session API
-│  ├─ vfs/
-│  │  ├─ index.ts                                 # C09 чтение index/objects/logs
-│  │  └─ adapters/
-│  │     └─ gms-index.ts                          # адаптер GMS структуры
-│  ├─ news/
-│  │  ├─ schema.ts                                # C23 ajv/types
-│  │  └─ index.ts                                 # C24 provider (manifest→records)
+│  │  ├─ index.ts
+│  │  └─ crypto.ts
 │  ├─ command-router/
-│  │  ├─ index.ts                                 # C25 parser/dispatch
-│  │  └─ commands/
-│  │     ├─ news.ts                               # C26
-│  │     └─ (заглушки future: search/meta/log)     # плановые
+│  │  ├─ index.ts
+│  │  └─ commands/*.ts
+│  ├─ news/
+│  │  ├─ index.ts
+│  │  └─ schema.ts
+│  ├─ vfs/
+│  │  ├─ index.ts
+│  │  └─ adapters/gms-index.ts
 │  ├─ gms-render/
-│  │  ├─ meta.ts                                  # форматирование мета‑секций
-│  │  └─ blocks/                                  # специфические рендеры Canvas
+│  │  ├─ meta.ts
+│  │  └─ blocks/*
 │  ├─ telemetry/
-│  │  └─ noop.ts                                  # PUBLIC no‑op
-│  └─ utils/                                      # вспомогательные функции
+│  │  └─ noop.ts
+│  └─ utils/
 ├─ public/
-│  ├─ assets/                                     # статические ресурсы (шрифты/иконки)
+│  ├─ assets/
 │  └─ data/
 │     ├─ index.json
 │     ├─ objects.json
 │     ├─ logs.json
-│     ├─ news/
-│     │  ├─ manifest.json                         # список новостей (whitelist поля)
-│     │  └─ items/                                # markdown/html карточки (по ссылкам)
-│     ├─ content/
-│     │  ├─ manifest.json                         # контент (technologies|factions|demo...)
-│     │  └─ files/                                # *.md / *.html (iframe/md render)
-│     └─ audits/
+│     ├─ audits/manifest.json
+│     ├─ content/manifest.json
+│     └─ news/
 │        ├─ manifest.json
-│        └─ html/                                 # audit HTML (sanitized)
+│        └─ items/                 # markdown/html карточки новостей
 ├─ styles/
-│  ├─ tokens.css                                  # C05 дизайн‑токены (палитра/типо)
-│  ├─ app.css                                     # C06 base + layout адаптив
-│  └─ red-protocol-overrides.css                  # итеративные override (из iteration plan)
+│  ├─ tokens.css
+│  └─ app.css
 ├─ tools/
-│  ├─ whitelist.json                              # C28 списки разрешённых полей/паттернов
-│  ├─ redactor.ts                                 # C29 очистка секретов/путей
-│  └─ export.ts                                   # C30 статический экспорт (/export)
+│  ├─ whitelist.json
+│  ├─ redactor.ts
+│  └─ export.ts
 ├─ tests/
-│  ├─ vfs.spec.ts                                 # C31
-│  ├─ news.spec.ts                                # C32
-│  └─ redactor.spec.ts                            # (проверка маскирования) 
-├─ docs/                                          # документация/итерации
-│  ├─ GETTING_STARTED.md                          # on‑boarding для dev
-│  ├─ ITERATION_PLAN_AXIOM DEMO_UI_v1.0.md        # цикл задач (foundation/news/content)
-│  ├─ AX_OPENAI_API_INTEGRATION_v0.1.md           # интеграция API (плановая)
-│  └─ (прочие future docs)
-├─ ax-design/
-│  ├─ AX_UI_ITERATION_v0.5.md                     # визуальная итерация (RED‑XS)
-│  └─ compat/
-│     ├─ README_TEMP.md                           # временные заметки совместимости
-│     └─ (ref_html_* assets)                      # HTML референсы (не билдятся)
-├─ .github/
-│  └─ workflows/
-│     └─ export-web-core.yml                      # C33 CI: build→export→deploy
-├─ legacy/
-│  ├─ index.html                                  # C34 (депрекация после паритета)
-│  └─ assets/js/app.js                            # C35 старая SPA логика (разбор)
-├─ package.json                                   # C00
-├─ vite.config.ts                                 # C01
-├─ tsconfig.json                                  # C02
-├─ README.md                                      # обновляемая дока запуска
-└─ (generated) export/                            # артефакт экспорта (gitignore)
+│  ├─ vfs.spec.ts
+│  ├─ news.spec.ts
+│  └─ redactor.spec.ts
+├─ .github/workflows/
+│  └─ export-web-core.yml
+├─ package.json
+├─ vite.config.ts
+└─ README.md
 ```
 
 ---
@@ -151,8 +127,6 @@ AXIOM_DEMO_UI/
 | `lib/command-router/commands/news.ts`   | Команда `news`        | NEW    | Вывод последних N    |
 | `public/data/*`                         | Снимки данных         | EDIT   | Перенос из `/data`   |
 | `public/data/news/*`                    | Данные ленты          | NEW    | manifest + items     |
-| `public/data/content/*`                 | Контент (HTML/MD)     | NEW    | категории: demo/tech/factions |
-| `public/data/audits/*`                  | Аудитовые HTML        | NEW    | iframe preview       |
 | `styles/tokens.css`                     | Дизайн‑токены         | NEW    | Red Protocol         |
 | `styles/app.css`                        | Базовые стили         | EDIT   | Адаптив              |
 | `tools/whitelist.json`                  | Белый список          | NEW    | Без секретов         |
@@ -193,11 +167,6 @@ AXIOM_DEMO_UI/
   }
 ]
 ```
-* **Content Manifest (`public/data/content/manifest.json`)**: массив объектов. Базовые поля: `title`, `date`, `tags?`, `file`, опционально: `category`, `subCategory`, `id`, `summary`, `status`, `visibility`, `weight`, `lang`, `links[]`, `meta{}`.
-  - Присутствуют демо‑элементы и placeholder записи (например, технология и фракция с `status: published` / `category: technologies|factions`).
-  - HTML/MD файлы рендерятся через iframe (HTML) или прямую загрузку (MD — позже unified renderer).
-* **Категории контента (расширяемость)**: `technologies`, `factions`, `demo`. План: унифицированный тип для фильтрации в дальнейшем `/dashboard/content`.
-* **Audits (`public/data/audits/*`)**: манифест + отдельные HTML (iframe). Используются для smoke‑валидаций структуры и будущего валидатора (упоминание внутри demo audit файла).
 
 ---
 
@@ -234,10 +203,7 @@ AXIOM_DEMO_UI/
 * PUBLIC: только чтение; mock‑auth; запрет мутаций; redaction/whitelist в export.
 * PRO: серверless‑login, KV‑кэш, API только чтение; feature‑flags.
 * Общие правила: никакой секретики в снапшотах; относительные пути; маскирование токенов.
-* **News**: whitelist полей `id,date,title,kind,tags,summary,link`.
-* **Content**: whitelist (минимум для PUBLIC экспорта) — `title,date,tags?,file,category?,subCategory?,summary?,lang?,status?,weight?`.
-* **Audits**: HTML проходит sanitization (strip script/style вне allowlist) перед публикацией (этап в `redactor.ts` — запланировано).
-* Внешние ссылки: только из allowlist (в будущем раздел в `tools/whitelist.json`).
+* **News**: whitelist только полей (`id,date,title,kind,tags,summary,link`); очистка HTML в `news/items/*` (strip XSS); внешние ссылки — только из allowlist.
 
 ---
 
@@ -278,7 +244,7 @@ AXIOM_DEMO_UI/
 | C06 | `styles/app.css`                        | Базовые стили                       | TODO   | EDIT | адаптив/reset                 |
 | C07 | `components/StatusLine.tsx`             | Статус/мета                         | TODO   | NEW  | gms‑индикация                 |
 | C08 | `components/PanelNav.tsx`               | Навигация                           | TODO   | NEW  | mobile menu                   |
-| C09 | `lib/vfs/index.ts`                      | Чтение снапшотов                    | TODO   | NEW  | index/objects/logs            |
+| C09 | `lib/vfs/index.ts`                      | Чтение снапшотов                    | WIP    | NEW  | базовые функции + ajv draft   |
 | C10 | `components/TerminalBoot.tsx`           | Терминальная загрузка               | TODO   | NEW  | лог задач + переход           |
 | C11 | `app/routes/login/page.tsx`             | Экран входа                         | TODO   | NEW  | строгий логин                 |
 | C12 | `lib/auth/crypto.ts`                    | Хэш/verify                          | TODO   | NEW  | webcrypto                     |
@@ -287,7 +253,7 @@ AXIOM_DEMO_UI/
 | C15 | `app/routes/dashboard/page.tsx`         | Main (protected)                    | TODO   | NEW  | shell + tabs                  |
 | C16 | `app/routes/dashboard/roadmap/page.tsx` | Roadmap                             | TODO   | NEW  | iframe+vfs                    |
 | C17 | `app/routes/dashboard/audit/page.tsx`   | Audit                               | TODO   | NEW  | manifest render               |
-| C18 | `app/routes/dashboard/content/page.tsx` | Content                             | TODO   | NEW  | manifest render               |
+| C18 | `app/routes/dashboard/content/page.tsx` | Content                             | WIP    | NEW  | `_layout.tsx` уже есть        |
 | C19 | `app/routes/dashboard/news/page.tsx`    | News                                | TODO   | NEW  | лента новостей                |
 | C20 | `components/NewsCard.tsx`               | Карточка новости                    | TODO   | NEW  | виды: update/release          |
 | C21 | `components/NewsFeed.tsx`               | Список новостей                     | TODO   | NEW  | пагинация/filters             |
@@ -296,7 +262,7 @@ AXIOM_DEMO_UI/
 | C24 | `lib/news/index.ts`                     | Провайдер новостей                  | TODO   | NEW  | manifest→items                |
 | C25 | `lib/command-router/index.ts`           | Роутер команд                       | TODO   | NEW  | help/ls/open                  |
 | C26 | `lib/command-router/commands/news.ts`   | Команда `news`                      | TODO   | NEW  | вывод N последних             |
-| C27 | `public/data/*`                         | Перенос снапшотов                   | TODO   | EDIT | из `/data` (legacy)           |
+| C27 | `public/data/*`                         | Перенос снапшотов                   | WIP    | EDIT | roadmap/audits уже на месте   |
 | C28 | `tools/whitelist.json`                  | Белый список                        | TODO   | NEW  | редактор публикации           |
 | C29 | `tools/redactor.ts`                     | Маскирование                        | TODO   | NEW  | secret/paths scrub            |
 | C30 | `tools/export.ts`                       | Сборка `/export`                    | TODO   | NEW  | статический билд              |
@@ -306,64 +272,38 @@ AXIOM_DEMO_UI/
 | C34 | `index.html` (legacy)                   | Старый вход                         | TODO   | EDIT | депрекация                    |
 | C35 | `assets/js/app.js` (legacy)             | Демо‑логика                         | TODO   | EDIT | разбор/удаление               |
 
+> Примечание: обнаружены дополнительные файлы (`components/ContentCategoryTiles.tsx`, `components/utils.ts`, `app/routes/dashboard/content/_layout.tsx`) — не имеют выделенных Canvas; можно зарезервировать `C36+` при расширении.
+
 ---
 
 ## 🔷 `BLOCK 10` — ПОЯСНЕНИЯ К КЛЮЧЕВЫМ УЗЛАМ
 
 * **TerminalBoot.tsx (C10)** — выводит пошаговый лог: preload токенов, загрузка `public/data/*`, проверка манифестов, warm‑up. Успех → `navigate('/login')`.
 * **Auth (C12–C14)** — регистрация+вход; пароли хэшируются (WebCrypto); хранение токена `localStorage`/cookie; `AuthGate` блокирует доступ к `/dashboard/*`.
-* **News (C19–C24)** — `news/manifest.json` (id, date, title, kind, tags, summary, link) + `items/*`. Рендер в `NewsFeed` (виртуализация позже); `Ticker` на layout.
-* **Content Provider (добавлено)** — чтение `content/manifest.json`, нормализация записей (унификация дат, сортировка по `weight|date DESC`), фильтр по категориям; iframe/MD стратегия рендера.
-* **VFS (C09)** — единый источник данных (index/objects/logs) + быстрый кэш.
-* **Command Router (C25–C26)** — `help|ls|open|search|meta|log|news` (read‑only в PUBLIC).
-* **Export/Redactor (C28–C30)** — `/export` артефакт; очистка секретов, абсолютных путей; применяются whitelist фильтры (включая разделы news/content/audits).
+* **News (C19–C24)** — `news/manifest.json` (id, date, title, kind, tags, summary, link) + `items/*`. Рендер в `NewsFeed` с виртуализацией и фильтрами; `Ticker` на layout.
+* **VFS (C09)** — единый источник данных для вкладок; синхронная и асинхронная загрузка с кэшированием.
+* **Command Router (C25–C26)** — поддержка терминальных команд (`help`, `ls`, `open`, `search`, `meta`, `log`, `news`). В PUBLIC — read‑only.
+* **Export/Redactor (C28–C30)** — детерминированный артефакт `/export`; маскирование секретов и абсолютных путей; whitelist.
 
 ---
 
-## 🔷 `BLOCK 11` — DELTA / CHANGELOG (АРХИТЕКТУРНЫЕ ОБНОВЛЕНИЯ)
+## 🔷 `BLOCK 11` — СТАРТ (ПЕРВЫЕ 5 CANVAS)
 
-| Версия | Дата       | Изменение                                                                 |
-|--------|------------|----------------------------------------------------------------------------|
-| v1.0   | 2025-09-06 | Первичная структура, очереди Canvas, News/Audit/Content базовые манифесты |
-| v1.0a  | 2025-09-06 | Добавлены схемные уточнения: Content categories, whitelist поля, Block 13  |
-| v1.0b  | 2025-09-06 | Security расширен (content/audits), добавлен Content Provider в Block 10   |
+1. **C00 — `package.json`**: deps — `react`, `react-dom`, `typescript`, `vite`, `@types/react*`; scripts — `dev`, `build`, `preview`, `lint`, `format`.
+2. **C01 — `vite.config.ts`**: alias `@/*` → `src`/корень `./`; настройка `base`, assets, HMR.
+3. **C02 — `tsconfig.json`**: `strict: true`, `jsx: react-jsx`, `paths: {"@/*":["./*"]}`.
+4. **C03 — `app/main.tsx`**: React root, Router, провайдеры (темы/ошибки), mount.
+5. **C04 — `app/routes/_layout.tsx`**: оболочка Dashboard с `PanelNav`, `StatusLine`, `Ticker`.
 
-> Следующие плановые deltas: v1.1 — Command Router расширение (`search/meta`), v1.2 — виртуализация ленты, v1.3 — экспорт + redaction pipeline.
+> После `C04` — быстрый smoke‑ран: рендер лэйаута с пустыми заглушками.
 
 ---
 
-## 🔷 `BLOCK 12` — СВЯЗАННЫЕ ФАЙЛЫ / ДОПОЛНИТЕЛЬНЫЕ ИСТОЧНИКИ
+## 🔷 `BLOCK 12` — ACCEPTANCE / DONE
 
-| Файл | Роль | Связь с архитектурой |
-| ---- | ---- | -------------------- |
-| `docs/GETTING_STARTED.md` | On‑boarding | Базовое описание запуска окружения и подготовки данных (`public/data/*`). |
-| `docs/ITERATION_PLAN_AXIOM DEMO_UI_v1.0.md` | План итераций | Декомпозиция циклов (Cycle 0 Foundation, Cycle 1 News, Cycle 2 Content); источник задач C0–C2. |
-| `docs/AX_OPENAI_API_INTEGRATION_v0.1.md` | Интеграция API | Планируемый модуль расширения (будущий слой assistant/AI hints) — не входит в v1 scope. |
-| `ax-design/AX_UI_ITERATION_v0.5.md` | UI итерация (RED‑XS) | Определяет визуальные токены и цели плотности; синхронизация с `styles/tokens.css` и overrides. |
-| `ax-design/compat/README_TEMP.md` | Совместимость / временные заметки | Источник временных решений и ограничений до полной миграции ref_html.* |
-| `ax-design/compat/ref_html_*.md/html` | Исторические референсы | Используются для верификации рендера (roadmap/audit previews) — не деплоятся напрямую. |
-
-### 12.1 Назначение блока
-
-Собрать внешние (к архитектуре) документы, влияющие на:
-1. Формирование задач очереди (итерационные планы).
-2. Визуальные решения (UI iteration).
-3. Будущие расширения (API/assistant интеграции).
-4. Совместимость и миграцию legacy HTML.
-
-### 12.2 Политика актуализации
-
-* Изменения в docs/* → отражаются в следующих версиях DELTA (BLOCK 11).
-* Любое добавление полей данных сначала фиксируется в `ITERATION_PLAN...` → затем whitelist → реализация.
-* Архивные файлы в `ax-design/compat/` не модифицируются; при миграции создаётся новый Canvas вместо правки legacy.
-
-### 12.3 Переход в будущие версии
-
-| Область | Триггер | Действие |
-| ------- | ------- | -------- |
-| AI Integration | Старт v1.4 | Добавить lib/ai/, конфиг rate‑limits, security review. |
-| UI Tokens Evolution | Завершение v1.1 | Выделить `tokens.css` генерацию (build step). |
-| Legacy Cleanup | Экспорт стабилен | Удалить `legacy/` + соответствующие Canvas C34/C35. |
+* Каждый Canvas содержит: цель, краткую доку, код, мини‑тест/проверку, чеклист мобильной вёрстки (если UI).
+* В таблице очереди обновляем `Статус` → `READY` после ревью.
+* Возврат к legacy (`index.html`, `assets/js/app.js`) только для паритета; затем депрекация.
 
 ---
 
