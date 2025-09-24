@@ -1,106 +1,62 @@
-﻿import React from 'react'
+import React from 'react'
 
 import type { ContentItem } from '@/lib/vfs'
-import type { ContentViewMode } from '@/app/routes/dashboard/content/context'
+
+import { classNames, formatDate, safeText } from './utils'
 
 export interface ContentListProps {
   items: ContentItem[]
-  view: ContentViewMode
-  selectedId: string | null
-  onSelect(id: string): void
-  pinned: string[]
-  onTogglePin(id: string): void
+  selectedId?: string | null
+  onSelect: (item: ContentItem) => void
 }
 
-const ContentList: React.FC<ContentListProps> = ({
-  items,
-  view,
-  selectedId,
-  onSelect,
-  pinned,
-  onTogglePin,
-}) => {
-  if (!items.length) {
-    return <p className='ax-muted'>No content matches the current filters.</p>
-  }
+const PLACEHOLDER_ITEMS = 3
 
-  const renderCard = (item: ContentItem) => {
-    const isActive = selectedId === item.id
-    const isPinned = pinned.includes(item.id)
-    return (
-      <article
-        key={item.id}
-        className={`ax-card ax-content-card ${isActive ? 'active' : ''}`.trim()}
-        aria-current={isActive ? 'true' : undefined}
-      >
-        <header className='ax-card-header'>
-          <div>
-            <h3>{item.title}</h3>
-            <small>{item.date}</small>
-          </div>
-          <button
-            type='button'
-            className={`ax-pin ${isPinned ? 'pinned' : ''}`.trim()}
-            aria-pressed={isPinned}
-            aria-label={isPinned ? 'Unpin item' : 'Pin item'}
-            onClick={() => onTogglePin(item.id)}
-          >
-            {isPinned ? '★' : '☆'}
-          </button>
-        </header>
-        <p className='ax-card-summary'>{item.summary || 'No summary'}</p>
-        <footer className='ax-card-footer'>
-          <button
-            type='button'
-            className='ax-btn primary'
-            onClick={() => onSelect(item.id)}
-          >
-            Open
-          </button>
-        </footer>
-      </article>
-    )
-  }
+export default function ContentList({ items, selectedId, onSelect }: ContentListProps) {
+  const hasItems = items.length > 0
 
-  const renderListRow = (item: ContentItem) => {
-    const isActive = selectedId === item.id
-    const isPinned = pinned.includes(item.id)
-    return (
-      <li key={item.id} className={`ax-row ${isActive ? 'active' : ''}`.trim()}>
-        <button
-          type='button'
-          className='ax-pin'
-          aria-pressed={isPinned}
-          aria-label={isPinned ? 'Unpin item' : 'Pin item'}
-          onClick={() => onTogglePin(item.id)}
-        >
-          {isPinned ? '★' : '☆'}
-        </button>
-        <button
-          type='button'
-          className='ax-row-button'
-          onClick={() => onSelect(item.id)}
-          aria-current={isActive ? 'true' : undefined}
-        >
-          <span className='ax-row-title'>{item.title}</span>
-          <span className='ax-row-meta'>{item.date}</span>
-          <span className='ax-row-tags'>
-            {(item.tags ?? []).slice(0, 3).map((tag) => (
-              <span key={tag} className='ax-tag'>
-                {tag}
-              </span>
-            ))}
-          </span>
-        </button>
-      </li>
-    )
-  }
-
-  if (view === 'cards') {
-    return <div className='ax-content-grid'>{items.map(renderCard)}</div>
-  }
-
-  return <ul className='ax-content-list'>{items.map(renderListRow)}</ul>
+  return (
+    <div className='ax-content-list' role='listbox' aria-label='Content items'>
+      {hasItems
+        ? items.map((item) => {
+            const isSelected = item.id === selectedId
+            return (
+              <article key={item.id} className={classNames('ax-content-card', isSelected && 'is-selected')}>
+                <button
+                  type='button'
+                  role='option'
+                  aria-selected={isSelected}
+                  className='ax-content-card__btn'
+                  onClick={() => onSelect(item)}
+                >
+                  <div className='ax-content-card__title'>{safeText(item.title)}</div>
+                  <div className='ax-content-card__meta'>
+                    <span className='ax-content-card__date'>{formatDate(item.date)}</span>
+                    {item.tags?.length ? (
+                      <span className='ax-content-card__tags'>
+                        {item.tags.slice(0, 3).map((tag) => (
+                          <span key={tag} className='ax-chip'>
+                            {safeText(tag)}
+                          </span>
+                        ))}
+                        {item.tags.length > 3 ? <span className='ax-chip ax-chip--more'>+{item.tags.length - 3}</span> : null}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className='ax-content-card__summary'>{safeText(item.summary)}</p>
+                </button>
+              </article>
+            )
+          })
+        : Array.from({ length: PLACEHOLDER_ITEMS }).map((_, index) => (
+            <article key={index} className='ax-content-card'>
+              <div className='ax-content-card__btn' aria-hidden='true'>
+                <div className='ax-skeleton ax-skeleton--text' style={{ width: '60%' }} />
+                <div className='ax-skeleton ax-skeleton--text' style={{ width: '35%', marginTop: 8 }} />
+                <div className='ax-skeleton ax-skeleton--block' style={{ height: 48, marginTop: 12 }} />
+              </div>
+            </article>
+          ))}
+    </div>
+  )
 }
-
-export default ContentList

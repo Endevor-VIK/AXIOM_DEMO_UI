@@ -1,116 +1,172 @@
-// AXIOM_DEMO_UI - WEB CORE
-// Canvas: C30 - components/PreviewPane.tsx
-// Purpose: Shared iframe preview pane with zoom controls for Roadmap/Audit/Content modules.
+import React, { useEffect, useMemo, useState } from 'react'
+import DOMPurify from 'dompurify'
+import { marked } from 'marked'
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { vfs, type ContentItem } from '@/lib/vfs'
 
-const ZOOM_LEVELS = [1, 1.25, 1.5] as const
+import { classNames, formatDate, safeText } from './utils'
 
-type ZoomValue = (typeof ZOOM_LEVELS)[number]
-
-export interface PreviewPaneProps {
-  src?: string | null
-  title: string
-  controls?: boolean
-  externalLabel?: string
-  emptyMessage?: React.ReactNode
-  leadingControls?: React.ReactNode
-  reloadToken?: string | number
-  onReload?: () => void
-  reloadDisabled?: boolean
-  externalHref?: string | null
-  children?: React.ReactNode
+type PreviewPaneProps = {
+  item: ContentItem | null
+  dataBase: string
+  onOpenExternal?: (href: string) => void
 }
 
-export function PreviewPane({
-  src,
-  title,
-  controls = true,
-  externalLabel = 'Open External',
-  emptyMessage = <p className='ax-preview__placeholder'>Select an item to preview.</p>,
-  leadingControls,
-  reloadToken,
-  onReload,
-  reloadDisabled,
-  externalHref: externalOverride,
-  children,
-}: PreviewPaneProps) {
-  const safeSrc = useMemo(() => (src && src.trim() ? src.trim() : null), [src])
-  const externalHref = useMemo(() => {
-    if (externalOverride && externalOverride.trim()) return externalOverride.trim()
-    return safeSrc
-  }, [externalOverride, safeSrc])
-  const [zoom, setZoom] = useState<ZoomValue>(1)
+function ensureContentPath(file: string): string {
+  const trimmed = file.replace(/^\/+/, '')
+  return trimmed.startsWith('content/') ? trimmed : `content/${trimmed}`
+}
+
+function isHtml(format: string): boolean {
+  return format === 'html'
+}
+
+function isMarkdown(format: string): boolean {
+  return format === 'md' || format === 'markdown'
+}
+
+function isText(format: string): boolean {
+  return format === 'txt'
+}
+
+export default function PreviewPane({ item, dataBase, onOpenExternal }: PreviewPaneProps) {
+  const [textContent, setTextContent] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const format = (item?.format ?? '').toLowerCase()
+  const filePath = item ? ensureContentPath(item.file) : null
+  const externalHref = item && filePath ? dataBase + filePath : null
 
   useEffect(() => {
-    setZoom(1)
-  }, [safeSrc])
+    let active = true
+    setError(null)
+    setTextContent('')
+    setLoading(false)
 
-  const handleZoom = useCallback((value: ZoomValue) => {
-    setZoom(value)
-  }, [])
+    if (!item || !filePath) return
+    if (!isMarkdown(format) && !isText(format)) return
 
-  const showControls = Boolean(leadingControls || onReload || (controls && (safeSrc || externalHref)))
+    setLoading(true)
+
+    vfs
+      .text(filePath)
+      .then((raw) => {
+        if (!active) return
+        setTextContent(raw)
+      })
+      .catch((err) => {
+        if (!active) return
+        setError(err instanceof Error ? err.message : String(err))
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [item, filePath, format])
+
+  const markdownHtml = useMemo(() => {
+    if (!isMarkdown(format) || !textContent) return ''
+    const raw = marked.parse(textContent)
+    const html = typeof raw === 'string' ? raw : String(raw)
+    return typeof window !== 'undefined' ? DOMPurify.sanitize(html) : html
+  }, [format, textContent])
+
+  const openExternalNode = externalHref
+    ? onOpenExternal
+      ? (
+          <button
+            type='button'
+            className='ax-btn ax-btn--primary'
+            onClick={() => onOpenExternal(externalHref)}
+          >
+            Open source
+          </button>
+        )
+      : (
+          <a className='ax-btn ax-btn--primary' href={externalHref} target='_blank' rel='noopener noreferrer'>
+            Open source
+          </a>
+        )
+    : null
+
+  if (!item) {
+    return (
+      <article className={classNames('ax-preview', 'is-empty')} aria-live='polite'>
+        <div className='ax-preview__placeholder'>
+          <div className='ax-skeleton ax-skeleton--text' style={{ width: '70%', height: 22 }} />
+          <div className='ax-skeleton ax-skeleton--text' style={{ width: '40%', height: 16, marginTop: 8 }} />
+          <div className='ax-skeleton ax-skeleton--block' style={{ height: 120, marginTop: 20 }} />
+        </div>
+        <p className='ax-muted'>Select a content item to preview its details.</p>
+      </article>
+    )
+  }
 
   return (
-    <section className='ax-card ax-preview' aria-label={title} data-has-src={Boolean(safeSrc)}>
-      {showControls && (
-        <div className='ax-preview__controls'>
-          {leadingControls && <div className='ax-preview__leading'>{leadingControls}</div>}
-          {onReload && (
-            <button
-              type='button'
-              className='ax-btn ghost ax-preview__refresh'
-              onClick={onReload}
-              disabled={Boolean(reloadDisabled) || (!safeSrc && !externalHref)}
-            >
-              Refresh
-            </button>
-          )}
-          {controls && (safeSrc || externalHref) && (
-            <div className='ax-preview__trail'>
-              {safeSrc && (
-                <div role='group' aria-label='Preview zoom' className='ax-preview__zoom'>
-                  {ZOOM_LEVELS.map((value) => (
-                    <button
-                      key={value}
-                      type='button'
-                      className='ax-chip'
-                      data-variant='ghost'
-                      data-zoom={Math.round(value * 100)}
-                      data-active={zoom === value ? 'true' : undefined}
-                      onClick={() => handleZoom(value)}
-                    >
-                      {Math.round(value * 100)}%
-                    </button>
-                  ))}
-                </div>
-              )}
-              {externalHref && (
-                <a className='ax-btn ghost' href={externalHref} target='_blank' rel='noreferrer'>
-                  {externalLabel}
-                </a>
-              )}
-            </div>
-          )}
+    <article className='ax-preview' aria-live='polite'>
+      <header className='ax-preview__header'>
+        <div className='ax-preview__heading'>
+          <h3 className='ax-preview__title'>{safeText(item.title)}</h3>
+          <span className='ax-preview__date'>{formatDate(item.date)}</span>
         </div>
-      )}
+        <div className='ax-preview__chips'>
+          <span className='ax-chip'>{safeText(item.category)}</span>
+          {item.lang ? <span className='ax-chip'>{safeText(item.lang.toUpperCase())}</span> : null}
+          {item.status ? <span className='ax-chip'>{safeText(item.status)}</span> : null}
+        </div>
+      </header>
 
-      <div
-        className='ax-viewport ax-scroll ax-scroll-thin'
-        data-zoom={zoom}
-        style={{ '--ax-preview-zoom': String(zoom) } as React.CSSProperties}
-      >
-        {safeSrc ? (
-          <iframe key={reloadToken ?? safeSrc} className='ax-embed' src={safeSrc} title={title} loading='lazy' />
-        ) : children ? (
-          <div className='ax-preview__custom'>{children}</div>
-        ) : (
-          <div className='ax-preview__empty' role='presentation'>
-            {emptyMessage}
-          </div>
-        )}
-      </div>
-    </section>
+      {item.summary ? <p className='ax-preview__summary'>{safeText(item.summary)}</p> : null}
+
+      {item.tags?.length ? (
+        <div className='ax-preview__tags' aria-label='Tags'>
+          {item.tags.map((tag) => (
+            <span key={tag} className='ax-chip'>
+              {safeText(tag)}
+            </span>
+          ))}
+        </div>
+      ) : null}
+
+      <section className='ax-preview__body'>
+        {error ? <div className='ax-preview__error'>Preview unavailable: {safeText(error, '—')}</div> : null}
+
+        {loading ? (
+          <div className='ax-skeleton ax-skeleton--block' style={{ height: 180 }} />
+        ) : null}
+
+        {!loading && !error ? (
+          <>
+            {isHtml(format) && externalHref ? (
+              <iframe
+                className='ax-preview__iframe'
+                src={externalHref}
+                title={`content:${item.id}`}
+                loading='lazy'
+              />
+            ) : null}
+
+            {isMarkdown(format) ? (
+              <div
+                className='ax-preview__rich'
+                dangerouslySetInnerHTML={{ __html: markdownHtml }}
+              />
+            ) : null}
+
+            {isText(format) ? <pre className='ax-preview__text'>{textContent}</pre> : null}
+
+            {!isHtml(format) && !isMarkdown(format) && !isText(format) && externalHref ? (
+              <p className='ax-preview__notice'>Preview not available for this format.</p>
+            ) : null}
+          </>
+        ) : null}
+      </section>
+
+      {openExternalNode ? <footer className='ax-preview__actions'>{openExternalNode}</footer> : null}
+    </article>
   )
 }

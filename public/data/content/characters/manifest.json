@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "CHR-PLACEHOLDER-0001",
+    "category": "characters",
+    "subCategory": "demo",
+    "title": "Шаблон персонажа",
+    "summary": "Заглушка персонажа для раздела Characters.",
+    "date": "2025-09-22",
+    "tags": ["placeholder", "demo"],
+    "file": "characters/2025-09-22__character-placeholder.md",
+    "format": "md",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 100,
+    "lang": "ru",
+    "links": [],
+    "meta": { "v": 2 }
+  }
+]

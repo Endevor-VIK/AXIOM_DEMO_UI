@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "TEC-PLACEHOLDER-0001",
+    "category": "technologies",
+    "subCategory": "demo",
+    "title": "Шаблон технологии",
+    "summary": "Заглушка технологии для раздела Technologies.",
+    "date": "2025-09-22",
+    "tags": ["placeholder", "tech"],
+    "file": "technologies/2025-09-22__technology-placeholder.md",
+    "format": "md",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 100,
+    "lang": "ru",
+    "links": [],
+    "meta": { "v": 2 }
+  }
+]

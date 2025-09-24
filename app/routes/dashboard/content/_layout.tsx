@@ -192,21 +192,50 @@ const ContentLayout: React.FC = () => {
     [filters, searchParams, updateSearchParam, setSearchParams]
   )
 
-  const categories = useMemo(
-    () => aggregate?.categories ?? buildEmptyCategories(),
-    [aggregate]
-  )
-
-  const categoryTiles = useMemo<CategoryStat[]>(() => {
-    if (!aggregate) return []
-    const source = aggregate.categories
-    return CATEGORY_ORDER.map((key) => ({
-      key,
-      title: CATEGORY_LABELS[key],
-      count: source[key].count,
-      to: key === 'all' ? 'all' : key,
-    }))
+  const categoryCounts = useMemo(() => {
+    const base = {
+      all: 0,
+      locations: 0,
+      characters: 0,
+      technologies: 0,
+      factions: 0,
+      events: 0,
+      lore: (aggregate?.lore?.roots?.length ?? 0) > 0 ? 1 : 0,
+    }
+    for (const it of aggregate?.items ?? []) {
+      base.all += 1
+      if (it.category in base) {
+        const key = it.category as keyof typeof base
+        base[key] += 1
+      }
+    }
+    return base
   }, [aggregate])
+
+  // Новый summary для контекста: правильная форма Record<..., ContentCategorySummary>
+  const categories = useMemo<Record<'all' | ContentCategory, ContentCategorySummary>>(() => {
+    const src = aggregate?.categories ?? buildEmptyCategories()
+    return {
+      all:          { ...src.all,          count: categoryCounts.all },
+      locations:    { ...src.locations,    count: categoryCounts.locations },
+      characters:   { ...src.characters,   count: categoryCounts.characters },
+      technologies: { ...src.technologies, count: categoryCounts.technologies },
+      factions:     { ...src.factions,     count: categoryCounts.factions },
+      events:       { ...src.events,       count: categoryCounts.events },
+      lore:         { ...src.lore,         count: categoryCounts.lore },
+    }
+  }, [aggregate, categoryCounts])
+
+  // Плитки: строгая типизация массива
+  const categoryTiles: CategoryStat[] = useMemo(() => ([
+    { key: 'all',          title: 'ALL',           count: categoryCounts.all,          to: '/dashboard/content/all' },
+    { key: 'locations',    title: 'LOCATIONS',     count: categoryCounts.locations,    to: '/dashboard/content/locations' },
+    { key: 'characters',   title: 'CHARACTERS',    count: categoryCounts.characters,   to: '/dashboard/content/characters' },
+    { key: 'technologies', title: 'TECHNOLOGIES',  count: categoryCounts.technologies, to: '/dashboard/content/technologies' },
+    { key: 'factions',     title: 'FACTIONS',      count: categoryCounts.factions,     to: '/dashboard/content/factions' },
+    { key: 'events',       title: 'EVENTS',        count: categoryCounts.events,       to: '/dashboard/content/events' },
+    { key: 'lore',         title: 'LORE',          count: categoryCounts.lore,         to: '/dashboard/content/lore' },
+  ]), [categoryCounts])
 
   const availableTags = useMemo(() => {
     if (!aggregate) return []
@@ -242,7 +271,7 @@ const ContentLayout: React.FC = () => {
       loading,
       error,
       dataBase,
-      categories,
+      categories, // было: categoryCounts — теперь корректный тип
       availableTags,
       availableLanguages,
       filters: filtersApi,
@@ -255,7 +284,7 @@ const ContentLayout: React.FC = () => {
       loading,
       error,
       dataBase,
-      categories,
+      categories, // важно: зависимость на summary
       availableTags,
       availableLanguages,
       filtersApi,

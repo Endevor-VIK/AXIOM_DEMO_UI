@@ -1,7 +1,7 @@
 /* styles/login-cyber.css — lightweight cyber overlay
    Слои строго ПОЗАДИ карточки: z-index управляется в components.css */
 
-   .ax-cyber{ position:absolute; inset:0; z-index:1; pointer-events:none; contain: paint; }
+   .ax-cyber{ position:fixed; inset:0; z-index:1; pointer-events:none; contain: paint; backface-visibility:hidden; }
 
    /* scanlines (очень лёгкие) */
    .ax-cyber__scanlines{
@@ -21,6 +21,8 @@
      transform: translateY(8px) scale(.985); opacity: 0;
      transition: transform .26s cubic-bezier(.2,.8,.2,1), opacity .18s ease;
      pointer-events:none;
+     will-change: transform, opacity;
+     contain: paint;
    }
    .ax-console.is-lite .ax-console__title{ color:#ffd7dc; letter-spacing:.08em; opacity:.9; }
    .ax-console.is-show{ transform: translateY(0) scale(1); opacity:1; }
@@ -46,9 +48,9 @@
      animation: ax-glitch .18s steps(2) both;
    }
    @keyframes ax-glitch{
-     0% { filter:none; transform: translateY(0) scale(1); }
-     50%{ filter: contrast(1.1) saturate(1.1); transform: translateY(-0.5px) scale(1.002) skewX(-0.2deg); }
-     100%{ filter:none; transform: translateY(0) scale(1); }
+     0% { transform: translateY(0) scale(1); opacity: 1; }
+     50%{ transform: translateY(-0.5px) scale(1.002) skewX(-0.2deg); opacity: .96; }
+     100%{ transform: translateY(0) scale(1); opacity: 1; }
    }
    
    @media (prefers-reduced-motion: reduce){

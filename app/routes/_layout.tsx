@@ -46,8 +46,8 @@ export default function Layout() {
   }, [navigate])
 
   return (
-    <div className='ax-shell'>
-      <header className='ax-topbar'>
+    <div className='ax-page'>
+      <header className='ax-header ax-topbar'>
         <div className='ax-container'>
           <div className='ax-topbar__inner'>
             <div className='ax-brand' aria-label='AXIOM Panel'>
@@ -82,21 +82,30 @@ export default function Layout() {
           </div>
         </div>
       </header>
+
+      {/* FX-layer: эффекты/scanlines; без интеракции */}
+      <div id='fx-layer' aria-hidden />
+
       <div className='ax-ticker'>
         <div className='ax-container'>
           <Ticker />
         </div>
       </div>
-      <main className='ax-main'>
+
+      <main className='ax-shell ax-content'>
         <div className='ax-container'>
           <Outlet />
         </div>
       </main>
-      <footer className='ax-status'>
+
+      <footer className='ax-footer ax-status'>
         <div className='ax-container'>
           <StatusLine />
         </div>
       </footer>
+
+      {/* Портал для модалок */}
+      <div id='modal-root' />
     </div>
   )
 }

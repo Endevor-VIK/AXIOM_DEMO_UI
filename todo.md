@@ -244,7 +244,7 @@ AXIOM_DEMO_UI/
 | C06 | `styles/app.css`                        | Базовые стили                       | TODO   | EDIT | адаптив/reset                 |
 | C07 | `components/StatusLine.tsx`             | Статус/мета                         | TODO   | NEW  | gms‑индикация                 |
 | C08 | `components/PanelNav.tsx`               | Навигация                           | TODO   | NEW  | mobile menu                   |
-| C09 | `lib/vfs/index.ts`                      | Чтение снапшотов                    | TODO   | NEW  | index/objects/logs            |
+| C09 | `lib/vfs/index.ts`                      | Чтение снапшотов                    | WIP    | NEW  | базовые функции + ajv draft   |
 | C10 | `components/TerminalBoot.tsx`           | Терминальная загрузка               | TODO   | NEW  | лог задач + переход           |
 | C11 | `app/routes/login/page.tsx`             | Экран входа                         | TODO   | NEW  | строгий логин                 |
 | C12 | `lib/auth/crypto.ts`                    | Хэш/verify                          | TODO   | NEW  | webcrypto                     |
@@ -253,7 +253,7 @@ AXIOM_DEMO_UI/
 | C15 | `app/routes/dashboard/page.tsx`         | Main (protected)                    | TODO   | NEW  | shell + tabs                  |
 | C16 | `app/routes/dashboard/roadmap/page.tsx` | Roadmap                             | TODO   | NEW  | iframe+vfs                    |
 | C17 | `app/routes/dashboard/audit/page.tsx`   | Audit                               | TODO   | NEW  | manifest render               |
-| C18 | `app/routes/dashboard/content/page.tsx` | Content                             | TODO   | NEW  | manifest render               |
+| C18 | `app/routes/dashboard/content/page.tsx` | Content                             | WIP    | NEW  | `_layout.tsx` уже есть        |
 | C19 | `app/routes/dashboard/news/page.tsx`    | News                                | TODO   | NEW  | лента новостей                |
 | C20 | `components/NewsCard.tsx`               | Карточка новости                    | TODO   | NEW  | виды: update/release          |
 | C21 | `components/NewsFeed.tsx`               | Список новостей                     | TODO   | NEW  | пагинация/filters             |
@@ -262,7 +262,7 @@ AXIOM_DEMO_UI/
 | C24 | `lib/news/index.ts`                     | Провайдер новостей                  | TODO   | NEW  | manifest→items                |
 | C25 | `lib/command-router/index.ts`           | Роутер команд                       | TODO   | NEW  | help/ls/open                  |
 | C26 | `lib/command-router/commands/news.ts`   | Команда `news`                      | TODO   | NEW  | вывод N последних             |
-| C27 | `public/data/*`                         | Перенос снапшотов                   | TODO   | EDIT | из `/data` (legacy)           |
+| C27 | `public/data/*`                         | Перенос снапшотов                   | WIP    | EDIT | roadmap/audits уже на месте   |
 | C28 | `tools/whitelist.json`                  | Белый список                        | TODO   | NEW  | редактор публикации           |
 | C29 | `tools/redactor.ts`                     | Маскирование                        | TODO   | NEW  | secret/paths scrub            |
 | C30 | `tools/export.ts`                       | Сборка `/export`                    | TODO   | NEW  | статический билд              |
@@ -271,6 +271,8 @@ AXIOM_DEMO_UI/
 | C33 | `.github/workflows/export-web-core.yml` | CI Pages                            | TODO   | NEW  | build→export→deploy           |
 | C34 | `index.html` (legacy)                   | Старый вход                         | TODO   | EDIT | депрекация                    |
 | C35 | `assets/js/app.js` (legacy)             | Демо‑логика                         | TODO   | EDIT | разбор/удаление               |
+
+> Примечание: обнаружены дополнительные файлы (`components/ContentCategoryTiles.tsx`, `components/utils.ts`, `app/routes/dashboard/content/_layout.tsx`) — не имеют выделенных Canvas; можно зарезервировать `C36+` при расширении.
 
 ---
 
