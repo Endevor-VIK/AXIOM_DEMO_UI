@@ -6,11 +6,9 @@ import React, {
 } from 'react'
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom'
 
-import ContentCategoryTiles, {
-  type CategoryKey,
-  type CategoryStat,
-} from '@/components/ContentCategoryTiles'
+import CategoryStats, { type CategoryItem } from '@/components/content/CategoryStats'
 import ContentFilters from '@/components/ContentFilters'
+import { getCategoryStats, type ContentCategoryKey } from '@/lib/contentStats'
 import {
   contentCategories,
   type ContentAggregate,
@@ -35,26 +33,6 @@ const DEFAULT_FILTERS: ContentFiltersSnapshot = {
   lang: 'any',
   view: 'cards',
 }
-
-const CATEGORY_LABELS: Record<CategoryKey, string> = {
-  all: 'All',
-  locations: 'Locations',
-  characters: 'Characters',
-  technologies: 'Technologies',
-  factions: 'Factions',
-  events: 'Events',
-  lore: 'Lore',
-}
-
-const CATEGORY_ORDER: CategoryKey[] = [
-  'all',
-  'locations',
-  'characters',
-  'technologies',
-  'factions',
-  'events',
-  'lore',
-]
 
 function ensureTrailingSlash(value: string): string {
   return value.endsWith('/') ? value : value + '/'
@@ -192,8 +170,8 @@ const ContentLayout: React.FC = () => {
     [filters, searchParams, updateSearchParam, setSearchParams]
   )
 
-  const categoryCounts = useMemo(() => {
-    const base = {
+  const categoryCounts = useMemo<Record<ContentCategoryKey, number>>(() => {
+    const base: Record<ContentCategoryKey, number> = {
       all: 0,
       locations: 0,
       characters: 0,
@@ -226,16 +204,15 @@ const ContentLayout: React.FC = () => {
     }
   }, [aggregate, categoryCounts])
 
-  // Плитки: строгая типизация массива
-  const categoryTiles: CategoryStat[] = useMemo(() => ([
-    { key: 'all',          title: 'ALL',           count: categoryCounts.all,          to: '/dashboard/content/all' },
-    { key: 'locations',    title: 'LOCATIONS',     count: categoryCounts.locations,    to: '/dashboard/content/locations' },
-    { key: 'characters',   title: 'CHARACTERS',    count: categoryCounts.characters,   to: '/dashboard/content/characters' },
-    { key: 'technologies', title: 'TECHNOLOGIES',  count: categoryCounts.technologies, to: '/dashboard/content/technologies' },
-    { key: 'factions',     title: 'FACTIONS',      count: categoryCounts.factions,     to: '/dashboard/content/factions' },
-    { key: 'events',       title: 'EVENTS',        count: categoryCounts.events,       to: '/dashboard/content/events' },
-    { key: 'lore',         title: 'LORE',          count: categoryCounts.lore,         to: '/dashboard/content/lore' },
-  ]), [categoryCounts])
+  const activeTab = useMemo(() => parseActiveCategory(location.pathname), [location.pathname])
+
+  const categoryStats: CategoryItem[] = useMemo(() => {
+    return getCategoryStats(categoryCounts).map((item) => ({
+      ...item,
+      active: item.key === activeTab,
+    }))
+  }, [activeTab, categoryCounts])
+
 
   const availableTags = useMemo(() => {
     if (!aggregate) return []
@@ -262,8 +239,6 @@ const ContentLayout: React.FC = () => {
   }, [])
 
   const isPinned = useCallback((id: string) => pins.includes(id), [pins])
-
-  const activeTab = useMemo(() => parseActiveCategory(location.pathname), [location.pathname])
 
   const contextValue = useMemo<ContentHubContextValue>(
     () => ({
@@ -298,7 +273,7 @@ const ContentLayout: React.FC = () => {
     <ContentHubContext.Provider value={contextValue}>
       <section className='ax-section'>
         <div className='ax-container ax-content-hub' aria-busy={loading}>
-          <ContentCategoryTiles items={categoryTiles} active={activeTab} loading={loading} />
+          <CategoryStats items={categoryStats} variant='table' />
           <ContentFilters disabled={Boolean(error)} />
           <div className='ax-content-outlet'>
             {error ? <div className='ax-dashboard__alert' role='alert'>{error}</div> : <Outlet />}
