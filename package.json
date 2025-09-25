@@ -16,7 +16,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "format": "prettier --write .",
-    "validate:content": "tsx tools/validate-content.ts"
+    "validate:content": "tsx tools/validate-content.ts",
+    "content-agent": "tsx tools/content-agent/index.ts"
   },
   "dependencies": {
     "@types/dompurify": "^3.0.5",

@@ -29,6 +29,12 @@ function isText(format: string): boolean {
   return format === 'txt'
 }
 
+const MARKDOWN_SANITIZE_OPTIONS = {
+  ADD_TAGS: ['style', 'svg', 'path', 'defs', 'linearGradient', 'radialGradient'],
+  ADD_ATTR: ['class', 'style', 'role', 'aria-label', 'id', 'fill', 'stroke', 'viewBox'],
+  ALLOW_UNKNOWN_PROTOCOLS: true,
+} as const
+
 export default function PreviewPane({ item, dataBase, onOpenExternal }: PreviewPaneProps) {
   const [textContent, setTextContent] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -72,7 +78,8 @@ export default function PreviewPane({ item, dataBase, onOpenExternal }: PreviewP
     if (!isMarkdown(format) || !textContent) return ''
     const raw = marked.parse(textContent)
     const html = typeof raw === 'string' ? raw : String(raw)
-    return typeof window !== 'undefined' ? DOMPurify.sanitize(html) : html
+    if (typeof window === 'undefined') return html
+    return DOMPurify.sanitize(html, MARKDOWN_SANITIZE_OPTIONS)
   }, [format, textContent])
 
   const openExternalNode = externalHref
@@ -133,7 +140,7 @@ export default function PreviewPane({ item, dataBase, onOpenExternal }: PreviewP
       ) : null}
 
       <section className='ax-preview__body'>
-        {error ? <div className='ax-preview__error'>Preview unavailable: {safeText(error, '—')}</div> : null}
+        {error ? <div className='ax-preview__error'>Preview unavailable: {safeText(error, 'вЂ”')}</div> : null}
 
         {loading ? (
           <div className='ax-skeleton ax-skeleton--block' style={{ height: 180 }} />
@@ -170,3 +177,5 @@ export default function PreviewPane({ item, dataBase, onOpenExternal }: PreviewP
     </article>
   )
 }
+
+

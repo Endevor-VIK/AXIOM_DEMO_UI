@@ -6,7 +6,7 @@ import React, {
 } from 'react'
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom'
 
-import CategoryStats, { type CategoryItem } from '@/components/content/CategoryStats'
+import CategoryStats, { type CategoryItem } from '@/components/content/CategoryStats' // оставляем (используется для подсчёта)
 import ContentFilters from '@/components/ContentFilters'
 import { getCategoryStats, type ContentCategoryKey } from '@/lib/contentStats'
 import {
@@ -213,7 +213,6 @@ const ContentLayout: React.FC = () => {
     }))
   }, [activeTab, categoryCounts])
 
-
   const availableTags = useMemo(() => {
     if (!aggregate) return []
     const bag = new Set<string>()
@@ -273,7 +272,9 @@ const ContentLayout: React.FC = () => {
     <ContentHubContext.Provider value={contextValue}>
       <section className='ax-section'>
         <div className='ax-container ax-content-hub' aria-busy={loading}>
+          {/* Corp-Table категорий (7 колонок, с ALL) */}
           <CategoryStats items={categoryStats} variant='table' />
+          {/* (старый грид плиток удалён по ТЗ Corp-Table) */}
           <ContentFilters disabled={Boolean(error)} />
           <div className='ax-content-outlet'>
             {error ? <div className='ax-dashboard__alert' role='alert'>{error}</div> : <Outlet />}

@@ -1,4 +1,4 @@
-﻿// AXIOM_DEMO_UI :: WEB CORE
+// AXIOM_DEMO_UI :: WEB CORE
 // Canvas: C09 :: lib/vfs/index.ts
 // Purpose: Read-only VFS layer for static data snapshots under /data.
 
@@ -186,6 +186,14 @@ const CONTENT_SCHEMA_PATH = 'content/_schema/content.schema.json'
 const CONTENT_MANIFEST_PATH = 'content/manifest.json'
 const DEFAULT_LORE_INDEX_REL = 'lore/_index.json'
 const DEFAULT_LORE_INDEX_PATH = 'content/' + DEFAULT_LORE_INDEX_REL
+const CATEGORY_MANIFEST_DEFAULTS: Record<ContentCategory, string> = {
+  locations: 'content/locations/manifest.json',
+  characters: 'content/characters/manifest.json',
+  technologies: 'content/technologies/manifest.json',
+  factions: 'content/factions/manifest.json',
+  events: 'content/events/manifest.json',
+  lore: DEFAULT_LORE_INDEX_PATH,
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -215,69 +223,15 @@ function normalizeLoreRequestPath(input?: string): string {
 
 function sortContentItems(items: ContentItem[]): ContentItem[] {
   return [...items].sort((a, b) => {
-    const weightA = typeof a.weight === 'number' ? a.weight : 0
-    const weightB = typeof b.weight === 'number' ? b.weight : 0
-    if (weightA !== weightB) return weightA - weightB
     const dateA = a.date || ''
     const dateB = b.date || ''
     if (dateA < dateB) return 1
     if (dateA > dateB) return -1
+    const weightA = typeof a.weight === 'number' ? a.weight : Number.POSITIVE_INFINITY
+    const weightB = typeof b.weight === 'number' ? b.weight : Number.POSITIVE_INFINITY
+    if (weightA !== weightB) return weightA - weightB
     return a.id.localeCompare(b.id)
   })
-}
-
-function buildCategorySummary(items: ContentItem[]): Record<'all' | ContentCategory, ContentCategorySummary> {
-  const base: Record<'all' | ContentCategory, ContentCategorySummary> = {
-    all: { count: items.length, manifest: CONTENT_MANIFEST_PATH },
-    locations: { count: 0, manifest: 'content/locations/manifest.json' },
-    characters: { count: 0, manifest: 'content/characters/manifest.json' },
-    technologies: { count: 0, manifest: 'content/technologies/manifest.json' },
-    factions: { count: 0, manifest: 'content/factions/manifest.json' },
-    events: { count: 0, manifest: 'content/events/manifest.json' },
-    lore: { count: 0, manifest: DEFAULT_LORE_INDEX_PATH },
-  }
-  for (const item of items) {
-    if (contentCategories.includes(item.category as ContentCategory)) {
-      const cat = item.category as ContentCategory
-      base[cat].count += 1
-    }
-  }
-  return base
-}
-
-function mergeCategorySummaries(
-  source: unknown,
-  items: ContentItem[]
-): Record<'all' | ContentCategory, ContentCategorySummary> {
-  const summary = buildCategorySummary(items)
-  if (!isRecord(source)) return summary
-  for (const key of Object.keys(summary) as Array<'all' | ContentCategory>) {
-    const entry = source[key]
-    if (isRecord(entry)) {
-      const manifest = typeof entry.manifest === 'string' ? entry.manifest : undefined
-      const count = typeof entry.count === 'number' ? entry.count : undefined
-      if (manifest) summary[key].manifest = normalizeManifestPath(manifest)
-      if (typeof count === 'number' && !Number.isNaN(count)) summary[key].count = count
-    }
-  }
-  return summary
-}
-
-function extractAggregateMeta(source: unknown): ContentAggregate['meta'] {
-  if (!isRecord(source)) return { version: 2 }
-  const versionRaw = source.version
-  const version = typeof versionRaw === 'number' ? versionRaw : Number(versionRaw) || 2
-  const meta: ContentAggregate['meta'] = { version }
-  if (typeof source.generatedAt === 'string') meta.generatedAt = source.generatedAt
-  if (typeof source.source === 'string') meta.source = source.source
-  return meta
-}
-
-function extractLoreSummary(source: unknown): ContentLoreSummary {
-  if (!isRecord(source)) return { index: DEFAULT_LORE_INDEX_PATH, roots: [] }
-  const index = typeof source.index === 'string' ? normalizeLoreSummaryPath(source.index) : DEFAULT_LORE_INDEX_PATH
-  const roots = Array.isArray(source.roots) ? (source.roots as LoreIndexNode[]) : []
-  return { index, roots }
 }
 
 export function createVfs(config?: VfsConfig): VfsApi {
@@ -348,10 +302,26 @@ export function createVfs(config?: VfsConfig): VfsApi {
         categories: buildCategorySummary(items),
         lore: { index: DEFAULT_LORE_INDEX_PATH, roots: [] },
       }
-    } else if (isRecord(raw)) {
-      const items = sortContentItems(await validateContentItems(raw.items ?? []))
+        } else if (isRecord(raw)) {
+      const meta = extractAggregateMeta(raw.meta)
+      const rootItems = await validateContentItems(raw.items ?? [])
+      let pool: ContentItem[] = [...rootItems]
+      if (meta.version >= 2) {
+        const manifests = collectCategoryManifests(raw.categories)
+        for (const entry of manifests) {
+          try {
+            const data = await json<unknown>(entry.manifest, opts)
+            const categoryItems = await validateContentItems(data)
+            pool = pool.concat(categoryItems)
+          } catch (error) {
+            const reason = error instanceof Error ? error.message : String(error)
+            throw new VfsError(`[VFS] unable to read ${entry.manifest}: ${reason}`)
+          }
+        }
+      }
+      const items = sortContentItems(dedupeContentItems(pool))
       aggregate = {
-        meta: extractAggregateMeta(raw.meta),
+        meta,
         items,
         categories: mergeCategorySummaries(raw.categories, items),
         lore: extractLoreSummary(raw.lore),
@@ -441,6 +411,13 @@ function validateNewsArray(data: unknown): NewsItem[] {
 }
 
 export const vfs = createVfs()
+
+
+
+
+
+
+
 
 
 
