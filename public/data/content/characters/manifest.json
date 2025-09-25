@@ -14,7 +14,61 @@
     "visibility": "public",
     "weight": 100,
     "lang": "ru",
+    "slug": "character-placeholder",
+    "numericSuffix": "0001",
     "links": [],
     "meta": { "v": 2 }
+  },
+
+  {
+    "id": "CHR-VIKTOR-0301",
+    "category": "characters",
+    "subCategory": "prime",
+    "title": "Виктор (VIKTOR)",
+    "summary": "Prime-персонаж: носитель ACCELERATOR и клинка NIGHTMARE; холодная дисциплина и роль «моста» между человеком и AXIOM.",
+    "date": "2025-09-25",
+    "tags": ["prime", "viktor", "nightmare", "accelerator", "host-axm", "echelon"],
+    "file": "characters/03.01_VIKTOR.md",
+    "format": "md",
+    "author": "CREATOR & AXIOM",
+    "status": "published",
+    "visibility": "public",
+    "weight": 10,
+    "lang": "ru",
+    "slug": "viktor",
+    "numericSuffix": "0301",
+    "links": [],
+    "meta": {
+      "v": 2,
+      "fileVersion": "v2.1.1",
+      "fileStatus": "SYSTEM STRUCTURE",
+      "zone": "03_CHARACTERS"
+    }
+  },
+
+  {
+    "id": "CHR-AXIOM-0303",
+    "category": "characters",
+    "subCategory": "central-ai",
+    "title": "AXIOM — центральная ИИ-сущность",
+    "summary": "Падший сверхразум Эшелона; фрагментирован (LIMBO/CRYPT/эхо). Центральный узел конфликта мира и мифологии.",
+    "date": "2025-09-25",
+    "tags": ["ai", "axiom", "central-ai", "ghost", "veil", "neurogrid", "limbo", "crypt"],
+    "file": "characters/03.03_AXIOM.md",
+    "format": "md",
+    "author": "CREATOR & AXIOM",
+    "status": "published",
+    "visibility": "public",
+    "weight": 20,
+    "lang": "ru",
+    "slug": "axiom",
+    "numericSuffix": "0303",
+    "links": [],
+    "meta": {
+      "v": 2,
+      "fileVersion": "v2.1",
+      "fileStatus": "DRAFT",
+      "zone": "03_CHARACTERS"
+    }
   }
 ]
