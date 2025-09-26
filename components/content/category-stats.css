@@ -8,142 +8,365 @@
   --ax-radius: 18px;
   --ax-border: rgba(255, 255, 255, 0.1);
   --ax-border-strong: rgba(255, 255, 255, 0.16);
+  --cell-h: 88px;
+  --cell-h-sm: 76px;
+  --hover-raise: 10px;
+  --title-hover-y: -6px;
+  --icon-base-y: -10px; /* было -6px */
+  --icon-hover-y: -2px; /* было 2px */
+  --ax-glitch-layer:
+    repeating-linear-gradient(0deg, rgba(255,32,52,.10) 0 2px, transparent 2px 4px),
+    linear-gradient(135deg, rgba(255,32,52,.18), rgba(255,32,52,0) 60%),
+    radial-gradient(70% 110% at 50% 100%, rgba(255,32,52,.18), transparent 70%);
   width: 100%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), var(--ax-panel);
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%), var(--ax-panel);
   border: 1px solid var(--ax-border);
   border-radius: var(--ax-radius);
   padding: 4px;
   color: var(--ax-fg);
-  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 22px 44px rgba(0,0,0,0.35);
+  overflow: visible; /* позволяем «колонне» выходить вверх */
 }
 
 .ax-CategoryStats__list {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0,1fr));
   margin: 0;
   padding: 0;
   list-style: none;
-  background: rgba(10, 10, 11, 0.75);
-  border-radius: calc(var(--ax-radius) - 6px);
-  overflow: hidden;
+  border-radius: var(--ax-radius);
+  /* было overflow:hidden — убираем, чтобы hover-raise не обрезался */
+  overflow: visible;
+  background: none;
 }
 
-.ax-CategoryStats__item {
-  min-width: 0;
-}
+/* === Corp-Table v2.4 Rect Tiles === */
 
-.ax-CategoryStats__link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 16px;
-  min-height: 54px;
-  color: inherit;
-  text-decoration: none;
-  background: rgba(18, 18, 24, 0.75);
+.ax-Cell {
+  position: relative;
+  height: var(--cell-h);
+  background: var(--ax-panel);
   border-right: 1px solid var(--ax-border);
-  border-bottom: none;
-  transition: box-shadow 180ms ease, background-color 180ms ease, border-color 180ms ease;
+  border-radius: 0;
+  overflow: visible;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  will-change: transform;
 }
 
-.ax-CategoryStats__item:nth-child(7n) .ax-CategoryStats__link {
+.ax-Cell:last-child {
   border-right: none;
 }
 
-.ax-CategoryStats__link .title {
-  font-size: 0.75rem;
+.ax-Cell__link {
+  position: relative;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: .55rem;
+  text-decoration: none;
+  color: var(--ax-fg);
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  outline: none;
+  transition: box-shadow 160ms ease, background-color 160ms ease;
+  border-radius: 12px; /* для внутренней подсветки active */
 }
 
-.ax-CategoryStats__link .count {
+.ax-Cell__icon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + var(--icon-base-y));
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transform: scale(.96);
+  transition: opacity 160ms ease, transform 160ms ease, top 160ms ease;
+  color: var(--ax-accent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.ax-Cell__icon svg {
+  /* было 48px */
+  width: 44px;
+  height: 44px;
+  stroke-linecap: round;
+  display: block;
+}
+
+.ax-Cell__title {
+  position: relative;
+  font-size: .86rem; /* было .8rem */
+  line-height: 1.1;
+  text-align: center;
+  max-width: 96%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  z-index: 3;
+  transform: translateY(0);
+  transition: transform 160ms ease;
+}
+
+.ax-Cell:hover .ax-Cell__title,
+.ax-Cell:focus-within .ax-Cell__title {
+  transform: translateY(var(--title-hover-y));
+}
+
+/* Text glitch layers */
+.ax-Cell__title::before,
+.ax-Cell__title::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: normal;
+}
+
+.ax-Cell__title::before {
+  color: rgba(255,32,52,.65);
+  transform: translateX(1px);
+  clip-path: inset(0 0 45% 0);
+}
+
+.ax-Cell__title::after {
+  color: rgba(167,176,192,.65);
+  transform: translateX(-1px);
+  clip-path: inset(55% 0 0 0);
+}
+
+@keyframes ax-glitch-txt {
+  0% { opacity: 1; }
+  40% { opacity: .25; }
+  100% { opacity: 0; }
+}
+
+.ax-Cell__count {
+  position: absolute;
+  left: .65rem;
+  bottom: .5rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 32px;
-  height: 28px;
-  padding: 0 12px;
+  min-width: 30px;
+  height: 24px;
+  padding: 0 10px;
   border-radius: 999px;
+  background: rgba(255,255,255,0.07);
   border: 1px solid var(--ax-border-strong);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--ax-accent);
-  font-size: 0.75rem;
+  font-size: .55rem;
   font-weight: 600;
-  line-height: 1;
+  letter-spacing: .07em;
+  color: var(--ax-accent);
+  backdrop-filter: blur(2px);
+  z-index: 4;
 }
 
-.ax-CategoryStats__link:hover {
-  box-shadow: inset 0 0 0 1px var(--ax-border-strong), 0 0 14px rgba(255, 32, 52, 0.2);
+/* Column raise (hover/focus) */
+.ax-Cell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0;
+  background: var(--ax-panel);
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: height 180ms ease, opacity 120ms ease;
+  z-index: 1;
 }
 
-.ax-CategoryStats__link[data-active='true'] {
-  outline: 2px solid var(--ax-red);
-  outline-offset: -2px;
-  border-color: var(--ax-red-700);
-  background: linear-gradient(180deg, rgba(255, 32, 52, 0.14) 0%, rgba(255, 32, 52, 0.06) 100%);
-  box-shadow: 0 0 0 1px rgba(255, 32, 52, 0.4), 0 0 24px rgba(255, 32, 52, 0.35);
+@keyframes ax-icon-scan {
+  0% { transform: translateY(6px) scale(.92); opacity: 0; }
+  60% { opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-.ax-CategoryStats__link[data-active='true'] .count {
-  color: var(--ax-fg);
+.ax-Cell:hover,
+.ax-Cell:focus-within {
+  transform: translateY(calc(-1 * var(--hover-raise)));
+  z-index: 10;
+}
+
+.ax-Cell:hover::before,
+.ax-Cell:focus-within::before {
+  height: var(--hover-raise);
+  opacity: 1;
+}
+
+.ax-Cell:hover .ax-Cell__icon,
+.ax-Cell:focus-within .ax-Cell__icon {
+  opacity: 1;
+  top: calc(50% + var(--icon-hover-y));
+  transform: scale(1);
+  animation: ax-scan 140ms ease 1;
+}
+
+.ax-Cell:hover .ax-Cell__title::before,
+.ax-Cell:hover .ax-Cell__title::after,
+.ax-Cell:focus-within .ax-Cell__title::before,
+.ax-Cell:focus-within .ax-Cell__title::after {
+  animation: ax-glitch-txt 140ms steps(2,end) 0s 1;
+}
+
+/* Active (очищенная рамка) */
+.ax-Cell[data-active='true'] {
+  /* убрано: border-right-color, box-shadow */
+  z-index: 15; /* поверх соседей при подъёме */
+  overflow: hidden; /* NEW: чтобы фон не «торчал» наружу */
+}
+
+.ax-Cell[data-active='true']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--ax-red);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 14;
+  box-shadow: 0 0 20px -8px rgba(255,32,52,.55); /* мягкое свечение без дублей линий */
+}
+
+/* Подсветка счётчика остаётся */
+.ax-Cell[data-active='true'] .ax-Cell__count {
+  background: rgba(255,32,52,0.22);
   border-color: var(--ax-red);
-  background: rgba(255, 32, 52, 0.18);
+  color: var(--ax-fg);
 }
 
-.ax-CategoryStats__link:focus-visible {
+/* === Glitch: persistent background (refined) === */
+/* Удаляем расширение вверх: один внутренний слой ровно по размеру клетки */
+.ax-Cell[data-active='true']::before {
+  top: 0;
+  height: 100%;
+  background: var(--ax-glitch-layer);
+  opacity: .50;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+  animation: ax-glitch-bg 6s linear infinite;
+  transition: opacity 160ms ease;
+  will-change: opacity, transform;
+}
+
+.ax-Cell[data-active='true']:hover::before,
+.ax-Cell[data-active='true']:focus-within::before {
+  opacity: .56;
+}
+
+/* === Glitch: persistent background for active cell === */
+.ax-Cell[data-active='true'] .ax-Cell__link {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Анимации */
+@keyframes ax-glitch-bg {
+  0%   { transform: translate3d(0,0,0); opacity:.55; }
+  45%  { transform: translate3d(2px,-1px,0); opacity:.62; }
+  46%  { transform: translate3d(-2px,1px,0); opacity:.50; }
+  47%  { transform: translate3d(1px,0,0); opacity:.60; }
+  100% { transform: translate3d(0,0,0); opacity:.55; }
+}
+
+@keyframes ax-glitch-jitter {
+  0%  { transform: translate3d(0,0,0) scale(1); }
+  40% { transform: translate3d(-1px,1px,0) scale(1.01); }
+  70% { transform: translate3d(1px,-1px,0) scale(.995); }
+  100%{ transform: translate3d(0,0,0) scale(1); }
+}
+
+@keyframes ax-glitch-slice {
+  0%  { clip-path: inset(0 0 40% 0); transform: translateX(0); }
+  50% { clip-path: inset(60% 0 0 0); transform: translateX(-1px); }
+  100%{ clip-path: inset(0 0 40% 0); transform: translateX(0); }
+}
+
+/* Лёгкое усиление уже существующего hover для активной */
+.ax-Cell[data-active='true']:hover .ax-Cell__title,
+.ax-Cell[data-active='true']:focus-within .ax-Cell__title {
+  transform: translateY(calc(var(--title-hover-y) * 1.05));
+}
+
+/* Reduced motion: упрощён (убраны clip-path/расширение) */
+@media (prefers-reduced-motion: reduce) {
+  .ax-Cell[data-active='true']::before {
+    animation: none !important;
+    opacity: .45;
+  }
+}
+
+.ax-Cell__link:focus-visible {
   outline: 2px solid var(--ax-red);
   outline-offset: 2px;
 }
 
-@media (max-width: 1279px) {
+/* Ограничение raise для второй строки (4+3) чтобы не налезало */
+@media (max-width: 1279px) and (min-width: 960px) {
   .ax-CategoryStats__list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0,1fr));
   }
-  .ax-CategoryStats__link {
-    border-bottom: 1px solid var(--ax-border);
-  }
-  .ax-CategoryStats__item:nth-child(4n) .ax-CategoryStats__link {
-    border-right: none;
-  }
-  .ax-CategoryStats__item:nth-child(n + 5) .ax-CategoryStats__link {
-    border-bottom: none;
-  }
-  .ax-CategoryStats__item:nth-child(7) .ax-CategoryStats__link {
-    border-right: none;
-  }
+  .ax-Cell { height: var(--cell-h-sm); }
+  /* скругления */
+  .ax-Cell:nth-child(1) { border-top-left-radius: var(--ax-radius); }
+  .ax-Cell:nth-child(4) { border-top-right-radius: var(--ax-radius); border-right: none; }
+  .ax-Cell:nth-child(5) { border-bottom-left-radius: var(--ax-radius); }
+  .ax-Cell:nth-child(7) { border-bottom-right-radius: var(--ax-radius); }
 }
 
+/* Desktop ≥1280px: одна строка, скругления по краям */
+@media (min-width: 1280px) {
+  .ax-Cell:first-child { border-top-left-radius: var(--ax-radius); border-bottom-left-radius: var(--ax-radius); }
+  .ax-Cell:last-child { border-top-right-radius: var(--ax-radius); border-bottom-right-radius: var(--ax-radius); }
+}
+
+/* <960px: горизонтальный скролл */
 @media (max-width: 959px) {
   .ax-CategoryStats__list {
     grid-auto-flow: column;
-    grid-auto-columns: minmax(160px, 1fr);
+    grid-auto-columns: minmax(200px, 1fr);
     overflow-x: auto;
     overscroll-behavior-inline: contain;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
   }
-  .ax-CategoryStats__item {
+  .ax-Cell {
     scroll-snap-align: start;
-  }
-  .ax-CategoryStats__link {
-    border-bottom: none;
-  }
-  .ax-CategoryStats__item:nth-child(4n) .ax-CategoryStats__link,
-  .ax-CategoryStats__item:nth-child(7) .ax-CategoryStats__link {
-    border-right: 1px solid var(--ax-border);
-  }
-  .ax-CategoryStats__item:last-child .ax-CategoryStats__link {
-    border-right: none;
+    min-width: 200px;
+    height: var(--cell-h-sm);
   }
 }
 
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .ax-CategoryStats__link {
-    transition: none;
+  .ax-Cell,
+  .ax-Cell::before,
+  .ax-Cell__icon,
+  .ax-Cell__title,
+  .ax-Cell__title::before,
+  .ax-Cell__title::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
   }
+  .ax-Cell:hover,
+  .ax-Cell:focus-within {
+    transform: none;
+  }
+  .ax-Cell__icon {
+    opacity: 1;
+    top: calc(50% + var(--icon-base-y));
+  }
+  .ax-Cell::before { height: 0 !important; opacity: 0 !important; }
 }

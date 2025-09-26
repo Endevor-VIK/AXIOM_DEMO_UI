@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { createVfs } from '@/lib/vfs'
 
 function mockFetch(map: Record<string, unknown | string>) {
@@ -127,6 +127,110 @@ describe('VFS', () => {
     expect(loreNode.id).toBe('ARC')
   })
 
+  it('builds aggregate from category manifests when version is 2', async () => {
+    const schema = {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['id', 'category', 'title', 'date', 'file', 'format', 'status', 'meta'],
+        properties: {
+          id: { type: 'string' },
+          category: { type: 'string' },
+          title: { type: 'string' },
+          date: { type: 'string' },
+          file: { type: 'string' },
+          format: { type: 'string' },
+          status: { type: 'string' },
+          meta: { type: 'object' },
+        },
+      },
+    }
+
+    mockFetch({
+      'data/content/_schema/content.schema.json': schema,
+      'data/content/manifest.json': {
+        meta: { version: 2, generatedAt: '2025-09-22T00:00:00Z' },
+        items: [
+          {
+            id: 'CHR-001',
+            category: 'characters',
+            title: 'Legacy Viktor',
+            date: '2025-09-01',
+            file: 'characters/legacy.md',
+            format: 'md',
+            status: 'published',
+            meta: { v: 2 },
+          },
+        ],
+        categories: {
+          characters: { manifest: 'content/characters/manifest.json', count: 99 },
+          locations: { manifest: 'content/locations/manifest.json', count: 0 },
+          technologies: { manifest: 'content/technologies/manifest.json', count: 0 },
+          factions: { manifest: 'content/factions/manifest.json', count: 0 },
+          events: { manifest: 'content/events/manifest.json', count: 0 },
+        },
+        lore: { index: 'content/lore/_index.json', roots: [] },
+      },
+      'data/content/characters/manifest.json': [
+        {
+          id: 'CHR-001',
+          category: 'characters',
+          title: 'Viktor',
+          date: '2025-09-25',
+          file: 'characters/viktor.md',
+          format: 'md',
+          status: 'published',
+          meta: { v: 2 },
+          weight: 10,
+        },
+        {
+          id: 'CHR-002',
+          category: 'characters',
+          title: 'Axiom',
+          date: '2025-09-20',
+          file: 'characters/axiom.md',
+          format: 'md',
+          status: 'published',
+          meta: { v: 2 },
+          weight: 5,
+        },
+      ],
+      'data/content/locations/manifest.json': [
+        {
+          id: 'LOC-001',
+          category: 'locations',
+          title: 'Hub',
+          date: '2025-09-06',
+          file: 'locations/hub.html',
+          format: 'html',
+          status: 'published',
+          meta: { v: 2 },
+          weight: 1,
+        },
+      ],
+      'data/content/technologies/manifest.json': [],
+      'data/content/factions/manifest.json': [],
+      'data/content/events/manifest.json': [],
+      'data/content/lore/_index.json': {
+        id: 'ROOT',
+        title: 'Root',
+        children: [],
+      },
+    })
+
+    const vfs = createVfs({ base: 'data/' })
+    vfs.clearCache()
+    const aggregate = await vfs.readContentAggregate()
+    expect(aggregate.meta.version).toBe(2)
+    expect(aggregate.items.map((entry) => entry.id)).toEqual(['CHR-001', 'CHR-002', 'LOC-001'])
+    expect(aggregate.categories.characters.count).toBe(2)
+    expect(aggregate.categories.locations.count).toBe(1)
+    expect(aggregate.categories.characters.manifest).toBe('content/characters/manifest.json')
+    const viktor = aggregate.items.find((entry) => entry.id === 'CHR-001')
+    expect(viktor?.title).toBe('Viktor')
+    expect(viktor?.date).toBe('2025-09-25')
+  })
+
   it('rejects invalid content manifests via schema', async () => {
     const schema = {
       type: 'array',
@@ -156,4 +260,5 @@ describe('VFS', () => {
     await expect(vfs.readContentAggregate()).rejects.toThrow()
   })
 })
+
 
