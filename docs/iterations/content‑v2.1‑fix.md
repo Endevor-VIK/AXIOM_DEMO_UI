@@ -1,4 +1,6 @@
-
+<!--
+PATCH: docs/iterations/content‑v2.1‑fix.md
+-->
 # AXIOM Codex Agent — Развернутое техническое задание на итерацию `content‑v2.1‑fix`
 
 <!--
