@@ -1,8 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import DOMPurify from 'dompurify'
+import type { Config as DOMPurifyConfig } from 'dompurify'
 import { marked } from 'marked'
 
-import { vfs, type ContentItem } from '@/lib/vfs'
+import { vfs, type ContentItem, type ContentRenderMode } from '@/lib/vfs'
+import { prefixStyles, normalizeScopeId } from '@/lib/hybrid/prefixStyles'
+import { deriveAssetsBase, resolveAssets } from '@/lib/hybrid/resolveAssets'
 
 import { classNames, formatDate, safeText } from './utils'
 
@@ -29,24 +32,79 @@ function isText(format: string): boolean {
   return format === 'txt'
 }
 
-const MARKDOWN_SANITIZE_OPTIONS = {
+const MARKDOWN_SANITIZE_OPTIONS: DOMPurifyConfig = {
   ADD_TAGS: ['style', 'svg', 'path', 'defs', 'linearGradient', 'radialGradient'],
   ADD_ATTR: ['class', 'style', 'role', 'aria-label', 'id', 'fill', 'stroke', 'viewBox'],
   ALLOW_UNKNOWN_PROTOCOLS: true,
-} as const
+}
+
+const STYLE_BLOCK_PATTERN = /<style[^>]*>([\s\S]*?)<\/style>/gi
+
+type ExtractedStyles = {
+  css: string
+  markup: string
+}
+
+function extractStyleBlocks(html: string): ExtractedStyles {
+  if (!html) {
+    return { css: '', markup: '' }
+  }
+
+  if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(html, 'text/html')
+    const cssParts: string[] = []
+    doc.querySelectorAll('style').forEach((node) => {
+      if (node.textContent) {
+        cssParts.push(node.textContent)
+      }
+      node.remove()
+    })
+    return { css: cssParts.join('\n'), markup: doc.body.innerHTML }
+  }
+
+  const cssParts: string[] = []
+  const markup = html.replace(STYLE_BLOCK_PATTERN, (_, block: string) => {
+    cssParts.push(block)
+    return ''
+  })
+  return { css: cssParts.join('\n'), markup }
+}
+
+const KNOWN_RENDER_MODES: readonly ContentRenderMode[] = ['plain', 'hybrid', 'sandbox'] as const
+
+function coerceRenderMode(value: unknown): ContentRenderMode {
+  if (typeof value === 'string') {
+    for (const mode of KNOWN_RENDER_MODES) {
+      if (mode === value) {
+        return mode
+      }
+    }
+  }
+  return 'plain'
+}
+
+
 
 export default function PreviewPane({ item, dataBase, onOpenExternal }: PreviewPaneProps) {
   const [textContent, setTextContent] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [renderError, setRenderError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [renderedHtml, setRenderedHtml] = useState('')
 
   const format = (item?.format ?? '').toLowerCase()
   const filePath = item ? ensureContentPath(item.file) : null
   const externalHref = item && filePath ? dataBase + filePath : null
+  const baseRenderMode = coerceRenderMode(item?.renderMode)
+  const mode = baseRenderMode
+
 
   useEffect(() => {
     let active = true
     setError(null)
+    setRenderError(null)
+    setRenderedHtml('')
     setTextContent('')
     setLoading(false)
 
@@ -74,13 +132,69 @@ export default function PreviewPane({ item, dataBase, onOpenExternal }: PreviewP
     }
   }, [item, filePath, format])
 
-  const markdownHtml = useMemo(() => {
-    if (!isMarkdown(format) || !textContent) return ''
-    const raw = marked.parse(textContent)
-    const html = typeof raw === 'string' ? raw : String(raw)
-    if (typeof window === 'undefined') return html
-    return DOMPurify.sanitize(html, MARKDOWN_SANITIZE_OPTIONS)
-  }, [format, textContent])
+  useEffect(() => {
+    let cancelled = false
+
+    setRenderError(null)
+
+    if (!item || !isMarkdown(format) || !textContent) {
+      setRenderedHtml('')
+      return () => {
+        cancelled = true
+      }
+    }
+
+    if (mode === 'sandbox') {
+      setRenderedHtml('')
+      return () => {
+        cancelled = true
+      }
+    }
+
+    const scopeId = normalizeScopeId(item.id)
+    const assetsBase = deriveAssetsBase(item)
+
+    const run = async () => {
+      try {
+        const parsed = marked.parse(textContent)
+        const html = typeof parsed === 'string' ? parsed : String(parsed)
+        const sanitized = typeof window === 'undefined' ? html : DOMPurify.sanitize(html, MARKDOWN_SANITIZE_OPTIONS)
+
+        if (mode === 'hybrid') {
+          const { css, markup } = extractStyleBlocks(sanitized)
+          const prefixedCss = css ? await prefixStyles(css, scopeId) : ''
+          const resolvedMarkup = resolveAssets(markup, assetsBase, dataBase)
+          const styleTag = prefixedCss ? `<style data-ax-scope="${scopeId}">${prefixedCss}</style>` : ''
+          const wrapped = `<div data-ax-scope="${scopeId}">${resolvedMarkup}</div>`
+          if (!cancelled) {
+            setRenderedHtml(styleTag + wrapped)
+          }
+          return
+        }
+
+        const resolved = resolveAssets(sanitized, assetsBase, dataBase)
+        if (!cancelled) {
+          setRenderedHtml(resolved)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          const message = err instanceof Error ? err.message : String(err)
+          setRenderError(message)
+          setRenderedHtml('')
+        }
+      }
+    }
+
+    run()
+
+    return () => {
+      cancelled = true
+    }
+  }, [dataBase, format, mode, textContent, item?.assetsBase, item?.file, item?.id])
+
+  const shouldUseIframe = Boolean(externalHref && (isHtml(format) || mode === 'sandbox'))
+  const shouldRenderMarkdown = isMarkdown(format) && mode !== 'sandbox'
+  const shouldRenderText = isText(format)
 
   const openExternalNode = externalHref
     ? onOpenExternal
@@ -140,42 +254,42 @@ export default function PreviewPane({ item, dataBase, onOpenExternal }: PreviewP
       ) : null}
 
       <section className='ax-preview__body'>
-        {error ? <div className='ax-preview__error'>Preview unavailable: {safeText(error, 'вЂ”')}</div> : null}
+        {error ? <div className='ax-preview__error'>Preview unavailable: {safeText(error, '-')}</div> : null}
+        {renderError ? (
+          <div className='ax-preview__error'>Render error: {safeText(renderError, '-')}</div>
+        ) : null}
 
         {loading ? (
           <div className='ax-skeleton ax-skeleton--block' style={{ height: 180 }} />
         ) : null}
 
-        {!loading && !error ? (
+        {!loading && !error && !renderError ? (
           <>
-            {isHtml(format) && externalHref ? (
+            {shouldUseIframe ? (
               <iframe
                 className='ax-preview__iframe'
-                src={externalHref}
+                src={externalHref!}
                 title={`content:${item.id}`}
                 loading='lazy'
               />
             ) : null}
 
-            {isMarkdown(format) ? (
-              <div
-                className='ax-preview__rich'
-                dangerouslySetInnerHTML={{ __html: markdownHtml }}
-              />
+            {shouldRenderMarkdown ? (
+              <div className='ax-preview__rich' dangerouslySetInnerHTML={{ __html: renderedHtml }} />
             ) : null}
 
-            {isText(format) ? <pre className='ax-preview__text'>{textContent}</pre> : null}
+            {shouldRenderText ? <pre className='ax-preview__text'>{textContent}</pre> : null}
 
-            {!isHtml(format) && !isMarkdown(format) && !isText(format) && externalHref ? (
+            {!shouldUseIframe && !shouldRenderMarkdown && !shouldRenderText && externalHref ? (
               <p className='ax-preview__notice'>Preview not available for this format.</p>
             ) : null}
           </>
         ) : null}
       </section>
-
       {openExternalNode ? <footer className='ax-preview__actions'>{openExternalNode}</footer> : null}
     </article>
   )
 }
+
 
 

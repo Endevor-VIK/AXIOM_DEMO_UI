@@ -521,9 +521,9 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - **AC:** любые ошибки схемы репортятся в консоль DEV, невалидные записи не ломают хаб.
 
 ### 12.3 Hybrid CSS-scoping и резолвер ассетов (см. §4.2, §4.3)
-- [ ] **P0** Утилита `prefixStyles.ts` (PostCSS) + переименование `@keyframes` под scope `[data-ax-scope="{id}"]`.
-- [ ] **P0** Обёртка контента `<div data-ax-scope="{id}">…</div>`.
-- [ ] **P0** Утилита `resolveAssets.ts` (переписывание `src|href` через `assetsBase`, поддержка `data:`).
+- [x] **P0** Утилита `prefixStyles.ts` (PostCSS) + переименование `@keyframes` под scope `[data-ax-scope="{id}"]`. ✅ (2025-09-30, by Codex, CHG-2025-09-30-002)
+- [x] **P0** Обёртка контента `<div data-ax-scope="{id}">…</div>`. ✅ (2025-10-01, by Codex, CHG-2025-10-01-001)
+- [x] **P0** Утилита `resolveAssets.ts` (переписывание `src|href` через `assetsBase`, поддержка `data:`). ✅ (2025-10-01, by Codex, CHG-2025-10-01-001)
 - [ ] **P1** Обработка нескольких `<style>` в одном файле (мердж с сохранением порядка).
 - **AC:** стили гибридов не протекают наружу; все изображения/ссылки работают.
 
@@ -759,6 +759,30 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-01-001 — [FEAT] Hybrid preview asset scoping (DONE)
+**Related:** §12.3-P0
+**Artifacts:** components/PreviewPane.tsx; lib/hybrid/prefixStyles.ts; lib/hybrid/resolveAssets.ts
+**Changes:**
+- Подключён `prefixStyles` в PreviewPane и добавлена обёртка `data-ax-scope` для hybrid-режима.
+- Реализован `resolveAssets` с обработкой относительных путей и встроенный вызов в plain/hybrid.
+- Переписан рендер превью: режимы, ошибки, iframe/sandbox и безопасная подстановка HTML.
+**AC Check:**
+- [x] Стили гибридов изолированы внутри превью и не протекают на остальной UI.
+- [x] Относительные `src|href` в plain/hybrid корректно резолвятся через `assetsBase`.
+**Result:** DONE
+
+#### CHG-2025-09-30-002 — [FEAT] PrefixStyles utility & preview sanitization (DONE)
+**Related:** §12.3-P0
+**Artifacts:** branch feature/content-v2.1-fix/hybrid-css; files: components/PreviewPane.tsx, lib/hybrid/prefixStyles.ts, lib/hybrid/postcss-prefix-selector.d.ts
+**Changes:**
+- Добавлен типобезопасный конфиг DOMPurify в PreviewPane.
+- Реализована утилита `prefixStyles` с перестройкой `@keyframes` и префиксацией селекторов.
+- Добавлена декларация типов для `postcss-prefix-selector`.
+**AC Check:**
+- [x] Префиксер добавляет scope `[data-ax-scope="{id}"]` для всех селекторов вне at-rule.
+- [x] Имена `@keyframes` и ссылки в `animation*` получают уникальный scoped-префикс.
+**Result:** DONE
+
 <!-- ВСТАВЛЯЙ НОВЫЕ ЗАПИСИ СРАЗУ ПОСЛЕ ЭТОЙ СТРОКИ -->
 #### CHG-2025-09-30-001 — [FEAT] Schema/VFS v2.1 baseline (DONE)
 **Related:** §12.2-P0
