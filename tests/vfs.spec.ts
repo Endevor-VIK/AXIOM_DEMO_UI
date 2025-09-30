@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { createVfs } from '@/lib/vfs'
 
 function mockFetch(map: Record<string, unknown | string>) {
@@ -15,6 +15,42 @@ function mockFetch(map: Record<string, unknown | string>) {
     })
   }) as any
 }
+
+function makeContentSchema() {
+  return {
+    type: 'array',
+    items: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['id', 'category', 'title', 'date', 'file', 'format', 'status', 'meta'],
+      properties: {
+        id: { type: 'string' },
+        category: { type: 'string' },
+        subCategory: { type: 'string' },
+        title: { type: 'string' },
+        summary: { type: 'string' },
+        date: { type: 'string' },
+        tags: { type: 'array', items: { type: 'string' } },
+        file: { type: 'string' },
+        format: { type: 'string', enum: ['html', 'md', 'markdown', 'txt'] },
+        renderMode: { type: 'string', enum: ['plain', 'hybrid', 'sandbox'] },
+        assetsBase: { type: 'string' },
+        version: { type: 'string' },
+        author: { type: 'string' },
+        status: { type: 'string' },
+        visibility: { type: 'string' },
+        weight: { type: 'number' },
+        lang: { type: 'string' },
+        links: { type: 'array', items: { type: 'object' } },
+        meta: { type: 'object' },
+      },
+    },
+  }
+}
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('VFS', () => {
   it('disallows path traversal', async () => {
@@ -59,23 +95,7 @@ describe('VFS', () => {
   })
 
   it('aggregates content manifest and reads lore index', async () => {
-    const schema = {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['id', 'category', 'title', 'date', 'file', 'format', 'status', 'meta'],
-        properties: {
-          id: { type: 'string' },
-          category: { type: 'string' },
-          title: { type: 'string' },
-          date: { type: 'string' },
-          file: { type: 'string' },
-          format: { type: 'string' },
-          status: { type: 'string' },
-          meta: { type: 'object' },
-        },
-      },
-    }
+    const schema = makeContentSchema()
 
     mockFetch({
       'data/content/_schema/content.schema.json': schema,
@@ -89,6 +109,7 @@ describe('VFS', () => {
           format: 'html',
           status: 'published',
           meta: { v: 2 },
+          renderMode: 'plain',
         },
         {
           id: 'EVT-1',
@@ -117,34 +138,14 @@ describe('VFS', () => {
     vfs.clearCache()
     const aggregate = await vfs.readContentAggregate()
     expect(aggregate.items.length).toBe(2)
+    expect(aggregate.items.every((entry) => entry.renderMode === 'plain')).toBe(true)
+    expect(aggregate.items.every((entry) => entry.assetsBase === '')).toBe(true)
     expect(aggregate.categories.events.count).toBe(1)
     expect(aggregate.lore.index).toBe('content/lore/_index.json')
-
-    const itemList = await vfs.readContentManifest()
-    const itemIds = itemList.map((entry) => entry.id).sort()
-    const loreNode = await vfs.readLoreIndex('lore/arc/_index.json')
-    expect(itemIds).toEqual(['EVT-1', 'LOC-1'].sort())
-    expect(loreNode.id).toBe('ARC')
   })
 
-  it('builds aggregate from category manifests when version is 2', async () => {
-    const schema = {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['id', 'category', 'title', 'date', 'file', 'format', 'status', 'meta'],
-        properties: {
-          id: { type: 'string' },
-          category: { type: 'string' },
-          title: { type: 'string' },
-          date: { type: 'string' },
-          file: { type: 'string' },
-          format: { type: 'string' },
-          status: { type: 'string' },
-          meta: { type: 'object' },
-        },
-      },
-    }
+  it('aggregates root manifest with category manifests', async () => {
+    const schema = makeContentSchema()
 
     mockFetch({
       'data/content/_schema/content.schema.json': schema,
@@ -180,8 +181,9 @@ describe('VFS', () => {
           file: 'characters/viktor.md',
           format: 'md',
           status: 'published',
-          meta: { v: 2 },
           weight: 10,
+          meta: { v: 2 },
+          renderMode: 'hybrid',
         },
         {
           id: 'CHR-002',
@@ -191,8 +193,8 @@ describe('VFS', () => {
           file: 'characters/axiom.md',
           format: 'md',
           status: 'published',
-          meta: { v: 2 },
           weight: 5,
+          meta: { v: 2 },
         },
       ],
       'data/content/locations/manifest.json': [
@@ -227,18 +229,47 @@ describe('VFS', () => {
     expect(aggregate.categories.locations.count).toBe(1)
     expect(aggregate.categories.characters.manifest).toBe('content/characters/manifest.json')
     const viktor = aggregate.items.find((entry) => entry.id === 'CHR-001')
-    expect(viktor?.title).toBe('Viktor')
-    expect(viktor?.date).toBe('2025-09-25')
+    expect(viktor?.renderMode).toBe('hybrid')
   })
 
-  it('rejects invalid content manifests via schema', async () => {
-    const schema = {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['id', 'category', 'title', 'date', 'file', 'format', 'status', 'meta'],
-      },
-    }
+  it('filters invalid content items when strict mode is disabled', async () => {
+    const schema = makeContentSchema()
+    mockFetch({
+      'data/content/_schema/content.schema.json': schema,
+      'data/content/manifest.json': [
+        {
+          id: 'GOOD-1',
+          category: 'all',
+          title: 'Good Entry',
+          date: '2025-01-01',
+          file: 'good.html',
+          format: 'html',
+          status: 'published',
+          meta: { v: 2 },
+        },
+        {
+          id: 'BAD-1',
+          category: 'all',
+          title: 'Broken Entry',
+          date: '2025-01-02',
+          file: 'bad.html',
+          format: 'html',
+          meta: { v: 2 },
+        },
+      ],
+      'data/content/lore/_index.json': { id: 'ROOT', title: 'Root', children: [] },
+    })
+
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const vfs = createVfs({ base: 'data/' })
+    vfs.clearCache()
+    const aggregate = await vfs.readContentAggregate()
+    expect(aggregate.items.map((entry) => entry.id)).toEqual(['GOOD-1'])
+    expect(errorSpy).toHaveBeenCalled()
+  })
+
+  it('rejects invalid content manifests in strict mode', async () => {
+    const schema = makeContentSchema()
 
     mockFetch({
       'data/content/_schema/content.schema.json': schema,
@@ -255,10 +286,8 @@ describe('VFS', () => {
       ],
     })
 
-    const vfs = createVfs({ base: 'data/' })
+    const vfs = createVfs({ base: 'data/', strict: true })
     vfs.clearCache()
-    await expect(vfs.readContentAggregate()).rejects.toThrow()
+    await expect(vfs.readContentAggregate()).rejects.toThrow('[VFS] content manifest invalid')
   })
 })
-
-

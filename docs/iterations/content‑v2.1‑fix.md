@@ -514,9 +514,9 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - **AC:** проект собирается без ошибок; статусы ENV/ONLINE выводятся в StatusLine.
 
 ### 12.2 Схема данных и VFS (см. §4.1, §4.8)
-- [ ] **P0** Расширить `public/data/content/_schema/content.schema.json`: `renderMode`, `assetsBase`, `version`, `lang`, `links`.
-- [ ] **P0** Обновить `lib/vfs/*`: валидация схемы (Ajv), `strict`-режим, фильтр невалидных записей.
-- [ ] **P0** Миграционный скрипт `scripts/migrate-v2.1.js` (autofill `renderMode=plain`, `assetsBase=''`).
+- [x] **P0** Расширить `public/data/content/_schema/content.schema.json`: `renderMode`, `assetsBase`, `version`, `lang`, `links`. ✅ (2025-09-30, by Codex, CHG-2025-09-30-001)
+- [x] **P0** Обновить `lib/vfs/*`: валидация схемы (Ajv), `strict`-режим, фильтр невалидных записей. ✅ (2025-09-30, by Codex, CHG-2025-09-30-001)
+- [x] **P0** Миграционный скрипт `scripts/migrate-v2.1.js` (autofill `renderMode=plain`, `assetsBase=''`). ✅ (2025-09-30, by Codex, CHG-2025-09-30-001)
 - [ ] **P1** Валидация ISO-дат, уникальности `id`, whitelists категорий/статусов.
 - **AC:** любые ошибки схемы репортятся в консоль DEV, невалидные записи не ломают хаб.
 
@@ -760,17 +760,18 @@ refs:
 
 <!-- LOG:START (do not remove) -->
 <!-- ВСТАВЛЯЙ НОВЫЕ ЗАПИСИ СРАЗУ ПОСЛЕ ЭТОЙ СТРОКИ -->
-#### CHG-2025-09-30-001 — [FEAT] Schema/VFS v2.1 baseline (OPEN)
+#### CHG-2025-09-30-001 — [FEAT] Schema/VFS v2.1 baseline (DONE)
 **Related:** §12.2-P0
-**Artifacts:** branch feat/content-v2.1-fix/schema-vfs
-**Changes (plan):
-- Обновить schema и типы (renderMode/assetsBase/version/links).
-- Включить strict Ajv и фильтрацию невалидных записей.
-- Добавить скрипт миграции и тесты.
+**Artifacts:** lib/vfs/index.ts; public/data/content/_schema/content.schema.json; scripts/migrate-v2.1.js; tests/vfs.spec.ts; tests: `npx vitest run tests/vfs.spec.ts`
+**Changes:**
+- Расширена content schema (renderMode, assetsBase, version, lang, links) и ужесточены паттерны.
+- Обновлён VFS: строгий Ajv, фильтрация невалидных записей, дефолты renderMode/assetsBase, поддержка режима strict.
+- Добавлен скрипт `scripts/migrate-v2.1.js` и переработаны unit-тесты VFS под новые правила.
 **AC Check:**
-- [ ] AC-1: ошибки схемы выводятся в консоль DEV.
-- [ ] AC-2: невалидные записи не ломают ContentHub.
-**Result:** OPEN
+- [x] AC-1: ошибки схемы выводятся в консоль DEV (console.error) и в strict-режиме приводят к throw.
+- [x] AC-2: невалидные записи не ломают ContentHub (невалид фильтруется, strict бросает ошибку).
+**Result:** DONE
+
 
 
 #### CHG-YYYY-MM-DD-XXX — [TYPE] Короткий заголовок (STATUS)

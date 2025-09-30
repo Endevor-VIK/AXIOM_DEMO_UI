@@ -11,6 +11,7 @@ export type RootCategoryKey = 'all' | CategoryKey | LoreCategoryKey
 
 export type ContentStatus = 'draft' | 'published' | 'archived'
 export type ContentFormat = 'html' | 'md' | 'markdown' | 'txt'
+export type ContentRenderMode = 'plain' | 'hybrid' | 'sandbox'
 export type ContentVisibility = 'public' | 'internal'
 
 export interface ContentLink {
@@ -35,6 +36,9 @@ export interface ContentItem {
   tags?: string[]
   file: string
   format: ContentFormat
+  renderMode?: ContentRenderMode
+  assetsBase?: string
+  version?: string
   author?: string
   status: ContentStatus
   visibility?: ContentVisibility

@@ -14,6 +14,7 @@ export type FetchOptions = {
 
 export interface VfsConfig {
   /** base URL relative to app root, defaults to 'data/' */ base?: string
+  /** validation mode: throw on schema errors when true */ strict?: boolean
 }
 
 export interface ManifestItem {
@@ -38,6 +39,11 @@ export type ContentStatus = 'draft' | 'published' | 'archived'
 export type ContentVisibility = 'public' | 'internal'
 export type ContentFormat = 'html' | 'md' | 'markdown' | 'txt'
 
+export type ContentRenderMode = 'plain' | 'hybrid' | 'sandbox'
+
+const RENDER_MODES: readonly ContentRenderMode[] = ['plain', 'hybrid', 'sandbox']
+const DEFAULT_RENDER_MODE: ContentRenderMode = 'plain'
+
 export interface ContentLink {
   type: string
   ref: string
@@ -59,6 +65,9 @@ export interface ContentItem extends ManifestItem {
   date: string
   file: string
   format: ContentFormat
+  renderMode?: ContentRenderMode
+  assetsBase?: string
+  version?: string
   author?: string
   status: ContentStatus
   visibility?: ContentVisibility
@@ -181,7 +190,7 @@ function key(base: string, rel: string) {
   return 'vfs:' + base + rel
 }
 
-const ajvInstance = new Ajv({ allErrors: true, strict: false })
+const ajvInstance = new Ajv({ allErrors: true, strict: true })
 const CONTENT_SCHEMA_PATH = 'content/_schema/content.schema.json'
 const CONTENT_MANIFEST_PATH = 'content/manifest.json'
 const DEFAULT_LORE_INDEX_REL = 'lore/_index.json'
@@ -219,6 +228,27 @@ function normalizeLoreRequestPath(input?: string): string {
   }
   disallowTraversal(raw)
   return raw
+}
+
+function determineRenderMode(value: unknown): ContentRenderMode {
+  if (typeof value === 'string' && (RENDER_MODES as readonly string[]).includes(value)) {
+    return value as ContentRenderMode
+  }
+  return DEFAULT_RENDER_MODE
+}
+
+function normalizeAssetsBase(value: unknown): string {
+  return typeof value === 'string' ? value : ''
+}
+
+function normalizeContentEntry(entry: ContentItem): ContentItem {
+  const normalized: ContentItem = { ...entry }
+  normalized.renderMode = determineRenderMode(entry.renderMode)
+  const assetsBase = normalizeAssetsBase(entry.assetsBase)
+  if (normalized.assetsBase !== assetsBase) {
+    normalized.assetsBase = assetsBase
+  }
+  return normalized
 }
 
 function sortContentItems(items: ContentItem[]): ContentItem[] {
@@ -346,7 +376,9 @@ function extractLoreSummary(raw: unknown): ContentLoreSummary {
 
 export function createVfs(config?: VfsConfig): VfsApi {
   const base = makeBase(config)
-  let contentValidator: ValidateFunction | null = null
+  const strictMode = Boolean(config?.strict)
+  let contentArrayValidator: ValidateFunction | null = null
+  let contentItemValidator: ValidateFunction | null = null
 
   async function json<T = Json>(relPath: string, opts?: FetchOptions): Promise<T> {
     const k = key(base, relPath)
@@ -378,25 +410,47 @@ export function createVfs(config?: VfsConfig): VfsApi {
   const readLogs = (opts?: FetchOptions) => json<Record<string, unknown>>('logs.json', opts)
   const readAuditsManifest = (opts?: FetchOptions) => json<ManifestItem[]>('audits/manifest.json', opts)
 
-  async function ensureContentValidator(): Promise<ValidateFunction> {
-    if (contentValidator) return contentValidator
+  async function ensureContentValidators(): Promise<{ array: ValidateFunction; item: ValidateFunction }> {
+    if (contentArrayValidator && contentItemValidator) {
+      return { array: contentArrayValidator, item: contentItemValidator }
+    }
     const schema = await json<Json>(CONTENT_SCHEMA_PATH, { force: true })
-    if (!isRecord(schema) && !Array.isArray(schema)) {
+    if (!isRecord(schema)) {
       throw new VfsError('[VFS] content schema has unexpected shape')
     }
-    contentValidator = ajvInstance.compile(schema as Record<string, unknown>)
-    return contentValidator
+    contentArrayValidator = ajvInstance.compile(schema as Record<string, unknown>)
+    const rawItemSchema = (schema as Record<string, unknown>).items
+    if (!isRecord(rawItemSchema)) {
+      throw new VfsError('[VFS] content schema missing items definition')
+    }
+    contentItemValidator = ajvInstance.compile(rawItemSchema as Record<string, unknown>)
+    return { array: contentArrayValidator, item: contentItemValidator }
   }
 
   async function validateContentItems(data: unknown): Promise<ContentItem[]> {
-    const validator = await ensureContentValidator()
-    if (!validator(data)) {
-      const detail = ajvInstance.errorsText(validator.errors ?? [], { separator: '; ' })
-      throw new VfsError('[VFS] content manifest invalid: ' + detail)
+    const { item: itemValidator } = await ensureContentValidators()
+    if (!Array.isArray(data)) {
+      throw new VfsError('[VFS] content manifest is not an array')
     }
-    return data as ContentItem[]
+    const issues: string[] = []
+    const valid: ContentItem[] = []
+    data.forEach((entry, index) => {
+      if (itemValidator(entry)) {
+        valid.push(normalizeContentEntry(entry as ContentItem))
+      } else {
+        const detail = ajvInstance.errorsText(itemValidator.errors ?? [], { separator: '; ' })
+        issues.push(`#${index}: ${detail}`)
+      }
+    })
+    if (issues.length) {
+      const message = issues.join(' | ')
+      if (strictMode) {
+        throw new VfsError('[VFS] content manifest invalid: ' + message)
+      }
+      console.error('[VFS] filtered invalid content items: ' + message)
+    }
+    return valid
   }
-
   async function readContentAggregate(opts?: FetchOptions): Promise<ContentAggregate> {
     const cacheKey = key(base, CONTENT_MANIFEST_PATH + '#aggregate')
     if (!opts?.force && cache.has(cacheKey)) return cache.get(cacheKey) as ContentAggregate
@@ -459,9 +513,11 @@ export function createVfs(config?: VfsConfig): VfsApi {
     return validateNewsArray(items)
   }
 
+
   function clearCache() {
     cache.clear()
-    contentValidator = null
+    contentArrayValidator = null
+    contentItemValidator = null
   }
 
   return {
@@ -521,6 +577,7 @@ function validateNewsArray(data: unknown): NewsItem[] {
 }
 
 export const vfs = createVfs()
+
 
 
 
