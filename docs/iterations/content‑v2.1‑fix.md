@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 PATCH: docs/iterations/content‑v2.1‑fix.md
 -->
 # AXIOM Codex Agent — Развернутое техническое задание на итерацию `content‑v2.1‑fix`
@@ -12,8 +12,6 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 смежных модулей.  Старайтесь использовать этот файл как единую точку истинны
 при планировании работ.
 -->
-
-# AXIOM Codex Agent — Детализированное техническое задание на итерацию `content‑v2.1‑fix`
 
 ## 1. Контекст и цели
 
@@ -762,6 +760,18 @@ refs:
 
 <!-- LOG:START (do not remove) -->
 <!-- ВСТАВЛЯЙ НОВЫЕ ЗАПИСИ СРАЗУ ПОСЛЕ ЭТОЙ СТРОКИ -->
+#### CHG-2025-09-30-001 — [FEAT] Schema/VFS v2.1 baseline (OPEN)
+**Related:** §12.2-P0
+**Artifacts:** branch feat/content-v2.1-fix/schema-vfs
+**Changes (plan):
+- Обновить schema и типы (renderMode/assetsBase/version/links).
+- Включить strict Ajv и фильтрацию невалидных записей.
+- Добавить скрипт миграции и тесты.
+**AC Check:**
+- [ ] AC-1: ошибки схемы выводятся в консоль DEV.
+- [ ] AC-2: невалидные записи не ломают ContentHub.
+**Result:** OPEN
+
 
 #### CHG-YYYY-MM-DD-XXX — [TYPE] Короткий заголовок (STATUS)
 **Related:** §12.x-Px, §12.y-Py  
