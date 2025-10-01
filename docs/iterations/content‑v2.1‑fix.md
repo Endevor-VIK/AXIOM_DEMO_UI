@@ -759,7 +759,7 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
-#### CHG-2025-10-01-001 — [FEAT] Hybrid preview asset scoping (DONE)
+#### CHG-2025-10-01-001 — \[FEAT] Hybrid preview asset scoping (DONE)
 **Related:** §12.3-P0
 **Artifacts:** components/PreviewPane.tsx; lib/hybrid/prefixStyles.ts; lib/hybrid/resolveAssets.ts
 **Changes:**
@@ -771,7 +771,7 @@ refs:
 - [x] Относительные `src|href` в plain/hybrid корректно резолвятся через `assetsBase`.
 **Result:** DONE
 
-#### CHG-2025-09-30-002 — [FEAT] PrefixStyles utility & preview sanitization (DONE)
+#### CHG-2025-09-30-002 — \[FEAT] PrefixStyles utility & preview sanitization (DONE)
 **Related:** §12.3-P0
 **Artifacts:** branch feature/content-v2.1-fix/hybrid-css; files: components/PreviewPane.tsx, lib/hybrid/prefixStyles.ts, lib/hybrid/postcss-prefix-selector.d.ts
 **Changes:**
@@ -784,7 +784,7 @@ refs:
 **Result:** DONE
 
 <!-- ВСТАВЛЯЙ НОВЫЕ ЗАПИСИ СРАЗУ ПОСЛЕ ЭТОЙ СТРОКИ -->
-#### CHG-2025-09-30-001 — [FEAT] Schema/VFS v2.1 baseline (DONE)
+#### CHG-2025-09-30-001 — \[FEAT] Schema/VFS v2.1 baseline (DONE)
 **Related:** §12.2-P0
 **Artifacts:** lib/vfs/index.ts; public/data/content/_schema/content.schema.json; scripts/migrate-v2.1.js; tests/vfs.spec.ts; tests: `npx vitest run tests/vfs.spec.ts`
 **Changes:**
@@ -798,7 +798,7 @@ refs:
 
 
 
-#### CHG-YYYY-MM-DD-XXX — [TYPE] Короткий заголовок (STATUS)
+#### CHG-YYYY-MM-DD-XXX — \[TYPE] Короткий заголовок (STATUS)
 **Related:** §12.x-Px, §12.y-Py  
 **Artifacts:** commit <hash>, PR <link>, files: …  
 **Changes:**
