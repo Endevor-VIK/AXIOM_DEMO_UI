@@ -9,3 +9,5 @@ export/
 requirements.txt
 api/
 app/services/ai.ts
+.vs/
+out/

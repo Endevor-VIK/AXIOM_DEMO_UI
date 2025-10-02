@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run netwatch",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}\\scripts\\netwatch.exe",
+      "args": ["2000"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build netwatch (Standalone)"
+    }
+  ]
+}

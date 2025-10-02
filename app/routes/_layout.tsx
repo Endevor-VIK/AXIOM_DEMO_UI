@@ -5,7 +5,8 @@
 import React, { useCallback, useMemo } from 'react'
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
-import Ticker from '@/components/Ticker'
+import HeadlinesTicker from '../../components/news/HeadlinesTicker'
+import { useNewsManifest } from '../../lib/useNewsManifest'
 import StatusLine from '@/components/StatusLine'
 
 type NavItem = {
@@ -45,6 +46,8 @@ export default function Layout() {
     navigate('/login', { replace: true })
   }, [navigate])
 
+  const tickerItems = useNewsManifest()
+
   return (
     <div className='ax-page'>
       <header className='ax-header ax-topbar'>
@@ -83,14 +86,11 @@ export default function Layout() {
         </div>
       </header>
 
+      {/* RED PROTOCOL Headlines Ticker */}
+      <HeadlinesTicker {...(tickerItems ? { items: tickerItems } : {})} />
+
       {/* FX-layer: эффекты/scanlines; без интеракции */}
       <div id='fx-layer' aria-hidden />
-
-      <div className='ax-ticker'>
-        <div className='ax-container'>
-          <Ticker />
-        </div>
-      </div>
 
       <main className='ax-shell ax-content'>
         <div className='ax-container'>

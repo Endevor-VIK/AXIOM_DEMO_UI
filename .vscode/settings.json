@@ -37,9 +37,6 @@
     "activityBar.activeBorder": "#ff2034",         // оставить тонкую границу слева
     "activityBar.activeFocusBorder": "#ff2034",
 
-
-
-
     // Activity Bar — иконки красные
     "activityBar.background": "#10090c",
     "activityBar.foreground": "#ff2034",
@@ -91,8 +88,6 @@
   "vscode_custom_css.imports": [
     "file:///e:/ENDEAVOR/AXIOM_SYSTEM/.vscode/axiom-custom.css",
     "file:///e:/ENDEAVOR/AXIOM_SYSTEM/.vscode/inject.js"
-
-
   ],
   "vscode_custom_css.policy": true,
   "typescript.tsdk": "node_modules\\typescript\\lib",
@@ -103,7 +98,16 @@
     }
   ],
   "dev.containers.defaultUserEnvProbe": "none",
-  "chatgpt.openOnStartup": true
-}
-  
+  "chatgpt.openOnStartup": false,
 
+  "terminal.integrated.profiles.windows": {
+    "VS 2022 x64 Native Tools": {
+      "path": "C:\\Windows\\System32\\cmd.exe",
+      "args": [
+        "/k",
+        "\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\VsDevCmd.bat\"",
+        "-arch=x64"
+      ]
+    }
+  }
+}
