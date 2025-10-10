@@ -1,11 +1,22 @@
 [
   {
+    "id": "NEWS-2025-10-10-AUDIT-AXIOM-DEMO-UI",
+    "date": "2025-10-10",
+    "title": "AUDIT: подробный отчёт AXIOM_DEMO_UI (05.09–02.10.2025)",
+    "kind": "release",
+    "tags": ["audit", "report", "webcore", "ui", "red-protocol", "gold-hybrid"],
+    "summary": "Опубликован полный HTML-аудит репозитория за период 05.09–02.10.2025: фазы, ключевые коммиты, фиксы маршрутизации/типизации, Content Hub v2, News feed, гибридный Red Protocol × Gold дизайн.",
+    "link": "/dashboard/audit",
+    "file": "audits/17.13.AUDIT_AXIOM_DEMO_UI.10.10.25.html",
+    "type": "release"
+  },
+  {
     "id": "NEWS-2025-09-21-LOGIN-NO-SCROLL",
     "date": "2025-09-21",
     "title": "Login: нижняя плашка встроена, убран вертикальный скролл (Баг присутствует)",
     "kind": "update",
     "tags": ["webcore", "ui", "login", "grid", "bugfix"],
-    "summary": "Плашка встроена в .ax-login (grid: 1fr auto), высота секции 100dvh/100svh; --ax-hint-reserve вынесен в паддинги, убран margin у плашки, overflow: clip/hidden. Скроллбар исчез (На smartphone), hover‑панель стабильна."
+    "summary": "Плашка встроена в .ax-login (grid: 1fr auto), высота секции 100dvh/100svh; --ax-hint-reserve вынесен в паддинги, убран margin у плашки, overflow: clip/hidden. Скроллбар исчез (На smartphone), hover-панель стабильна."
   },
   {
     "id": "NEWS-2025-09-20-PATCH-RED-PROTOCOL",
@@ -15,18 +26,13 @@
     "tags": ["webcore", "ui", "login", "performance", "docs"],
     "summary": "Эффекты вынесены в фоновый слой (#fx-layer); карточка логина без фильтров, нижний бордер восстановлен. Глич очищается при переходе, не протекает. Консоль облегчена: батч-обновления, кольцевой буфер, меньше перерисовок.",
     "file": "items/2025-09-20-red-protocol-patch.md"
-  },  
+  },
   {
     "id": "NEWS-2025-09-17-CONTENT-HUB",
     "date": "2025-09-17",
     "title": "Content Hub v2: категории, LORE, предпросмотры",
     "kind": "release",
-    "tags": [
-      "update",
-      "content",
-      "lore",
-      "ui"
-    ],
+    "tags": ["update", "content", "lore", "ui"],
     "summary": "Запущен Content Hub: уровневое меню, Cards/List, предпросмотр HTML/Markdown, дерево LORE и CI-проверки.",
     "file": "items/2025-09-17-content-hub.md",
     "type": "release"
@@ -36,11 +42,7 @@
     "date": "2025-09-10",
     "title": "AUDIT: добавлен раздел и первый демо-отчёт",
     "kind": "update",
-    "tags": [
-      "audit",
-      "data",
-      "iframe"
-    ],
+    "tags": ["audit", "data", "iframe"],
     "summary": "Запущена вкладка Audit: манифест читает список, iframe открывает HTML из data/audits/…",
     "link": "/dashboard/audit"
   },
@@ -49,11 +51,7 @@
     "date": "2025-09-10",
     "title": "Сайт: идёт улучшение и оптимизация, готовится глобальное обновление",
     "kind": "update",
-    "tags": [
-      "webcore",
-      "optimization",
-      "ui"
-    ],
+    "tags": ["webcore", "optimization", "ui"],
     "summary": "Фикс путей и base-URL, подключение фавиконки, улучшение загрузки статических HTML; готовим крупное обновление UI и контента.",
     "link": "/dashboard/news"
   },
@@ -62,10 +60,7 @@
     "date": "2025-09-06",
     "title": "WEB CORE: старт работ",
     "kind": "update",
-    "tags": [
-      "webcore",
-      "release"
-    ],
+    "tags": ["webcore", "release"],
     "summary": "Инициализация архитектуры, терминальная загрузка, строгий логин.",
     "link": "/dashboard/news"
   },
@@ -74,10 +69,7 @@
     "date": "2025-09-06",
     "title": "Roadmap: добавлен iframe-рендер",
     "kind": "update",
-    "tags": [
-      "roadmap",
-      "ui"
-    ],
+    "tags": ["roadmap", "ui"],
     "summary": "Страница Roadmap теперь рендерит HTML из data/roadmap/index.html",
     "link": "/dashboard/roadmap"
   }

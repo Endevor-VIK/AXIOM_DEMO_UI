@@ -1,7 +1,12 @@
 [
-    {
-      "title": "Комплексный аудит SYSTEM V2",
-      "date": "2025-09-06",
-      "file": "audits/2025-09-06__audit-demo.html"
-    }
-  ]
+  {
+    "title": "Комплексный аудит SYSTEM V2",
+    "date": "2025-09-06",
+    "file": "audits/2025-09-06__audit-demo.html"
+  },
+  {
+    "title": "Аудит AXIOM_DEMO_UI (05.09–02.10.2025)",
+    "date": "2025-10-10",
+    "file": "audits/17.13.AUDIT_AXIOM_DEMO_UI.10.10.25.html"
+  }
+]
