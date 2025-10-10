@@ -7,7 +7,7 @@
     "tags": ["audit", "report", "webcore", "ui", "red-protocol", "gold-hybrid"],
     "summary": "Опубликован полный HTML-аудит репозитория за период 05.09–02.10.2025: фазы, ключевые коммиты, фиксы маршрутизации/типизации, Content Hub v2, News feed, гибридный Red Protocol × Gold дизайн.",
     "link": "/dashboard/audit",
-    "file": "audits/17.13.AUDIT_AXIOM_DEMO_UI.10.10.25.html",
+    "file": "/data/audits/17.13.AUDIT_AXIOM_DEMO_UI.10.10.25.html",
     "type": "release"
   },
   {
