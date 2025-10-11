@@ -759,7 +759,23 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
-#### CHG-2025-10-01-006 — **PLAN** ContentHub UI redesign (OPEN)
+#### CHG-2025-10-11-001 - **FEAT** PreviewPane controls rollout (IN_PROGRESS)
+**Related:** §12.5-P0
+**Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-11 20:18 CET)
+**Changes (plan):**
+- audit current PreviewPane/PreviewBar scaffolding and map required props from §12.5
+- implement PreviewBar interactions (modes, zoom, reload/external) wired to PreviewPane
+- wire sandbox iframe flow with scoped srcdoc, auto-resize via postMessage, reload handling
+- prepare follow-up tests/docs updates if needed for zoom/mode toggles
+**Changes (actual):**
+- filtered sandbox postMessage handler to ignore unrelated sources and sanitized iframe title for a11y
+- normalized content hooks helpers (`attachReveal`/`attachTilt`) for non-browser contexts; restored unit specs
+**AC Check:**
+- [ ] Preview toggles work without regressions and console stays clean
+- [ ] Sandbox mode uses proper iframe config with live resize/reload
+**Result:** IN_PROGRESS
+
+#### CHG-2025-10-01-006 - **PLAN** ContentHub UI redesign (OPEN)
 **Related:** §12.7-P1
 **Artifacts:** TBD
 **Changes (plan):**

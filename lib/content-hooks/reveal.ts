@@ -6,15 +6,26 @@ const DEFAULT_THRESHOLD = 0.25
 
 type IntersectionObserverLike = typeof IntersectionObserver
 
-function getMatchMedia(): ((query: string) => MediaQueryList) | null {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-    return null
-  }
-  return (query: string) => window.matchMedia(query)
+function getGlobalScope(): typeof globalThis | undefined {
+  if (typeof window !== 'undefined') return window
+  if (typeof globalThis !== 'undefined') return globalThis
+  return undefined
 }
 
-function hasIntersectionObserver(): boolean {
-  return typeof window !== 'undefined' && 'IntersectionObserver' in window
+function getMatchMedia(): ((query: string) => MediaQueryList) | null {
+  const scope = getGlobalScope()
+  if (!scope || typeof scope.matchMedia !== 'function') {
+    return null
+  }
+  return (query: string) => scope.matchMedia(query)
+}
+
+function resolveObserverFactory(
+  options: RevealOptions,
+): IntersectionObserverLike | null | undefined {
+  if (options.observerFactory) return options.observerFactory
+  const scope = getGlobalScope()
+  return scope?.IntersectionObserver ?? null
 }
 
 function parseNumber(value: string | undefined, fallback: number): number {
@@ -66,16 +77,15 @@ export function attachReveal(root: ParentNode, options: RevealOptions = {}): Cle
 
   const reducedMotion = shouldRespectReducedMotion()
 
-  if (reducedMotion || !hasIntersectionObserver()) {
+  const Observer = resolveObserverFactory(options)
+
+  if (reducedMotion || !Observer) {
     elements.forEach((element) => {
       const { className } = getElementConfig(element)
       element.classList.add(className)
     })
     return () => {}
   }
-
-  const Observer: IntersectionObserverLike =
-    options.observerFactory ?? window.IntersectionObserver
 
   const observers = new Map<HTMLElement, IntersectionObserver>()
 
@@ -94,7 +104,6 @@ export function attachReveal(root: ParentNode, options: RevealOptions = {}): Cle
           if (once) {
             const stored = observers.get(target)
             stored?.unobserve(target)
-            observers.delete(target)
           }
         } else if (!once) {
           target.classList.remove(className)

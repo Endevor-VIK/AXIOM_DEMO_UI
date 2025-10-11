@@ -424,6 +424,7 @@ export default function PreviewPane({
     if (mode !== 'sandbox') return
 
     const handler = (event: MessageEvent) => {
+      if (event.source !== iframeRef.current?.contentWindow) return
       const data = event?.data
       if (!data || typeof data !== 'object') return
       const type = (data as { type?: string }).type
@@ -592,6 +593,11 @@ export default function PreviewPane({
                     className='ax-preview__iframe'
                     sandbox='allow-scripts allow-same-origin'
                     srcDoc={sandboxDoc ?? ''}
+                    title={
+                      item.title
+                        ? `Preview of ${safeText(item.title)}`
+                        : `Preview ${safeText(item.id)}`
+                    }
                     style={sandboxHeight ? { height: sandboxHeight } : undefined}
                     onLoad={handleIframeLoad}
                   />

@@ -6,7 +6,8 @@ import React, {
 } from 'react'
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom'
 
-import CategoryStats, { type CategoryItem } from '@/components/content/CategoryStats' // оставляем (используется для подсчёта)
+import ContentCategoryTiles from '@/components/ContentCategoryTiles'
+оставляем (используется для подсчёта)
 import ContentFilters from '@/components/ContentFilters'
 import { getCategoryStats, type ContentCategoryKey } from '@/lib/contentStats'
 import {
@@ -206,12 +207,14 @@ const ContentLayout: React.FC = () => {
 
   const activeTab = useMemo(() => parseActiveCategory(location.pathname), [location.pathname])
 
-  const categoryStats: CategoryItem[] = useMemo(() => {
+  const categoryTiles = useMemo(() => {
     return getCategoryStats(categoryCounts).map((item) => ({
-      ...item,
-      active: item.key === activeTab,
+      key: item.key,
+      title: item.title,
+      count: item.count,
+      to: item.href,
     }))
-  }, [activeTab, categoryCounts])
+  }, [categoryCounts])
 
   const availableTags = useMemo(() => {
     if (!aggregate) return []

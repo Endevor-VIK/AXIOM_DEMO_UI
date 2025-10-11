@@ -17,11 +17,18 @@ interface TiltConfig {
   perspective: number
 }
 
+function getGlobalScope(): typeof globalThis | undefined {
+  if (typeof window !== 'undefined') return window
+  if (typeof globalThis !== 'undefined') return globalThis
+  return undefined
+}
+
 function getMatchMedia(): ((query: string) => MediaQueryList) | null {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+  const scope = getGlobalScope()
+  if (!scope || typeof scope.matchMedia !== 'function') {
     return null
   }
-  return (query: string) => window.matchMedia(query)
+  return (query: string) => scope.matchMedia(query)
 }
 
 function shouldSkipViaMedia(options: TiltOptions): boolean {
@@ -72,19 +79,23 @@ export function attachTilt(root: ParentNode, options: TiltOptions = {}): Cleanup
     return () => {}
   }
 
+  const scope = getGlobalScope()
   const request =
     options.requestFrame ??
-    (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function'
-      ? window.requestAnimationFrame.bind(window)
+    (scope && typeof scope.requestAnimationFrame === 'function'
+      ? scope.requestAnimationFrame.bind(scope)
       : (cb: FrameRequestCallback) => {
-          cb(performance.now())
+          const now = typeof performance !== 'undefined' && typeof performance.now === 'function'
+            ? performance.now()
+            : Date.now()
+          cb(now)
           return 0
         })
 
   const cancel =
     options.cancelFrame ??
-    (typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function'
-      ? window.cancelAnimationFrame.bind(window)
+    (scope && typeof scope.cancelAnimationFrame === 'function'
+      ? scope.cancelAnimationFrame.bind(scope)
       : () => {})
 
   const cleanups: CleanupFn[] = []
