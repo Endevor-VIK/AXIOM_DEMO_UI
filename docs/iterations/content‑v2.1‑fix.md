@@ -534,10 +534,10 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - **AC:** эффекты cover/blocks активируются без встраиваемых `<script>`.
 
 ### 12.5 PreviewPane/PreviewBar и режимы рендера (см. §4.4)
-- [ ] **P0** Новый `PreviewPane` с пропсами: `item`, `dataBase`, `allowedModes`, `initialZoom`.
-- [ ] **P0** `PreviewBar` (zoom 100/125/150, переключатель `plain/hybrid/sandbox`, кнопка Reload/External).
-- [ ] **P0** Поддержка `sandbox` (`iframe sandbox="allow-scripts allow-same-origin"`, авто-resize через `postMessage`).
-- [ ] **P1** Error-states (файл не найден, невалидный HTML/MD).
+- [x] **P0** Новый `PreviewPane` с пропсами: `item`, `dataBase`, `allowedModes`, `initialZoom`. ✅ (2025-10-11, by Codex, CHG-2025-10-11-001)
+- [x] **P0** `PreviewBar` (zoom 100/125/150, переключатель `plain/hybrid/sandbox`, кнопка Reload/External). ✅ (2025-10-11, by Codex, CHG-2025-10-11-001)
+- [x] **P0** Поддержка `sandbox` (`iframe sandbox="allow-scripts allow-same-origin"`, авто-resize через `postMessage`). ✅ (2025-10-11, by Codex, CHG-2025-10-11-001)
+- [x] **P1** Error-states (файл не найден, невалидный HTML/MD). ✅ (2025-10-11, by Codex, CHG-2025-10-11-001)
 - **AC:** режимы переключаются без перезагрузки страницы; зум не ломает лэйаут.
 
 ### 12.6 Inline-expand и полноэкранный ридер (см. §4.5)
@@ -759,9 +759,9 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
-#### CHG-2025-10-11-001 - **FEAT** PreviewPane controls rollout (IN_PROGRESS)
+#### CHG-2025-10-11-001 - **FEAT** PreviewPane controls rollout (DONE)
 **Related:** §12.5-P0
-**Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-11 21:39 CET)
+**Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-11 22:16 CET)
 **Changes (plan):**
 - audit current PreviewPane/PreviewBar scaffolding and map required props from §12.5
 - implement PreviewBar interactions (modes, zoom, reload/external) wired to PreviewPane
@@ -772,10 +772,11 @@ refs:
 - normalized content hooks helpers (`attachReveal`/`attachTilt`) for non-browser contexts; restored unit specs
 - added PreviewPane `Expand` control wired to reader route and disabled PreviewBar actions while content is loading/error
 - improved reveal observer cleanup to avoid dangling listeners when elements unmount
+- exercised preview mode/zoom toggles and sandbox reload to confirm console stays clean with DEV seed data
 **AC Check:**
-- [ ] Preview toggles work without regressions and console stays clean
-- [ ] Sandbox mode uses proper iframe config with live resize/reload
-**Result:** IN_PROGRESS
+- [x] Preview toggles work without regressions and console stays clean
+- [x] Sandbox mode uses proper iframe config with live resize/reload
+**Result:** DONE
 
 #### CHG-2025-10-01-006 - **PLAN** ContentHub UI redesign (OPEN)
 **Related:** §12.7-P1
