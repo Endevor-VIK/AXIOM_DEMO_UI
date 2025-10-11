@@ -1,18 +1,34 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import DOMPurify from 'dompurify'
 import type { Config as DOMPurifyConfig } from 'dompurify'
 import { marked } from 'marked'
 
 import { vfs, type ContentItem, type ContentRenderMode } from '@/lib/vfs'
-import { prefixStyles, normalizeScopeId } from '@/lib/hybrid/prefixStyles'
+import { normalizeScopeId, prefixStyles } from '@/lib/hybrid/prefixStyles'
 import { deriveAssetsBase, resolveAssets } from '@/lib/hybrid/resolveAssets'
 
+import PreviewBar, { PREVIEW_ZOOM_LEVELS, type PreviewZoom } from './preview/PreviewBar'
 import { classNames, formatDate, safeText } from './utils'
+
+const MARKDOWN_SANITIZE_OPTIONS: DOMPurifyConfig = {
+  ADD_TAGS: ['style', 'svg', 'path', 'defs', 'linearGradient', 'radialGradient'],
+  ADD_ATTR: ['class', 'style', 'role', 'aria-label', 'id', 'fill', 'stroke', 'viewBox'],
+  ALLOW_UNKNOWN_PROTOCOLS: true,
+}
+
+const SANDBOX_MESSAGE_NAMESPACE = 'axiom-preview:'
 
 type PreviewPaneProps = {
   item: ContentItem | null
   dataBase: string
+  allowedModes?: ReadonlyArray<ContentRenderMode>
+  initialZoom?: number
   onOpenExternal?: (href: string) => void
+}
+
+type ExtractedStyles = {
+  css: string
+  markup: string
 }
 
 function ensureContentPath(file: string): string {
@@ -32,38 +48,61 @@ function isText(format: string): boolean {
   return format === 'txt'
 }
 
-const MARKDOWN_SANITIZE_OPTIONS: DOMPurifyConfig = {
-  ADD_TAGS: ['style', 'svg', 'path', 'defs', 'linearGradient', 'radialGradient'],
-  ADD_ATTR: ['class', 'style', 'role', 'aria-label', 'id', 'fill', 'stroke', 'viewBox'],
-  ALLOW_UNKNOWN_PROTOCOLS: true,
+function isPreviewMode(value: unknown): value is ContentRenderMode {
+  return value === 'plain' || value === 'hybrid' || value === 'sandbox'
 }
 
-const STYLE_BLOCK_PATTERN = /<style[^>]*>([\s\S]*?)<\/style>/gi
+function dedupeModes(source: ReadonlyArray<ContentRenderMode>): ContentRenderMode[] {
+  const uniq = new Set<ContentRenderMode>()
+  source.forEach((mode) => {
+    if (isPreviewMode(mode)) {
+      uniq.add(mode)
+    }
+  })
+  return Array.from(uniq)
+}
 
-type ExtractedStyles = {
-  css: string
-  markup: string
+function deriveFormatModes(format: string): ContentRenderMode[] {
+  if (isMarkdown(format)) return ['plain', 'hybrid', 'sandbox']
+  if (isText(format)) return ['plain']
+  if (isHtml(format)) return ['plain', 'sandbox']
+  return ['plain']
+}
+
+function selectInitialMode(
+  allowed: ContentRenderMode[],
+  preferred?: ContentRenderMode | null,
+): ContentRenderMode {
+  if (preferred && allowed.includes(preferred)) {
+    return preferred
+  }
+  return allowed[0] ?? 'plain'
+}
+
+function normalizeZoom(value?: number): PreviewZoom {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    const nearest = PREVIEW_ZOOM_LEVELS.reduce((best, candidate) =>
+      Math.abs(candidate - value) < Math.abs(best - value) ? candidate : best,
+    )
+    return nearest
+  }
+  return PREVIEW_ZOOM_LEVELS[0]
 }
 
 function extractStyleBlocks(html: string): ExtractedStyles {
-  if (!html) {
-    return { css: '', markup: '' }
-  }
-
+  if (!html) return { css: '', markup: '' }
   if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
     const parser = new DOMParser()
     const doc = parser.parseFromString(html, 'text/html')
     const cssParts: string[] = []
     doc.querySelectorAll('style').forEach((node) => {
-      if (node.textContent) {
-        cssParts.push(node.textContent)
-      }
+      if (node.textContent) cssParts.push(node.textContent)
       node.remove()
     })
     return { css: cssParts.join('\n'), markup: doc.body.innerHTML }
   }
-
   const cssParts: string[] = []
+  const STYLE_BLOCK_PATTERN = /<style[^>]*>([\s\S]*?)<\/style>/gi
   const markup = html.replace(STYLE_BLOCK_PATTERN, (_, block: string) => {
     cssParts.push(block)
     return ''
@@ -71,155 +110,401 @@ function extractStyleBlocks(html: string): ExtractedStyles {
   return { css: cssParts.join('\n'), markup }
 }
 
-const KNOWN_RENDER_MODES: readonly ContentRenderMode[] = ['plain', 'hybrid', 'sandbox'] as const
-
-function coerceRenderMode(value: unknown): ContentRenderMode {
-  if (typeof value === 'string') {
-    for (const mode of KNOWN_RENDER_MODES) {
-      if (mode === value) {
-        return mode
-      }
-    }
-  }
-  return 'plain'
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
+function escapeAttribute(value: string): string {
+  return escapeHtml(value).replace(/`/g, '&#96;')
+}
 
+function buildSandboxDocument(content: string, baseHref: string): string {
+  const escapedBase = escapeAttribute(baseHref)
+  return [
+    '<!DOCTYPE html>',
+    '<html lang="en">',
+    '<head>',
+    '<meta charset="utf-8" />',
+    `<base href="${escapedBase}" />`,
+    '<meta name="viewport" content="width=device-width, initial-scale=1" />',
+    '<style>',
+    '  :root { color-scheme: light dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }',
+    '  body { margin: 0; padding: 16px; background: transparent; color: inherit; line-height: 1.6; }',
+    '  img, video, iframe { max-width: 100%; height: auto; }',
+    '</style>',
+    '<script>',
+    '(function(){',
+    '  const NS = "' + SANDBOX_MESSAGE_NAMESPACE + '";',
+    '  const SEND = () => {',
+    '    try {',
+    '      const doc = document;',
+    '      const height = Math.max(',
+    '        doc.body ? doc.body.scrollHeight : 0,',
+    '        doc.documentElement ? doc.documentElement.scrollHeight : 0,',
+    '        doc.body ? doc.body.offsetHeight : 0,',
+    '        doc.documentElement ? doc.documentElement.offsetHeight : 0,',
+    '        doc.body ? doc.body.clientHeight : 0,',
+    '        doc.documentElement ? doc.documentElement.clientHeight : 0',
+    '      );',
+    '      parent.postMessage({ type: NS + "resize", height }, "*");',
+    '    } catch (error) { /* noop */ }',
+    '  };',
+    '  window.addEventListener("load", SEND);',
+    '  if (window.ResizeObserver) {',
+    '    const observer = new ResizeObserver(() => requestAnimationFrame(SEND));',
+    '    observer.observe(document.body);',
+    '  } else {',
+    '    let lastHeight = 0;',
+    '    setInterval(() => {',
+    '      const now = document.body ? document.body.scrollHeight : 0;',
+    '      if (now !== lastHeight) { lastHeight = now; SEND(); }',
+    '    }, 500);',
+    '  }',
+    '  window.addEventListener("message", function(event){',
+    '    const data = event && event.data;',
+    '    if (data && typeof data === "object" && data.type === NS + "ping") {',
+    '      SEND();',
+    '    }',
+    '  });',
+    '})();',
+    '</script>',
+    '</head>',
+    `<body>${content}</body>`,
+    '</html>',
+  ].join('')
+}
 
-export default function PreviewPane({ item, dataBase, onOpenExternal }: PreviewPaneProps) {
+function computeSandboxBaseHref(dataBase: string, filePath?: string | null): string {
+  const base = dataBase.endsWith('/') ? dataBase : `${dataBase}/`
+  if (!filePath) return base
+  const normalized = ensureContentPath(filePath)
+  const directory = normalized.replace(/[^/]*$/, '')
+  return `${base}${directory}`
+}
+
+export default function PreviewPane({
+  item,
+  dataBase,
+  allowedModes: allowedModesProp,
+  initialZoom,
+  onOpenExternal,
+}: PreviewPaneProps) {
   const [textContent, setTextContent] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [renderError, setRenderError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [textLoading, setTextLoading] = useState(false)
+  const [textError, setTextError] = useState<string | null>(null)
+
+  const [htmlContent, setHtmlContent] = useState<string | null>(null)
+  const [htmlLoading, setHtmlLoading] = useState(false)
+  const [htmlError, setHtmlError] = useState<string | null>(null)
+
   const [renderedHtml, setRenderedHtml] = useState('')
+  const [renderError, setRenderError] = useState<string | null>(null)
+
+  const [sandboxDoc, setSandboxDoc] = useState<string | null>(null)
+  const [sandboxHeight, setSandboxHeight] = useState<number | null>(null)
+  const [sandboxKey, setSandboxKey] = useState(0)
+  const [sandboxReloading, setSandboxReloading] = useState(false)
 
   const format = (item?.format ?? '').toLowerCase()
   const filePath = item ? ensureContentPath(item.file) : null
   const externalHref = item && filePath ? dataBase + filePath : null
-  const baseRenderMode = coerceRenderMode(item?.renderMode)
-  const mode = baseRenderMode
+  const assetsBase = item ? deriveAssetsBase(item) : undefined
 
+  const allowedModes = useMemo(() => {
+    const formatModes = dedupeModes(deriveFormatModes(format))
+    const candidate = allowedModesProp ? dedupeModes(allowedModesProp) : formatModes
+    const filtered = candidate.filter((mode) => formatModes.includes(mode))
+    return filtered.length ? filtered : formatModes.length ? formatModes : ['plain']
+  }, [allowedModesProp, format])
+
+  const initialMode = useMemo(
+    () => selectInitialMode(allowedModes, item?.renderMode ?? null),
+    [allowedModes, item?.renderMode],
+  )
+
+  const [mode, setMode] = useState<ContentRenderMode>(initialMode)
+  useEffect(() => {
+    setMode(initialMode)
+    setSandboxDoc(null)
+    setSandboxHeight(null)
+  }, [initialMode, item?.id])
+
+  const [zoom, setZoom] = useState<PreviewZoom>(() => normalizeZoom(initialZoom))
+  useEffect(() => {
+    setZoom(normalizeZoom(initialZoom))
+  }, [initialZoom, item?.id])
+
+  const zoomStyle = useMemo(
+    () => ({ '--ax-preview-zoom': zoom / 100 } as React.CSSProperties),
+    [zoom],
+  )
+
+  const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
   useEffect(() => {
-    let active = true
-    setError(null)
-    setRenderError(null)
-    setRenderedHtml('')
-    setTextContent('')
-    setLoading(false)
+    if (!item || !filePath) {
+      setTextContent('')
+      setTextLoading(false)
+      setTextError(null)
+      return
+    }
 
-    if (!item || !filePath) return
-    if (!isMarkdown(format) && !isText(format)) return
+    const needsText =
+      isMarkdown(format) || isText(format) || (mode === 'sandbox' && format !== 'html')
 
-    setLoading(true)
+    if (!needsText) {
+      setTextContent('')
+      setTextLoading(false)
+      setTextError(null)
+      return
+    }
+
+    let cancelled = false
+    setTextLoading(true)
+    setTextError(null)
 
     vfs
       .text(filePath)
       .then((raw) => {
-        if (!active) return
+        if (cancelled) return
         setTextContent(raw)
       })
       .catch((err) => {
-        if (!active) return
-        setError(err instanceof Error ? err.message : String(err))
+        if (cancelled) return
+        const reason = err instanceof Error ? err.message : String(err)
+        setTextError(reason)
+        setTextContent('')
       })
       .finally(() => {
-        if (active) setLoading(false)
+        if (!cancelled) setTextLoading(false)
       })
-
-    return () => {
-      active = false
-    }
-  }, [item, filePath, format])
-
-  useEffect(() => {
-    let cancelled = false
-
-    setRenderError(null)
-
-    if (!item || !isMarkdown(format) || !textContent) {
-      setRenderedHtml('')
-      return () => {
-        cancelled = true
-      }
-    }
-
-    if (mode === 'sandbox') {
-      setRenderedHtml('')
-      return () => {
-        cancelled = true
-      }
-    }
-
-    const scopeId = normalizeScopeId(item.id)
-    const assetsBase = deriveAssetsBase(item)
-
-    const run = async () => {
-      try {
-        const parsed = marked.parse(textContent)
-        const html = typeof parsed === 'string' ? parsed : String(parsed)
-        const sanitized = typeof window === 'undefined' ? html : DOMPurify.sanitize(html, MARKDOWN_SANITIZE_OPTIONS)
-
-        if (mode === 'hybrid') {
-          const { css, markup } = extractStyleBlocks(sanitized)
-          const prefixedCss = css ? await prefixStyles(css, scopeId) : ''
-          const resolvedMarkup = resolveAssets(markup, assetsBase, dataBase)
-          const styleTag = prefixedCss ? `<style data-ax-scope="${scopeId}">${prefixedCss}</style>` : ''
-          const wrapped = `<div data-ax-scope="${scopeId}">${resolvedMarkup}</div>`
-          if (!cancelled) {
-            setRenderedHtml(styleTag + wrapped)
-          }
-          return
-        }
-
-        const resolved = resolveAssets(sanitized, assetsBase, dataBase)
-        if (!cancelled) {
-          setRenderedHtml(resolved)
-        }
-      } catch (err) {
-        if (!cancelled) {
-          const message = err instanceof Error ? err.message : String(err)
-          setRenderError(message)
-          setRenderedHtml('')
-        }
-      }
-    }
-
-    run()
 
     return () => {
       cancelled = true
     }
-  }, [dataBase, format, mode, textContent, item?.assetsBase, item?.file, item?.id])
+  }, [item?.id, filePath, format, mode])
 
-  const shouldUseIframe = Boolean(externalHref && (isHtml(format) || mode === 'sandbox'))
-  const shouldRenderMarkdown = isMarkdown(format) && mode !== 'sandbox'
-  const shouldRenderText = isText(format)
+  useEffect(() => {
+    if (!item || !filePath || format !== 'html' || mode !== 'sandbox') {
+      setHtmlContent(null)
+      setHtmlLoading(false)
+      setHtmlError(null)
+      return
+    }
 
-  const openExternalNode = externalHref
-    ? onOpenExternal
-      ? (
-          <button
-            type='button'
-            className='ax-btn ax-btn--primary'
-            onClick={() => onOpenExternal(externalHref)}
-          >
-            Open source
-          </button>
+    let cancelled = false
+    setHtmlLoading(true)
+    setHtmlError(null)
+
+    vfs
+      .text(filePath)
+      .then((raw) => {
+        if (cancelled) return
+        setHtmlContent(raw)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        const reason = err instanceof Error ? err.message : String(err)
+        setHtmlError(reason)
+        setHtmlContent(null)
+      })
+      .finally(() => {
+        if (!cancelled) setHtmlLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [item?.id, filePath, format, mode])
+
+  useEffect(() => {
+    setRenderError(null)
+    setRenderedHtml('')
+
+    if (!item) {
+      setSandboxDoc(null)
+      return
+    }
+
+    const scopeId = normalizeScopeId(item.id)
+    const assets = assetsBase ?? undefined
+    const baseHref = computeSandboxBaseHref(dataBase, item.file)
+
+    const process = async () => {
+      try {
+        if (mode === 'sandbox') {
+          let sandboxContent = ''
+
+          if (format === 'html') {
+            if (!htmlContent) {
+              setSandboxDoc(null)
+              return
+            }
+            sandboxContent = htmlContent
+          } else if (isMarkdown(format)) {
+            if (!textContent) {
+              setSandboxDoc(null)
+              return
+            }
+            const parsed = marked.parse(textContent)
+            const html = typeof parsed === 'string' ? parsed : String(parsed)
+            sandboxContent = html
+          } else if (isText(format)) {
+            sandboxContent = `<pre>${escapeHtml(textContent)}</pre>`
+          } else {
+            sandboxContent = `<pre>${escapeHtml(textContent)}</pre>`
+          }
+
+          const doc = buildSandboxDocument(sandboxContent, baseHref)
+          setSandboxDoc(doc)
+          setRenderedHtml('')
+          return
+        }
+
+        if (isMarkdown(format)) {
+          if (!textContent) {
+            setRenderedHtml('')
+            return
+          }
+          const parsed = marked.parse(textContent)
+          const rawHtml = typeof parsed === 'string' ? parsed : String(parsed)
+          const sanitized =
+            typeof window === 'undefined'
+              ? rawHtml
+              : DOMPurify.sanitize(rawHtml, MARKDOWN_SANITIZE_OPTIONS)
+
+          if (mode === 'hybrid') {
+            const { css, markup } = extractStyleBlocks(sanitized)
+            const prefixedCss = css ? await prefixStyles(css, scopeId) : ''
+            const resolvedMarkup = resolveAssets(markup, assets, dataBase)
+            const styleTag = prefixedCss
+              ? `<style data-ax-scope="${scopeId}">${prefixedCss}</style>`
+              : ''
+            setRenderedHtml(styleTag + `<div data-ax-scope="${scopeId}">${resolvedMarkup}</div>`)
+            return
+          }
+
+          const resolved = resolveAssets(sanitized, assets, dataBase)
+          setRenderedHtml(resolved)
+          return
+        }
+
+        setRenderedHtml('')
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : String(error)
+        setRenderError(reason)
+        setRenderedHtml('')
+        setSandboxDoc(null)
+      }
+    }
+
+    process()
+  }, [
+    assetsBase,
+    dataBase,
+    format,
+    htmlContent,
+    item,
+    mode,
+    textContent,
+  ])
+
+  useEffect(() => {
+    if (mode !== 'sandbox') return
+
+    const handler = (event: MessageEvent) => {
+      const data = event?.data
+      if (!data || typeof data !== 'object') return
+      const type = (data as { type?: string }).type
+      if (type === `${SANDBOX_MESSAGE_NAMESPACE}resize`) {
+        const height = Number((data as { height?: unknown }).height)
+        if (Number.isFinite(height)) {
+          const clamped = Math.max(120, Math.min(height, 4000))
+          setSandboxHeight(clamped)
+        }
+      }
+    }
+
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
+  }, [mode])
+
+  useEffect(() => {
+    if (mode !== 'sandbox') {
+      setSandboxHeight(null)
+      setSandboxReloading(false)
+      return
+    }
+  }, [mode])
+
+  const handleModeChange = useCallback(
+    (next: ContentRenderMode) => {
+      if (next === mode) return
+      setMode(next)
+      setRenderError(null)
+      if (next !== 'sandbox') {
+        setSandboxDoc(null)
+        setSandboxHeight(null)
+      } else {
+        setSandboxKey((key) => key + 1)
+        setSandboxReloading(true)
+      }
+    },
+    [mode],
+  )
+
+  const handleZoomChange = useCallback((value: PreviewZoom) => {
+    setZoom(value)
+  }, [])
+
+  const handleReload = useCallback(() => {
+    if (mode !== 'sandbox') return
+    setSandboxReloading(true)
+    setSandboxHeight(null)
+    setSandboxKey((key) => key + 1)
+  }, [mode])
+
+  const handleIframeLoad = useCallback(() => {
+    if (mode === 'sandbox') {
+      setSandboxReloading(false)
+      try {
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: `${SANDBOX_MESSAGE_NAMESPACE}ping` },
+          '*',
         )
-      : (
-          <a className='ax-btn ax-btn--primary' href={externalHref} target='_blank' rel='noopener noreferrer'>
-            Open source
-          </a>
-        )
-    : null
+      } catch {
+        /* ignore cross-origin access */
+      }
+    }
+  }, [mode])
+
+  const errorMessage = textError ?? htmlError
+  const isLoading = textLoading || htmlLoading
+
+  const allowedForBar = allowedModes.length ? allowedModes : ['plain']
+  const leadingControls = item?.file ? (
+    <span className='ax-chip'>{safeText(item.file)}</span>
+  ) : null
+
+  const shouldUseIframe = mode === 'sandbox' || isHtml(format)
+  const showSandboxFrame = mode === 'sandbox' && sandboxDoc
+  const showMarkdownHtml = !shouldUseIframe && renderedHtml
+  const showText = !shouldUseIframe && isText(format) && textContent
 
   if (!item) {
     return (
       <article className={classNames('ax-preview', 'is-empty')} aria-live='polite'>
         <div className='ax-preview__placeholder'>
           <div className='ax-skeleton ax-skeleton--text' style={{ width: '70%', height: 22 }} />
-          <div className='ax-skeleton ax-skeleton--text' style={{ width: '40%', height: 16, marginTop: 8 }} />
+          <div
+            className='ax-skeleton ax-skeleton--text'
+            style={{ width: '40%', height: 16, marginTop: 8 }}
+          />
           <div className='ax-skeleton ax-skeleton--block' style={{ height: 120, marginTop: 20 }} />
         </div>
         <p className='ax-muted'>Select a content item to preview its details.</p>
@@ -253,43 +538,72 @@ export default function PreviewPane({ item, dataBase, onOpenExternal }: PreviewP
         </div>
       ) : null}
 
+      <PreviewBar
+        mode={mode}
+        allowedModes={allowedForBar}
+        onModeChange={handleModeChange}
+        zoom={zoom}
+        onZoomChange={handleZoomChange}
+        onReload={mode === 'sandbox' ? handleReload : undefined}
+        reloading={mode === 'sandbox' ? sandboxReloading : false}
+        externalHref={externalHref}
+        onOpenExternal={onOpenExternal}
+        disabled={isLoading}
+        leadingControls={leadingControls}
+      />
+
       <section className='ax-preview__body'>
-        {error ? <div className='ax-preview__error'>Preview unavailable: {safeText(error, '-')}</div> : null}
+        {errorMessage ? (
+          <div className='ax-preview__error'>Preview unavailable: {safeText(errorMessage, '-')}</div>
+        ) : null}
         {renderError ? (
           <div className='ax-preview__error'>Render error: {safeText(renderError, '-')}</div>
         ) : null}
 
-        {loading ? (
-          <div className='ax-skeleton ax-skeleton--block' style={{ height: 180 }} />
+        {isLoading || (mode === 'sandbox' && !showSandboxFrame) ? (
+          <div className='ax-skeleton ax-skeleton--block' style={{ height: 220 }} />
         ) : null}
 
-        {!loading && !error && !renderError ? (
-          <>
+        {!isLoading && !errorMessage && !renderError ? (
+          <div className='ax-preview__frame' data-zoom={zoom} style={zoomStyle}>
             {shouldUseIframe ? (
-              <iframe
-                className='ax-preview__iframe'
-                src={externalHref!}
-                title={`content:${item.id}`}
-                loading='lazy'
-              />
-            ) : null}
-
-            {shouldRenderMarkdown ? (
+              mode === 'sandbox' ? (
+                showSandboxFrame ? (
+                  <iframe
+                    key={`sandbox-${item.id}-${sandboxKey}`}
+                    ref={iframeRef}
+                    className='ax-preview__iframe'
+                    sandbox='allow-scripts allow-same-origin'
+                    srcDoc={sandboxDoc ?? ''}
+                    style={sandboxHeight ? { height: sandboxHeight } : undefined}
+                    onLoad={handleIframeLoad}
+                  />
+                ) : null
+              ) : (
+                externalHref && (
+                  <iframe
+                    key={`external-${item.id}`}
+                    ref={iframeRef}
+                    className='ax-preview__iframe'
+                    src={externalHref}
+                    title={`content:${item.id}`}
+                    loading='lazy'
+                    onLoad={handleIframeLoad}
+                  />
+                )
+              )
+            ) : showMarkdownHtml ? (
               <div className='ax-preview__rich' dangerouslySetInnerHTML={{ __html: renderedHtml }} />
-            ) : null}
-
-            {shouldRenderText ? <pre className='ax-preview__text'>{textContent}</pre> : null}
-
-            {!shouldUseIframe && !shouldRenderMarkdown && !shouldRenderText && externalHref ? (
+            ) : showText ? (
+              <>
+                <pre className='ax-preview__text'>{textContent}</pre>
+              </>
+            ) : (
               <p className='ax-preview__notice'>Preview not available for this format.</p>
-            ) : null}
-          </>
+            )}
+          </div>
         ) : null}
       </section>
-      {openExternalNode ? <footer className='ax-preview__actions'>{openExternalNode}</footer> : null}
     </article>
   )
 }
-
-
-

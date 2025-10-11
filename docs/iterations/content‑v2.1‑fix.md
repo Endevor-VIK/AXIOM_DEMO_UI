@@ -759,19 +759,19 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
-#### CHG-2025-10-01-002 — [PLAN] PreviewBar mode toggles (OPEN)
+#### CHG-2025-10-01-002 — [FEAT] PreviewBar mode toggles (DONE)
 **Related:** §12.5-P0
-**Artifacts:** TBD
-**Changes (plan):**
-- Согласовать обновлённый API `PreviewPane`/`PreviewBar` (allowedModes, zoom, sandbox).
-- Реализовать `PreviewBar` с переключением `plain/hybrid/sandbox` и контролами зума.
-- Подключить управление режимом и zoom в `PreviewPane`, добавить обработку reload.
+**Artifacts:** components/PreviewPane.tsx; components/preview/PreviewBar.tsx; styles/app.css
+**Changes:**
+- Обновлён `PreviewPane`: добавлены пропсы `allowedModes`/`initialZoom`, управление zoom/mode, sandbox через `srcdoc` с auto-resize и reload.
+- Добавлен `PreviewBar` с переключением `plain/hybrid/sandbox`, контролами зума, кнопкой reload и поддержкой внешних ссылок.
+- Обновлены стили превью для активных состояний кнопок/чипов и новых контролов масштабирования.
 **AC Check:**
-- [ ] Параметры `allowedModes` и `initialZoom` работают в PreviewPane.
-- [ ] PreviewBar переключает режимы и зум без перезагрузки.
-- [ ] Режим `sandbox` поддерживает reload и auto-resize.
-- [ ] Ошибки/empty-состояния покрыты интерфейсом.
-**Result:** OPEN
+- [x] Параметры `allowedModes` и `initialZoom` работают в PreviewPane.
+- [x] PreviewBar переключает режимы и зум без перезагрузки.
+- [x] Режим `sandbox` поддерживает reload и auto-resize.
+- [x] Ошибки/empty-состояния покрыты интерфейсом.
+**Result:** DONE
 
 #### CHG-2025-10-01-001 — \[FEAT] Hybrid preview asset scoping (DONE)
 **Related:** §12.3-P0
