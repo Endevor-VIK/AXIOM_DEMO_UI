@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ContentList from '@/components/ContentList'
-import Modal from '@/components/Modal'
-import PreviewPane from '@/components/PreviewPane'
+import ContentCardExpanded from '@/components/ContentCardExpanded'
 import type { ContentCategory, ContentItem, ContentStatus } from '@/lib/vfs'
 
 import { useContentHub } from './context'
@@ -96,11 +95,8 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   }, [aggregate, category, filters])
 
   const ordered = useMemo(() => orderByPins(items, pinned), [items, pinned])
-  const orderedLength = ordered.length
-
   const itemParam = searchParams.get('item') ?? ''
   const isDesktop = useMediaQuery('(min-width: 1024px)')
-  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     if (!ordered.length) {
@@ -120,18 +116,6 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     setSearchParams(next, { replace: true })
   }, [ordered, itemParam, searchParams, setSearchParams])
 
-  useEffect(() => {
-    if (!orderedLength && modalOpen) {
-      setModalOpen(false)
-    }
-  }, [orderedLength, modalOpen])
-
-  useEffect(() => {
-    if (isDesktop && modalOpen) {
-      setModalOpen(false)
-    }
-  }, [isDesktop, modalOpen])
-
   const selectedItem = useMemo(() => {
     if (!ordered.length) return null
     if (itemParam) {
@@ -140,12 +124,6 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     }
     return ordered[0] ?? null
   }, [ordered, itemParam])
-
-  useEffect(() => {
-    if (!selectedItem && modalOpen) {
-      setModalOpen(false)
-    }
-  }, [selectedItem, modalOpen])
 
   const handleSelect = useCallback(
     (item: ContentItem) => {
@@ -161,17 +139,10 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
         navigate(target, {
           state: { from: `${location.pathname}${suffix}` },
         })
-        setModalOpen(false)
-      } else {
-        setModalOpen(true)
       }
     },
     [isDesktop, searchParams, setSearchParams, navigate, location.pathname]
   )
-
-  const handleModalChange = useCallback((open: boolean) => {
-    setModalOpen(open)
-  }, [])
 
   const handleExpand = useCallback(
     (item: ContentItem) => {
@@ -187,17 +158,19 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     [location.pathname, navigate, searchParams],
   )
 
+  const renderExpanded = useCallback(
+    (item: ContentItem) => (
+      <ContentCardExpanded item={item} dataBase={dataBase} onExpand={handleExpand} />
+    ),
+    [dataBase, handleExpand],
+  )
+
   if (loading) {
     return (
-      <div className='ax-content-split'>
+      <div className='ax-content-split ax-content-split--single'>
         <div className='ax-content-column list'>
           <ContentList items={[]} selectedId={null} onSelect={noop} />
         </div>
-        {isDesktop ? (
-          <aside className='ax-content-preview'>
-            <PreviewPane item={null} dataBase={dataBase} />
-          </aside>
-        ) : null}
       </div>
     )
   }
@@ -211,22 +184,15 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   }
 
   return (
-    <div className='ax-content-split'>
+    <div className='ax-content-split ax-content-split--single'>
       <div className='ax-content-column list'>
-        <ContentList items={ordered} selectedId={selectedItem?.id ?? null} onSelect={handleSelect} />
+        <ContentList
+          items={ordered}
+          selectedId={selectedItem?.id ?? null}
+          onSelect={handleSelect}
+          renderExpanded={isDesktop ? renderExpanded : undefined}
+        />
       </div>
-
-      {isDesktop ? (
-        <aside className='ax-content-preview'>
-          <PreviewPane item={selectedItem} dataBase={dataBase} onExpand={handleExpand} />
-        </aside>
-      ) : null}
-
-      {!isDesktop ? (
-        <Modal open={modalOpen} onOpenChange={handleModalChange} title={selectedItem ? selectedItem.title : 'Preview'}>
-          <PreviewPane item={selectedItem} dataBase={dataBase} onExpand={handleExpand} />
-        </Modal>
-      ) : null}
     </div>
   )
 }

@@ -8,11 +8,12 @@ export interface ContentListProps {
   items: ContentItem[]
   selectedId?: string | null
   onSelect: (item: ContentItem) => void
+  renderExpanded?: (item: ContentItem) => React.ReactNode
 }
 
 const PLACEHOLDER_ITEMS = 3
 
-export default function ContentList({ items, selectedId, onSelect }: ContentListProps) {
+export default function ContentList({ items, selectedId, onSelect, renderExpanded }: ContentListProps) {
   const hasItems = items.length > 0
 
   return (
@@ -45,6 +46,7 @@ export default function ContentList({ items, selectedId, onSelect }: ContentList
                   </div>
                   <p className='ax-content-card__summary'>{safeText(item.summary)}</p>
                 </button>
+                {isSelected && renderExpanded ? renderExpanded(item) : null}
               </article>
             )
           })
