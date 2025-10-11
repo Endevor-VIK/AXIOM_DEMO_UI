@@ -322,6 +322,9 @@
 .ax-preview__zoom .ax-chip:not(.is-active){
   opacity: .78;
 }
+.ax-preview__content{
+  display: contents;
+}
 .ax-preview__frame{
   height: 72vh; overflow:auto; border-radius: var(--r-xl);
   border: 1px solid rgba(255,32,52,.16);

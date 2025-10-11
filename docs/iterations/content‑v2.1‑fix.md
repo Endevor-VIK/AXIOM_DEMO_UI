@@ -528,9 +528,9 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - **AC:** стили гибридов не протекают наружу; все изображения/ссылки работают.
 
 ### 12.4 Хуки поведения (замена `<script>`, см. §4.2 hybrid)
-- [ ] **P0** `useReveal` (IntersectionObserver: добавление/снятие класса `is-in`).
-- [ ] **P0** `useTilt` (pointer-наклон с reset на `pointerleave`).
-- [ ] **P1** Инициализация хуков по `data-*` атрибутам в HTML гибрида.
+- [x] **P0** `useReveal` (IntersectionObserver: добавление/снятие класса `is-in`). ✅ (2025-10-01, by Codex, CHG-2025-10-01-004)
+- [x] **P0** `useTilt` (pointer-наклон с reset на `pointerleave`). ✅ (2025-10-01, by Codex, CHG-2025-10-01-004)
+- [x] **P1** Инициализация хуков по `data-*` атрибутам в HTML гибрида. ✅ (2025-10-01, by Codex, CHG-2025-10-01-004)
 - **AC:** эффекты cover/blocks активируются без встраиваемых `<script>`.
 
 ### 12.5 PreviewPane/PreviewBar и режимы рендера (см. §4.4)
@@ -759,6 +759,37 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-01-004 — [FEAT] Interaction hooks rollout (DONE)
+**Related:** §12.4-P0
+**Artifacts:** lib/content-hooks/*; components/PreviewPane.tsx; public/data/content/characters/03.01_VIKTOR.md; styles/app.css; tests/contentHooks.spec.ts
+**Changes:**
+- Реализованы `attachReveal` и `attachTilt`, авто-инициализация по `data-*`, unit-тесты сценариев.
+- Обновлён `PreviewPane`: подключение хуков для plain/hybrid, очистка inline-скриптов.
+- Обновлён контент `03.01_VIKTOR`: `data-reveal`/`data-tilt` вместо встроенного JS.
+- Обновлены стили тулбара/контента под новые состояния.
+**AC Check:**
+- [x] `useReveal` добавляет/снимает `is-in` через IntersectionObserver и уважает отключение анимаций.
+- [x] `useTilt` даёт интерактивный эффект с reset и fallback при reduced-motion.
+- [x] Инициализация происходит через `data-*` без inline-скриптов, ошибки не ломают верстку.
+- [x] Документация и чек-листы обновлены, деградация не влияет на plain/hybrid сценарии.
+**Result:** DONE
+
+#### CHG-2025-10-01-005 — [PLAN] Full reader route scaffolding (OPEN)
+**Related:** §12.6-P0
+**Artifacts:** TBD
+**Changes (plan):**
+- Проанализировать текущие маршруты ContentHub и требования к `/dashboard/content/read/:id`.
+- Спроектировать архитектуру: layout, загрузчики данных, взаимодействие с PreviewPane и сохранение фильтров.
+- Подготовить роут, навигацию и тестовое покрытие (desktop/mobile, возврат назад).
+- Обновить §4/§12, зафиксировать артефакты после завершения.
+**AC Check:**
+- [ ] Маршрут `/dashboard/content/read/:id` отображает PreviewPane в full-view без потери фильтров.
+- [ ] Навигация обратно сохраняет состояние выбора/фильтров.
+- [ ] Поддержаны desktop/mobile сценарии (mobile сразу открывает full reader).
+- [ ] AC из §12.6 задокументированы и покрыты smoke-тестом.
+**Result:** OPEN
+
+
 #### CHG-2025-10-01-002 — [FEAT] PreviewBar mode toggles (DONE)
 **Related:** §12.5-P0
 **Artifacts:** components/PreviewPane.tsx; components/preview/PreviewBar.tsx; styles/app.css

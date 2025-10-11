@@ -6,6 +6,7 @@ import { marked } from 'marked'
 import { vfs, type ContentItem, type ContentRenderMode } from '@/lib/vfs'
 import { normalizeScopeId, prefixStyles } from '@/lib/hybrid/prefixStyles'
 import { deriveAssetsBase, resolveAssets } from '@/lib/hybrid/resolveAssets'
+import { attachReveal, attachTilt } from '@/lib/content-hooks'
 
 import PreviewBar, { PREVIEW_ZOOM_LEVELS, type PreviewZoom } from './preview/PreviewBar'
 import { classNames, formatDate, safeText } from './utils'
@@ -244,6 +245,7 @@ export default function PreviewPane({
     [zoom],
   )
 
+  const contentRef = useRef<HTMLDivElement | null>(null)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
   useEffect(() => {
@@ -442,6 +444,18 @@ export default function PreviewPane({
     }
   }, [mode])
 
+  useEffect(() => {
+    if (mode === 'sandbox') return
+    const root = contentRef.current
+    if (!root) return
+
+    const cleanups = [attachReveal(root), attachTilt(root)]
+
+    return () => {
+      cleanups.forEach((cleanup) => cleanup())
+    }
+  }, [mode, renderedHtml, textContent, item?.id])
+
   const handleModeChange = useCallback(
     (next: ContentRenderMode) => {
       if (next === mode) return
@@ -592,14 +606,16 @@ export default function PreviewPane({
                   />
                 )
               )
-            ) : showMarkdownHtml ? (
-              <div className='ax-preview__rich' dangerouslySetInnerHTML={{ __html: renderedHtml }} />
-            ) : showText ? (
-              <>
-                <pre className='ax-preview__text'>{textContent}</pre>
-              </>
             ) : (
-              <p className='ax-preview__notice'>Preview not available for this format.</p>
+              <div ref={contentRef} className='ax-preview__content'>
+                {showMarkdownHtml ? (
+                  <div className='ax-preview__rich' dangerouslySetInnerHTML={{ __html: renderedHtml }} />
+                ) : showText ? (
+                  <pre className='ax-preview__text'>{textContent}</pre>
+                ) : (
+                  <p className='ax-preview__notice'>Preview not available for this format.</p>
+                )}
+              </div>
             )}
           </div>
         ) : null}
