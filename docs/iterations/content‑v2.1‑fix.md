@@ -759,6 +759,20 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-01-006 — **PLAN** ContentHub UI redesign (OPEN)
+**Related:** §12.7-P1
+**Artifacts:** TBD
+**Changes (plan):**
+- Проанализировать `ContentCategoryTiles`, `ContentFilters`, `ContentList` и sticky PreviewPane, определить приоритеты по P1.
+- Спроектировать обновлённый UI: ARIA tabs, компактные фильтры, списки с pin/tooltip, sticky preview на ключевых брейкпоинтах.
+- Очертить этапы внедрения и smoke-план, зафиксировать критерии в §12.
+**AC Check:**
+- [ ] Tiles соответствуют ARIA `tablist/tab`, отображают counts и active state.
+- [ ] Фильтры переведены на `ax-input/ax-chip` с debounce.
+- [ ] Список поддерживает pin, line-clamp, tooltip, author/avatar.
+- [ ] Sticky PreviewPane держит ~72vh и авто-скролл к превью.
+**Result:** OPEN
+
 #### CHG-2025-10-01-004 — **FEAT** Interaction hooks rollout (DONE)
 **Related:** §12.4-P0
 **Artifacts:** lib/content-hooks/*; components/PreviewPane.tsx; public/data/content/characters/03.01_VIKTOR.md; styles/app.css; tests/contentHooks.spec.ts
