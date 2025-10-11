@@ -541,9 +541,9 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - **AC:** режимы переключаются без перезагрузки страницы; зум не ломает лэйаут.
 
 ### 12.6 Inline-expand и полноэкранный ридер (см. §4.5)
-- [ ] **P1** `ContentCardExpanded` (раскрытие карточки в списке).
-- [ ] **P0** Маршрут `/dashboard/content/read/:id` (full reader с `PreviewPane`).
-- [ ] **P1** Mobile-policy: на узких экранах сразу открывать full reader.
+- [x] **P1** `ContentCardExpanded` (раскрытие карточки в списке). ✅ (2025-10-11, by Codex, CHG-2025-10-11-003)
+- [x] **P0** Маршрут `/dashboard/content/read/:id` (full reader с `PreviewPane`). ✅ (2025-10-11, by Codex, CHG-2025-10-11-003)
+- [x] **P1** Mobile-policy: на узких экранах сразу открывать full reader. ✅ (2025-10-11, by Codex, CHG-2025-10-11-003)
 - **AC:** навигация назад сохраняет фильтры и выбранный `item`.
 
 ### 12.7 Редизайн ContentHub (см. §4.6)
@@ -759,6 +759,24 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-11-003 - **FEAT** Inline expand & reader polish (DONE)
+**Related:** §12.6-P0, §12.6-P1
+**Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-12 02:01 CET)
+**Changes (plan):**
+- introduce inline ContentCardExpanded preview on desktop per §4.5
+- ensure read route/back navigation preserves filters & selected item state
+- enforce mobile policy by redirecting card taps to the full reader
+**Changes (actual):**
+- added `ContentCardExpanded` wrapper around `PreviewPane` with single-mode inline view and wired it into `ContentList`
+- reworked `ContentCategoryView` desktop flow to render in-place previews while mobile selection continues to deep-link into `/dashboard/content/read/:id`
+- tightened layout styles so expanded cards stay contained and removed the desktop modal, relying on history/state for back navigation
+- refreshed red protocol styles for expanded cards and single-column layout
+**AC Check:**
+- [x] Inline expand renders beneath the selected card on desktop without disturbing the list layout
+- [x] Navigating back from the reader restores filters and the last selected item
+- [x] Mobile selection opens the full reader directly as per policy
+**Result:** DONE
+
 #### CHG-2025-10-11-002 - **FIX** Content manifest guardrails (DONE)
 **Related:** §12.2-P1
 **Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-11 23:21 CET)
