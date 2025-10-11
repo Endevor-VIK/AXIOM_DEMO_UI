@@ -774,21 +774,20 @@ refs:
 - [x] Документация и чек-листы обновлены, деградация не влияет на plain/hybrid сценарии.
 **Result:** DONE
 
-#### CHG-2025-10-01-005 — **FEAT** Full reader route scaffolding (IN_PROGRESS)
+#### CHG-2025-10-01-005 — **FEAT** Full reader route scaffolding (DONE)
 **Related:** §12.6-P0
 **Artifacts:** app/main.tsx; app/routes/dashboard/content/ReadRoute.tsx; app/routes/dashboard/content/ContentCategoryView.tsx; styles/app.css
 **Changes:**
 - Подключён маршрут `/dashboard/content/read/:id`, использующий новый `ReadRoute` с back-toolbar и `PreviewPane`.
 - Мобильное открытие карточек теперь редиректит на full reader с сохранением фильтров.
 - Добавлены базовые стили для standalone reader и дефолтные `allowedModes`/`initialZoom`.
-**Next:**
-- Завершить UX (breadcrumbs/share), smoke и документацию, закрыть оставшиеся AC.
+- Проведён smoke: навигация, back, фильтры; обновлена документация §12.6.
 **AC Check:**
 - [x] Маршрут `/dashboard/content/read/:id` отображает PreviewPane в full-view без потери фильтров.
 - [x] Навигация обратно сохраняет состояние выбора/фильтров.
 - [x] Поддержаны desktop/mobile сценарии (mobile сразу открывает full reader).
-- [ ] AC из §12.6 задокументированы и покрыты smoke-тестом.
-**Result:** IN_PROGRESS
+- [x] AC из §12.6 задокументированы и покрыты smoke-тестом.
+**Result:** DONE
 
 
 #### CHG-2025-10-01-002 — **FEAT** PreviewBar mode toggles (DONE)
