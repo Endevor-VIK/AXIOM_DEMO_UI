@@ -238,22 +238,53 @@ describe('VFS', () => {
       'data/content/_schema/content.schema.json': schema,
       'data/content/manifest.json': [
         {
-          id: 'GOOD-1',
-          category: 'all',
+          id: 'LOC-VALID',
+          category: 'locations',
           title: 'Good Entry',
-          date: '2025-01-01',
-          file: 'good.html',
+          date: '2025-01-05',
+          file: 'locations/good.html',
           format: 'html',
           status: 'published',
           meta: { v: 2 },
         },
         {
-          id: 'BAD-1',
-          category: 'all',
-          title: 'Broken Entry',
-          date: '2025-01-02',
-          file: 'bad.html',
+          id: 'LOC-BADDATE',
+          category: 'locations',
+          title: 'Broken Date',
+          date: '2025-02-30',
+          file: 'locations/bad-date.html',
           format: 'html',
+          status: 'draft',
+          meta: { v: 2 },
+        },
+        {
+          id: 'LOC-VALID',
+          category: 'locations',
+          title: 'Duplicate',
+          date: '2025-03-01',
+          file: 'locations/duplicate.html',
+          format: 'html',
+          status: 'published',
+          meta: { v: 2 },
+        },
+        {
+          id: 'LOC-BADCATEGORY',
+          category: 'unknown',
+          title: 'Bad Category',
+          date: '2025-04-01',
+          file: 'locations/bad-category.html',
+          format: 'html',
+          status: 'published',
+          meta: { v: 2 },
+        },
+        {
+          id: 'LOC-BADSTATUS',
+          category: 'locations',
+          title: 'Bad Status',
+          date: '2025-05-01',
+          file: 'locations/bad-status.html',
+          format: 'html',
+          status: 'staging',
           meta: { v: 2 },
         },
       ],
@@ -264,8 +295,13 @@ describe('VFS', () => {
     const vfs = createVfs({ base: 'data/' })
     vfs.clearCache()
     const aggregate = await vfs.readContentAggregate()
-    expect(aggregate.items.map((entry) => entry.id)).toEqual(['GOOD-1'])
+    expect(aggregate.items.map((entry) => entry.id)).toEqual(['LOC-VALID'])
     expect(errorSpy).toHaveBeenCalled()
+    const errorMessage = String(errorSpy.mock.calls[0]?.[0])
+    expect(errorMessage).toContain('ISO')
+    expect(errorMessage).toContain('duplicate id')
+    expect(errorMessage).toContain('category')
+    expect(errorMessage).toContain('status')
   })
 
   it('rejects invalid content manifests in strict mode', async () => {
