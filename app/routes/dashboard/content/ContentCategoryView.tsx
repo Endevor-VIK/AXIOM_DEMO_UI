@@ -173,6 +173,20 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     setModalOpen(open)
   }, [])
 
+  const handleExpand = useCallback(
+    (item: ContentItem) => {
+      const next = new URLSearchParams(searchParams)
+      next.set('item', item.id)
+      const suffix = next.toString()
+      const query = suffix ? `?${suffix}` : ''
+      const target = `/dashboard/content/read/${item.id}${query}`
+      navigate(target, {
+        state: { from: `${location.pathname}${query}` },
+      })
+    },
+    [location.pathname, navigate, searchParams],
+  )
+
   if (loading) {
     return (
       <div className='ax-content-split'>
@@ -204,13 +218,13 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
 
       {isDesktop ? (
         <aside className='ax-content-preview'>
-          <PreviewPane item={selectedItem} dataBase={dataBase} />
+          <PreviewPane item={selectedItem} dataBase={dataBase} onExpand={handleExpand} />
         </aside>
       ) : null}
 
       {!isDesktop ? (
         <Modal open={modalOpen} onOpenChange={handleModalChange} title={selectedItem ? selectedItem.title : 'Preview'}>
-          <PreviewPane item={selectedItem} dataBase={dataBase} />
+          <PreviewPane item={selectedItem} dataBase={dataBase} onExpand={handleExpand} />
         </Modal>
       ) : null}
     </div>

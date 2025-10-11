@@ -140,9 +140,10 @@ const PreviewBar: React.FC<PreviewBarProps> = ({
             type='button'
             className={BUTTON_BASE}
             onClick={() => {
-              if (disabled) return
+              if (disabled || reloading) return
               onReload()
             }}
+            disabled={disabled || reloading}
           >
             {reloading ? 'Reloading...' : 'Reload'}
           </button>

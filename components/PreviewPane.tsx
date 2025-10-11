@@ -25,6 +25,7 @@ type PreviewPaneProps = {
   allowedModes?: ReadonlyArray<ContentRenderMode>
   initialZoom?: number
   onOpenExternal?: (href: string) => void
+  onExpand?: (item: ContentItem) => void
 }
 
 type ExtractedStyles = {
@@ -194,6 +195,7 @@ export default function PreviewPane({
   allowedModes: allowedModesProp,
   initialZoom,
   onOpenExternal,
+  onExpand,
 }: PreviewPaneProps) {
   const [textContent, setTextContent] = useState('')
   const [textLoading, setTextLoading] = useState(false)
@@ -505,10 +507,26 @@ export default function PreviewPane({
   const errorMessage = textError ?? htmlError
   const isLoading = textLoading || htmlLoading
 
+  const controlsDisabled = isLoading || Boolean(errorMessage || renderError)
+
   const allowedForBar: ReadonlyArray<ContentRenderMode> = allowedModes.length ? allowedModes : (['plain'] as ReadonlyArray<ContentRenderMode>)
   const leadingControls = item?.file ? (
     <span className='ax-chip'>{safeText(item.file)}</span>
   ) : null
+
+  const trailingControls = useMemo(() => {
+    if (!item || !onExpand) return null
+    return (
+      <button
+        type='button'
+        className='ax-btn ax-btn--ghost ax-btn--dense'
+        onClick={() => onExpand(item)}
+        disabled={controlsDisabled}
+      >
+        Expand
+      </button>
+    )
+  }, [item, onExpand, controlsDisabled])
 
   const shouldUseIframe = mode === 'sandbox' || isHtml(format)
   const showSandboxFrame = mode === 'sandbox' && sandboxDoc
@@ -564,8 +582,9 @@ export default function PreviewPane({
         zoom={zoom}
         onZoomChange={handleZoomChange}
         externalHref={externalHref}
-        disabled={isLoading}
+        disabled={controlsDisabled}
         leadingControls={leadingControls}
+        trailingControls={trailingControls}
         {...(onOpenExternal ? { onOpenExternal } : {})}
         {...(mode === 'sandbox' ? { onReload: handleReload, reloading: sandboxReloading } : {})}
       />

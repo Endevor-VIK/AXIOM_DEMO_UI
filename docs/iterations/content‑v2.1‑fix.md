@@ -761,7 +761,7 @@ refs:
 <!-- LOG:START (do not remove) -->
 #### CHG-2025-10-11-001 - **FEAT** PreviewPane controls rollout (IN_PROGRESS)
 **Related:** §12.5-P0
-**Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-11 20:18 CET)
+**Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-11 21:39 CET)
 **Changes (plan):**
 - audit current PreviewPane/PreviewBar scaffolding and map required props from §12.5
 - implement PreviewBar interactions (modes, zoom, reload/external) wired to PreviewPane
@@ -770,6 +770,8 @@ refs:
 **Changes (actual):**
 - filtered sandbox postMessage handler to ignore unrelated sources and sanitized iframe title for a11y
 - normalized content hooks helpers (`attachReveal`/`attachTilt`) for non-browser contexts; restored unit specs
+- added PreviewPane `Expand` control wired to reader route and disabled PreviewBar actions while content is loading/error
+- improved reveal observer cleanup to avoid dangling listeners when elements unmount
 **AC Check:**
 - [ ] Preview toggles work without regressions and console stays clean
 - [ ] Sandbox mode uses proper iframe config with live resize/reload

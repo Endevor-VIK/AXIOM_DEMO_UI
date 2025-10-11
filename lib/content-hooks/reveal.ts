@@ -88,6 +88,7 @@ export function attachReveal(root: ParentNode, options: RevealOptions = {}): Cle
   }
 
   const observers = new Map<HTMLElement, IntersectionObserver>()
+  const allObservers = new Set<IntersectionObserver>()
 
   elements.forEach((element) => {
     const { className, once, threshold, rootMargin } = getElementConfig(element)
@@ -113,10 +114,12 @@ export function attachReveal(root: ParentNode, options: RevealOptions = {}): Cle
 
     observer.observe(element)
     observers.set(element, observer)
+    allObservers.add(observer)
   })
 
   return () => {
-    observers.forEach((observer) => observer.disconnect())
+    allObservers.forEach((observer) => observer.disconnect())
     observers.clear()
+    allObservers.clear()
   }
 }
