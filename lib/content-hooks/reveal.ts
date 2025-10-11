@@ -37,7 +37,7 @@ interface ElementConfig {
   className: string
   once: boolean
   threshold: number
-  rootMargin?: string
+  rootMargin?: string | undefined
 }
 
 function getElementConfig(element: HTMLElement): ElementConfig {
@@ -48,7 +48,7 @@ function getElementConfig(element: HTMLElement): ElementConfig {
   const once = onceAttr === 'false' ? false : true
 
   const threshold = parseNumber(dataset.revealThreshold, DEFAULT_THRESHOLD)
-  const rootMargin = dataset.revealRootMargin
+  const rootMargin = dataset.revealRootMargin ?? undefined
 
   return { className, once, threshold, rootMargin }
 }
@@ -82,27 +82,25 @@ export function attachReveal(root: ParentNode, options: RevealOptions = {}): Cle
   elements.forEach((element) => {
     const { className, once, threshold, rootMargin } = getElementConfig(element)
 
-    const observer = new Observer(
-      (entries) => {
-        entries.forEach((entry) => {
-          const target = entry.target as HTMLElement
-          if (entry.isIntersecting) {
-            target.classList.add(className)
-            if (once) {
-              const stored = observers.get(target)
-              stored?.unobserve(target)
-              observers.delete(target)
-            }
-          } else if (!once) {
-            target.classList.remove(className)
+    const observerInit: IntersectionObserverInit = rootMargin !== undefined
+      ? { threshold, rootMargin }
+      : { threshold }
+
+    const observer = new Observer((entries) => {
+      entries.forEach((entry) => {
+        const target = entry.target as HTMLElement
+        if (entry.isIntersecting) {
+          target.classList.add(className)
+          if (once) {
+            const stored = observers.get(target)
+            stored?.unobserve(target)
+            observers.delete(target)
           }
-        })
-      },
-      {
-        threshold,
-        rootMargin,
-      },
-    )
+        } else if (!once) {
+          target.classList.remove(className)
+        }
+      })
+    }, observerInit)
 
     observer.observe(element)
     observers.set(element, observer)

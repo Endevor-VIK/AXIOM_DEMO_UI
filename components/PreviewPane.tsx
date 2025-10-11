@@ -64,10 +64,10 @@ function dedupeModes(source: ReadonlyArray<ContentRenderMode>): ContentRenderMod
 }
 
 function deriveFormatModes(format: string): ContentRenderMode[] {
-  if (isMarkdown(format)) return ['plain', 'hybrid', 'sandbox']
-  if (isText(format)) return ['plain']
-  if (isHtml(format)) return ['plain', 'sandbox']
-  return ['plain']
+  if (isMarkdown(format)) return ['plain', 'hybrid', 'sandbox'] as ContentRenderMode[]
+  if (isText(format)) return ['plain'] as ContentRenderMode[]
+  if (isHtml(format)) return ['plain', 'sandbox'] as ContentRenderMode[]
+  return ['plain'] as ContentRenderMode[]
 }
 
 function selectInitialMode(
@@ -216,11 +216,15 @@ export default function PreviewPane({
   const externalHref = item && filePath ? dataBase + filePath : null
   const assetsBase = item ? deriveAssetsBase(item) : undefined
 
-  const allowedModes = useMemo(() => {
+  const allowedModes = useMemo<ContentRenderMode[]>(() => {
     const formatModes = dedupeModes(deriveFormatModes(format))
     const candidate = allowedModesProp ? dedupeModes(allowedModesProp) : formatModes
     const filtered = candidate.filter((mode) => formatModes.includes(mode))
-    return filtered.length ? filtered : formatModes.length ? formatModes : ['plain']
+    return filtered.length
+      ? filtered
+      : formatModes.length
+        ? formatModes
+        : (['plain'] as ContentRenderMode[])
   }, [allowedModesProp, format])
 
   const initialMode = useMemo(
@@ -500,7 +504,7 @@ export default function PreviewPane({
   const errorMessage = textError ?? htmlError
   const isLoading = textLoading || htmlLoading
 
-  const allowedForBar = allowedModes.length ? allowedModes : ['plain']
+  const allowedForBar: ReadonlyArray<ContentRenderMode> = allowedModes.length ? allowedModes : (['plain'] as ReadonlyArray<ContentRenderMode>)
   const leadingControls = item?.file ? (
     <span className='ax-chip'>{safeText(item.file)}</span>
   ) : null
@@ -558,12 +562,11 @@ export default function PreviewPane({
         onModeChange={handleModeChange}
         zoom={zoom}
         onZoomChange={handleZoomChange}
-        onReload={mode === 'sandbox' ? handleReload : undefined}
-        reloading={mode === 'sandbox' ? sandboxReloading : false}
         externalHref={externalHref}
-        onOpenExternal={onOpenExternal}
         disabled={isLoading}
         leadingControls={leadingControls}
+        {...(onOpenExternal ? { onOpenExternal } : {})}
+        {...(mode === 'sandbox' ? { onReload: handleReload, reloading: sandboxReloading } : {})}
       />
 
       <section className='ax-preview__body'>

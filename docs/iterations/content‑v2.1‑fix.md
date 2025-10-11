@@ -640,7 +640,7 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 #### Полный (фича/компонент/модуль)
 
 ```md
-### CHG-YYYY-MM-DD-XXX — [FEAT] Название блока работ (СТАТУС)
+### CHG-YYYY-MM-DD-XXX — **FEAT** Название блока работ (СТАТУС)
 
 **Related:** 12.x-Px, 12.y-Py
 **Artifacts:**
@@ -712,7 +712,7 @@ refs:
 ```
 
 ```md
-### CHG-2025-09-30-002 — [FEAT] Новый PreviewPane + PreviewBar (IN_PROGRESS)
+### CHG-2025-09-30-002 — **FEAT** Новый PreviewPane + PreviewBar (IN_PROGRESS)
 **Related:** 12.5-P0
 **Artifacts:** branch feature/previewpane-v2
 **Changes:**
@@ -759,7 +759,7 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
-#### CHG-2025-10-01-004 — [FEAT] Interaction hooks rollout (DONE)
+#### CHG-2025-10-01-004 — **FEAT** Interaction hooks rollout (DONE)
 **Related:** §12.4-P0
 **Artifacts:** lib/content-hooks/*; components/PreviewPane.tsx; public/data/content/characters/03.01_VIKTOR.md; styles/app.css; tests/contentHooks.spec.ts
 **Changes:**
@@ -774,7 +774,7 @@ refs:
 - [x] Документация и чек-листы обновлены, деградация не влияет на plain/hybrid сценарии.
 **Result:** DONE
 
-#### CHG-2025-10-01-005 — [PLAN] Full reader route scaffolding (OPEN)
+#### CHG-2025-10-01-005 — **PLAN** Full reader route scaffolding (OPEN)
 **Related:** §12.6-P0
 **Artifacts:** TBD
 **Changes (plan):**
@@ -790,7 +790,7 @@ refs:
 **Result:** OPEN
 
 
-#### CHG-2025-10-01-002 — [FEAT] PreviewBar mode toggles (DONE)
+#### CHG-2025-10-01-002 — **FEAT** PreviewBar mode toggles (DONE)
 **Related:** §12.5-P0
 **Artifacts:** components/PreviewPane.tsx; components/preview/PreviewBar.tsx; styles/app.css
 **Changes:**

@@ -112,13 +112,14 @@ describe('attachReveal', () => {
     const cleanup = attachReveal(root, { observerFactory: MockIntersectionObserver as unknown as typeof IntersectionObserver })
     expect(MockIntersectionObserver.instances).toHaveLength(1)
     const instance = MockIntersectionObserver.instances[0]
-    expect(instance.observe).toHaveBeenCalledWith(element)
+    expect(instance).toBeDefined()
+    expect(instance!.observe).toHaveBeenCalledWith(element)
 
-    instance.trigger({ target: element, isIntersecting: true })
+    instance!.trigger({ target: element, isIntersecting: true })
     expect(element.classList.contains('is-in')).toBe(true)
 
     cleanup()
-    expect(instance.disconnect).toHaveBeenCalled()
+    expect(instance!.disconnect).toHaveBeenCalled()
 
     MockIntersectionObserver.instances = []
   })
