@@ -524,7 +524,7 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - [x] **P0** Утилита `prefixStyles.ts` (PostCSS) + переименование `@keyframes` под scope `[data-ax-scope="{id}"]`. ✅ (2025-09-30, by Codex, CHG-2025-09-30-002)
 - [x] **P0** Обёртка контента `<div data-ax-scope="{id}">…</div>`. ✅ (2025-10-01, by Codex, CHG-2025-10-01-001)
 - [x] **P0** Утилита `resolveAssets.ts` (переписывание `src|href` через `assetsBase`, поддержка `data:`). ✅ (2025-10-01, by Codex, CHG-2025-10-01-001)
-- [ ] **P1** Обработка нескольких `<style>` в одном файле (мердж с сохранением порядка).
+- [x] **P1** Обработка нескольких `<style>` в одном файле (мердж с сохранением порядка). ✅ (2025-10-11, by Codex, CHG-2025-10-11-002)
 - **AC:** стили гибридов не протекают наружу; все изображения/ссылки работают.
 
 ### 12.4 Хуки поведения (замена `<script>`, см. §4.2 hybrid)
@@ -769,6 +769,7 @@ refs:
 - enforced calendar-accurate ISO date checks plus category/status allowlists in VFS normalization flow
 - blocked duplicate content ids while preserving strict-mode error propagation
 - expanded VFS tests to assert filtered entries and captured diagnostics without breaking aggregates
+- merged multiple inline `<style>` blocks in PreviewPane while preserving declaration order and covering the helper with unit tests
 **AC Check:**
 - [x] Manifest validation reports schema violations in DEV without breaking the hub
 - [x] Invalid entries (dates/ids/categories/status) are excluded from aggregate payloads

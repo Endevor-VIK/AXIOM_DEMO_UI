@@ -91,25 +91,35 @@ function normalizeZoom(value?: number): PreviewZoom {
   return PREVIEW_ZOOM_LEVELS[0]
 }
 
-function extractStyleBlocks(html: string): ExtractedStyles {
+export function extractStyleBlocks(html: string): ExtractedStyles {
   if (!html) return { css: '', markup: '' }
   if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
     const parser = new DOMParser()
     const doc = parser.parseFromString(html, 'text/html')
     const cssParts: string[] = []
     doc.querySelectorAll('style').forEach((node) => {
-      if (node.textContent) cssParts.push(node.textContent)
+      const content = node.textContent?.trim()
+      if (content) cssParts.push(content)
       node.remove()
     })
-    return { css: cssParts.join('\n'), markup: doc.body.innerHTML }
+    return { css: cssParts.join('\n\n'), markup: doc.body.innerHTML }
   }
-  const cssParts: string[] = []
+  let order = 0
+  const cssParts: Array<{ index: number; content: string }> = []
   const STYLE_BLOCK_PATTERN = /<style[^>]*>([\s\S]*?)<\/style>/gi
   const markup = html.replace(STYLE_BLOCK_PATTERN, (_, block: string) => {
-    cssParts.push(block)
+    const content = block.trim()
+    if (content) {
+      cssParts.push({ index: order, content })
+    }
+    order += 1
     return ''
   })
-  return { css: cssParts.join('\n'), markup }
+  const mergedCss = cssParts
+    .sort((a, b) => a.index - b.index)
+    .map((entry) => entry.content)
+    .join('\n\n')
+  return { css: mergedCss, markup }
 }
 
 function escapeHtml(value: string): string {
