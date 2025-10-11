@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ContentList from '@/components/ContentList'
 import Modal from '@/components/Modal'
@@ -82,6 +82,8 @@ const noop = () => {}
 
 const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) => {
   const { aggregate, loading, error, filters, dataBase, pinned } = useContentHub()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const items = useMemo(() => {
@@ -153,10 +155,18 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
         setSearchParams(next, { replace: true })
       }
       if (!isDesktop) {
+        const nextSearch = next.toString()
+        const suffix = nextSearch ? `?${nextSearch}` : ''
+        const target = `/dashboard/content/read/${item.id}${suffix}`
+        navigate(target, {
+          state: { from: `${location.pathname}${suffix}` },
+        })
+        setModalOpen(false)
+      } else {
         setModalOpen(true)
       }
     },
-    [isDesktop, searchParams, setSearchParams]
+    [isDesktop, searchParams, setSearchParams, navigate, location.pathname]
   )
 
   const handleModalChange = useCallback((open: boolean) => {

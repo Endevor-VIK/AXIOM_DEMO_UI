@@ -16,6 +16,7 @@ import ContentLayout from '@/app/routes/dashboard/content/_layout'
 import AllRoute from '@/app/routes/dashboard/content/AllRoute'
 import CategoryRoute from '@/app/routes/dashboard/content/CategoryRoute'
 import LoreRoute from '@/app/routes/dashboard/content/LoreRoute'
+import ReadRoute from '@/app/routes/dashboard/content/ReadRoute'
 import NewsPage from '@/app/routes/dashboard/news/page'
 
 import AuthGate from '@/components/AuthGate'
@@ -42,6 +43,7 @@ const routes = [
           { index: true, element: <Navigate to='all' replace /> },
           { path: 'all', element: <AllRoute /> },
           { path: 'lore/*', element: <LoreRoute /> },
+          { path: 'read/:id', element: <ReadRoute /> },
           { path: ':category', element: <CategoryRoute /> },
         ],
       },
