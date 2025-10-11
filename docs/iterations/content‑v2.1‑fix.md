@@ -517,7 +517,7 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - [x] **P0** Расширить `public/data/content/_schema/content.schema.json`: `renderMode`, `assetsBase`, `version`, `lang`, `links`. ✅ (2025-09-30, by Codex, CHG-2025-09-30-001)
 - [x] **P0** Обновить `lib/vfs/*`: валидация схемы (Ajv), `strict`-режим, фильтр невалидных записей. ✅ (2025-09-30, by Codex, CHG-2025-09-30-001)
 - [x] **P0** Миграционный скрипт `scripts/migrate-v2.1.js` (autofill `renderMode=plain`, `assetsBase=''`). ✅ (2025-09-30, by Codex, CHG-2025-09-30-001)
-- [ ] **P1** Валидация ISO-дат, уникальности `id`, whitelists категорий/статусов.
+- [x] **P1** Валидация ISO-дат, уникальности `id`, whitelists категорий/статусов. ✅ (2025-10-11, by Codex, CHG-2025-10-11-002)
 - **AC:** любые ошибки схемы репортятся в консоль DEV, невалидные записи не ломают хаб.
 
 ### 12.3 Hybrid CSS-scoping и резолвер ассетов (см. §4.2, §4.3)
@@ -759,6 +759,21 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-11-002 - **FIX** Content manifest guardrails (DONE)
+**Related:** §12.2-P1
+**Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-11 23:21 CET)
+**Changes (plan):**
+- tighten VFS validation to catch ISO-date issues, duplicate ids, and category/status drift
+- backstop behavior with targeted unit coverage in `tests/vfs.spec.ts`
+**Changes (actual):**
+- enforced calendar-accurate ISO date checks plus category/status allowlists in VFS normalization flow
+- blocked duplicate content ids while preserving strict-mode error propagation
+- expanded VFS tests to assert filtered entries and captured diagnostics without breaking aggregates
+**AC Check:**
+- [x] Manifest validation reports schema violations in DEV without breaking the hub
+- [x] Invalid entries (dates/ids/categories/status) are excluded from aggregate payloads
+**Result:** DONE
+
 #### CHG-2025-10-11-001 - **FEAT** PreviewPane controls rollout (DONE)
 **Related:** §12.5-P0
 **Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-11 22:16 CET)
