@@ -567,7 +567,7 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - **AC:** гибриды открываются; обложки/картинки видны в preview и reader.
 
 ### 12.10 Тестирование (см. §6)
-- [ ] **P0** Юнит-тесты: префиксация CSS, `resolveAssets`, рендер `plain/hybrid/sandbox`.
+- [x] **P0** Юнит-тесты: префиксация CSS, `resolveAssets`, рендер `plain/hybrid/sandbox`. ✅ (2025-10-12, by Codex, CHG-2025-10-12-001)
 - [ ] **P1** a11y-проверки (axe), Lighthouse ≥ 90.
 - [ ] **P1** E2E (Playwright/Cypress): выбор карточки, фильтры, pin, reader, sandbox.
 - **AC:** зелёные тесты в CI; отчёты приложены к PR.
@@ -776,6 +776,21 @@ refs:
 - [x] Navigation links and inline titles use animated underline via shared helper
 - [x] StatusLine now reports MODE/SECTION/ENV/version/time with responsive chips
 **Result:** DONE
+
+#### CHG-2025-10-12-001 - **TEST** Core suite validation (PARTIAL)
+**Related:** §12.10-P0, §12.10-P1
+**Artifacts:** tests: `npm run test -- --runInBand` (2025-10-12 05:01 CET)
+**Changes (plan):**
+- rerun unit suite covering prefixStyles/resolveAssets/PreviewPane render modes
+- log blockers for Lighthouse/axe/E2E coverage and schedule follow-up
+**Changes (actual):**
+- executed Vitest suite locally (`npm run test -- --runInBand`) — 5 files / 21 tests passed
+- noted remaining gaps: a11y (axe/Lighthouse) and end-to-end smoke not yet automated for v2.1
+**AC Check:**
+- [x] Unit tests green for core content pipeline
+- [ ] Lighthouse ≥ 90 / axe scan recorded
+- [ ] E2E flows (card select/filter/pin/reader/sandbox) executed
+**Result:** PARTIAL (a11y & E2E runs pending)
 
 #### CHG-2025-10-11-004 - **FEAT** Character manifests migration (DONE)
 **Related:** §12.9-P0, §12.9-P1
