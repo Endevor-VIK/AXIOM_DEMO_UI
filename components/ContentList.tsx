@@ -30,7 +30,9 @@ export default function ContentList({ items, selectedId, onSelect, renderExpande
                   className='ax-content-card__btn'
                   onClick={() => onSelect(item)}
                 >
-                  <div className='ax-content-card__title'>{safeText(item.title)}</div>
+                  <div className='ax-content-card__title'>
+                    <span className='ax-link-underline'>{safeText(item.title)}</span>
+                  </div>
                   <div className='ax-content-card__meta'>
                     <span className='ax-content-card__date'>{formatDate(item.date ?? item.createdAt)}</span>
                     {item.tags?.length ? (

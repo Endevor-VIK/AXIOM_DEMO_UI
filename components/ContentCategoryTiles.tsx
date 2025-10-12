@@ -207,7 +207,9 @@ export default function ContentCategoryTiles({ items, active, loading = false }:
             <div className='cat-ico' aria-hidden='true'>
               {item.icon}
             </div>
-            <div className='cat-title'>{item.title}</div>
+            <div className='cat-title'>
+              <span className='ax-link-underline'>{item.title}</span>
+            </div>
             <div className='cat-meta'>
               <span className='ax-chip' data-variant='level'>
                 {item.count}

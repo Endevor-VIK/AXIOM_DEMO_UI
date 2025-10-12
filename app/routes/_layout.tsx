@@ -2,8 +2,8 @@
 // Canvas: C04 - app/routes/_layout.tsx
 // Purpose: Shared dashboard layout with Red Protocol navigation and system status shell.
 
-import React, { useCallback, useMemo } from 'react'
-import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import React, { useCallback, useMemo, useState } from 'react'
+import { Outlet, NavLink, useLocation } from 'react-router-dom'
 
 import HeadlinesTicker from '../../components/news/HeadlinesTicker'
 import { useNewsManifest } from '../../lib/useNewsManifest'
@@ -25,7 +25,6 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function Layout() {
   const location = useLocation()
-  const navigate = useNavigate()
   const route = location.pathname || '/'
 
   const section = useMemo(() => {
@@ -35,16 +34,20 @@ export default function Layout() {
     return key === 'home' ? 'HOME' : key.replace(/-/g, ' ').toUpperCase()
   }, [route])
 
-  const ribbonTokens = useMemo(() => ['MODE :: RED PROTOCOL', `SECTION :: ${section}`], [section])
+  const modeLabel = 'RED PROTOCOL'
+  const [language, setLanguage] = useState<'RU' | 'EN'>('RU')
+  const toggleLanguage = useCallback(() => {
+    setLanguage((prev) => (prev === 'RU' ? 'EN' : 'RU'))
+  }, [])
 
-  const handleLogout = useCallback(() => {
-    try {
-      localStorage.removeItem('axiom.auth')
-    } catch {
-      // storage unavailable
-    }
-    navigate('/login', { replace: true })
-  }, [navigate])
+  const statusMeta = useMemo(
+    () => ({
+      mode: modeLabel,
+      section,
+      version: 'v0.5.0',
+    }),
+    [modeLabel, section],
+  )
 
   const tickerItems = useNewsManifest()
 
@@ -62,26 +65,27 @@ export default function Layout() {
                   key={item.to}
                   to={item.to}
                   end={Boolean(item.end)}
-                  className={({ isActive }) => (isActive ? 'ax-tab is-active' : 'ax-tab')}
+                  className={({ isActive }) =>
+                    isActive ? 'ax-tab ax-link-underline is-active' : 'ax-tab ax-link-underline'
+                  }
                 >
                   {item.label}
                 </NavLink>
               ))}
             </nav>
-            <button type='button' className='ax-btn ghost ax-action-logout' onClick={handleLogout}>
-              EXIT
-            </button>
-          </div>
-          <div className='ax-ribbon' role='status' aria-live='polite'>
-            {ribbonTokens.map((token, index) => (
-              <React.Fragment key={token}>
-                {index > 0 && (
-                  <span className='ax-ribbon__sep' aria-hidden='true'>//</span>
-                )}
-                <span className='ax-ribbon__item'>{token}</span>
-              </React.Fragment>
-            ))}
-            <span className='visually-hidden'>Active route {route}</span>
+            <div className='ax-topbar__actions'>
+              <button
+                type='button'
+                className='ax-btn ghost ax-lang-toggle'
+                onClick={toggleLanguage}
+                aria-label='Toggle interface language'
+              >
+                {language}
+              </button>
+              <div className='ax-avatar' role='img' aria-label='User avatar'>
+                AX
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -100,7 +104,7 @@ export default function Layout() {
 
       <footer className='ax-footer ax-status'>
         <div className='ax-container'>
-          <StatusLine />
+          <StatusLine meta={statusMeta} />
         </div>
       </footer>
 

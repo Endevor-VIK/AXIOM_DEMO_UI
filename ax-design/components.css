@@ -139,10 +139,9 @@
       7) Tabs (top navigation)
       ============================ */
    .ax-tabs { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
-   .ax-tab { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: calc(32px * var(--ax-scale)); padding: 0 var(--space-3); border-radius: var(--r-lg); color: var(--ax-text); border: 1px solid transparent; background: transparent; font-size: var(--fs-14); transition: color var(--t-std) var(--ease-ax2), border-color var(--t-std) var(--ease-ax2); }
-   .ax-tab:hover { border-color: var(--ax-border); }
-   .ax-tab[aria-current="page"], .ax-tab.is-active { color: #ffd7dc; }
-   .ax-tab[aria-current="page"]::after, .ax-tab.is-active::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: -4px; height: 2px; background: linear-gradient(90deg, var(--ax-red), transparent 70%); -webkit-mask: var(--blade-mask); mask: var(--blade-mask); }
+   .ax-tab { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: var(--btn-h); padding: 0 var(--btn-px); border-radius: var(--r-lg); color: rgba(255, 233, 240, 0.72); border: 1px solid transparent; background: transparent; font: 700 var(--fs-12)/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; transition: color var(--t-std) var(--ease-ax2), border-color var(--t-std) var(--ease-ax2), background var(--t-std) var(--ease-ax2); }
+   .ax-tab:hover { color: var(--ax-text); border-color: rgba(255,84,98,0.32); }
+   .ax-tab[aria-current="page"], .ax-tab.is-active { color: var(--ax-text); background: rgba(255,84,98,0.16); border-color: rgba(255,84,98,0.42); }
    
    /* ============================
       8) Cover Bar (hero/section header)

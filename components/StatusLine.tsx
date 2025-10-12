@@ -8,6 +8,8 @@ import { useLocation } from 'react-router-dom'
 export type StatusMeta = {
   version?: string
   zone?: string
+  mode?: string
+  section?: string
 }
 
 export interface StatusLineProps {
@@ -48,19 +50,46 @@ export default function StatusLine({ meta }: StatusLineProps) {
   const mode = import.meta.env.MODE
   const envTag = (import.meta as any).env?.VITE_ENV || (mode === 'production' ? 'PUBLIC' : 'DEV')
   const buildTs = (import.meta as any).env?.VITE_BUILD_TIME as string | undefined
+  const modeLabel = meta?.mode ?? 'RED PROTOCOL'
+  const fallbackSection = useMemo(() => {
+    const parts = route.split('/').filter(Boolean)
+    if (parts[0] !== 'dashboard') return route.toUpperCase()
+    const key = parts[1] || 'HOME'
+    return key.replace(/-/g, ' ').toUpperCase()
+  }, [route])
+  const sectionLabel = meta?.section ?? fallbackSection
+  const versionLabel = meta?.version ?? ''
 
   return (
     <div className='ax-status-line' role='status' aria-live='polite' aria-atomic='true'>
-      <div className='ax-status-line__group'>
-        <span className='ax-chip' data-variant='info'>ENV :: {envTag}</span>
-        {meta?.zone && <span className='ax-chip' data-variant='info'>ZONE :: {meta.zone}</span>}
-        {meta?.version && <span className='ax-chip' data-variant='level'>VER :: {meta.version}</span>}
-        {buildTs && <span className='ax-chip' data-variant='info'>BUILD :: {buildTs}</span>}
-        <span className='ax-chip' data-variant={online ? 'online' : 'error'} aria-live='off'>
+      <div className='ax-status-line__group ax-status-line__group--crumbs'>
+        <span className='ax-chip ax-status-line__chip' data-variant='ghost'>MODE :: {modeLabel}</span>
+        <span className='ax-chip ax-status-line__chip' data-variant='ghost'>SECTION :: {sectionLabel}</span>
+      </div>
+      <div className='ax-status-line__group ax-status-line__group--meta'>
+        <span className='ax-chip ax-status-line__chip' data-variant='info'>ENV :: {envTag}</span>
+        {meta?.zone && (
+          <span className='ax-chip ax-status-line__chip' data-variant='info' data-hide-sm='true'>
+            ZONE :: {meta.zone}
+          </span>
+        )}
+        {versionLabel && (
+          <span className='ax-chip ax-status-line__chip' data-variant='level'>
+            VER :: {versionLabel}
+          </span>
+        )}
+        {buildTs && (
+          <span className='ax-chip ax-status-line__chip' data-variant='info' data-hide-sm='true'>
+            BUILD :: {buildTs}
+          </span>
+        )}
+        <span className='ax-chip ax-status-line__chip' data-variant={online ? 'online' : 'error'} aria-live='off'>
           {online ? 'ONLINE' : 'OFFLINE'}
         </span>
-        <span className='ax-status-line__time'>{now}</span>
-        <span className='ax-status-line__route'>{route}</span>
+        <span className='ax-status-line__time ax-status-line__chip'>{now}</span>
+        <span className='ax-status-line__route ax-status-line__chip' data-hide-sm='true'>
+          {route}
+        </span>
       </div>
     </div>
   )

@@ -34,6 +34,88 @@
    .hidden { display: none !important; }
    .visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; }
    
+   .ax-link-underline{
+     position: relative;
+     display: inline-flex;
+     align-items: center;
+     gap: 6px;
+     color: inherit;
+     text-decoration: none;
+   }
+   .ax-link-underline::after{
+     content: '';
+     position: absolute;
+     inset: auto 0 -.2em;
+     height: 2px;
+     background: currentColor;
+     transform: scaleX(0);
+     transform-origin: 0 50%;
+     transition: transform .25s ease;
+   }
+   .ax-link-underline:hover::after,
+   .ax-link-underline:focus-visible::after,
+   .ax-link-underline.is-active::after{
+     transform: scaleX(1);
+   }
+   
+   .ax-chip{
+     display:inline-flex;
+     align-items:center;
+     justify-content:center;
+     gap: 6px;
+     min-height: var(--chip-h, 28px);
+     padding: 0 calc(var(--space-2, 12px));
+     border-radius: calc(var(--chip-h, 28px) / 2);
+     border: 1px solid var(--ax-border, rgba(255,32,52,0.22));
+     font: 600 var(--fs-12, 12px)/1 var(--font-mono, ui-monospace);
+     letter-spacing: .08em;
+     text-transform: uppercase;
+     color: rgba(255, 233, 240, 0.78);
+     background: rgba(255,255,255,0.03);
+     transition: background .2s ease, border-color .2s ease, color .2s ease, opacity .2s ease;
+     cursor: pointer;
+   }
+   .ax-chip.is-active{
+     background: rgba(255,84,98,0.18);
+     border-color: rgba(255,84,98,0.38);
+     color: #ffe4e8;
+   }
+   .ax-chip[data-variant='info']{
+     background: var(--ax-info-soft, rgba(64,217,255,0.18));
+     color: var(--ax-info, #17a2b8);
+     border-color: rgba(64,217,255,0.28);
+   }
+   .ax-chip[data-variant='accent'],
+   .ax-chip[data-variant='level']{
+     background: rgba(255,84,98,0.16);
+     color: var(--ax-red-strong, #ff5462);
+     border-color: rgba(255,84,98,0.36);
+   }
+   .ax-chip[data-variant='online'],
+   .ax-chip[data-variant='success']{
+     background: var(--ax-success-soft, rgba(46,204,113,0.18));
+     color: var(--ax-success, #2ecc71);
+     border-color: rgba(46,204,113,0.32);
+   }
+   .ax-chip[data-variant='warn']{
+     background: var(--ax-warn-soft, rgba(241,196,15,0.20));
+     color: var(--ax-warn, #f1c40f);
+     border-color: rgba(241,196,15,0.32);
+   }
+   .ax-chip[data-variant='error']{
+     background: var(--ax-danger-soft, rgba(255,64,86,0.22));
+     color: var(--ax-danger, #ff4056);
+     border-color: rgba(255,64,86,0.34);
+   }
+   .ax-chip[data-variant='ghost']{
+     background: rgba(255,255,255,0.03);
+     color: rgba(255,233,240,0.78);
+     border-color: rgba(255,233,240,0.16);
+   }
+   .ax-chip:not(.is-active){
+     opacity: .9;
+   }
+   
    /* ============================
       1) Layout Shell
       ============================ */
@@ -50,15 +132,15 @@
 }
 
    .ax-topbar { position: sticky; top: 0; z-index: var(--z-modal, 50); border-bottom: 1px solid rgba(255, 32, 52, 0.16); background: linear-gradient(180deg, rgba(12, 13, 17, 0.95), rgba(16, 8, 12, 0.85)); backdrop-filter: blur(var(--backdrop-2)); padding-block: 6px !important; }
-   .ax-topbar__inner { display: flex; align-items: center; justify-content: space-between; gap: calc(var(--space-1) / 2); padding-block: 4px !important; flex-wrap: wrap; }
+   .ax-topbar__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding-block: 4px !important; flex-wrap: wrap; }
    
-   .ax-brand { font-family: var(--font-display); font-size: var(--fs-16); letter-spacing: .12em; text-transform: uppercase; color: var(--ax-text); }
+   .ax-brand { flex: 0 0 auto; font-family: var(--font-display); font-size: var(--fs-16); letter-spacing: .12em; text-transform: uppercase; color: var(--ax-text); }
    
-   .ax-tabs { flex: 1 1 auto; display: flex; justify-content: center; align-items: center; gap: calc(var(--space-1) / 2); flex-wrap: wrap; margin-block: 0 !important; }
+   .ax-tabs { flex: 1 1 auto; display: flex; justify-content: center; align-items: center; gap: var(--space-2); flex-wrap: wrap; margin-block: 0 !important; }
    
-   .ax-ribbon { display: flex; align-items: center; gap: var(--space-2); padding-block: var(--space-1); font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: .12em; text-transform: uppercase; color: rgba(255, 215, 220, 0.78); }
-   .ax-ribbon__item { white-space: nowrap; }
-   .ax-ribbon__sep { opacity: .45; }
+   .ax-topbar__actions { flex: 0 0 auto; display: inline-flex; align-items: center; gap: var(--space-2); }
+   .ax-lang-toggle { min-width: 48px; padding-inline: var(--space-2); font: 700 var(--fs-12)/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+   .ax-avatar { width: calc(var(--btn-h, 36px) * .72); height: calc(var(--btn-h, 36px) * .72); border-radius: 999px; border: 1px solid rgba(255,84,98,0.28); background: linear-gradient(180deg, rgba(255,84,98,0.25), rgba(177,15,30,0.85)); box-shadow: 0 0 14px rgba(255,84,98,0.26) inset; display: inline-flex; align-items: center; justify-content: center; font: 700 var(--fs-12)/1 var(--font-mono); letter-spacing: .08em; color: #ffe5ea; }
    
    .ax-ticker { border-block: 1px solid rgba(255, 32, 52, 0.16); background: linear-gradient(180deg, rgba(16, 9, 12, 0.82), rgba(10, 13, 16, 0.68)); }
    .ax-ticker .ax-container { padding-block: var(--space-2); }
@@ -197,11 +279,16 @@
    /* ============================
       5) Status Line
       ============================ */
-   .ax-status-line { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+   .ax-status-line { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; padding-block: var(--space-1); }
    .ax-status-line__group { display: inline-flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
-   .ax-status-line__group--right { margin-left: auto; }
+   .ax-status-line__group--crumbs { flex: 1 1 auto; }
+   .ax-status-line__group--meta { flex: 0 0 auto; }
    .ax-status-line__time { font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: .08em; color: var(--ax-muted); }
    .ax-status-line__route { font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: .08em; color: var(--ax-muted); white-space: nowrap; }
+   .ax-status-line__chip { display: inline-flex; align-items: center; gap: 6px; }
+   @media (max-width: 720px){
+     .ax-status-line [data-hide-sm='true']{ display: none; }
+   }
    
    /* ============================
       6) Modules Pattern

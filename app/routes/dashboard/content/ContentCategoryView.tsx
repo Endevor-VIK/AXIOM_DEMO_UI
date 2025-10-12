@@ -190,7 +190,7 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
           items={ordered}
           selectedId={selectedItem?.id ?? null}
           onSelect={handleSelect}
-          renderExpanded={isDesktop ? renderExpanded : undefined}
+          {...(isDesktop ? { renderExpanded } : {})}
         />
       </div>
     </div>
