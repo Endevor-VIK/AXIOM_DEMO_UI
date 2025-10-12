@@ -554,9 +554,9 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - **AC:** UX единообразен и читаем на 1920/1440/1024/390 ширинах.
 
 ### 12.8 Токены и глобальные эффекты (см. §4.7)
-- [ ] **P1** RED-XS плотность (`--ax-scale: 0.9`, пересчёт `--btn-h/--chip-h/--input-h`).
-- [ ] **P1** `.ax-link-underline` с анимацией `::after` (меню/табы/линки).
-- [ ] **P1** StatusLine (crumbs: MODE/SECTION/ENV/версия/время).
+- [x] **P1** RED-XS плотность (`--ax-scale: 0.9`, пересчёт `--btn-h/--chip-h/--input-h`). ✅ (2025-10-11, by Codex, CHG-2025-10-11-005)
+- [x] **P1** `.ax-link-underline` с анимацией `::after` (меню/табы/линки). ✅ (2025-10-11, by Codex, CHG-2025-10-11-005)
+- [x] **P1** StatusLine (crumbs: MODE/SECTION/ENV/версия/время). ✅ (2025-10-11, by Codex, CHG-2025-10-11-005)
 - [ ] **P2** Обновлённый `Ticker` (fade-mask, pause-on-hover, reduced-motion).
 - **AC:** визуально единый стиль, контраст и фокус соответствуют a11y.
 
@@ -759,6 +759,24 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-11-005 - **FEAT** Token refresh & status polish (DONE)
+**Related:** §12.8-P1
+**Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-12 05:01 CET)
+**Changes (plan):**
+- align design tokens with RED-XS density and semantic color roles per §4.7
+- roll updated link underline + chip states across navigation/components
+- modernize status line layout with mode/section crumbs and responsive meta
+**Changes (actual):**
+- rebuilt `styles/tokens.css` around `--ax-scale`, refreshed palette, control heights, spacing aliases; synced `ax-design/tokens.css`
+- updated global/app styles to use the new tokens: link underline helper, chip variants, status line grouping, topbar controls, inline card titles
+- adjusted `_layout.tsx`/`StatusLine.tsx` to surface mode/section/version chips and added language toggle/avatar affordances
+- refreshed component tabs to consume tokenized sizing and underline styling
+**AC Check:**
+- [x] Density tokens apply consistently to buttons/chips/inputs across shell
+- [x] Navigation links and inline titles use animated underline via shared helper
+- [x] StatusLine now reports MODE/SECTION/ENV/version/time with responsive chips
+**Result:** DONE
+
 #### CHG-2025-10-11-004 - **FEAT** Character manifests migration (DONE)
 **Related:** §12.9-P0, §12.9-P1
 **Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-12 03:04 CET); lint: `npm run validate:content`
