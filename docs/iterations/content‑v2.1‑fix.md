@@ -561,9 +561,9 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - **AC:** визуально единый стиль, контраст и фокус соответствуют a11y.
 
 ### 12.9 Контент и манифест
-- [ ] **P0** Разложить `CHR-VIKTOR-0301` и `CHR-AXIOM-0303` по каталогу `public/data/content/characters/<ID>/` (+ ассеты).
-- [ ] **P0** Обновить `manifest.json`: `renderMode: "hybrid"`, `assetsBase`, `lang`, `version`.
-- [ ] **P1** Проверка относительных ссылок/картинок (CLI-линтер).
+- [x] **P0** Разложить `CHR-VIKTOR-0301` и `CHR-AXIOM-0303` по каталогу `public/data/content/characters/<ID>/` (+ ассеты). ✅ (2025-10-11, by Codex, CHG-2025-10-11-004)
+- [x] **P0** Обновить `manifest.json`: `renderMode: "hybrid"`, `assetsBase`, `lang`, `version`. ✅ (2025-10-11, by Codex, CHG-2025-10-11-004)
+- [x] **P1** Проверка относительных ссылок/картинок (CLI-линтер). ✅ (2025-10-11, by Codex, CHG-2025-10-11-004)
 - **AC:** гибриды открываются; обложки/картинки видны в preview и reader.
 
 ### 12.10 Тестирование (см. §6)
@@ -759,6 +759,23 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-11-004 - **FEAT** Character manifests migration (DONE)
+**Related:** §12.9-P0, §12.9-P1
+**Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-12 03:04 CET); lint: `npm run validate:content`
+**Changes (plan):**
+- relocate CHR-VIKTOR-0301 and CHR-AXIOM-0303 into dedicated character directories with scoped assets
+- refresh characters manifest to mark hybrid render metadata and expose assetsBase/version
+- verify relative media paths via CLI lint to ensure hybrid previews pick up images
+**Changes (actual):**
+- moved Viktor and AXIOM markdown + assets into `public/data/content/characters/CHR-*/` and cleaned old folders
+- updated `characters/manifest.json` with hybrid renderMode, assetsBase, version tags, and kept lang/metadata in sync
+- patched cross-links inside AXIOM entry to the new Viktor location and ran `npm run validate:content` alongside unit suite
+**AC Check:**
+- [x] Both hybrid characters open in PreviewPane/reader with cover imagery intact
+- [x] Manifest entries expose correct render metadata and resolve assets via new base paths
+- [x] CLI validation passes with no broken relative assets
+**Result:** DONE
+
 #### CHG-2025-10-11-003 - **FEAT** Inline expand & reader polish (DONE)
 **Related:** §12.6-P0, §12.6-P1
 **Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-12 02:01 CET)
