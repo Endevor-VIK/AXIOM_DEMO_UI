@@ -557,7 +557,7 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - [x] **P1** RED-XS плотность (`--ax-scale: 0.9`, пересчёт `--btn-h/--chip-h/--input-h`). ✅ (2025-10-11, by Codex, CHG-2025-10-11-005)
 - [x] **P1** `.ax-link-underline` с анимацией `::after` (меню/табы/линки). ✅ (2025-10-11, by Codex, CHG-2025-10-11-005)
 - [x] **P1** StatusLine (crumbs: MODE/SECTION/ENV/версия/время). ✅ (2025-10-11, by Codex, CHG-2025-10-11-005)
-- [ ] **P2** Обновлённый `Ticker` (fade-mask, pause-on-hover, reduced-motion).
+- [x] **P2** Обновлённый `Ticker` (fade-mask, pause-on-hover, reduced-motion). ✅ (2025-10-11, by Codex, CHG-2025-10-11-006)
 - **AC:** визуально единый стиль, контраст и фокус соответствуют a11y.
 
 ### 12.9 Контент и манифест
@@ -775,6 +775,22 @@ refs:
 - [x] Density tokens apply consistently to buttons/chips/inputs across shell
 - [x] Navigation links and inline titles use animated underline via shared helper
 - [x] StatusLine now reports MODE/SECTION/ENV/version/time with responsive chips
+**Result:** DONE
+
+#### CHG-2025-10-11-006 - **FEAT** Headlines ticker polish (DONE)
+**Related:** §12.8-P2
+**Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar
+**Changes (plan):**
+- add fade masks and hover pause to `HeadlinesTicker`, respect reduced-motion
+- ensure seamless loop re-inits on resize while keeping animation fluid
+**Changes (actual):**
+- updated ticker CSS with gradient fade edges and paused state; JS pauses on hover/focus
+- wired reduced-motion path to disable animation and allow manual scrolling
+- refined resize observer logic to rebuild the loop when viewport width changes
+**AC Check:**
+- [x] Fade masks applied at edges without clipping content
+- [x] Hover/focus pauses animation; reduced-motion preference removes auto-scroll
+- [x] Loop remains seamless after container resize
 **Result:** DONE
 
 #### CHG-2025-10-12-001 - **TEST** Core suite validation (PARTIAL)
