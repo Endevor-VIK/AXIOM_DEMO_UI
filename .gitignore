@@ -11,3 +11,6 @@ api/
 app/services/ai.ts
 .vs/
 out/
+playwright-report/
+test-results/
+reports/

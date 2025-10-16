@@ -80,7 +80,7 @@ export interface ContentCategoryViewProps {
 const noop = () => {}
 
 const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) => {
-  const { aggregate, loading, error, filters, dataBase, pinned } = useContentHub()
+  const { aggregate, loading, error, filters, dataBase, pinned, togglePin, isPinned } = useContentHub()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -158,6 +158,18 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     [location.pathname, navigate, searchParams],
   )
 
+  const handleTogglePin = useCallback(
+    (item: ContentItem) => {
+      togglePin(item.id)
+    },
+    [togglePin],
+  )
+
+  const handleIsPinned = useCallback(
+    (item: ContentItem) => isPinned(item.id),
+    [isPinned],
+  )
+
   const renderExpanded = useCallback(
     (item: ContentItem) => (
       <ContentCardExpanded item={item} dataBase={dataBase} onExpand={handleExpand} />
@@ -190,6 +202,8 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
           items={ordered}
           selectedId={selectedItem?.id ?? null}
           onSelect={handleSelect}
+          onTogglePin={handleTogglePin}
+          isPinned={handleIsPinned}
           {...(isDesktop ? { renderExpanded } : {})}
         />
       </div>

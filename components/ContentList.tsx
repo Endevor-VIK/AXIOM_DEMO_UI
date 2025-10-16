@@ -9,11 +9,20 @@ export interface ContentListProps {
   selectedId?: string | null
   onSelect: (item: ContentItem) => void
   renderExpanded?: (item: ContentItem) => React.ReactNode
+  onTogglePin?: (item: ContentItem) => void
+  isPinned?: (item: ContentItem) => boolean
 }
 
 const PLACEHOLDER_ITEMS = 3
 
-export default function ContentList({ items, selectedId, onSelect, renderExpanded }: ContentListProps) {
+export default function ContentList({
+  items,
+  selectedId,
+  onSelect,
+  renderExpanded,
+  onTogglePin,
+  isPinned,
+}: ContentListProps) {
   const hasItems = items.length > 0
 
   return (
@@ -21,8 +30,30 @@ export default function ContentList({ items, selectedId, onSelect, renderExpande
       {hasItems
         ? items.map((item) => {
             const isSelected = item.id === selectedId
+            const pinned = isPinned?.(item) ?? false
             return (
-              <article key={item.id} className={classNames('ax-content-card', isSelected && 'is-selected')}>
+              <article
+                key={item.id}
+                data-testid={`content-card-${item.id}`}
+                className={classNames('ax-content-card', isSelected && 'is-selected', pinned && 'is-pinned')}
+              >
+                {onTogglePin ? (
+                  <button
+                    type='button'
+                    className='ax-content-card__pin'
+                    aria-label={`${pinned ? 'Unpin' : 'Pin'} ${safeText(item.title)}`}
+                    aria-pressed={pinned ? 'true' : 'false'}
+                    data-testid={`pin-toggle-${item.id}`}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onTogglePin(item)
+                    }}
+                  >
+                    <span aria-hidden='true' className='ax-content-card__pin-icon' data-state={pinned ? 'pinned' : 'unpinned'}>
+                      {pinned ? 'PINNED' : 'PIN'}
+                    </span>
+                  </button>
+                ) : null}
                 <button
                   type='button'
                   role='option'
