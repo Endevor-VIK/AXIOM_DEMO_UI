@@ -32,10 +32,20 @@ export default function ContentList({
             const isSelected = item.id === selectedId
             const pinned = isPinned?.(item) ?? false
             return (
-              <article
+              <div
                 key={item.id}
                 data-testid={`content-card-${item.id}`}
+                role='option'
+                tabIndex={0}
+                aria-selected={isSelected}
                 className={classNames('ax-content-card', isSelected && 'is-selected', pinned && 'is-pinned')}
+                onClick={() => onSelect(item)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    onSelect(item)
+                  }
+                }}
               >
                 {onTogglePin ? (
                   <button
@@ -47,6 +57,7 @@ export default function ContentList({
                     onClick={(event) => {
                       event.stopPropagation()
                       onTogglePin(item)
+                      ;(event.currentTarget.parentElement as HTMLElement | null)?.focus()
                     }}
                   >
                     <span aria-hidden='true' className='ax-content-card__pin-icon' data-state={pinned ? 'pinned' : 'unpinned'}>
@@ -54,13 +65,7 @@ export default function ContentList({
                     </span>
                   </button>
                 ) : null}
-                <button
-                  type='button'
-                  role='option'
-                  aria-selected={isSelected}
-                  className='ax-content-card__btn'
-                  onClick={() => onSelect(item)}
-                >
+                <div className='ax-content-card__btn'>
                   <div className='ax-content-card__title'>
                     <span className='ax-link-underline'>{safeText(item.title)}</span>
                   </div>
@@ -78,19 +83,19 @@ export default function ContentList({
                     ) : null}
                   </div>
                   <p className='ax-content-card__summary'>{safeText(item.summary)}</p>
-                </button>
+                </div>
                 {isSelected && renderExpanded ? renderExpanded(item) : null}
-              </article>
+              </div>
             )
           })
         : Array.from({ length: PLACEHOLDER_ITEMS }).map((_, index) => (
-            <article key={index} className='ax-content-card'>
+            <div key={index} className='ax-content-card' role='presentation'>
               <div className='ax-content-card__btn' aria-hidden='true'>
                 <div className='ax-skeleton ax-skeleton--text' style={{ width: '60%' }} />
                 <div className='ax-skeleton ax-skeleton--text' style={{ width: '35%', marginTop: 8 }} />
                 <div className='ax-skeleton ax-skeleton--block' style={{ height: 48, marginTop: 12 }} />
               </div>
-            </article>
+            </div>
           ))}
     </div>
   )

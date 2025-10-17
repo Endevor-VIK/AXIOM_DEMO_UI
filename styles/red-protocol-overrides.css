@@ -193,10 +193,11 @@
   background: transparent;
   border: 0;
   border-radius: var(--ax-radius);
+  cursor: inherit;
 }
 
-.ax-content-card__btn:hover,
-.ax-content-card__btn:focus-visible {
+.ax-content-card:hover .ax-content-card__btn,
+.ax-content-card:focus-visible .ax-content-card__btn {
   background: rgba(225, 29, 46, 0.06);
 }
 
@@ -235,20 +236,25 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 42px;
+ 	min-width: 42px;
   padding: 2px 6px;
   font-size: 10px;
   letter-spacing: 0.16em;
   border-radius: 999px;
-  border: 1px solid var(--ax-color-border);
-  color: var(--ax-color-subtle);
-  background: rgba(255,255,255,0.72);
+  border: 1px solid var(--ax-color-border-strong, rgba(0,0,0,0.18));
+  color: var(--ax-color-text-strong, #1d1d1f);
+  background: rgba(255,255,255,0.92);
 }
 
 .ax-content-card__pin-icon[data-state='pinned'] {
   background: var(--ax-color-accent);
   border-color: var(--ax-color-accent);
   color: var(--ax-color-contrast, #ffffff);
+}
+.ax-content-card__pin-icon[data-state='unpinned'] {
+  background: transparent;
+  color: var(--ax-color-contrast, #f5f5f5);
+  border-color: rgba(255, 255, 255, 0.24);
 }
 
 .ax-chip {
