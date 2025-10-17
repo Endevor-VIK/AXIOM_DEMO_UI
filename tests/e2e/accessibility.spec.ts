@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test'
-import axe from 'axe-core'
+import { test, expect } from "@playwright/test"
+import axe from "axe-core"
 
-import { bootstrapSession, stubContentApi } from './utils'
+import { bootstrapSession, stubContentApi } from "./utils"
 
-test.describe('Accessibility', () => {
-  test('content dashboard has no axe violations', async ({ page }) => {
+test.describe("Accessibility", () => {
+  test("content dashboard has no axe violations", async ({ page }) => {
     page.setDefaultTimeout(120000)
     await stubContentApi(page)
     await bootstrapSession(page)
@@ -14,8 +14,8 @@ test.describe('Accessibility', () => {
     })
 
     await page.goto('/dashboard/content/all', { waitUntil: 'domcontentloaded' })
-    console.log('[debug] current URL', page.url())
-    await page.waitForTimeout(1000)
+    await page.waitForLoadState('networkidle')
+
     await page.waitForFunction(
       () => {
         const nodes = Array.from(document.querySelectorAll('[data-testid^="content-card-"]'))
@@ -25,7 +25,11 @@ test.describe('Accessibility', () => {
     )
     await expect(page.locator('[data-testid^="content-card-"]').first()).toBeVisible({ timeout: 15000 })
 
-    await page.addScriptTag({ content: axe.source })
+    await page.evaluate((source: string) => {
+      const script = document.createElement('script')
+      script.textContent = source
+      document.head.appendChild(script)
+    }, axe.source)
     const results = await page.evaluate(async () => {
       if (!('axe' in window)) {
         throw new Error('axe not injected')
@@ -56,3 +60,4 @@ test.describe('Accessibility', () => {
     expect(results.violations, results.violations.map((violation) => violation.id).join(', ')).toEqual([])
   })
 })
+

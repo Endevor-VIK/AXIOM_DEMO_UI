@@ -568,8 +568,8 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 
 ### 12.10 Тестирование (см. §6)
 - [x] **P0** Юнит-тесты: префиксация CSS, `resolveAssets`, рендер `plain/hybrid/sandbox`. ✅ (2025-10-12, by Codex, CHG-2025-10-12-001)
-- [ ] **P1** a11y-проверки (axe), Lighthouse ≥ 90.
-- [ ] **P1** E2E (Playwright/Cypress): выбор карточки, фильтры, pin, reader, sandbox.
+  - [ ] **P1** a11y-проверки (axe), Lighthouse ≥ 90. _(axe suite still failing: pin badge contrast < 4.5:1; axe script injection pending)_.
+  - [ ] **P1** E2E (Playwright/Cypress): выбор карточки, фильтры, pin, reader, sandbox. _(Playwright specs drafted; ожидает зелёный axe перед фиксацией)_.
 - **AC:** зелёные тесты в CI; отчёты приложены к PR.
 
 ### 12.11 Документация и миграции (см. §4.8)
@@ -759,6 +759,24 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-13-001 - **TEST** Accessibility harness hardening (IN_PROGRESS)
+**Related:** §12.10-P1
+**Artifacts:** tests/e2e/accessibility.spec.ts; tests/e2e/content.spec.ts; components/ContentList.tsx; styles/red-protocol-overrides.css
+**Changes (plan):**
+- стабилизировать запуск axe через Playwright и ограничить область проверки `.ax-content-hub`
+- довести контраст бейджа pin ≥ 4.5:1 и зафиксировать отчёт
+- пройти chromium/firefox a11y + e2e сценарии и приложить в §12
+**Changes (actual):**
+- внедрены вспомогательные хелперы `stubContentApi` / `bootstrapSession`, настройка axe через `addInitScript`
+- переработан `ContentList` (role="option", сохранение фокуса, pin badge) и уточнён стиль бейджа (контраст пока < 4.5:1)
+- подготовлены Playwright сценарии (chromium) и собраны логи неудачных прогонов
+**AC Check:**
+- [ ] axe suit зелёный в chromium/firefox с приложенным отчётом
+- [ ] Lighthouse ≥ 90 сохранён и приложен к PR
+- [ ] Playwright E2E (card/filter/pin/reader/sandbox) успешен и приложен
+**Result:** IN_PROGRESS
+**Notes:** блокер — подобрать палитру pin badge под Red Protocol, после чего повторить прогон axe и зафиксировать отчёты
+
 #### CHG-2025-10-11-005 - **FEAT** Token refresh & status polish (DONE)
 **Related:** §12.8-P1
 **Artifacts:** branch feature/content-v2.1-fix-2.1.2-previewbar; tests: `npm run test -- --runInBand` (2025-10-12 05:01 CET)
