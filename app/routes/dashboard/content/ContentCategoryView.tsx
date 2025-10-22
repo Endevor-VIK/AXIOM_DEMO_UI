@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ContentList from '@/components/ContentList'
-import ContentCardExpanded from '@/components/ContentCardExpanded'
+import PreviewPane from '@/components/PreviewPane'
 import type { ContentCategory, ContentItem, ContentStatus } from '@/lib/vfs'
 
 import { useContentHub } from './context'
@@ -58,7 +58,7 @@ function orderByPins(items: ContentItem[], pinned: string[]): ContentItem[] {
 
 function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState<boolean>(() =>
-    typeof window !== 'undefined' ? window.matchMedia(query).matches : true
+    typeof window !== 'undefined' ? window.matchMedia(query).matches : true,
   )
 
   useEffect(() => {
@@ -84,6 +84,8 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
+  const previewRef = useRef<HTMLDivElement | null>(null)
+  const lastScrolledId = useRef<string | null>(null)
 
   const items = useMemo(() => {
     if (!aggregate) return []
@@ -125,6 +127,27 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     return ordered[0] ?? null
   }, [ordered, itemParam])
 
+  useEffect(() => {
+    if (!isDesktop) return
+    if (!selectedItem) return
+    if (typeof window === 'undefined') return
+    if (!previewRef.current) return
+
+    const previousId = lastScrolledId.current
+    lastScrolledId.current = selectedItem.id
+
+    if (!previousId || previousId === selectedItem.id) return
+    const rect = previewRef.current.getBoundingClientRect()
+    const stickyTop = 96
+    const withinViewport = rect.top >= stickyTop && rect.bottom <= window.innerHeight
+    if (!withinViewport) {
+      previewRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: rect.top < stickyTop ? 'start' : 'center',
+      })
+    }
+  }, [selectedItem, isDesktop])
+
   const handleSelect = useCallback(
     (item: ContentItem) => {
       const next = new URLSearchParams(searchParams)
@@ -141,7 +164,7 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
         })
       }
     },
-    [isDesktop, searchParams, setSearchParams, navigate, location.pathname]
+    [isDesktop, searchParams, setSearchParams, navigate, location.pathname],
   )
 
   const handleExpand = useCallback(
@@ -170,19 +193,19 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     [isPinned],
   )
 
-  const renderExpanded = useCallback(
-    (item: ContentItem) => (
-      <ContentCardExpanded item={item} dataBase={dataBase} onExpand={handleExpand} />
-    ),
-    [dataBase, handleExpand],
-  )
-
   if (loading) {
     return (
-      <div className='ax-content-split ax-content-split--single'>
+      <div className='ax-content-split'>
         <div className='ax-content-column list'>
           <ContentList items={[]} selectedId={null} onSelect={noop} />
         </div>
+        {isDesktop ? (
+          <aside className='ax-panel-right' aria-label='Preview panel'>
+            <div className='ax-preview-panel' ref={previewRef} role='region' aria-label='Content preview'>
+              <PreviewPane item={null} dataBase={dataBase} />
+            </div>
+          </aside>
+        ) : null}
       </div>
     )
   }
@@ -196,7 +219,7 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   }
 
   return (
-    <div className='ax-content-split ax-content-split--single'>
+    <div className='ax-content-split'>
       <div className='ax-content-column list'>
         <ContentList
           items={ordered}
@@ -204,9 +227,15 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
           onSelect={handleSelect}
           onTogglePin={handleTogglePin}
           isPinned={handleIsPinned}
-          {...(isDesktop ? { renderExpanded } : {})}
         />
       </div>
+      {isDesktop ? (
+        <aside className='ax-panel-right' aria-label='Preview panel'>
+          <div className='ax-preview-panel' ref={previewRef} role='region' aria-label='Content preview'>
+            <PreviewPane item={selectedItem} dataBase={dataBase} onExpand={handleExpand} />
+          </div>
+        </aside>
+      ) : null}
     </div>
   )
 }

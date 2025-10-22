@@ -547,10 +547,10 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - **AC:** навигация назад сохраняет фильтры и выбранный `item`.
 
 ### 12.7 Редизайн ContentHub (см. §4.6)
-- [ ] **P1** Обновить `ContentCategoryTiles` (ARIA `tablist/tab`, active-state, counts).
-- [ ] **P1** Компактные фильтры (`ax-input`, `ax-chip`, debounce для поиска).
-- [ ] **P1** Список: pin-иконка, `line-clamp`, tooltip summary, автор/аватар (если есть).
-- [ ] **P1** Sticky `PreviewPane` ~72vh, автоскролл к превью при выборе.
+- [x] **P1** Обновить `ContentCategoryTiles` (ARIA `tablist/tab`, active-state, counts). ✅ (2025-10-22, by Codex, CHG-2025-10-22-001)
+- [x] **P1** Компактные фильтры (`ax-input`, `ax-chip`, debounce для поиска). ✅ (2025-10-22, by Codex, CHG-2025-10-22-001)
+- [x] **P1** Список: pin-иконка, `line-clamp`, tooltip summary, автор/аватар (если есть). ✅ (2025-10-22, by Codex, CHG-2025-10-22-001)
+- [x] **P1** Sticky `PreviewPane` ~72vh, автоскролл к превью при выборе. ✅ (2025-10-22, by Codex, CHG-2025-10-22-001)
 - **AC:** UX единообразен и читаем на 1920/1440/1024/390 ширинах.
 
 ### 12.8 Токены и глобальные эффекты (см. §4.7)
@@ -759,6 +759,21 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-22-001 — **FEAT** ContentHub redesign baseline (DONE)
+**Related:** §12.7-P1
+**Artifacts:** branch feat/content-v2.1-fix/content-hub-redesign; files: app/routes/dashboard/content/ContentCategoryView.tsx, components/ContentFilters.tsx, components/ContentList.tsx, components/content/CategoryStats.tsx, styles/red-protocol-overrides.css
+**Changes:**
+- перестроен `ContentCategoryView` в split-лейаут со sticky PreviewPane (~72vh) и плавным scroll-to-preview; mobile по-прежнему переходит в full reader.
+- обновлён навигационный блок категорий: `tablist` + roving focus, клавиатурные стрелки и space/enter в стиле §4.6.
+- фильтры получили debounce-поиск, статус/языковые chip-группы; карточки списка — новый pin-glyph, summary line-clamp/tooltip и блок автора (аватар + имя).
+- донастроены Red Protocol стили: превью-панель, chip-кнопки, стек тегов, состояния pin, обновлены глобальные размеры split-layout.
+**AC Check:**
+- [x] UX читаем на 1920/1440/1024/390 (responsive devtools, manual resize)
+- [x] PreviewPane закреплён и при выборе карточки попадает в вьюпорт
+- [x] Pin, фильтры, summary соответствуют спецификации, управления доступны с клавиатуры
+**Result:** DONE
+**Notes:** `npm run typecheck` падает на legacy VFS/tests (предсуществующие проблемы, вне объёма CHG); изменения не затрагивали их.
+
 #### CHG-2025-10-13-001 - **TEST** Accessibility harness hardening (IN_PROGRESS)
 **Related:** §12.10-P1
 **Artifacts:** tests/e2e/accessibility.spec.ts; tests/e2e/content.spec.ts; components/ContentList.tsx; styles/red-protocol-overrides.css

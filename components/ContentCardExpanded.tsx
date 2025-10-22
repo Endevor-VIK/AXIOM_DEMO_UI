@@ -33,7 +33,7 @@ const ContentCardExpanded: React.FC<ContentCardExpandedProps> = ({ item, dataBas
         dataBase={dataBase}
         allowedModes={[preferredMode]}
         initialZoom={100}
-        onExpand={onExpand}
+        {...(onExpand ? { onExpand } : {})}
       />
     </div>
   )

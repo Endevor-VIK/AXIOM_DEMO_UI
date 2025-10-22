@@ -8,18 +8,29 @@ export interface ContentListProps {
   items: ContentItem[]
   selectedId?: string | null
   onSelect: (item: ContentItem) => void
-  renderExpanded?: (item: ContentItem) => React.ReactNode
   onTogglePin?: (item: ContentItem) => void
   isPinned?: (item: ContentItem) => boolean
 }
 
 const PLACEHOLDER_ITEMS = 3
 
+function getAuthorInitials(name: string | undefined): string {
+  if (!name) return ''
+  const parts = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+  if (!parts.length) return ''
+  if (parts.length === 1) return parts[0]!.charAt(0).toUpperCase()
+  const first = parts[0]!.charAt(0)
+  const last = parts[parts.length - 1]!.charAt(0)
+  return `${first}${last}`.toUpperCase()
+}
+
 export default function ContentList({
   items,
   selectedId,
   onSelect,
-  renderExpanded,
   onTogglePin,
   isPinned,
 }: ContentListProps) {
@@ -31,6 +42,8 @@ export default function ContentList({
         ? items.map((item) => {
             const isSelected = item.id === selectedId
             const pinned = isPinned?.(item) ?? false
+            const authorName = item.author ? safeText(item.author) : null
+            const authorInitials = getAuthorInitials(item.author)
             return (
               <div
                 key={item.id}
@@ -60,8 +73,17 @@ export default function ContentList({
                       ;(event.currentTarget.parentElement as HTMLElement | null)?.focus()
                     }}
                   >
-                    <span aria-hidden='true' className='ax-content-card__pin-icon' data-state={pinned ? 'pinned' : 'unpinned'}>
-                      {pinned ? 'PINNED' : 'PIN'}
+                    <span
+                      aria-hidden='true'
+                      className='ax-content-card__pin-icon'
+                      data-state={pinned ? 'pinned' : 'unpinned'}
+                    >
+                      <svg viewBox='0 0 16 16' focusable='false'>
+                        <path
+                          d='M6.25 1.5h3.5l-.34 3.82 2.09 1.88v1.3H9.3L8.5 14.5h-1L6.7 8.5H4.5v-1.3l2.09-1.88L6.25 1.5Z'
+                          fill='currentColor'
+                        />
+                      </svg>
                     </span>
                   </button>
                 ) : null}
@@ -71,20 +93,37 @@ export default function ContentList({
                   </div>
                   <div className='ax-content-card__meta'>
                     <span className='ax-content-card__date'>{formatDate(item.date ?? item.createdAt)}</span>
-                    {item.tags?.length ? (
-                      <span className='ax-content-card__tags'>
-                        {item.tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className='ax-chip'>
-                            {safeText(tag)}
-                          </span>
-                        ))}
-                        {item.tags.length > 3 ? <span className='ax-chip ax-chip--more'>+{item.tags.length - 3}</span> : null}
+                    {authorName ? (
+                      <span className='ax-content-card__author'>
+                        <span className='ax-avatar' aria-hidden='true'>
+                          {authorInitials || 'AX'}
+                        </span>
+                        <span className='ax-content-card__author-name'>{authorName}</span>
                       </span>
                     ) : null}
                   </div>
-                  <p className='ax-content-card__summary'>{safeText(item.summary)}</p>
+                  {item.tags?.length ? (
+                    <div className='ax-content-card__tags' aria-label='Tags'>
+                      {item.tags.slice(0, 3).map((tag) => (
+                        <span key={tag} className='ax-chip'>
+                          {safeText(tag)}
+                        </span>
+                      ))}
+                      {item.tags.length > 3 ? (
+                        <span className='ax-chip ax-chip--more'>+{item.tags.length - 3}</span>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {item.summary ? (
+                    <p
+                      className='ax-content-card__summary'
+                      title={safeText(item.summary)}
+                      aria-label='Summary'
+                    >
+                      {safeText(item.summary)}
+                    </p>
+                  ) : null}
                 </div>
-                {isSelected && renderExpanded ? renderExpanded(item) : null}
               </div>
             )
           })
