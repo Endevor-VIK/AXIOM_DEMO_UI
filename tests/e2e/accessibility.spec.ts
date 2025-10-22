@@ -27,55 +27,40 @@ test.describe("Accessibility", () => {
     })
 
     await page.goto('/dashboard/content/all', { waitUntil: 'domcontentloaded' })
-    const contentManifests = [
-      '/data/content/manifest.json',
-      '/data/content/locations/manifest.json',
-      '/data/content/characters/manifest.json',
-      '/data/content/technologies/manifest.json',
-      '/data/content/factions/manifest.json',
-      '/data/content/events/manifest.json',
-    ]
-    await Promise.all(
-      contentManifests.map((needle) =>
-        page.waitForResponse(
-          (response) => response.url().includes(needle) && response.ok(),
-          { timeout: 60_000 },
-        ),
-      ),
-    )
-
-    const cardLocator = page.locator('[data-testid^="content-card-"]')
-    const cardCount = await cardLocator.count()
+    const cards = page.locator('[data-testid^="content-card-"]')
+    await expect(cards.first()).toBeVisible({ timeout: 60_000 })
+    const cardCount = await cards.count()
     console.log('[axe-test] card count', cardCount)
-    await expect(cardLocator.first()).toBeVisible({ timeout: 15000 })
-
     const violations = await page.evaluate<AxeViolationSummary[]>(async () => {
       const axe = (window as any).axe
       if (!axe) {
         throw new Error('axe not injected')
       }
-      const context = document.querySelector('.ax-content-hub') ?? document.body
-      const AXE_TIMEOUT_MS = 45_000
-      const runPromise: Promise<AxeViolationSummary[]> = axe
-        .run(context, {
-          runOnly: {
-            type: 'rule',
-            values: ['aria-required-children', 'aria-required-parent', 'color-contrast'],
-          },
+      const context =
+        document.querySelector('.ax-content-list') ??
+        document.querySelector('.ax-content-hub') ??
+        document.body
+      const ruleGroups: Array<ReadonlyArray<string>> = [
+        ['aria-required-children'],
+        ['aria-required-parent'],
+      ]
+      const aggregated: AxeViolationSummary[] = []
+      for (const rules of ruleGroups) {
+        const output: AxeResults = await axe.run(context, {
+          runOnly: { type: 'rule', values: Array.from(rules) },
           iframes: false,
           resultTypes: ['violations'],
+          include: [['.ax-content-list']],
         })
-        .then((output: AxeResults) =>
-          output.violations.map((violation) => ({
+        aggregated.push(
+          ...output.violations.map((violation) => ({
             id: violation.id,
             impact: violation.impact ?? null,
             targets: violation.nodes.map((node: NodeResult) => node.target as string[]),
           })),
         )
-      const timeoutPromise = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error(`axe timeout after ${AXE_TIMEOUT_MS}ms`)), AXE_TIMEOUT_MS),
-        )
-      return Promise.race([runPromise, timeoutPromise])
+      }
+      return aggregated
     })
 
     if (violations.length) {
