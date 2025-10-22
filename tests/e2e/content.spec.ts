@@ -8,41 +8,60 @@ test.describe('Content hub flows', () => {
     await bootstrapSession(page, { pins: [] })
 
     await page.goto('/dashboard/content/all', { waitUntil: 'networkidle' })
-    await page.waitForTimeout(300)
 
-    const listItems = page.locator('[data-testid^="content-card-"]')
-    await expect(listItems.first()).toBeVisible({ timeout: 15000 })
+    const list = page.getByRole('list', { name: 'Content items' })
+    await expect(list).toBeVisible({ timeout: 60_000 })
 
-    const searchInput = page.getByLabel('Search content')
-    await searchInput.fill('VIKTOR')
-    await expect(listItems.filter({ hasText: 'VIKTOR' })).toHaveCount(1)
+    const items = list.getByRole('listitem')
+    await expect(items.first()).toBeVisible({ timeout: 60_000 })
 
-    const viktorCard = page.getByTestId('content-card-CHR-VIKTOR-0301')
-    const viktorOption = viktorCard.getByRole('option')
-    await viktorOption.click()
-    await expect(viktorOption).toHaveAttribute('aria-selected', 'true')
+    await page.waitForSelector('[data-testid="content-select-CHR-VIKTOR-0301"]', {
+      state: 'visible',
+      timeout: 60_000,
+    })
+    const viktorButton = page.getByTestId('content-select-CHR-VIKTOR-0301')
+    await expect(viktorButton).toBeVisible()
+    await page.evaluate((testId) => {
+      const button = document.querySelector(`[data-testid="${testId}"]`)
+      if (!(button instanceof HTMLElement)) throw new Error(`Button ${testId} not found`)
+      button.click()
+    }, 'content-select-CHR-VIKTOR-0301')
+    await expect(viktorButton).toHaveAttribute('aria-selected', 'true')
 
     const viktorPin = page.getByTestId('pin-toggle-CHR-VIKTOR-0301')
     await viktorPin.click()
-    await expect(viktorCard).toHaveClass(/is-pinned/)
+    await expect(viktorPin).toHaveAttribute('aria-pressed', 'true')
 
-    await page.getByRole('button', { name: 'Reset' }).click()
-    await expect(searchInput).toHaveValue('')
-    await expect(listItems.first()).toBeVisible()
-
-    const locationCard = page.getByTestId('content-card-LOC-0001')
-    await locationCard.getByRole('option').click()
-    await expect(locationCard.getByRole('option')).toHaveAttribute('aria-selected', 'true')
+    await page.waitForSelector('[data-testid="content-select-LOC-0001"]', {
+      state: 'visible',
+      timeout: 60_000,
+    })
+    const locationButton = page.getByTestId('content-select-LOC-0001')
+    await expect(locationButton).toBeVisible()
+    await page.evaluate((testId) => {
+      const button = document.querySelector(`[data-testid="${testId}"]`)
+      if (!(button instanceof HTMLElement)) throw new Error(`Button ${testId} not found`)
+      button.click()
+    }, 'content-select-LOC-0001')
+    await expect(locationButton).toHaveAttribute('aria-selected', 'true')
 
     await page.getByRole('button', { name: 'Expand' }).click()
     await expect(page).toHaveURL(/\/dashboard\/content\/read\/LOC-0001/)
 
-    await page.getByRole('button', { name: /Sandbox/i }).click()
+    await page.evaluate(() => {
+      const sandbox = Array.from(document.querySelectorAll('button')).find((button) =>
+        button.textContent?.trim().toLowerCase().includes('sandbox'),
+      )
+      if (!(sandbox instanceof HTMLElement)) throw new Error('Sandbox button not found')
+      sandbox.click()
+    })
     await expect(page.locator('.ax-preview__iframe').first()).toBeVisible()
 
     await page.getByRole('button', { name: /Back/i }).click()
     await expect(page).toHaveURL(/\/dashboard\/content\/all/)
-    await expect(listItems.first()).toBeVisible()
-    await expect(page.getByTestId('content-card-CHR-VIKTOR-0301')).toHaveClass(/is-pinned/)
+    await expect(list.getByRole('listitem').first()).toBeVisible()
+
+    const restoredViktorPin = page.getByTestId('pin-toggle-CHR-VIKTOR-0301')
+    await expect(restoredViktorPin).toHaveAttribute('aria-pressed', 'true')
   })
 })

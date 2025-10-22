@@ -37,7 +37,7 @@ export default function ContentList({
   const hasItems = items.length > 0
 
   return (
-    <div className='ax-content-list' role='listbox' aria-label='Content items'>
+    <div className='ax-content-list' role='list' aria-label='Content items'>
       {hasItems
         ? items.map((item) => {
             const isSelected = item.id === selectedId
@@ -48,17 +48,8 @@ export default function ContentList({
               <div
                 key={item.id}
                 data-testid={`content-card-${item.id}`}
-                role='option'
-                tabIndex={0}
-                aria-selected={isSelected}
+                role='listitem'
                 className={classNames('ax-content-card', isSelected && 'is-selected', pinned && 'is-pinned')}
-                onClick={() => onSelect(item)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault()
-                    onSelect(item)
-                  }
-                }}
               >
                 {onTogglePin ? (
                   <button
@@ -68,9 +59,11 @@ export default function ContentList({
                     aria-pressed={pinned ? 'true' : 'false'}
                     data-testid={`pin-toggle-${item.id}`}
                     onClick={(event) => {
+                      event.preventDefault()
                       event.stopPropagation()
                       onTogglePin(item)
-                      ;(event.currentTarget.parentElement as HTMLElement | null)?.focus()
+                      const option = event.currentTarget.nextElementSibling as HTMLButtonElement | null
+                      option?.focus()
                     }}
                   >
                     <span
@@ -78,7 +71,7 @@ export default function ContentList({
                       className='ax-content-card__pin-icon'
                       data-state={pinned ? 'pinned' : 'unpinned'}
                     >
-                      <svg viewBox='0 0 16 16' focusable='false'>
+                      <svg viewBox='0 0 16 16' focusable='false' aria-hidden='true'>
                         <path
                           d='M6.25 1.5h3.5l-.34 3.82 2.09 1.88v1.3H9.3L8.5 14.5h-1L6.7 8.5H4.5v-1.3l2.09-1.88L6.25 1.5Z'
                           fill='currentColor'
@@ -87,7 +80,14 @@ export default function ContentList({
                     </span>
                   </button>
                 ) : null}
-                <div className='ax-content-card__btn'>
+                <button
+                  type='button'
+                  aria-selected={isSelected}
+                  className='ax-content-card__btn'
+                  data-state={isSelected ? 'selected' : undefined}
+                  data-testid={`content-select-${item.id}`}
+                  onClick={() => onSelect(item)}
+                >
                   <div className='ax-content-card__title'>
                     <span className='ax-link-underline'>{safeText(item.title)}</span>
                   </div>
@@ -123,7 +123,7 @@ export default function ContentList({
                       {safeText(item.summary)}
                     </p>
                   ) : null}
-                </div>
+                </button>
               </div>
             )
           })
