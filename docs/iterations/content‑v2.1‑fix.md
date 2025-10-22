@@ -759,6 +759,24 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-22-002 — **TEST** A11y harness stabilization (IN_PROGRESS)
+**Related:** §12.10-P1
+**Artifacts:** tests/e2e/accessibility.spec.ts; lib/vfs/index.ts
+**Changes (plan):**
+- привести axe Playwright spec к стабильной и типобезопасной реализации (инициализация, тайм-ауты, сериализация)
+- добить `npm run typecheck` (убрать strict-ошибки в VFS/utilities и тестах)
+- прогнать `npx playwright test tests/e2e/accessibility.spec.ts --project={chromium,firefox}` и зафиксировать результат
+**Changes (actual):**
+- обновил `accessibility.spec.ts`: preload axe через `addInitScript`, дождался манифестов, добавил Promise.race c timeout, типизировал результаты и логирование таргетов.
+- починил strict TypeScript ошибки (schema split length, axe typings); `npm run typecheck` теперь зелёный.
+- Playwright run (chromium/firefox) всё ещё падает по timeout при `axe.run` (см. `tmp-playwright-log.txt`); создаётся screenshot в `test-results/...`.
+**AC Check:**
+- [ ] axe suite успешна для chromium/firefox, отчёты приложены
+- [x] typecheck проходит без ошибок
+- [ ] протокол прогона приложен в §12.10
+**Result:** IN_PROGRESS
+**Notes:** требуется дополнительная оптимизация/отладка axe-runner, т.к. `axe.run` зависает на CI Firefox/Chromium.
+
 #### CHG-2025-10-22-001 — **FEAT** ContentHub redesign baseline (DONE)
 **Related:** §12.7-P1
 **Artifacts:** branch feat/content-v2.1-fix/content-hub-redesign; files: app/routes/dashboard/content/ContentCategoryView.tsx, components/ContentFilters.tsx, components/ContentList.tsx, components/content/CategoryStats.tsx, styles/red-protocol-overrides.css

@@ -1,63 +1,93 @@
-import { test, expect } from "@playwright/test"
-import axe from "axe-core"
+import { test, expect } from '@playwright/test'
+import axe, { type AxeResults, type NodeResult } from 'axe-core'
 
-import { bootstrapSession, stubContentApi } from "./utils"
+import { bootstrapSession, stubContentApi } from './utils'
+
+type AxeViolationSummary = {
+  id: string
+  impact: string | null
+  targets: string[][]
+}
+
+declare global {
+  interface Window {
+    axe: typeof axe
+  }
+}
 
 test.describe("Accessibility", () => {
   test("content dashboard has no axe violations", async ({ page }) => {
     page.setDefaultTimeout(120000)
     await stubContentApi(page)
     await bootstrapSession(page)
+    await page.addInitScript({ content: axe.source })
 
     page.on('console', (msg) => {
       console.log('[console]', msg.type(), msg.text())
     })
 
     await page.goto('/dashboard/content/all', { waitUntil: 'domcontentloaded' })
-    await page.waitForLoadState('networkidle')
-
-    await page.waitForFunction(
-      () => {
-        const nodes = Array.from(document.querySelectorAll('[data-testid^="content-card-"]'))
-        return nodes.length > 0 && nodes.some((node) => node instanceof HTMLElement && node.offsetParent !== null)
-      },
-      { timeout: 60000 },
+    const contentManifests = [
+      '/data/content/manifest.json',
+      '/data/content/locations/manifest.json',
+      '/data/content/characters/manifest.json',
+      '/data/content/technologies/manifest.json',
+      '/data/content/factions/manifest.json',
+      '/data/content/events/manifest.json',
+    ]
+    await Promise.all(
+      contentManifests.map((needle) =>
+        page.waitForResponse(
+          (response) => response.url().includes(needle) && response.ok(),
+          { timeout: 60_000 },
+        ),
+      ),
     )
-    await expect(page.locator('[data-testid^="content-card-"]').first()).toBeVisible({ timeout: 15000 })
 
-    await page.evaluate((source: string) => {
-      const script = document.createElement('script')
-      script.textContent = source
-      document.head.appendChild(script)
-    }, axe.source)
-    const results = await page.evaluate(async () => {
-      if (!('axe' in window)) {
+    const cardLocator = page.locator('[data-testid^="content-card-"]')
+    const cardCount = await cardLocator.count()
+    console.log('[axe-test] card count', cardCount)
+    await expect(cardLocator.first()).toBeVisible({ timeout: 15000 })
+
+    const violations = await page.evaluate<AxeViolationSummary[]>(async () => {
+      const axe = (window as any).axe
+      if (!axe) {
         throw new Error('axe not injected')
       }
       const context = document.querySelector('.ax-content-hub') ?? document.body
-      const output = await window.axe.run(context, {
-        runOnly: {
-          type: 'rule',
-          values: ['aria-required-children', 'aria-required-parent', 'color-contrast'],
-        },
-        iframes: false,
-        resultTypes: ['violations'],
-      })
-      return { violations: output.violations }
+      const AXE_TIMEOUT_MS = 45_000
+      const runPromise: Promise<AxeViolationSummary[]> = axe
+        .run(context, {
+          runOnly: {
+            type: 'rule',
+            values: ['aria-required-children', 'aria-required-parent', 'color-contrast'],
+          },
+          iframes: false,
+          resultTypes: ['violations'],
+        })
+        .then((output: AxeResults) =>
+          output.violations.map((violation) => ({
+            id: violation.id,
+            impact: violation.impact ?? null,
+            targets: violation.nodes.map((node: NodeResult) => node.target as string[]),
+          })),
+        )
+      const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`axe timeout after ${AXE_TIMEOUT_MS}ms`)), AXE_TIMEOUT_MS),
+        )
+      return Promise.race([runPromise, timeoutPromise])
     })
 
-    if (results.violations.length) {
+    if (violations.length) {
       console.log(
         'axe violations',
-        results.violations.map((violation) => ({
-          id: violation.id,
-          impact: violation.impact,
-          targets: violation.nodes.slice(0, 5).map((node) => node.target),
-        })),
+        violations.slice(0, 10),
       )
     }
 
-    expect(results.violations, results.violations.map((violation) => violation.id).join(', ')).toEqual([])
+    expect(violations, violations.map((violation) => violation.id).join(', ')).toEqual([])
   })
 })
+
+export {}
 

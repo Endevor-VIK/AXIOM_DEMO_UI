@@ -248,7 +248,9 @@ function isIsoDate(value: unknown): value is string {
   if (typeof value !== 'string' || !ISO_DATE_PATTERN.test(value)) {
     return false
   }
-  const [yearStr, monthStr, dayStr] = value.split('-')
+  const parts = value.split('-')
+  if (parts.length !== 3) return false
+  const [yearStr, monthStr, dayStr] = parts as [string, string, string]
   const year = Number.parseInt(yearStr, 10)
   const month = Number.parseInt(monthStr, 10)
   const day = Number.parseInt(dayStr, 10)
