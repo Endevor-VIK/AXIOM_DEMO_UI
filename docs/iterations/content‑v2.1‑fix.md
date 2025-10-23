@@ -759,6 +759,23 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-23-003 — [DOC] Release readiness & telemetry plan (OPEN)
+**Related:** §12.12-P0, §12.12-P1, §12.12-P2
+**Artifacts:** docs/releases/content-v2.1-fix-release-checklist.md
+**Changes (plan):**
+- подготовить пакет для code review/squash-merge (резюме изменений, проверки, pending items)
+- зафиксировать smoke-план DEV → Preview → Prod и блокеры
+- собрать план по телеметрии (`content_view`, `reader_open`, `mode_switch`) и мониторингу post-release
+**Changes (actual):**
+- создал `docs/releases/content-v2.1-fix-release-checklist.md` с обзором изменений, тестами, smoke/telemetry/мониторинг планами и рисками.
+- зафиксировал блокеры: отсутствие Chrome для lighthouse, pending telemetry implementation, требуются среда DEV/Preview для smoke.
+**AC Check:**
+- [x] Документ/чеклист релиза приложен и покрывает все подпункты §12.12
+- [ ] Smoke-тесты описаны или выполнены, блокеры задокументированы
+- [ ] Телеметрия и мониторинг имеют план внедрения/подтверждения
+**Result:** IN_PROGRESS
+**Notes:** требуется выполнить smoke на DEV/Preview/Prod и внедрить телеметрию перед закрытием §12.12; см. release checklist для действий.
+
 #### CHG-2025-10-23-002 — [DOC] Documentation updates for content v2.1 (DONE)
 **Related:** §12.11-P1, §12.11-P2
 **Artifacts:** docs/content-authoring-v2.1.md; README.md
