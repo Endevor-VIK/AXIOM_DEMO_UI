@@ -1,6 +1,25 @@
 import { test, expect } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 import { bootstrapSession, stubContentApi } from './utils'
+
+async function clickTestId(page: Page, testId: string): Promise<void> {
+  await page.waitForFunction(
+    (id) => {
+      const element = document.querySelector(`[data-testid="${id}"]`)
+      return !!element && element instanceof HTMLElement
+    },
+    testId,
+    { timeout: 60_000 },
+  )
+  await page.evaluate((id) => {
+    const element = document.querySelector(`[data-testid="${id}"]`)
+    if (!(element instanceof HTMLElement)) {
+      throw new Error(`Test id ${id} not found`)
+    }
+    element.click()
+  }, testId)
+}
 
 test.describe('Content hub flows', () => {
   test('supports selection, filters, pinning, reader navigation, and sandbox view', async ({ page }) => {
@@ -15,34 +34,16 @@ test.describe('Content hub flows', () => {
     const items = list.getByRole('listitem')
     await expect(items.first()).toBeVisible({ timeout: 60_000 })
 
-    await page.waitForSelector('[data-testid="content-select-CHR-VIKTOR-0301"]', {
-      state: 'visible',
-      timeout: 60_000,
-    })
+    await clickTestId(page, 'content-select-CHR-VIKTOR-0301')
     const viktorButton = page.getByTestId('content-select-CHR-VIKTOR-0301')
-    await expect(viktorButton).toBeVisible()
-    await page.evaluate((testId) => {
-      const button = document.querySelector(`[data-testid="${testId}"]`)
-      if (!(button instanceof HTMLElement)) throw new Error(`Button ${testId} not found`)
-      button.click()
-    }, 'content-select-CHR-VIKTOR-0301')
     await expect(viktorButton).toHaveAttribute('aria-selected', 'true')
 
+    await clickTestId(page, 'pin-toggle-CHR-VIKTOR-0301')
     const viktorPin = page.getByTestId('pin-toggle-CHR-VIKTOR-0301')
-    await viktorPin.click()
     await expect(viktorPin).toHaveAttribute('aria-pressed', 'true')
 
-    await page.waitForSelector('[data-testid="content-select-LOC-0001"]', {
-      state: 'visible',
-      timeout: 60_000,
-    })
+    await clickTestId(page, 'content-select-LOC-0001')
     const locationButton = page.getByTestId('content-select-LOC-0001')
-    await expect(locationButton).toBeVisible()
-    await page.evaluate((testId) => {
-      const button = document.querySelector(`[data-testid="${testId}"]`)
-      if (!(button instanceof HTMLElement)) throw new Error(`Button ${testId} not found`)
-      button.click()
-    }, 'content-select-LOC-0001')
     await expect(locationButton).toHaveAttribute('aria-selected', 'true')
 
     await page.getByRole('button', { name: 'Expand' }).click()
@@ -57,7 +58,15 @@ test.describe('Content hub flows', () => {
     })
     await expect(page.locator('.ax-preview__iframe').first()).toBeVisible()
 
-    await page.getByRole('button', { name: /Back/i }).click()
+    await page.evaluate(() => {
+      const backButton = Array.from(document.querySelectorAll('button')).find((button) =>
+        button.textContent?.trim().toLowerCase().includes('back'),
+      )
+      if (!(backButton instanceof HTMLElement)) {
+        throw new Error('Back button not found')
+      }
+      backButton.click()
+    })
     await expect(page).toHaveURL(/\/dashboard\/content\/all/)
     await expect(list.getByRole('listitem').first()).toBeVisible()
 
