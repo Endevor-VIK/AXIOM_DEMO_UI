@@ -24,6 +24,16 @@
   - §12.2–§12.12
   - CHG-2025-09-30-001 … CHG-2025-10-23-003
   ```
+- Branch status: `feat/content-v2.1-fix/content-hub-redesign` (ahead of origin by 2 commits; clean working tree). Review `git log -5` for latest updates.
+- Reviewer focus areas:
+  - Hybrid preview sandbox isolation (no leaked styles, DOMPurify usage).
+  - Playwright axe harness stability; ensure `tmp-playwright-log.txt` historical failures are resolved.
+  - Telemetry adapter integration plan (see section 5) and absence of sensitive data in payloads.
+  - Performance impact of scoped CSS and sandbox rendering (check devtools screenshots if available).
+- Pre-merge checklist:
+  - [ ] Confirm Preview smoke + telemetry adapter tasks are complete (sections 4–5).
+  - [ ] Re-run Lighthouse once Chrome is available.
+  - [ ] Ensure conventional commits are squashed with the template above.
 
 ## 3. Test Evidence
 - `npm run test -- --runInBand` — ✅ (2025-10-12, 5 files / 21 tests).
