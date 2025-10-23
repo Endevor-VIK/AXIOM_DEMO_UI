@@ -21,6 +21,7 @@ import NewsPage from '@/app/routes/dashboard/news/page'
 
 import AuthGate from '@/components/AuthGate'
 import TerminalBoot from '@/components/TerminalBoot'
+import { initAnalyticsBridge } from '@/lib/analytics/init'
 
 const routes = [
   { path: '/', element: <TerminalBoot /> },
@@ -56,6 +57,7 @@ const routes = [
 const router = createBrowserRouter(routes, { basename: import.meta.env.BASE_URL })
 
 function mount() {
+  initAnalyticsBridge()
   const el = document.getElementById('root')
   const app = (
     <RouterProvider
