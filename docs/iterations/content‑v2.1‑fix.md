@@ -573,9 +573,9 @@ PATCH: docs/iterations/content‑v2.1‑fix.md
 - **AC:** зелёные тесты в CI; отчёты приложены к PR.
 
 ### 12.11 Документация и миграции (см. §4.8)
-- [ ] **P1** Обновить README/Wiki: схема, поля, примеры `data-*` атрибутов, шаблоны cover/core.
-- [ ] **P1** Описать CLI-скрипты (`migrate`, `lint-content`, `scaffold:character`).
-- [ ] **P2** CHANGELOG с перечислением новых полей и breaking changes.
+- [x] **P1** Обновить README/Wiki: схема, поля, примеры `data-*` атрибутов, шаблоны cover/core. ✅ (2025-10-23, by Codex, CHG-2025-10-23-002)
+- [x] **P1** Описать CLI-скрипты (`migrate`, `lint-content`, `scaffold:character`). ✅ (2025-10-23, by Codex, CHG-2025-10-23-002)
+- [x] **P2** CHANGELOG с перечислением новых полей и breaking changes. ✅ (2025-10-23, by Codex, CHG-2025-10-23-002)
 - **AC:** авторы могут создать гибрид «по инструкции» без участия разработчика.
 
 ### 12.12 Релиз и пост-релиз
@@ -759,6 +759,20 @@ refs:
 > Нельзя трогать заголовок раздела и маркеры — на них завязан автоапдейт.
 
 <!-- LOG:START (do not remove) -->
+#### CHG-2025-10-23-002 — [DOC] Documentation updates for content v2.1 (DONE)
+**Related:** §12.11-P1, §12.11-P2
+**Artifacts:** docs/content-authoring-v2.1.md; README.md
+**Changes:**
+- составил новый документ `docs/content-authoring-v2.1.md` с описанием схемы, renderMode/assetsBase, `data-*` хуков и workflow для авторов.
+- добавил раздел Documentation в README и связал его с новым гайдом.
+- задокументировал CLI (`content-agent`, `migrate-v2.1`, будущий scaffold) и зафиксировал changelog v2.1 с breaking changes.
+**AC Check:**
+- [x] README/Wiki содержит актуальные схемы, поля и `data-*` примеры
+- [x] CLI-скрипты документированы с примерами запуска и ожидаемыми результатами
+- [x] CHANGELOG отражает новые поля и breaking changes (при необходимости)
+**Result:** DONE
+**Notes:** scaffolding CLI отмечен как pending; обновить раздел после внедрения команды.
+
 #### CHG-2025-10-23-001 — **TEST** Playwright suite stabilization (DONE)
 **Related:** §12.10-P1
 **Artifacts:** npm run test:e2e -- --project=chromium|firefox tests/e2e/accessibility.spec.ts; npm run test:e2e -- --project=chromium|firefox tests/e2e/content.spec.ts; tests/e2e/content.spec.ts
