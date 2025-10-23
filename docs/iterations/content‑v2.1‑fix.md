@@ -769,10 +769,11 @@ refs:
 **Changes (actual):**
 - создал `docs/releases/content-v2.1-fix-release-checklist.md` с обзором изменений, тестами, smoke/telemetry/мониторинг планами и рисками.
 - зафиксировал блокеры: отсутствие Chrome для lighthouse, pending telemetry implementation, требуются среда DEV/Preview для smoke.
+- реализовал базовую телеметрию (`lib/analytics.ts`) и подключил события `content_view`/`reader_open`/`mode_switch` в списке/ридере/preview.
 **AC Check:**
 - [x] Документ/чеклист релиза приложен и покрывает все подпункты §12.12
 - [ ] Smoke-тесты описаны или выполнены, блокеры задокументированы
-- [ ] Телеметрия и мониторинг имеют план внедрения/подтверждения
+- [x] Телеметрия и мониторинг имеют план внедрения/подтверждения
 **Result:** IN_PROGRESS
 **Notes:** требуется выполнить smoke на DEV/Preview/Prod и внедрить телеметрию перед закрытием §12.12; см. release checklist для действий.
 

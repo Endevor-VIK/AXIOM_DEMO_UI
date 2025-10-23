@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ContentList from '@/components/ContentList'
 import PreviewPane from '@/components/PreviewPane'
+import { trackContentView } from '@/lib/analytics'
 import type { ContentCategory, ContentItem, ContentStatus } from '@/lib/vfs'
 
 import { useContentHub } from './context'
@@ -86,6 +87,7 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   const [searchParams, setSearchParams] = useSearchParams()
   const previewRef = useRef<HTMLDivElement | null>(null)
   const lastScrolledId = useRef<string | null>(null)
+  const lastTrackedId = useRef<string | null>(null)
 
   const items = useMemo(() => {
     if (!aggregate) return []
@@ -126,6 +128,19 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     }
     return ordered[0] ?? null
   }, [ordered, itemParam])
+
+  useEffect(() => {
+    if (!selectedItem) return
+    if (lastTrackedId.current === selectedItem.id) return
+    lastTrackedId.current = selectedItem.id
+    trackContentView({
+      id: selectedItem.id,
+      category: selectedItem.category,
+      renderMode: selectedItem.renderMode ?? 'plain',
+      lang: selectedItem.lang ?? null,
+      source: isDesktop ? 'list' : 'reader',
+    })
+  }, [selectedItem, isDesktop])
 
   useEffect(() => {
     if (!isDesktop) return

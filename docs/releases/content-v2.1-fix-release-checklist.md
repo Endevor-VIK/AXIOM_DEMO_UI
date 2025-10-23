@@ -43,17 +43,15 @@
 
 ## 5. Telemetry Plan (AC: §12.12-P1)
 - Required events per §12.12: `content_view`, `reader_open`, `mode_switch`.
-- Current status: no runtime instrumentation found (`rg 'content_view'` returns doc references only).
-- Proposed implementation:
-  1. Instrument `ContentCategoryView` to emit `content_view` when a card becomes active (after filters/query apply). Include payload: `{ id, category, lang, renderMode }`.
-  2. Instrument `ReadRoute` to emit `reader_open` when reader mounts (include `{ id, mode }`).
-  3. Instrument `PreviewPane` mode toggle handler to emit `mode_switch` with `{ id, from, to }`.
-  4. Wire events to analytics bridge (`window.AX.analytics?.track` or PostHog/GA adapter); if bridge absent, provide shim with console fallback.
-  5. Document event schema + sample payloads in `docs/content-authoring-v2.1.md` appendix.
+- Current status: instrumentation shipped via `lib/analytics.ts` (console fallback) with hooks in `ContentCategoryView`, `ReadRoute`, and `PreviewPane`.
+- Remaining steps:
+  1. Wire analytics adapter for target provider (`window.AX.analytics.track` or equivalent PostHog/GA bridge).
+  2. Append event schema + payload examples to `docs/content-authoring-v2.1.md` (appendix pending).
+  3. Optionally extend Playwright coverage to assert `mode_switch` emission (mock endpoint or console capture).
 - Action items:
   - [ ] Confirm target analytics provider (GA4/PostHog) and event naming scheme.
-  - [ ] Implement hooks & unit tests for payload shape.
-  - [ ] Add Playwright coverage to assert tracking calls (using `page.on('console')` or mock endpoint).
+  - [ ] Provide production adapter implementation / configuration snippet.
+  - [ ] Update authoring guide appendix with telemetry payload reference.
 
 ## 6. Post-Release Monitoring (AC: §12.12-P2)
 - Metrics to watch (first 48h):
@@ -70,7 +68,7 @@
   - Maintain backup of `public/data/content/manifest.json` pre-merge (`git tag content-v2.1-fix-premerge`).
 
 ## 7. Outstanding Risks / Follow-ups
-- Telemetry instrumentation pending (section 5).
+- Telemetry adapter integration + documentation pending (section 5).
 - Lighthouse automation blocked by missing Chrome binary; rerun in CI or local environment with Chrome installed.
 - Smoke tests require environment access; schedule with QA immediately after review sign-off.
 - Ensure no unmerged changes remain on branching strategy (`feat/content-v2.1-fix/content-hub-redesign` vs final target).

@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import PreviewPane from '@/components/PreviewPane'
 import { safeText } from '@/components/utils'
+import { trackContentView, trackReaderOpen } from '@/lib/analytics'
 import type { ContentRenderMode } from '@/lib/vfs'
 
 import { useContentHub } from './context'
@@ -22,6 +23,23 @@ const ReadRoute: React.FC = () => {
 
   const fromState = (location.state as { from?: string } | null)?.from
   const search = location.search
+
+  useEffect(() => {
+    if (!item) return
+    const renderMode = item.renderMode ?? 'plain'
+    trackReaderOpen({
+      id: item.id,
+      renderMode,
+      from: fromState ? 'list' : 'direct',
+    })
+    trackContentView({
+      id: item.id,
+      category: item.category,
+      renderMode,
+      lang: item.lang ?? null,
+      source: 'reader',
+    })
+  }, [item, fromState])
 
   const handleBack = () => {
     if (fromState) {

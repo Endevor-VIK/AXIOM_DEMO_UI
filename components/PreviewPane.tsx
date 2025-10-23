@@ -7,6 +7,7 @@ import { vfs, type ContentItem, type ContentRenderMode } from '@/lib/vfs'
 import { normalizeScopeId, prefixStyles } from '@/lib/hybrid/prefixStyles'
 import { deriveAssetsBase, resolveAssets } from '@/lib/hybrid/resolveAssets'
 import { attachReveal, attachTilt } from '@/lib/content-hooks'
+import { trackModeSwitch } from '@/lib/analytics'
 
 import PreviewBar, { PREVIEW_ZOOM_LEVELS, type PreviewZoom } from './preview/PreviewBar'
 import { classNames, formatDate, safeText } from './utils'
@@ -476,6 +477,13 @@ export default function PreviewPane({
   const handleModeChange = useCallback(
     (next: ContentRenderMode) => {
       if (next === mode) return
+      if (item?.id) {
+        trackModeSwitch({
+          id: item.id,
+          from: mode,
+          to: next,
+        })
+      }
       setMode(next)
       setRenderError(null)
       if (next !== 'sandbox') {
@@ -486,7 +494,7 @@ export default function PreviewPane({
         setSandboxReloading(true)
       }
     },
-    [mode],
+    [mode, item?.id],
   )
 
   const handleZoomChange = useCallback((value: PreviewZoom) => {
