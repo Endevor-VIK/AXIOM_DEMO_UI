@@ -55,12 +55,11 @@
 - Required events per §12.12: `content_view`, `reader_open`, `mode_switch`.
 - Current status: instrumentation shipped via `lib/analytics.ts` (console fallback) with hooks in `ContentCategoryView`, `ReadRoute`, and `PreviewPane`.
 - Remaining steps:
-  1. Wire analytics adapter for target provider (`window.AX.analytics.track` or equivalent PostHog/GA bridge).
-  2. Append event schema + payload examples to `docs/content-authoring-v2.1.md` (appendix pending).
-  3. Optionally extend Playwright coverage to assert `mode_switch` emission (mock endpoint or console capture).
+  1. Wire analytics adapter for target provider (`window.posthog.capture` or `window.gtag`) — handled via `initAnalyticsBridge`.
+  2. Optionally extend Playwright coverage to assert `mode_switch` emission (mock endpoint or console capture).
 - Action items:
-  - [ ] Confirm target analytics provider (GA4/PostHog) and event naming scheme (`initAnalyticsBridge` now auto-wires to `window.posthog`/`window.gtag` if present).
-  - [ ] Provide production adapter implementation / configuration snippet _(document how to expose `window.posthog.capture` or `window.gtag` in deployment)_.
+  - [x] Confirm target analytics provider (PostHog primary, GA fallback) and event naming scheme (see `lib/analytics/init.ts`).
+  - [x] Provide production adapter implementation / configuration snippet _(PostHog snippet: expose `window.posthog` before bundle; GA: ensure `window.gtag`)._
   - [x] Update authoring guide appendix with telemetry payload reference.
 
 ## 6. Post-Release Monitoring (AC: §12.12-P2)
