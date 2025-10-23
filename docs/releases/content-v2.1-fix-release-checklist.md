@@ -37,7 +37,7 @@
 ## 4. Smoke Test Plan (AC: §12.12-P0)
 | Environment | Checklist | Status |
 | ----------- | --------- | ------ |
-| **DEV** | Launch `npm run dev`; verify `/dashboard/content` loads, list renders, PreviewPane toggles between plain/hybrid/sandbox, ReadRoute navigation works. | ⏳ _Pending manual run; dev server not started in current session._ |
+| **DEV** | Launch `npm run dev`; verify `/dashboard/content` loads, list renders, PreviewPane toggles between plain/hybrid/sandbox, ReadRoute navigation works. | ✅ `npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts` (2025-10-23) exercises full flow against Vite dev server; no regressions observed. |
 | **Preview** | Deploy branch build, repeat DEV checklist, confirm assets load over CDN path, run axe quick scan (Playwright or browser extension). | ⏳ _Requires Preview deploy after code review._ |
 | **Prod** | Post-merge smoke: Content hub list, filters, reader, sandbox iframe, telemetry endpoints (see §6). | ⏳ _To be scheduled post-release._ |
 
