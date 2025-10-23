@@ -51,7 +51,7 @@
 - Action items:
   - [ ] Confirm target analytics provider (GA4/PostHog) and event naming scheme.
   - [ ] Provide production adapter implementation / configuration snippet.
-  - [ ] Update authoring guide appendix with telemetry payload reference.
+  - [x] Update authoring guide appendix with telemetry payload reference.
 
 ## 6. Post-Release Monitoring (AC: §12.12-P2)
 - Metrics to watch (first 48h):

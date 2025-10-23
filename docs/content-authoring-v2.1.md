@@ -218,3 +218,37 @@ Breaking change summary:
 - IDs that do not follow the strict prefix pattern are rejected.
 
 Update any legacy documentation or templates to follow these rules so authors can produce compliant content without engineering support.
+
+---
+
+## 7. Telemetry Events Reference
+
+The content hub now emits analytics events via `@/lib/analytics`. When integrating with a provider (GA4, PostHog, etc.), supply an adapter that forwards these payloads (`setAnalyticsAdapter` or `window.AX.analytics.track`).
+
+| Event | Trigger | Payload |
+| ----- | ------- | ------- |
+| `content_view` | A content card becomes active in the list or the reader opens a record. | `{ name: 'content_view', id, category, renderMode, lang?, source: 'list' | 'reader', timestamp }` |
+| `reader_open` | Reader route mounts for a given item. | `{ name: 'reader_open', id, renderMode, from: 'list' | 'direct', timestamp }` |
+| `mode_switch` | PreviewPane toggles modes (plain/hybrid/sandbox). | `{ name: 'mode_switch', id, from, to, timestamp }` |
+
+Implementation notes:
+
+1. `content_view` fires once per item selection in the list (desktop) and whenever the reader mounts (mobile or direct navigation).
+2. `reader_open` is always followed by a `content_view` with `source: 'reader'`, allowing downstream dedupe.
+3. `mode_switch` is suppressed when the requested mode matches the current mode.
+4. Events include a `timestamp` (ms since epoch) automatically; providers may override via adapter if needed.
+
+### Provider Adapter Skeleton
+
+```ts
+import { setAnalyticsAdapter } from '@/lib/analytics'
+
+setAnalyticsAdapter({
+  track(event) {
+    window.posthog?.capture(event.name, event)
+    // or gtag('event', event.name, event)
+  },
+})
+```
+
+Add the adapter during app bootstrap (`main.tsx`) so that analytics wiring exists before routes render. For environments without a provider, the fallback logs events to the console (`[analytics] …`), useful for smoke verification.

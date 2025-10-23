@@ -770,6 +770,7 @@ refs:
 - создал `docs/releases/content-v2.1-fix-release-checklist.md` с обзором изменений, тестами, smoke/telemetry/мониторинг планами и рисками.
 - зафиксировал блокеры: отсутствие Chrome для lighthouse, pending telemetry implementation, требуются среда DEV/Preview для smoke.
 - реализовал базовую телеметрию (`lib/analytics.ts`) и подключил события `content_view`/`reader_open`/`mode_switch` в списке/ридере/preview.
+- расширил `docs/content-authoring-v2.1.md` разделом «Telemetry Events Reference» с payload схемами и примером адаптера.
 **AC Check:**
 - [x] Документ/чеклист релиза приложен и покрывает все подпункты §12.12
 - [x] Smoke-тесты описаны или выполнены, блокеры задокументированы
