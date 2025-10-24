@@ -1,4 +1,4 @@
-import { setAnalyticsAdapter } from './analytics'
+import { setAnalyticsAdapter } from '../analytics'
 
 declare global {
   interface Window {
