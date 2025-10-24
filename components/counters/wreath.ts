@@ -55,13 +55,13 @@ const defaultConfig: Config = {
   innerRadiusK: 0.53,
   minTileK: 0.02,
   maxTileK: 0.05,
-  outerRedWidthK: 0.0085,
-  innerRedWidthK: 0.0075,
-  shadowBlur: 6,
-  baseLight: 0.02,
-  hoverLight: 0.07,
+  outerRedWidthK: 0.0062,
+  innerRedWidthK: 0.0048,
+  shadowBlur: 5,
+  baseLight: 0.018,
+  hoverLight: 0.06,
   redTint: 0.08,
-  transformDuration: 600,
+  transformDuration: 720,
   aspectRatios: [1, 1.4, 0.7, 1.8, 0.55, 2.2, 0.35],
   compoundProb: 0.2,
 }
@@ -103,6 +103,34 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   let hovering = false
   let lastTime = performance.now()
   let rafId = 0
+  const interactionTarget = (root.closest('a') as HTMLElement | null) ?? root
+
+  const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  let prefersReducedMotion = reduceMotionQuery.matches
+
+  const handleMotionPreference = (event: MediaQueryListEvent | MediaQueryList) => {
+    prefersReducedMotion = event.matches
+    if (prefersReducedMotion) {
+      stopAnimation()
+      tiles.forEach((tile) => {
+        tile.currentR = tile.origR
+        tile.currentW = tile.origW
+        tile.currentH = tile.origH
+        tile.currentRot = tile.origRot
+        tile.animating = false
+        tile.direction = 0
+        tile.progress = 0
+      })
+      draw()
+    }
+  }
+
+  if (typeof reduceMotionQuery.addEventListener === 'function') {
+    reduceMotionQuery.addEventListener('change', handleMotionPreference)
+  } else {
+    // eslint-disable-next-line deprecation/deprecation
+    reduceMotionQuery.addListener(handleMotionPreference)
+  }
 
   function computeTiles(measuredSize: number) {
     tiles = []
@@ -318,6 +346,9 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   }
 
   function startTransform() {
+    if (prefersReducedMotion) {
+      return
+    }
     const outerR = size * cfg.outerRadiusK * 0.5
     const innerR = size * cfg.innerRadiusK * 0.5
     tiles.forEach((tile) => {
@@ -349,6 +380,19 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   }
 
   function revertTransform() {
+    if (prefersReducedMotion) {
+      tiles.forEach((tile) => {
+        tile.currentR = tile.origR
+        tile.currentW = tile.origW
+        tile.currentH = tile.origH
+        tile.currentRot = tile.origRot
+        tile.animating = false
+        tile.direction = 0
+        tile.progress = 0
+      })
+      draw()
+      return
+    }
     tiles.forEach((tile) => {
       tile.progress = 0
       tile.animating = true
@@ -357,6 +401,13 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
     lastTime = performance.now()
     if (!rafId) {
       rafId = requestAnimationFrame(draw)
+    }
+  }
+
+  function stopAnimation() {
+    if (rafId) {
+      cancelAnimationFrame(rafId)
+      rafId = 0
     }
   }
 
@@ -374,16 +425,19 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   }
 
   function destroy() {
-    if (rafId) {
-      cancelAnimationFrame(rafId)
-      rafId = 0
-    }
+    stopAnimation()
     resizeObserver.disconnect()
-    root.removeEventListener('mouseenter', handleEnter)
-    root.removeEventListener('mouseleave', handleLeave)
-    root.removeEventListener('click', handleClick)
-    root.removeEventListener('focusin', handleEnter)
-    root.removeEventListener('focusout', handleLeave)
+    interactionTarget.removeEventListener('mouseenter', handleEnter)
+    interactionTarget.removeEventListener('mouseleave', handleLeave)
+    interactionTarget.removeEventListener('click', handleClick)
+    interactionTarget.removeEventListener('focusin', handleEnter)
+    interactionTarget.removeEventListener('focusout', handleLeave)
+    if (typeof reduceMotionQuery.removeEventListener === 'function') {
+      reduceMotionQuery.removeEventListener('change', handleMotionPreference)
+    } else {
+      // eslint-disable-next-line deprecation/deprecation
+      reduceMotionQuery.removeListener(handleMotionPreference)
+    }
     root.replaceChildren()
   }
 
@@ -406,12 +460,14 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   resizeObserver.observe(root)
   resize()
 
-  root.addEventListener('mouseenter', handleEnter, { passive: true })
-  root.addEventListener('mouseleave', handleLeave, { passive: true })
-  root.addEventListener('click', handleClick, { passive: true })
-  root.addEventListener('focusin', handleEnter)
-  root.addEventListener('focusout', handleLeave)
-  root.tabIndex = root.tabIndex >= 0 ? root.tabIndex : 0
+  interactionTarget.addEventListener('mouseenter', handleEnter, { passive: true })
+  interactionTarget.addEventListener('mouseleave', handleLeave, { passive: true })
+  interactionTarget.addEventListener('click', handleClick, { passive: true })
+  interactionTarget.addEventListener('focusin', handleEnter)
+  interactionTarget.addEventListener('focusout', handleLeave)
+  if (interactionTarget === root) {
+    root.tabIndex = root.tabIndex >= 0 ? root.tabIndex : 0
+  }
 
   return {
     setValue(next) {
