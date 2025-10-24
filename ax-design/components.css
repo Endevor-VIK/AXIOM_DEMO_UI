@@ -219,7 +219,7 @@
    .ax-filter-actions .ax-btn[data-active='true'] { border-color: rgba(255,32,52,.45); box-shadow: var(--ax-glow-accent); }
    .ax-content-hub { display: grid; gap: var(--section-vspace); }
    .ax-content-outlet { display: grid; gap: var(--gutter); }
-   .ax-news-grid { display: grid; gap: var(--gutter); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ax-news-grid { display: grid; gap: var(--gutter); grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
    @media (max-width: 960px) { .ax-news-grid { grid-template-columns: minmax(0, 1fr); } }
    .ax-news-card { display: grid; gap: var(--space-3); padding: var(--space-5); }
    .ax-news-card__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }

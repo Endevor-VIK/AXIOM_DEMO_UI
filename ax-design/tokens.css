@@ -168,6 +168,8 @@
     --container-sm: 640px;
     --container-md: 860px;
     --container-lg: 1180px;
+    --container-xl: 1440px;
+    --container-2xl: 1600px;
     --container-max: var(--container-lg);
     --gutter:        var(--space-4);
     --section-vspace: calc(28px * var(--ax-scale));
@@ -186,6 +188,18 @@
     --z-raised: 10;
     --z-overlay: 1000;
     --z-max: 2147483647;
+  }
+  
+  @media (min-width: 1280px) {
+    :root {
+      --container-max: var(--container-xl);
+    }
+  }
+  
+  @media (min-width: 1600px) {
+    :root {
+      --container-max: var(--container-2xl);
+    }
   }
   
   /* Optional light theme hook (values mirror, but project is dark-first) */

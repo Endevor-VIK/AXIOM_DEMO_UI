@@ -54,6 +54,8 @@
   position:relative;
   box-shadow:0 0 0 1px #2a0b10,0 0 32px -12px #ff5a5f20;
   overflow:hidden;
+  max-width:min(960px,100%);
+  margin-inline:auto;
 }
 .ax-viewer--audit .ax-doc:before{
   content:"AUDIT V2";
