@@ -23,6 +23,8 @@ type Tile = {
   progress: number
   animating: boolean
   direction: number
+  delay: number
+  elapsed: number
 }
 
 type Config = {
@@ -38,6 +40,9 @@ type Config = {
   hoverLight: number
   redTint: number
   transformDuration: number
+  staggerPerRad: number
+  maxStagger: number
+  baseStaggerStep: number
   aspectRatios: number[]
   compoundProb: number
 }
@@ -62,6 +67,9 @@ const defaultConfig: Config = {
   hoverLight: 0.06,
   redTint: 0.08,
   transformDuration: 720,
+  staggerPerRad: 0.09,
+  maxStagger: 0.32,
+  baseStaggerStep: 0.035,
   aspectRatios: [1, 1.4, 0.7, 1.8, 0.55, 2.2, 0.35],
   compoundProb: 0.2,
 }
@@ -103,6 +111,9 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   let hovering = false
   let lastTime = performance.now()
   let rafId = 0
+  let pointerAngle = 0
+  let hasPointerPosition = false
+  let pointerDistance = 0
   const interactionTarget = (root.closest('a') as HTMLElement | null) ?? root
 
   const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -123,6 +134,28 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
       })
       draw()
     }
+  }
+
+  function handlePointerMove(event: MouseEvent) {
+    const rect = root.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+    const dx = event.clientX - centerX
+    const dy = event.clientY - centerY
+    pointerAngle = Math.atan2(dy, dx)
+    pointerDistance = Math.sqrt(dx * dx + dy * dy)
+    hasPointerPosition = true
+  }
+
+  function computeStaggerDelay(angle: number, index: number) {
+    if (prefersReducedMotion) {
+      return 0
+    }
+    if (hasPointerPosition && pointerDistance > 4) {
+      const diff = Math.abs(shortestAngle(angle, pointerAngle))
+      return Math.min(cfg.maxStagger, diff * cfg.staggerPerRad)
+    }
+    return Math.min(cfg.maxStagger, index * cfg.baseStaggerStep)
   }
 
   if (typeof reduceMotionQuery.addEventListener === 'function') {
@@ -175,6 +208,8 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
         progress: 0,
         animating: false,
         direction: 0,
+        delay: 0,
+        elapsed: 0,
       })
     }
   }
@@ -200,28 +235,40 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
     let anyAnimating = false
 
     if (typeof time === 'number') {
+      const delta = time - lastTime
       tiles.forEach((tile) => {
-        if (tile.animating) {
-          tile.progress += (time - lastTime) / cfg.transformDuration
-          if (tile.progress >= 1) {
-            tile.progress = 1
-            tile.animating = false
-          }
-          const eased = easeInOutCubic(tile.progress)
-          if (tile.direction === 1) {
-            tile.currentR = lerp(tile.origR, tile.targetR, eased)
-            tile.currentW = lerp(tile.origW, tile.targetW, eased)
-            tile.currentH = lerp(tile.origH, tile.targetH, eased)
-            tile.currentRot = lerp(tile.origRot, tile.targetRot, eased)
-          } else if (tile.direction === -1) {
-            tile.currentR = lerp(tile.targetR, tile.origR, eased)
-            tile.currentW = lerp(tile.targetW, tile.origW, eased)
-            tile.currentH = lerp(tile.targetH, tile.origH, eased)
-            tile.currentRot = lerp(tile.targetRot, tile.origRot, eased)
-          }
+        if (!tile.animating) {
+          return
         }
-        if (tile.animating) anyAnimating = true
+        tile.elapsed += delta
+        if (tile.elapsed < tile.delay) {
+          anyAnimating = true
+          return
+        }
+        const localTime = tile.elapsed - tile.delay
+        tile.progress = Math.min(1, localTime / cfg.transformDuration)
+        const eased = easeInOutCubic(tile.progress)
+        if (tile.direction === 1) {
+          tile.currentR = lerp(tile.origR, tile.targetR, eased)
+          tile.currentW = lerp(tile.origW, tile.targetW, eased)
+          tile.currentH = lerp(tile.origH, tile.targetH, eased)
+          tile.currentRot = lerp(tile.origRot, tile.targetRot, eased)
+        } else if (tile.direction === -1) {
+          tile.currentR = lerp(tile.targetR, tile.origR, eased)
+          tile.currentW = lerp(tile.targetW, tile.origW, eased)
+          tile.currentH = lerp(tile.targetH, tile.origH, eased)
+          tile.currentRot = lerp(tile.targetRot, tile.origRot, eased)
+        }
+        if (tile.progress >= 1) {
+          tile.animating = false
+          tile.progress = 1
+        } else {
+          anyAnimating = true
+        }
       })
+      if (tiles.some((tile) => tile.animating || tile.elapsed < tile.delay)) {
+        anyAnimating = true
+      }
     }
 
     // outer ring
@@ -351,7 +398,7 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
     }
     const outerR = size * cfg.outerRadiusK * 0.5
     const innerR = size * cfg.innerRadiusK * 0.5
-    tiles.forEach((tile) => {
+    tiles.forEach((tile, index) => {
       const maxDim = Math.max(tile.origW, tile.origH)
       const shift = (rand() * 2 - 1) * maxDim * 0.4
       let newR = tile.origR + shift
@@ -369,6 +416,8 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
         tile.targetH = tile.origH
       }
       tile.targetRot = tile.origRot + (rand() * 2 - 1) * (Math.PI / 6)
+      tile.delay = computeStaggerDelay(tile.angle, index)
+      tile.elapsed = 0
       tile.progress = 0
       tile.animating = true
       tile.direction = 1
@@ -393,10 +442,12 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
       draw()
       return
     }
-    tiles.forEach((tile) => {
+    tiles.forEach((tile, index) => {
       tile.progress = 0
       tile.animating = true
       tile.direction = -1
+      tile.delay = computeStaggerDelay(tile.angle, index)
+      tile.elapsed = 0
     })
     lastTime = performance.now()
     if (!rafId) {
@@ -432,6 +483,7 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
     interactionTarget.removeEventListener('click', handleClick)
     interactionTarget.removeEventListener('focusin', handleEnter)
     interactionTarget.removeEventListener('focusout', handleLeave)
+    interactionTarget.removeEventListener('mousemove', handlePointerMove)
     if (typeof reduceMotionQuery.removeEventListener === 'function') {
       reduceMotionQuery.removeEventListener('change', handleMotionPreference)
     } else {
@@ -449,6 +501,7 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   function handleLeave() {
     hovering = false
     revertTransform()
+    hasPointerPosition = false
   }
 
   function handleClick() {
@@ -465,6 +518,7 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   interactionTarget.addEventListener('click', handleClick, { passive: true })
   interactionTarget.addEventListener('focusin', handleEnter)
   interactionTarget.addEventListener('focusout', handleLeave)
+  interactionTarget.addEventListener('mousemove', handlePointerMove, { passive: true })
   if (interactionTarget === root) {
     root.tabIndex = root.tabIndex >= 0 ? root.tabIndex : 0
   }
@@ -544,4 +598,8 @@ function mixColors(c1: string, c2: string, ratio: number) {
   const t = Math.min(1, Math.max(0, ratio))
   const mixChannel = (x: number, y: number) => Math.round(x * (1 - t) + y * t)
   return `rgb(${mixChannel(a.r, b.r)}, ${mixChannel(a.g, b.g)}, ${mixChannel(a.b, b.b)})`
+}
+
+function shortestAngle(a: number, b: number) {
+  return Math.atan2(Math.sin(a - b), Math.cos(a - b))
 }
