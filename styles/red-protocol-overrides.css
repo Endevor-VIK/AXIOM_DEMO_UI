@@ -164,6 +164,13 @@
   display: grid;
   gap: var(--ax-gap);
   padding: 0;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+@media (max-width: 1024px) {
+  .ax-content-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .ax-content-card {
