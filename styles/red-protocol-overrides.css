@@ -138,23 +138,42 @@
 /* Split layout */
 .ax-content-split {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
   gap: var(--ax-gap-lg, 24px);
   align-items: start;
 }
 
+.ax-content-column.list {
+  width: 100%;
+  max-width: 400px;
+  min-width: 320px;
+}
+
+.ax-content-column.preview {
+  min-width: 0;
+}
 
 .ax-content-split.ax-content-split--single {
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 1024px) {
+@media (max-width: 1280px) {
   .ax-content-split {
-    grid-template-columns: 1fr 480px;
+    grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
   }
+  .ax-content-column.list {
+    min-width: 280px;
+    max-width: 340px;
+  }
+}
 
-  .ax-content-split.ax-content-split--single {
-    grid-template-columns: 1fr;
+@media (max-width: 1024px) {
+  .ax-content-split {
+    display: block;
+  }
+  .ax-content-column.list {
+    min-width: auto;
+    max-width: none;
   }
 }
 
@@ -164,19 +183,7 @@
   display: grid;
   gap: var(--ax-gap);
   padding: 0;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-}
-
-@media (max-width: 1200px) {
-  .ax-content-list {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  }
-}
-
-@media (max-width: 960px) {
-  .ax-content-list {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .ax-content-card {
@@ -593,13 +600,13 @@ body.ax-no-scroll {
 /* --- AXIOM ContentHub v2.1 adjustments --- */
 .ax-content-split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 440px);
+  grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
   gap: clamp(16px, 3vw, 28px);
 }
 
 @media (max-width: 1280px) {
   .ax-content-split {
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+    grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
   }
 }
 

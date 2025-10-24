@@ -1,0 +1,569 @@
+<!--
+  counter-ring-wreath-ultra.html
+
+  Ultra‑refined version of the interactive double‑ring wreath counter.  This
+  iteration aims to match the supplied reference as closely as possible.
+
+  Key features:
+    • Two clearly visible concentric red rings: a wider outer ring and a
+      slightly thinner inner ring.  Both respond subtly on hover.
+    • Blocks vary in size and aspect ratio; some are simple squares or
+      rectangles, while others are compound “cross” shapes to evoke the
+      feeling of stacked or interlocked tiles seen in the reference.
+    • A matte graphite palette with a gentle crimson tint applied to the
+      blocks.  Edges are bevelled to enhance the 3D feel, and a soft
+      drop‑shadow anchors the blocks on the dark background.
+    • Counter value and label are perfectly centred inside the wreath,
+      stacked like a fraction.  Typography remains crisp and minimal.
+    • Interaction: when the user hovers or clicks on a wreath, each block
+      performs a one‑time random transformation – growing, shrinking,
+      shifting radially, changing aspect ratio and rotation.  These
+      changes persist while the cursor remains over the wreath.  Moving
+      away or hovering again triggers a reverse animation back to the
+      original layout.  Clicking repeatedly will generate fresh
+      transformations.
+
+  Duplicate the `.ax-wreath` elements and adjust the `data-value` and
+  `data-label` attributes to create additional counters.
+-->
+
+<section class="ax-wreaths">
+  <div class="ax-wreath" data-value="2" data-label="AUDIT"></div>
+  <div class="ax-wreath" data-value="7" data-label="CONTENT"></div>
+  <div class="ax-wreath" data-value="9" data-label="NEWS"></div>
+</section>
+
+<style>
+  :root {
+    /* Graphite palette */
+    --g-900: #0f1112;
+    --g-860: #141718;
+    --g-820: #16191b;
+    --g-780: #1a1d20;
+    --g-740: #1e2226;
+    --g-700: #22272b;
+
+    /* Red palette */
+    --r-500: #ff2d55;
+    --r-700: #8e1022;
+
+    --ink:   #e9eaec;
+    --muted: #b6b8ba;
+
+    /* Sizing */
+    --ring-size: 260px;
+  }
+
+  .ax-wreaths {
+    display: flex;
+    gap: clamp(24px, 4vw, 48px);
+    align-items: center;
+    justify-content: center;
+    padding: clamp(16px, 4vw, 32px);
+    background:
+      radial-gradient(1000px 800px at 50% 8%, rgba(255, 45, 85, 0.06), transparent),
+      linear-gradient(180deg, var(--g-900), var(--g-860));
+  }
+
+  .ax-wreath {
+    width: var(--ring-size);
+    height: var(--ring-size);
+    position: relative;
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+  }
+
+  .ax-wreath:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Canvas fills the container; border-radius ensures round clipping */
+  .ax-wreath canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 50%;
+  }
+
+  /* Readout is centred like a fraction (number on top, label underneath) */
+  .ax-readout {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    text-align: center;
+    z-index: 2;
+    font-family: ui-sans-serif, system-ui, Inter, Arial, sans-serif;
+    letter-spacing: 0.08em;
+  }
+
+  .ax-value {
+    color: var(--ink);
+    font-weight: 800;
+    font-size: clamp(36px, 8vw, 52px);
+    line-height: 1;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  }
+
+  .ax-label {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: clamp(10px, 2.5vw, 12px);
+    opacity: 0.9;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ax-wreath {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+(() => {
+  /* Helper functions for colours and randomness */
+  function hexToRgb(hex) {
+    hex = hex.replace(/^#/, '');
+    const intVal = parseInt(hex, 16);
+    return { r: (intVal >> 16) & 0xFF, g: (intVal >> 8) & 0xFF, b: intVal & 0xFF };
+  }
+  function parseColor(col) {
+    if (col.startsWith('rgb')) {
+      const m = col.match(/rgb\s*\(\s*(\d+)[^\d]+(\d+)[^\d]+(\d+)/);
+      return { r: parseInt(m[1]), g: parseInt(m[2]), b: parseInt(m[3]) };
+    }
+    return hexToRgb(col);
+  }
+  function lightenColor(hex, factor) {
+    const { r, g, b } = hexToRgb(hex);
+    const nr = Math.min(255, Math.round(r + (255 - r) * factor));
+    const ng = Math.min(255, Math.round(g + (255 - g) * factor));
+    const nb = Math.min(255, Math.round(b + (255 - b) * factor));
+    return `rgb(${nr}, ${ng}, ${nb})`;
+  }
+  function mixColors(c1, c2, ratio) {
+    const a = parseColor(c1);
+    const b = parseColor(c2);
+    const r = Math.round(a.r * (1 - ratio) + b.r * ratio);
+    const g = Math.round(a.g * (1 - ratio) + b.g * ratio);
+    const bb = Math.round(a.b * (1 - ratio) + b.b * ratio);
+    return `rgb(${r}, ${g}, ${bb})`;
+  }
+  function mulberry32(a) {
+    return function() {
+      let t = (a += 0x6D2B79F5);
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function getCssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+  // cubic easing for animations
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function initWreath(root, idx) {
+    // create a canvas inside the wreath
+    const canvas = document.createElement('canvas');
+    root.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+
+    // create the readout (centre) for value and label
+    const readout = document.createElement('div');
+    readout.className = 'ax-readout';
+    readout.innerHTML = `<div class="ax-value"></div><div class="ax-label"></div>`;
+    readout.querySelector('.ax-value').textContent = root.dataset.value || '0';
+    readout.querySelector('.ax-label').textContent = root.dataset.label || '';
+    root.appendChild(readout);
+
+    // configuration parameters controlling layout and animation
+    const cfg = {
+      tileCount: 90,            // fewer tiles to reduce clutter and reveal the rings
+      outerRadiusK: 0.8,        // slightly larger outer radius for more breathing room
+      innerRadiusK: 0.53,       // inner radius adjusted to emphasise the second ring
+      minTileK: 0.02,           // smaller minimum tile size
+      maxTileK: 0.05,           // smaller maximum size
+      outerRedWidthK: 0.0085,    // thicker outer ring
+      innerRedWidthK: 0.0075,    // thicker inner ring
+      shadowBlur: 6,            // softness of the tile shadow
+      baseLight: 0.02,          // idle highlight on blocks
+      hoverLight: 0.07,         // additional highlight when hovering
+      redTint: 0.08,            // mix ratio of red into graphite for block fill
+      transformDuration: 600,   // length of one transformation animation (ms)
+      aspectRatios: [1, 1.4, 0.7, 1.8, 0.55, 2.2, 0.35],
+      compoundProb: 0.2         // lower probability for compound cross shapes
+    };
+
+    const seed = 0xDEAD + idx * 157;
+    const rand = mulberry32(seed);
+    let tiles = [];
+    let size = 0;
+    let hovering = false;
+    let lastTime = 0;
+
+    /**
+     * Compute initial layout of tiles whenever the wreath is resized.
+     * Each tile stores its original size, position, rotation, and whether
+     * it is a compound shape.  These originals serve as the baseline for
+     * animations.
+     */
+    function computeTiles(s) {
+      tiles = [];
+      const outerR = s * cfg.outerRadiusK * 0.5;
+      const innerR = s * cfg.innerRadiusK * 0.5;
+      for (let i = 0; i < cfg.tileCount; i++) {
+        const angle = (i / cfg.tileCount) * Math.PI * 2 + rand() * 0.1;
+        // base dimension for square tile
+        const baseSize = lerp(s * cfg.minTileK, s * cfg.maxTileK, rand());
+        // pick an aspect ratio from the list
+        const aspect = cfg.aspectRatios[Math.floor(rand() * cfg.aspectRatios.length)];
+        let w = baseSize;
+        let h = baseSize;
+        if (aspect > 1) {
+          // width dominates
+          w = baseSize * aspect;
+        } else if (aspect < 1) {
+          // height dominates
+          h = baseSize / aspect;
+        }
+        // place tiles primarily between the inner and outer rings.  Start with
+        // a base radius inside the band and apply a small jitter.  Some
+        // overshoot is allowed to mimic tiles breaking the boundaries.
+        const maxDim = Math.max(w, h);
+        // pick a base radius uniformly between the two red rings minus half a tile
+        let baseRadius = lerp(innerR + maxDim * 0.6, outerR - maxDim * 0.6, rand());
+        // apply jitter up to 30% of a tile size
+        let r = baseRadius + (rand() * 2 - 1) * maxDim * 0.3;
+        // clamp to avoid hiding both rings; allow a small overshoot beyond them
+        r = Math.max(innerR * 0.9, Math.min(r, outerR * 1.07));
+        const rot = (rand() * 2 - 1) * (Math.PI / 5);
+        // decide if this tile is compound (cross shape)
+        const compound = rand() < cfg.compoundProb;
+        const tile = {
+          angle,
+          origR: r,
+          origW: w,
+          origH: h,
+          origRot: rot,
+          compound,
+          // current properties start equal to originals
+          currentR: r,
+          currentW: w,
+          currentH: h,
+          currentRot: rot,
+          // target properties for animations
+          targetR: r,
+          targetW: w,
+          targetH: h,
+          targetRot: rot,
+          progress: 0,
+          animating: false,
+          direction: 0
+        };
+        tiles.push(tile);
+      }
+    }
+
+    /**
+     * Draw the wreath in its current state.  When animating, this function
+     * interpolates between the original and target values.  When not
+     * animating, it simply draws the static layout.
+     */
+    function draw(time) {
+      const W = canvas.width;
+      const H = canvas.height;
+      const S = Math.min(W, H);
+      const cx = W / 2;
+      const cy = H / 2;
+      ctx.clearRect(0, 0, W, H);
+
+      // retrieve palette values each frame in case CSS variables change
+      const g780 = getCssVar('--g-780');
+      const g700 = getCssVar('--g-700');
+      const g820 = getCssVar('--g-820');
+      const g860 = getCssVar('--g-860');
+      const r500 = getCssVar('--r-500');
+      const r700 = getCssVar('--r-700');
+
+      // radii for red rings in device pixels
+      const outerRadius = S * cfg.outerRadiusK * 0.5 * DPR;
+      const innerRadius = S * cfg.innerRadiusK * 0.5 * DPR;
+
+      // Determine whether any tile is animating to schedule next frame
+      let anyAnimating = false;
+
+      // update tile progress if animating
+      if (time !== undefined) {
+        tiles.forEach(tile => {
+          if (tile.animating) {
+            tile.progress += (time - lastTime) / cfg.transformDuration;
+            if (tile.progress >= 1) {
+              tile.progress = 1;
+              tile.animating = false;
+            }
+            const eased = easeInOutCubic(tile.progress);
+            // interpolate based on direction (1 forward, -1 backward)
+            if (tile.direction === 1) {
+              tile.currentR  = lerp(tile.origR, tile.targetR, eased);
+              tile.currentW  = lerp(tile.origW, tile.targetW, eased);
+              tile.currentH  = lerp(tile.origH, tile.targetH, eased);
+              tile.currentRot= lerp(tile.origRot, tile.targetRot, eased);
+            } else {
+              tile.currentR  = lerp(tile.targetR, tile.origR, eased);
+              tile.currentW  = lerp(tile.targetW, tile.origW, eased);
+              tile.currentH  = lerp(tile.targetH, tile.origH, eased);
+              tile.currentRot= lerp(tile.targetRot, tile.origRot, eased);
+            }
+          }
+          if (tile.animating) anyAnimating = true;
+        });
+      }
+
+      // draw outer red ring
+      const outerGrad = ctx.createLinearGradient(0, 0, W, H);
+      outerGrad.addColorStop(0, r500);
+      outerGrad.addColorStop(1, r700);
+      ctx.save();
+      ctx.lineWidth = Math.max(1, S * cfg.outerRedWidthK * DPR);
+      ctx.strokeStyle = outerGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, outerRadius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      // draw inner red ring
+      const innerGrad = ctx.createLinearGradient(W, 0, 0, H);
+      innerGrad.addColorStop(0, r500);
+      innerGrad.addColorStop(1, r700);
+      ctx.save();
+      ctx.lineWidth = Math.max(1, S * cfg.innerRedWidthK * DPR);
+      ctx.strokeStyle = innerGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, innerRadius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      // draw blocks
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+      ctx.shadowBlur = cfg.shadowBlur * DPR;
+      ctx.shadowOffsetY = 2 * DPR;
+      tiles.forEach(tile => {
+        // choose highlight based on hover state
+        const brighten = hovering ? cfg.hoverLight : cfg.baseLight;
+        const baseGraph = lightenColor(g780, brighten);
+        const tinted = mixColors(baseGraph, r500, cfg.redTint);
+        const lightEdge = lightenColor(g700, brighten + cfg.redTint * 0.5);
+        const darkEdge  = g820;
+        const x = Math.cos(tile.angle) * tile.currentR * DPR;
+        const y = Math.sin(tile.angle) * tile.currentR * DPR;
+        const w = tile.currentW * DPR;
+        const h = tile.currentH * DPR;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(tile.currentRot);
+        ctx.fillStyle = tinted;
+        if (tile.compound) {
+          // draw a cross shape using horizontal and vertical bars
+          const barH = h * 0.4;
+          const barW = w * 0.4;
+          // horizontal bar
+          ctx.fillRect(-w * 0.6, -barH * 0.5, w * 1.2, barH);
+          // vertical bar
+          ctx.fillRect(-barW * 0.5, -h * 0.6, barW, h * 1.2);
+          // top bevel for cross shape
+          ctx.globalAlpha = 0.6;
+          ctx.fillStyle = lightEdge;
+          // horizontal bevels
+          const bevelHh = Math.max(1.5 * DPR, barH * 0.2);
+          const bevelWh = Math.max(1.5 * DPR, w * 0.15);
+          ctx.fillRect(-w * 0.6, -barH * 0.5, w * 1.2, bevelHh);
+          ctx.fillRect(-w * 0.6, -barH * 0.5, bevelWh, barH);
+          // vertical bevels
+          const bevelHv = Math.max(1.5 * DPR, h * 0.15);
+          const bevelWv = Math.max(1.5 * DPR, barW * 0.2);
+          ctx.fillRect(-barW * 0.5, -h * 0.6, bevelWv, h * 1.2);
+          ctx.fillRect(-barW * 0.5, -h * 0.6, barW, bevelHv);
+          // dark bevels for cross shape
+          ctx.globalAlpha = 0.35;
+          ctx.fillStyle = darkEdge;
+          // bottom and right edges horizontal
+          const bevelHhB = Math.max(1.5 * DPR, barH * 0.25);
+          ctx.fillRect(-w * 0.6, barH * 0.5 - bevelHhB, w * 1.2, bevelHhB);
+          ctx.fillRect(w * 0.6 - bevelWh, -barH * 0.5, bevelWh, barH);
+          // bottom and right edges vertical
+          const bevelHvB = Math.max(1.5 * DPR, h * 0.25);
+          ctx.fillRect(-barW * 0.5, h * 0.6 - bevelHvB, barW, bevelHvB);
+          ctx.fillRect(barW * 0.5 - bevelWv, -h * 0.6, bevelWv, h * 1.2);
+          // crisp inner stroke
+          ctx.globalAlpha = 0.15;
+          ctx.strokeStyle = g860;
+          const lineW = Math.max(1 * DPR, Math.min(w, h) * 0.035);
+          ctx.lineWidth = lineW;
+          // around horizontal bar
+          ctx.strokeRect(-w * 0.6 + lineW / 2, -barH * 0.5 + lineW / 2,
+                         w * 1.2 - lineW, barH - lineW);
+          // around vertical bar
+          ctx.strokeRect(-barW * 0.5 + lineW / 2, -h * 0.6 + lineW / 2,
+                         barW - lineW, h * 1.2 - lineW);
+        } else {
+          // regular rectangular tile
+          ctx.fillRect(-w / 2, -h / 2, w, h);
+          // light bevels
+          ctx.globalAlpha = 0.6;
+          ctx.fillStyle = lightEdge;
+          const bH = Math.max(1.5 * DPR, h * 0.15);
+          const bW = Math.max(1.5 * DPR, w * 0.15);
+          ctx.fillRect(-w / 2, -h / 2, w, bH);
+          ctx.fillRect(-w / 2, -h / 2, bW, h);
+          // dark bevels
+          ctx.globalAlpha = 0.35;
+          ctx.fillStyle = darkEdge;
+          const bHb = Math.max(1.5 * DPR, h * 0.18);
+          const bWb = Math.max(1.5 * DPR, w * 0.18);
+          ctx.fillRect(-w / 2,  h / 2 - bHb, w, bHb);
+          ctx.fillRect( w / 2 - bWb, -h / 2, bWb, h);
+          // crisp stroke
+          ctx.globalAlpha = 0.15;
+          ctx.strokeStyle = g860;
+          const lineW = Math.max(1 * DPR, Math.min(w, h) * 0.035);
+          ctx.lineWidth = lineW;
+          ctx.strokeRect(-w / 2 + lineW / 2, -h / 2 + lineW / 2,
+                         w - lineW, h - lineW);
+        }
+        ctx.restore();
+      });
+      ctx.restore();
+
+      // vignette to sink the centre
+      ctx.save();
+      const vignette = ctx.createRadialGradient(cx, cy, 0, cx, cy, S * 0.55);
+      vignette.addColorStop(0, 'rgba(0,0,0,0)');
+      vignette.addColorStop(1, 'rgba(0,0,0,0.25)');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+
+      if (anyAnimating) {
+        requestAnimationFrame(draw);
+      }
+      lastTime = time;
+    }
+
+    /**
+     * Start a random transformation on all tiles.  Each tile picks a new
+     * radius shift, aspect ratio, and rotation.  The animation will run
+     * forward (direction = 1).  Once complete, the tile keeps its new
+     * values until a reversal is triggered.
+     */
+    function startTransform() {
+      const outerR = size * cfg.outerRadiusK * 0.5;
+      const innerR = size * cfg.innerRadiusK * 0.5;
+      tiles.forEach(tile => {
+        // choose a random radial shift relative to tile size
+        const maxDim = Math.max(tile.origW, tile.origH);
+        // apply a moderate radial shift; keep within ring band with small overshoot
+        const shift = (rand() * 2 - 1) * maxDim * 0.4;
+        let newR = tile.origR + shift;
+        // constrain within and slightly outside rings
+        newR = Math.max(innerR * 0.85, Math.min(newR, outerR * 1.15));
+        tile.targetR = newR;
+        // pick a new aspect ratio and adjust target width/height
+        const aspect = cfg.aspectRatios[Math.floor(rand() * cfg.aspectRatios.length)];
+        let newW = tile.origW;
+        let newH = tile.origH;
+        if (aspect > 1) {
+          newW = tile.origW * aspect;
+          newH = tile.origH;
+        } else if (aspect < 1) {
+          newW = tile.origW;
+          newH = tile.origH / aspect;
+        }
+        tile.targetW = newW;
+        tile.targetH = newH;
+        // random rotation change
+        tile.targetRot = tile.origRot + (rand() * 2 - 1) * (Math.PI / 6);
+        tile.progress = 0;
+        tile.animating = true;
+        tile.direction = 1;
+      });
+      lastTime = performance.now();
+      requestAnimationFrame(draw);
+    }
+
+    /**
+     * Reverse the last transformation, restoring all tiles to their
+     * original positions, sizes, and rotations.  The animation runs
+     * backwards (direction = -1).
+     */
+    function revertTransform() {
+      tiles.forEach(tile => {
+        tile.progress = 0;
+        tile.animating = true;
+        tile.direction = -1;
+      });
+      lastTime = performance.now();
+      requestAnimationFrame(draw);
+    }
+
+    /**
+     * Handle resizing of the wreath.  Adjust canvas size, recalculate
+     * tile layout, and draw the static state.
+     */
+    function resize() {
+      const rect = root.getBoundingClientRect();
+      const newSize = Math.round(rect.width);
+      if (newSize === size) return;
+      size = newSize;
+      canvas.width = Math.round(size * DPR);
+      canvas.height = Math.round(size * DPR);
+      canvas.style.width = `${size}px`;
+      canvas.style.height = `${size}px`;
+      computeTiles(size);
+      // initial draw
+      draw();
+    }
+
+    // Set up event listeners for interaction
+    root.addEventListener('mouseenter', () => {
+      hovering = true;
+      startTransform();
+    });
+    root.addEventListener('mouseleave', () => {
+      hovering = false;
+      revertTransform();
+    });
+    root.addEventListener('click', () => {
+      startTransform();
+    });
+
+    // Resize observer to handle responsive sizing
+    const ro = new ResizeObserver(resize);
+    ro.observe(root);
+    resize();
+
+    // Public API to update the number value of a wreath
+    window.AXWreathUltraSet = function(selector, value) {
+      const el = typeof selector === 'string' ? document.querySelector(selector) : selector;
+      if (!el) return;
+      el.dataset.value = value;
+      const val = el.querySelector('.ax-value');
+      if (val) val.textContent = value;
+    };
+  }
+
+  document.querySelectorAll('.ax-wreath').forEach((el, idx) => initWreath(el, idx));
+})();
+</script>
