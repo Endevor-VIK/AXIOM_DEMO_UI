@@ -338,6 +338,7 @@ canvas.height = Math.round(size * DPR);
 - ✅ `components/counters/wreath.ts`: добавлен трекинг `prefers-reduced-motion`, вынесены `stopAnimation()` и безопасный interaction target (ближайшая ссылка), исправлено снятие слушателей при `destroy()`.
 - ✅ `styles/app.css`: обновлено позиционирование CONTROL STATUS, сняты фоны/тени обёрток, hover-эффект ограничен самим венком.
 - ✅ `styles/counter-wreath.css`: восстановлены тёмные фоновые градиенты, удалены псевдо-элементы со свечением.
+- ✅ Глобальный масштаб интерфейса снижен до 80% (через `html { zoom: .8 }` + transform fallback) для соответствия макету.
 - ✅ Документ отражает прогресс: обновлён раздел Definition of Done, новое состояние зафиксировано в этом логе.
 
 **Оставшиеся задачи**
