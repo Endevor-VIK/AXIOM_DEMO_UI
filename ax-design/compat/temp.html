@@ -1,0 +1,238 @@
+<!-- counter-ring-wreath.html :: graphite/red minimal -->
+<section class="ax-wreaths">
+    <div class="ax-wreath" data-value="2" data-label="AUDIT"></div>
+    <div class="ax-wreath" data-value="7" data-label="CONTENT"></div>
+    <div class="ax-wreath" data-value="9" data-label="NEWS"></div>
+  </section>
+  
+  <style>
+    :root{
+      /* графиты */
+      --g-900:#0f1112;  /* чёрный графит (фон) */
+      --g-850:#121416;
+      --g-820:#141719;
+      --g-800:#16181a;  /* базовый тон плитки */
+      --g-760:#1a1d20;
+      --g-700:#1f2326;  /* светлая грань/фаска */
+  
+      /* красные */
+      --r-500:#ff2d55;      /* основной акцент */
+      --r-700:#8e1022;      /* красный-графит */
+  
+      --ink:#e9eaec;        /* цифра */
+      --muted:#b6b8ba;      /* подпись */
+  
+      /* размеры */
+      --ring-size: 260px;   /* общий диаметр виджета */
+    }
+  
+    .ax-wreaths{
+      display:flex; gap:clamp(24px,4vw,48px);
+      align-items:center; justify-content:center;
+      padding:clamp(16px,4vw,32px);
+      background:
+        radial-gradient(1000px 800px at 50% 8%, rgba(255,45,85,.06), transparent),
+        linear-gradient(180deg, var(--g-900), var(--g-850));
+    }
+  
+    .ax-wreath{
+      width:var(--ring-size); height:var(--ring-size);
+      position:relative; display:grid; place-items:center;
+      isolation:isolate; border-radius:50%;
+      transition:transform .25s ease;
+    }
+    .ax-wreath:hover{ transform:translateY(-1px); }
+  
+    .ax-wreath canvas{ width:100%; height:100%; display:block; border-radius:50%; }
+    .ax-readout{
+      position:absolute; inset:0; display:grid; place-items:center;
+      pointer-events:none; text-align:center; z-index:2;
+      font-family: ui-sans-serif, system-ui, Inter, Arial, sans-serif;
+      letter-spacing:.08em;
+    }
+    .ax-value{
+      color:var(--ink); font-weight:800;
+      font-size:clamp(36px,8vw,52px); line-height:1;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+    }
+    .ax-label{
+      margin-top:.5rem; color:var(--muted);
+      font-size:clamp(10px,2.5vw,12px); opacity:.9;
+    }
+  
+    /* уважение reduced-motion */
+    @media (prefers-reduced-motion: reduce){
+      .ax-wreath{ transition:none; }
+    }
+  </style>
+  
+  <script>
+  /* ===== Graphite "wreath" counters (Canvas, perf-first) ===== */
+  (function initWreathCounters(){
+    const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  
+    document.querySelectorAll('.ax-wreath').forEach((root, idx) => {
+      // canvas
+      const c = document.createElement('canvas');
+      root.appendChild(c);
+  
+      // readout
+      const out = document.createElement('div');
+      out.className = 'ax-readout';
+      out.innerHTML = `
+        <div class="ax-value"></div>
+        <div class="ax-label"></div>
+      `;
+      root.appendChild(out);
+      out.querySelector('.ax-value').textContent = root.dataset.value || '0';
+      out.querySelector('.ax-label').textContent = root.dataset.label || '';
+  
+      // size & setup
+      const rect = () => root.getBoundingClientRect();
+      function fit(){
+        const s = Math.round(rect().width);
+        c.width  = Math.round(s * DPR);
+        c.height = Math.round(s * DPR);
+        c.style.width  = s + 'px';
+        c.style.height = s + 'px';
+        draw(false);
+      }
+  
+      // seeded RNG for stable layout
+      const seed = 0x57A10 + idx*97;
+      const rnd  = mulberry32(seed);
+  
+      // parameters (tuned to your reference)
+      const cfg = {
+        tiles: 160,           // количество плиток
+        radiusK: 0.76,        // относительный радиус центра венка
+        ringWidthK: 0.16,     // относительная толщина кольца для разброса
+        minSizeK: 0.038,      // относительные размеры плиток
+        maxSizeK: 0.062,
+        redStrokeK: 0.0045,   // толщина красной окружности
+        shadowBlur: 6,        // мягкая тень плиток
+        hoverJitter: 0.85     // амплитуда дрожи на ховер (px в canvas)
+      };
+  
+      // hover → мягкий перерис с лёгким «оживлением»
+      let hovering = false;
+      root.addEventListener('mouseenter', () => { hovering = true; draw(true); });
+      root.addEventListener('mouseleave', () => { hovering = false; draw(false); });
+  
+      // main draw
+      function draw(jitter){
+        const ctx = c.getContext('2d');
+        const W = c.width, H = c.height, S = Math.min(W,H);
+        const cx = W/2, cy = H/2;
+  
+        // palette
+        const g900 = getCSS('--g-900'), g820 = getCSS('--g-820'), g800 = getCSS('--g-800'),
+              g760 = getCSS('--g-760'), g700 = getCSS('--g-700'),
+              r500 = getCSS('--r-500'), r700 = getCSS('--r-700');
+  
+        // clear
+        ctx.clearRect(0,0,W,H);
+  
+        // inner red ring (behind tiles)
+        const R = S*cfg.radiusK*0.5;
+        const redG = ctx.createLinearGradient(0,0,W,H);
+        redG.addColorStop(0, r500);
+        redG.addColorStop(1, r700);
+        ctx.save();
+        ctx.lineWidth = Math.max(1, S*cfg.redStrokeK);
+        ctx.strokeStyle = redG;
+        ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.stroke();
+        ctx.restore();
+  
+        // precompute tiles
+        const tiles = [];
+        const ringJitter = S * cfg.ringWidthK * 0.5;
+        for(let i=0;i<cfg.tiles;i++){
+          const a = (i/cfg.tiles) * Math.PI*2 + rnd()*0.09;     // базовый угол + небольшой шум
+          const rr = R + (rnd()*2-1)*ringJitter;                // радиальный сдвиг
+          const sz = lerp(S*cfg.minSizeK, S*cfg.maxSizeK, rnd()); // размер
+          const rot = (rnd()*2-1) * (Math.PI/7);                // небольшие повороты
+          tiles.push({a, rr, sz, rot});
+        }
+  
+        // soft noise overlay (very subtle) – one pass
+        const noiseAlpha = 0.035;
+        ctx.fillStyle = g900;
+        ctx.globalAlpha = 1;
+        ctx.fillRect(0,0,W,H);
+  
+        // draw tiles
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.shadowColor = 'rgba(0,0,0,0.45)';
+        ctx.shadowBlur = cfg.shadowBlur * DPR;
+        ctx.shadowOffsetY = 2*DPR;
+  
+        tiles.forEach(t=>{
+          const x = Math.cos(t.a) * t.rr;
+          const y = Math.sin(t.a) * t.rr;
+          const jx = jitter ? (rnd()*2-1)*cfg.hoverJitter*DPR : 0;
+          const jy = jitter ? (rnd()*2-1)*cfg.hoverJitter*DPR : 0;
+  
+          ctx.save();
+          ctx.translate(x + jx, y + jy);
+          ctx.rotate(t.rot);
+  
+          // base (matte graphite)
+          ctx.fillStyle = g800;
+          const s = t.sz;
+          ctx.fillRect(-s/2, -s/2, s, s);
+  
+          // bevel: light top-left & dark bottom-right
+          // light edge
+          ctx.globalAlpha = 0.55;
+          ctx.fillStyle = g700;
+          ctx.fillRect(-s/2, -s/2, s, Math.max(1.5*DPR, s*0.14));
+          ctx.fillRect(-s/2, -s/2, Math.max(1.5*DPR, s*0.14), s);
+  
+          // dark edge
+          ctx.globalAlpha = 0.35;
+          ctx.fillStyle = g760;
+          ctx.fillRect(-s/2,  s/2 - Math.max(1.5*DPR, s*0.16), s, Math.max(1.5*DPR, s*0.16));
+          ctx.fillRect( s/2 - Math.max(1.5*DPR, s*0.16), -s/2, Math.max(1.5*DPR, s*0.16), s);
+  
+          // tiny inner stroke for crispness
+          ctx.globalAlpha = 0.15;
+          ctx.strokeStyle = g820;
+          ctx.lineWidth = Math.max(1*DPR, s*0.04);
+          ctx.strokeRect(-s/2+ctx.lineWidth/2, -s/2+ctx.lineWidth/2, s-ctx.lineWidth, s-ctx.lineWidth);
+  
+          ctx.restore();
+          ctx.globalAlpha = 1;
+        });
+        ctx.restore();
+  
+        // very faint vignette to "sink" center
+        const vg = ctx.createRadialGradient(cx, cy, 0, cx, cy, S*0.5);
+        vg.addColorStop(0, 'rgba(0,0,0,0)');
+        vg.addColorStop(1, 'rgba(0,0,0,0.25)');
+        ctx.fillStyle = vg; ctx.fillRect(0,0,W,H);
+      }
+  
+      // initial fit/draw + resize
+      const ro = new ResizeObserver(fit); ro.observe(root);
+  
+      // public API
+      window.AXWreathSet = function(el, value){
+        const r = (typeof el === 'string') ? document.querySelector(el) : el;
+        if(!r) return;
+        r.dataset.value = value;
+        const out = r.querySelector('.ax-value');
+        if(out) out.textContent = value;
+      };
+  
+      // utils
+      function getCSS(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#000'; }
+    });
+  
+    // --- helpers ---
+    function lerp(a,b,t){ return a + (b-a)*t; }
+    function mulberry32(a){ return function(){ let t=a+=0x6D2B79F5; t=Math.imul(t^t>>>15,t|1); t^=t+Math.imul(t^t>>>7,t|61); return ((t^t>>>14)>>>0)/4294967296; }; }
+  })();
+  </script>
+  

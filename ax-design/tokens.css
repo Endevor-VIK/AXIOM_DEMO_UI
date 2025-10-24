@@ -135,7 +135,7 @@
     --lh-loose: 1.5;
   
     /* Density preset (RED-XS) */
-    --ax-scale: .9;
+    --ax-scale: .81;
   
     /* Type scale */
     --fs-base: calc(14px * var(--ax-scale));
