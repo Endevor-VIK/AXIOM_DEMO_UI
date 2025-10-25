@@ -39,7 +39,7 @@ const ContentTabs: React.FC<ContentTabsProps> = ({ categories, active }) => {
             key={key}
             to={to}
             className={({ isActive }) =>
-              `ax-tab ${isActive || active === key ? 'active' : ''}`.trim()
+              `ax-tab ax-link-underline ${isActive || active === key ? 'active' : ''}`.trim()
             }
           >
             <span>{TAB_LABELS[key]}</span>

@@ -61,7 +61,8 @@
      background: currentColor;
      transform: scaleX(0);
      transform-origin: 0 50%;
-     transition: transform .25s ease;
+     transition: transform .36s var(--ease-ax2);
+     box-shadow: 0 0 12px rgba(255,57,93,0.35);
    }
    .ax-link-underline:hover::after,
    .ax-link-underline:focus-visible::after,

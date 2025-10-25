@@ -26,6 +26,14 @@
     --ax-red-2: #b10f1e;       /* deep accent (borders) */
     --ax-red-3: #5a0a12;       /* shadow/edge */
     --ax-red-strong: #ff5462;  /* hover/active accent */
+    --ax-red-neon: #ff395d;    /* high-energy accent */
+    --ax-red-neon-soft: rgba(255,57,93,0.26);
+    /* aliases for backward compatibility */
+    --red: var(--ax-red);
+    --red-2: var(--ax-red-2);
+    --red-3: var(--ax-red-3);
+    --glow: rgba(255,32,52,0.28);    /* normalized accent halo */
+    --red-alert: #ff0d00;           /* system banner / alert */
     --ax-white: #ffffff;
     --ax-black: #0a0d10;
   
