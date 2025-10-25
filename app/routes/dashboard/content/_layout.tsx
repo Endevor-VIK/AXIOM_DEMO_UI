@@ -8,6 +8,7 @@ import { Outlet, useLocation, useSearchParams } from 'react-router-dom'
 
 import CategoryStats from '@/components/content/CategoryStats'
 import ContentFilters from '@/components/ContentFilters'
+import RouteWreath from '@/components/counters/RouteWreath'
 import { getCategoryStats, type ContentCategoryKey } from '@/lib/contentStats'
 import {
   contentCategories,
@@ -233,6 +234,17 @@ const ContentLayout: React.FC = () => {
     return Array.from(bag).sort((a, b) => a.localeCompare(b))
   }, [aggregate])
 
+  const contentTotal = aggregate?.items?.length ?? 0
+  const activeCategoryLabel =
+    activeTab === 'all'
+      ? 'All collections'
+      : activeTab.replace(/[-_]/g, ' ')
+  const contentWreathDescription = loading
+    ? 'Loading content manifests...'
+    : contentTotal > 0
+      ? `${contentTotal} entries indexed. Focus: ${activeCategoryLabel.toUpperCase()}.`
+      : 'No content entries synced yet.'
+
   const togglePin = useCallback((id: string) => {
     setPins((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
   }, [])
@@ -272,6 +284,13 @@ const ContentLayout: React.FC = () => {
     <ContentHubContext.Provider value={contextValue}>
       <section className='ax-section'>
         <div className='ax-container ax-content-hub' aria-busy={loading}>
+          <RouteWreath
+            label='CONTENT'
+            value={contentTotal}
+            title='Content Library'
+            description={contentWreathDescription}
+            ariaLabel={`CONTENT module total ${contentTotal}`}
+          />
           {/* Category summary table (7 columns including ALL) */}
           <CategoryStats items={categoryStats} variant='table' />
           {/* Legacy tile grid removed per spec */}

@@ -7,9 +7,18 @@ type CounterWreathProps = {
   label: string
   size?: number
   className?: string
+  ariaLabel?: string | null
+  ariaHidden?: boolean
 }
 
-export default function CounterWreath({ value, label, size = 260, className }: CounterWreathProps) {
+export default function CounterWreath({
+  value,
+  label,
+  size = 260,
+  className,
+  ariaLabel,
+  ariaHidden,
+}: CounterWreathProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const apiRef = useRef<WreathApi | null>(null)
 
@@ -32,6 +41,9 @@ export default function CounterWreath({ value, label, size = 260, className }: C
       ref={containerRef}
       className={['ax-wreath', className].filter(Boolean).join(' ')}
       style={{ '--ring-size': `${size}px` } as CSSProperties}
+      role={ariaHidden ? undefined : 'img'}
+      aria-hidden={ariaHidden || undefined}
+      aria-label={ariaHidden ? undefined : ariaLabel ?? `${label} total ${value}`}
       data-label={label}
     />
   )

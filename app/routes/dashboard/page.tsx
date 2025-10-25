@@ -95,7 +95,13 @@ export default function DashboardPage() {
                 data-variant={resolveCountVariant(counter.value)}
                 aria-label={`${counter.label} total ${counter.value}`}
               >
-                <CounterWreath value={counter.value} label={counter.label} size={260} className='ax-dashboard__wreath' />
+                <CounterWreath
+                  value={counter.value}
+                  label={counter.label}
+                  size={260}
+                  className='ax-dashboard__wreath'
+                  ariaHidden
+                />
               </Link>
             ))}
           </div>

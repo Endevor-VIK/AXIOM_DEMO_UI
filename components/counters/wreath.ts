@@ -63,13 +63,13 @@ const defaultConfig: Config = {
   outerRedWidthK: 0.0062,
   innerRedWidthK: 0.0048,
   shadowBlur: 5,
-  baseLight: 0.018,
-  hoverLight: 0.06,
-  redTint: 0.08,
-  transformDuration: 720,
-  staggerPerRad: 0.09,
-  maxStagger: 0.32,
-  baseStaggerStep: 0.035,
+  baseLight: 0.024,
+  hoverLight: 0.072,
+  redTint: 0.09,
+  transformDuration: 780,
+  staggerPerRad: 90,
+  maxStagger: 285,
+  baseStaggerStep: 48,
   aspectRatios: [1, 1.4, 0.7, 1.8, 0.55, 2.2, 0.35],
   compoundProb: 0.2,
 }
@@ -78,6 +78,8 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1))
   const canvas = document.createElement('canvas')
   const ctx = getRequiredContext(canvas)
+  canvas.setAttribute('role', 'presentation')
+  canvas.setAttribute('aria-hidden', 'true')
 
   root.appendChild(canvas)
 
@@ -402,7 +404,7 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
       const maxDim = Math.max(tile.origW, tile.origH)
       const shift = (rand() * 2 - 1) * maxDim * 0.4
       let newR = tile.origR + shift
-      newR = clamp(newR, innerR * 0.85, outerR * 1.15)
+      newR = clamp(newR, innerR * 0.9, outerR * 1.07)
       tile.targetR = newR
       const aspect = pickAspect()
       if (aspect > 1) {

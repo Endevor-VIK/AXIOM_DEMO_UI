@@ -281,13 +281,67 @@
    @media (max-width: 960px){
      .ax-dashboard__wreaths{ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
    }
-   @media (max-width: 640px){
-     .ax-dashboard__wreaths{ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: clamp(1.5rem, 8vw, 2.5rem); }
-     .ax-dashboard__wreath { --ring-size: clamp(180px, 44vw, 220px); }
-   }
-   @media (prefers-reduced-motion: reduce){
-     .ax-dashboard__wreath-link{ transition: none; transform: none !important; }
-   }
+@media (max-width: 640px){
+    .ax-dashboard__wreaths{ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: clamp(1.5rem, 8vw, 2.5rem); }
+    .ax-dashboard__wreath { --ring-size: clamp(180px, 44vw, 220px); }
+}
+@media (prefers-reduced-motion: reduce){
+    .ax-dashboard__wreath-link{ transition: none; transform: none !important; }
+}
+
+.ax-route-wreath{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap: clamp(16px, 4vw, 40px);
+  padding: clamp(18px, 3vw, 30px);
+  margin-bottom: clamp(20px, 4vw, 36px);
+  border-radius: var(--r-xl, 24px);
+  background: linear-gradient(180deg, rgba(22, 14, 16, 0.86), rgba(10, 7, 9, 0.92));
+  border: 1px solid rgba(255, 45, 85, 0.18);
+  box-shadow:
+    0 0 0 1px rgba(255, 45, 85, 0.12) inset,
+    0 32px 64px -36px rgba(255, 45, 85, 0.32);
+}
+.ax-route-wreath__meta{
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+  flex: 1 1 240px;
+  min-width: 220px;
+}
+.ax-route-wreath__eyebrow{
+  font: 600 11px/1.2 var(--font-mono, 'JetBrains Mono', monospace);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(255, 233, 240, 0.72);
+}
+.ax-route-wreath__title{
+  font: 700 clamp(20px, 3vw, 30px)/1.2 var(--font-sans, 'Inter', sans-serif);
+  letter-spacing: .08em;
+}
+.ax-route-wreath__description{
+  max-width: clamp(260px, 42vw, 420px);
+  color: rgba(233, 234, 236, 0.74);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.ax-route-wreath__viz{
+  flex: 0 0 auto;
+}
+.ax-route-wreath__viz .ax-wreath{
+  --ring-size: clamp(180px, 26vw, 240px);
+}
+@media (max-width: 780px){
+  .ax-route-wreath{
+    justify-content:center;
+    text-align:center;
+  }
+  .ax-route-wreath__meta{
+    align-items:center;
+  }
+}
    
    .ax-dashboard__actions { display: flex; gap: var(--space-2); flex-wrap: wrap; justify-content: flex-start; align-items: center; }
    .ax-dashboard__action { min-height: var(--btn-h); padding-inline: var(--space-3); font-size: var(--fs-12); letter-spacing: .1em; text-transform: uppercase; }

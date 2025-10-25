@@ -3,6 +3,7 @@
 // Purpose: News panel with Red Protocol filters, grid layout and pagination.
 
 import React, { useEffect, useMemo, useState } from 'react'
+import RouteWreath from '@/components/counters/RouteWreath'
 import { vfs, type NewsItem, type NewsKind } from '@/lib/vfs'
 import NewsCard from '@/components/NewsCard'
 
@@ -59,6 +60,12 @@ export default function NewsPage() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const newsTotal = items.length
+  const newsWreathDescription = busy
+    ? 'Loading news manifest...'
+    : newsTotal > 0
+      ? `${newsTotal} briefings archived. Showing ${filtered.length}.`
+      : 'No news briefings yet. Add items to populate the feed.'
 
   const handlePrev = () => setPage((prev) => Math.max(1, prev - 1))
   const handleNext = () => setPage((prev) => Math.min(totalPages, prev + 1))
@@ -67,6 +74,13 @@ export default function NewsPage() {
     <>
       <section className='ax-container ax-section' aria-busy={busy}>
         <div className='ax-stack'>
+          <RouteWreath
+            label='NEWS'
+            value={newsTotal}
+            title='News Dispatch'
+            description={newsWreathDescription}
+            ariaLabel={`NEWS module total ${newsTotal}`}
+          />
           <div className='ax-card ghost ax-news-controls'>
             <div className='ax-filter-row'>
               <label className='visually-hidden' htmlFor='news-search'>Search news</label>

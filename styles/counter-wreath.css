@@ -18,18 +18,6 @@
   place-items: center;
   border-radius: 50%;
   isolation: isolate;
-  background: radial-gradient(circle at 50% 50%, rgba(16, 18, 22, 0.96) 0%, rgba(11, 13, 16, 0.94) 55%, rgba(7, 8, 11, 0.9) 100%);
-}
-
-.ax-wreath::after {
-  content: '';
-  position: absolute;
-  inset: calc(var(--ring-size, 260px) * 0.12);
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 48%, rgba(6, 7, 9, 0.9), rgba(4, 5, 7, 0.98));
-  opacity: 0.85;
-  pointer-events: none;
-  z-index: 0;
 }
 
 .ax-wreath canvas {
