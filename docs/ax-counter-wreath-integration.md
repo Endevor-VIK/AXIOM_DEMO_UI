@@ -3,6 +3,8 @@
 **Дата:** 2025-10-24 (Europe/Berlin)  
 **Область:** HOME → CONTROL STATUS (3 счётчика: AUDIT / CONTENT / NEWS)
 
+<!-- fiele: docs/ax-counter-wreath-integration.md -->
+
 ---
 
 ## 0) Резюме
