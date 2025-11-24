@@ -57,11 +57,11 @@ let mountIndex = 0
 
 const defaultConfig: Config = {
   tileCount: 96,
-  outerRadiusK: 0.88,
-  innerRadiusK: 0.64,
-  minTileK: 0.022,
-  maxTileK: 0.042,
-  bandGapK: 0.008,
+  outerRadiusK: 0.95,
+  innerRadiusK: 0.78,
+  minTileK: 0.02,
+  maxTileK: 0.036,
+  bandGapK: 0.0065,
   outerRedWidthK: 0.0062,
   innerRedWidthK: 0.0048,
   shadowBlur: 5,
@@ -194,7 +194,7 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
       const minR = innerR + bandGap + half
       const maxR = outerR - bandGap - half
       const baseRadius = lerp(minR, maxR, rand())
-      const r = clamp(baseRadius + (rand() * 2 - 1) * Math.min(maxDim * 0.2, bandGap), minR, maxR)
+      const r = clamp(baseRadius + (rand() * 2 - 1) * Math.min(maxDim * 0.18, bandGap * 1.05), minR, maxR)
       const rot = (rand() * 2 - 1) * (Math.PI / 5)
       const compound = rand() < cfg.compoundProb
 
@@ -412,7 +412,7 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
       const half = maxDim * 0.5
       const minR = innerR + bandGap + half
       const maxR = outerR - bandGap - half
-      const shift = (rand() * 2 - 1) * Math.min(maxDim * 0.25, bandGap * 1.2)
+      const shift = (rand() * 2 - 1) * Math.min(maxDim * 0.22, bandGap * 1.2)
       let newR = tile.origR + shift
       newR = clamp(newR, minR, maxR)
       tile.targetR = newR
