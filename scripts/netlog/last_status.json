@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-24T21:35:59.160173",
+  "timestamp": "2025-11-24T21:38:44.775900",
   "ip": {
     "ip": "192.168.0.11",
     "error": null
@@ -52,7 +52,7 @@
     "out_bps": null
   },
   "summary": "OK – интернет и api.openai.com доступны",
-  "uptime_seconds": 430,
+  "uptime_seconds": 596,
   "downtime_seconds": 0,
   "primary": {
     "host": "api.openai.com",
