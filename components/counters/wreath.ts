@@ -33,6 +33,7 @@ type Config = {
   innerRadiusK: number
   minTileK: number
   maxTileK: number
+  bandGapK: number
   outerRedWidthK: number
   innerRedWidthK: number
   shadowBlur: number
@@ -55,11 +56,12 @@ export type WreathApi = {
 let mountIndex = 0
 
 const defaultConfig: Config = {
-  tileCount: 90,
-  outerRadiusK: 0.8,
-  innerRadiusK: 0.53,
-  minTileK: 0.02,
-  maxTileK: 0.05,
+  tileCount: 96,
+  outerRadiusK: 0.88,
+  innerRadiusK: 0.64,
+  minTileK: 0.022,
+  maxTileK: 0.042,
+  bandGapK: 0.008,
   outerRedWidthK: 0.0062,
   innerRedWidthK: 0.0048,
   shadowBlur: 5,
@@ -171,9 +173,11 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
     tiles = []
     const outerR = measuredSize * cfg.outerRadiusK * 0.5
     const innerR = measuredSize * cfg.innerRadiusK * 0.5
+    const bandGap = Math.max(1.5, measuredSize * cfg.bandGapK)
+    const angleStep = (Math.PI * 2) / cfg.tileCount
 
     for (let i = 0; i < cfg.tileCount; i += 1) {
-      const angle = (i / cfg.tileCount) * Math.PI * 2 + rand() * 0.1
+      const angle = angleStep * i + (rand() - 0.5) * angleStep * 0.28
       const baseSize = lerp(measuredSize * cfg.minTileK, measuredSize * cfg.maxTileK, rand())
       const aspect = pickAspect()
 
@@ -186,9 +190,11 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
       }
 
       const maxDim = Math.max(w, h)
-      const baseRadius = lerp(innerR + maxDim * 0.6, outerR - maxDim * 0.6, rand())
-      let r = baseRadius + (rand() * 2 - 1) * maxDim * 0.3
-      r = clamp(r, innerR * 0.9, outerR * 1.07)
+      const half = maxDim * 0.5
+      const minR = innerR + bandGap + half
+      const maxR = outerR - bandGap - half
+      const baseRadius = lerp(minR, maxR, rand())
+      const r = clamp(baseRadius + (rand() * 2 - 1) * Math.min(maxDim * 0.2, bandGap), minR, maxR)
       const rot = (rand() * 2 - 1) * (Math.PI / 5)
       const compound = rand() < cfg.compoundProb
 
@@ -400,11 +406,15 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
     }
     const outerR = size * cfg.outerRadiusK * 0.5
     const innerR = size * cfg.innerRadiusK * 0.5
+    const bandGap = Math.max(1.5, size * cfg.bandGapK)
     tiles.forEach((tile, index) => {
       const maxDim = Math.max(tile.origW, tile.origH)
-      const shift = (rand() * 2 - 1) * maxDim * 0.4
+      const half = maxDim * 0.5
+      const minR = innerR + bandGap + half
+      const maxR = outerR - bandGap - half
+      const shift = (rand() * 2 - 1) * Math.min(maxDim * 0.25, bandGap * 1.2)
       let newR = tile.origR + shift
-      newR = clamp(newR, innerR * 0.9, outerR * 1.07)
+      newR = clamp(newR, minR, maxR)
       tile.targetR = newR
       const aspect = pickAspect()
       if (aspect > 1) {

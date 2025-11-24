@@ -278,7 +278,7 @@
    .ax-dashboard__wreath-link[data-variant='warn'] { box-shadow: none; }
    .ax-dashboard__wreath-link[data-variant='online'] { box-shadow: none; }
    .ax-dashboard__wreath-link[data-variant='warn']:hover { box-shadow: 0 0 32px rgba(255, 64, 86, 0.38); }
-   .ax-dashboard__wreath-link[data-variant='online']:hover { box-shadow: 0 0 28px rgba(46, 204, 113, 0.32); }
+   .ax-dashboard__wreath-link[data-variant='online']:hover { box-shadow: 0 0 28px rgba(255, 45, 85, 0.28); }
    @media (max-width: 960px){
      .ax-dashboard__wreaths{ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
    }
