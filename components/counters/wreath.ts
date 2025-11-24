@@ -34,9 +34,6 @@ type Config = {
   minTileK: number
   maxTileK: number
   bandGapK: number
-  glowWidthK: number
-  glowBaseAlpha: number
-  glowHoverAlpha: number
   outerRedWidthK: number
   innerRedWidthK: number
   shadowBlur: number
@@ -65,9 +62,6 @@ const defaultConfig: Config = {
   minTileK: 0.028,
   maxTileK: 0.052,
   bandGapK: 0.012,
-  glowWidthK: 0.08,
-  glowBaseAlpha: 0.18,
-  glowHoverAlpha: 0.3,
   outerRedWidthK: 0.0062,
   innerRedWidthK: 0.0048,
   shadowBlur: 5,
@@ -250,8 +244,6 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
 
     const outerRadius = S * cfg.outerRadiusK * 0.5
     const innerRadius = S * cfg.innerRadiusK * 0.5
-    const glowWidth = Math.max(1, S * cfg.glowWidthK)
-    const glowAlpha = hovering ? cfg.glowHoverAlpha : cfg.glowBaseAlpha
 
     let anyAnimating = false
 
@@ -303,18 +295,6 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
     ctx.arc(cx, cy, outerRadius, 0, Math.PI * 2)
     ctx.stroke()
     ctx.restore()
-
-    // halo near outer ring
-    if (glowAlpha > 0.001) {
-      const g = ctx.createRadialGradient(cx, cy, Math.max(0, outerRadius - glowWidth * 0.6), cx, cy, outerRadius + glowWidth)
-      g.addColorStop(0, applyAlpha(r500, glowAlpha * 0.5))
-      g.addColorStop(0.45, applyAlpha(r500, glowAlpha))
-      g.addColorStop(1, 'rgba(0,0,0,0)')
-      ctx.save()
-      ctx.fillStyle = g
-      ctx.fillRect(0, 0, S, S)
-      ctx.restore()
-    }
 
     // inner ring
     const innerGrad = ctx.createLinearGradient(W, 0, 0, H)
@@ -639,10 +619,4 @@ function mixColors(c1: string, c2: string, ratio: number) {
 
 function shortestAngle(a: number, b: number) {
   return Math.atan2(Math.sin(a - b), Math.cos(a - b))
-}
-
-function applyAlpha(color: string, alpha: number) {
-  const { r, g, b } = parseColor(color)
-  const a = Math.min(1, Math.max(0, alpha))
-  return `rgba(${r}, ${g}, ${b}, ${a})`
 }
