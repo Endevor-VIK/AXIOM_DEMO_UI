@@ -274,7 +274,7 @@
    .ax-dashboard__wreath-link:focus-visible { outline: 1px solid rgba(255, 45, 85, 0.8); outline-offset: 6px; }
    .ax-dashboard__wreath { --ring-size: clamp(220px, 22vw, 260px); pointer-events: auto; }
 
-   .ax-dashboard__wreath-link:hover { transform: translateY(-3px); box-shadow: 0 0 16px rgba(255, 45, 85, 0.28); }
+   .ax-dashboard__wreath-link:hover { transform: translateY(-3px); box-shadow: 0 0 12px 4px rgba(255, 45, 85, 0.26); }
    .ax-dashboard__wreath-link[data-variant='warn'] { box-shadow: none; }
    .ax-dashboard__wreath-link[data-variant='online'] { box-shadow: none; }
    .ax-dashboard__wreath-link[data-variant='warn']:hover { box-shadow: 0 0 32px rgba(255, 64, 86, 0.38); }
