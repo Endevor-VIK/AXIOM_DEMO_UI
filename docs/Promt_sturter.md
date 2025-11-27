@@ -88,12 +88,6 @@
      - в логе `AXIOM_CONTENT_HUB_v2_LOG.md` (описать причину, что мешает выполнению).
    - Если у тебя есть предложение по решению — добавь его в `Notes` для этого шага или в отдельный файл `docs/AXIOM_CONTENT_HUB_v2_ISSUES.md`, если он существует.
 
-8. Коммиты:
-   - Формируй понятные commit message, связанные с блоками:
-     - `feat(content): implement ContentHubPage`,
-     - `feat(reader): add ReaderPage and routing`,
-     - `chore(content-build): add build-content script` и т.п.
-   - В логе всегда указывай, какой блок/шаг был покрыт данным коммитом.
 
 ТВОЯ ЦЕЛЬ:
 Используя ТОЛЬКО SPEC-файл (docs/AXIOM_CONTENT_HUB_v2_SPEC.md) и структуру репозитория (корень /e/ENDEAVOR/AXIOM WEB CORE/ui/), автономно:
