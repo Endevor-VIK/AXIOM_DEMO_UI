@@ -16,3 +16,4 @@ test-results/
 reports/
 scripts/__pycache__
 scripts/netlog/
+temp
