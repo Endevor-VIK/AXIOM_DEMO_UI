@@ -1,0 +1,539 @@
+<!-- CONTENT LIBRARY MODULE -->
+<div class="cl-module">
+    <!-- 2-й слой: почти прозрачный бинарный фон -->
+    <div class="cl-bg-binary" aria-hidden="true">
+      <!-- Ленты: направление и скорость различаются -->
+      <div class="binary-line" style="--y: 22%; --dur: 110s;"></div>
+      <div class="binary-line" style="--y: 48%; --dur: 95s;" data-dir="-1"></div>
+      <div class="binary-line" style="--y: 74%; --dur: 130s;"></div>
+    </div>
+  
+    <!-- 3-й слой: ТВОЙ текущий контент модуля -->
+    <div class="cl-content" data-content-count="7">
+      <section class="ax-demo-shell ax-animate" aria-label="Axiom Panel - Red Protocol">
+        <header class="ax-demo-top">
+          <div class="ax-demo-brand">
+            <span class="ax-demo-logo">AXIOM PANEL</span>
+            <span class="ax-demo-meta">ENV :: DEV | VER :: v0.5.0</span>
+          </div>
+          <nav class="ax-demo-nav" aria-label="Primary navigation">
+            <a href="#" class="ax-tab ax-link-underline ax-animate" style="--i:0">HOME</a>
+            <a href="#" class="ax-tab ax-link-underline ax-animate" style="--i:1">ROADMAP</a>
+            <a href="#" class="ax-tab ax-link-underline ax-animate" style="--i:2">AUDIT</a>
+            <a href="#" class="ax-tab ax-link-underline ax-animate is-active" style="--i:3">CONTENT</a>
+            <a href="#" class="ax-tab ax-link-underline ax-animate" style="--i:4">NEWS</a>
+          </nav>
+          <div class="ax-demo-controls">
+            <button type="button" class="ax-demo-chip ax-animate" style="--i:5" aria-label="Switch to Russian language">RU</button>
+            <button type="button" class="ax-demo-chip ax-animate" style="--i:6" aria-label="Current user profile">AX</button>
+          </div>
+        </header>
+
+        <div class="ax-demo-wire ax-animate" style="--i:7" role="status" aria-live="polite">
+          <span class="ax-demo-badge">NEWS WIRE</span>
+          <div class="ax-demo-wire-body">
+            <span class="ax-demo-wire-id">t AXIOM_DEMO_UI (05.09-02.10.2025)</span>
+            <span class="ax-demo-wire-update">Login: нижняя плашка встроена, убран вертикальный скролл (Баг присутствует)</span>
+          </div>
+          <button type="button" class="ax-demo-action" aria-label="Refresh ticker updates">UPDATE</button>
+        </div>
+
+        <section class="ax-demo-categories" aria-label="Content categories">
+          <button type="button" class="ax-cat ax-animate is-active" style="--i:8">
+            <span class="ax-cat__head">
+              <span class="ax-cat__label">ALL</span>
+              <span class="ax-cat__count" aria-hidden="true">7</span>
+            </span>
+          </button>
+          <button type="button" class="ax-cat ax-animate" style="--i:9">
+            <span class="ax-cat__head">
+              <span class="ax-cat__label">LOCATIONS</span>
+              <span class="ax-cat__count" aria-hidden="true">1</span>
+            </span>
+          </button>
+          <button type="button" class="ax-cat ax-animate" style="--i:10">
+            <span class="ax-cat__head">
+              <span class="ax-cat__label">CHARACTERS</span>
+              <span class="ax-cat__count" aria-hidden="true">3</span>
+            </span>
+          </button>
+          <button type="button" class="ax-cat ax-animate" style="--i:11">
+            <span class="ax-cat__head">
+              <span class="ax-cat__label">TECHNOLOGIES</span>
+              <span class="ax-cat__count" aria-hidden="true">1</span>
+            </span>
+          </button>
+          <button type="button" class="ax-cat ax-animate" style="--i:12">
+            <span class="ax-cat__head">
+              <span class="ax-cat__label">FACTIONS</span>
+              <span class="ax-cat__count" aria-hidden="true">1</span>
+            </span>
+          </button>
+          <button type="button" class="ax-cat ax-animate" style="--i:13">
+            <span class="ax-cat__head">
+              <span class="ax-cat__label">EVENTS</span>
+              <span class="ax-cat__count" aria-hidden="true">1</span>
+            </span>
+          </button>
+          <button type="button" class="ax-cat ax-animate" style="--i:14">
+            <span class="ax-cat__head">
+              <span class="ax-cat__label">LORE</span>
+              <span class="ax-cat__count" aria-hidden="true">1</span>
+            </span>
+          </button>
+        </section>
+      </section>
+    </div>
+  </div>
+  
+  <style>
+    :root{
+      /* Палитра: красный/графит/чёрный/серый */
+      --ax-bg:#0B0C0E;
+      --ax-graphite:#101114;
+      --ax-graphite-2:#13161A;
+      --ax-ink:#0d0f14;
+      --ax-ink-soft: rgba(10,12,18,0.82);
+      --ax-red:#E14747;         /* основной красный */
+      --ax-red-strong:#ff5462;
+      --ax-red-deep:#5a0a12;
+      --ax-red-soft: rgba(225,71,71,.18);  /* мягкий красный «дым» */
+      --ax-white:#f5f5f7;
+      --ax-ease:cubic-bezier(.2,.8,.2,1);
+    }
+  
+    .cl-module{
+      position: relative;
+      background: var(--ax-bg);            /* 1-й слой — чёрный */
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(225,71,71,.06) inset, 0 40px 80px rgba(0,0,0,.35);
+    }
+  
+    .cl-content{ position: relative; z-index: 2; }
+
+    /* ===== DEMO SHELL ===== */
+    .ax-demo-shell{
+      display: grid;
+      gap: 28px;
+      padding: 32px clamp(24px,4vw,42px) 40px;
+      background: linear-gradient(180deg, rgba(19,22,28,.88) 0%, rgba(12,14,16,.92) 48%, rgba(12,14,16,.98) 100%);
+      border-radius: 20px;
+      border: 1px solid rgba(255,32,52,.28);
+      box-shadow: 0 28px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(255,32,52,.08) inset;
+      color: var(--ax-white);
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .ax-demo-top{
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: clamp(18px,2vw,32px);
+    }
+
+    .ax-demo-brand{
+      display: grid;
+      gap: 6px;
+    }
+
+    .ax-demo-logo{
+      font-size: clamp(18px,2.2vw,24px);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ax-red);
+    }
+
+    .ax-demo-meta{
+      font-size: 11px;
+      letter-spacing: .16em;
+      color: rgba(255,255,255,.48);
+      text-transform: uppercase;
+    }
+
+    .ax-demo-nav{
+      display: flex;
+      justify-content: center;
+      gap: clamp(16px,2.6vw,32px);
+    }
+
+    .ax-demo-controls{
+      display: flex;
+      gap: 10px;
+    }
+
+    .ax-demo-chip{
+      min-width: 46px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,32,52,.36);
+      background: rgba(255,32,52,.06);
+      color: var(--ax-red-strong);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      transition: border-color .26s var(--ax-ease), background .26s var(--ax-ease), color .26s var(--ax-ease);
+    }
+
+    .ax-demo-chip:hover{
+      color: var(--ax-white);
+      border-color: rgba(255,32,52,.6);
+      background: rgba(255,32,52,.16);
+    }
+
+    .ax-demo-wire{
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 18px;
+      padding: 14px clamp(18px,3vw,28px);
+      border-radius: 16px;
+      border: 1px solid rgba(255,32,52,.24);
+      background: radial-gradient(110% 120% at 0% 50%, rgba(255,32,52,.22) 0%, rgba(255,32,52,0) 60%), rgba(12,14,18,.92);
+    }
+
+    .ax-demo-badge{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,32,52,.92), rgba(255,32,52,.65));
+      color: #1f0508;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      box-shadow: 0 0 18px rgba(255,32,52,.36);
+    }
+
+    .ax-demo-wire-body{
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.78);
+    }
+
+    .ax-demo-wire-id{
+      color: var(--ax-red-strong);
+    }
+
+    .ax-demo-action{
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,32,52,.32);
+      background: rgba(255,32,52,.12);
+      color: var(--ax-white);
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      transition: border-color .24s var(--ax-ease), background .24s var(--ax-ease), color .24s var(--ax-ease);
+    }
+
+    .ax-demo-action:hover{
+      border-color: rgba(255,32,52,.6);
+      background: rgba(255,32,52,.22);
+      color: var(--ax-red-strong);
+    }
+
+    .ax-demo-categories{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+      gap: 12px;
+    }
+
+    .ax-cat{
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px clamp(14px,3vw,24px);
+      border-radius: 16px;
+      border: 1px solid rgba(255,32,52,.2);
+      background: rgba(18,19,24,.8);
+      color: rgba(255,255,255,.72);
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: 13px;
+      font-weight: 700;
+      gap: 16px;
+      transition: border-color .26s var(--ax-ease), background .26s var(--ax-ease), color .26s var(--ax-ease), box-shadow .26s var(--ax-ease);
+    }
+
+    .ax-cat::before{
+      content:"";
+      position:absolute;
+      inset: 1px;
+      border-radius: 14px;
+      background: linear-gradient(120deg, rgba(255,32,52,.18), rgba(255,32,52,0) 55%);
+      opacity: 0;
+      transition: opacity .3s var(--ax-ease);
+      pointer-events: none;
+    }
+
+    .ax-cat:hover{
+      border-color: rgba(255,32,52,.32);
+      background: rgba(255,32,52,.08);
+      color: var(--ax-white);
+    }
+
+    .ax-cat:hover::before{
+      opacity: .55;
+    }
+
+    .ax-cat.is-active{
+      border-color: rgba(255,32,52,.55);
+      background: radial-gradient(85% 120% at 0% 50%, rgba(255,32,52,.35) 0%, rgba(255,32,52,.06) 55%), rgba(14,16,22,.95);
+      color: var(--ax-red-strong);
+      box-shadow: 0 0 24px rgba(255,32,52,.2);
+    }
+
+    .ax-cat.is-active::before{
+      opacity: 1;
+    }
+
+    .ax-cat__head{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .ax-cat__count{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,32,52,.45);
+      background: rgba(255,32,52,.12);
+      color: var(--ax-red-strong);
+      font-size: 12px;
+      letter-spacing: .08em;
+    }
+
+    /* Shared tab styling */
+    .ax-tab{
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 20px;
+      border-radius: 999px;
+      color: rgba(255,255,255,.68);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+      background: transparent;
+      transition: color .26s var(--ax-ease), border-color .26s var(--ax-ease), background .26s var(--ax-ease);
+    }
+
+    .ax-tab:hover{
+      color: var(--ax-red-strong);
+      border-color: rgba(255,32,52,.35);
+      background: rgba(255,32,52,.08);
+    }
+
+    .ax-tab.is-active{
+      color: var(--ax-white);
+      border-color: rgba(255,32,52,.55);
+      background: rgba(255,32,52,.16);
+      box-shadow: 0 0 22px rgba(255,32,52,.22);
+    }
+
+    /* Animated underline */
+    .ax-link-underline{
+      overflow: hidden;
+    }
+
+    .ax-link-underline::after{
+      content:"";
+      position:absolute;
+      left:12px;
+      right:12px;
+      bottom:10px;
+      height:2px;
+      transform: scaleX(0);
+      transform-origin: 0% 50%;
+      background: currentColor;
+      opacity: .85;
+      transition: transform .35s var(--ax-ease);
+    }
+
+    .ax-link-underline:hover::after,
+    .ax-link-underline:focus-visible::after,
+    .ax-link-underline.is-active::after{
+      transform: scaleX(1);
+    }
+
+    .ax-link-underline:focus-visible{
+      outline: 2px solid rgba(255,32,52,.7);
+      outline-offset: 3px;
+    }
+
+    /* Motion */
+    .ax-animate{
+      opacity: 0;
+      transform: translateY(6px);
+      animation: ax-page-in .6s var(--ax-ease) forwards;
+      animation-delay: calc(var(--i, 0) * .06s);
+    }
+
+    @keyframes ax-page-in{
+      to{
+        opacity:1;
+        transform:none;
+      }
+    }
+
+    @media (max-width: 900px){
+      .ax-demo-top{
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 20px;
+      }
+
+      .ax-demo-nav{
+        flex-wrap: wrap;
+      }
+
+      .ax-demo-controls{
+        justify-content: center;
+      }
+    }
+  
+    .cl-bg-binary{
+      position: absolute; inset: 0; z-index: 1;
+      pointer-events: none;
+      /* мягкая виньетка чтобы фон не спорил с контентом */
+      background: radial-gradient(120% 80% at 50% 50%, transparent 0%, transparent 55%, rgba(0,0,0,.18) 100%);
+      /* лёгкая маска-затухание краёв для лент */
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+              mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+      contain: layout paint;    /* изоляция перерисовок */
+    }
+  
+    .binary-line{
+      position: absolute;
+      left: -25vw;                 /* «вынос» за край для ровного старта */
+      top: var(--y, 50%);
+      transform: translateY(-50%);
+      color: var(--ax-red-soft);
+      opacity: .085;               /* почти прозрачный */
+      font: 700 clamp(18px, 3.2vw, 44px)/1.05 ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .06em;
+      filter: saturate(110%) contrast(110%);
+      text-shadow: 0 0 22px rgba(225,71,71,.05);
+    }
+  
+    /* Трек прокрутки — дублируем кусок, чтобы цикл был бесшовным */
+    .binary-line .track{
+      display: inline-block;
+      white-space: nowrap;
+      will-change: transform;
+      animation: ax-marquee var(--dur, 120s) linear infinite;
+      transform: translate3d(0,0,0);
+    }
+    .binary-line[data-dir="-1"] .track{ animation-direction: reverse; }
+  
+    .binary-line .chunk{ padding-right: 10ch; }
+  
+    @keyframes ax-marquee{
+      to{ transform: translateX(-50%); }
+    }
+  
+    /* лёгкая реакция при ховере на модуль (без событий мыши на фон) */
+    .cl-module:hover .binary-line{ opacity: .11; }
+    .cl-module:hover .binary-line .track{ animation-duration: calc(var(--dur, 120s) * .9); }
+  
+    /* уважение к системной настройке «уменьшить движение» */
+    @media (prefers-reduced-motion: reduce){
+      .binary-line .track{ animation-duration: 999s; }
+      .ax-animate{ animation: none !important; opacity:1; transform:none; }
+    }
+  </style>
+
+  <script>
+  (() => {
+    /** Мини-PRNG (xorshift32) для стабильного «зашитого» шума */
+    const xs32 = seed => () => (seed ^= seed << 13, seed ^= seed >>> 17, seed ^= seed << 5, seed >>> 0);
+  
+    /** Генерация бинарной строки нужной длины */
+    function makeBits(len, rng){
+      let s = "";
+      for(let i=0;i<len;i++) s += (rng() & 1) ? "1" : "0";
+      return s;
+    }
+  
+    /** Инициализация: создаём бесшовный трек для каждой ленты */
+    function initBinaryLines(){
+      const lines = document.querySelectorAll('.cl-bg-binary .binary-line');
+      if(!lines.length) return;
+  
+      const baseSeed = calcSeed();
+  
+      lines.forEach((line, i) => {
+        const rng = xs32(baseSeed + i * 12345);
+        // Делаем строку ощутимо длинной (2× вьюпорт на мониторах 4k)
+        const bits = makeBits(8000, rng);
+        line.innerHTML = `<span class="track"><span class="chunk">${bits}</span><span class="chunk">${bits}</span></span>`;
+      });
+    }
+  
+    /** «Шифрование/привязка» к состоянию сайта:
+     *  берём несколько параметров и превращаем в число (FNV-1a).
+     *  Если на странице есть элемент с data-content-count — используем его.
+     */
+    function calcSeed(){
+      const countAttr = document.querySelector('[data-content-count]')?.dataset.contentCount ?? "";
+      const txtLen = document.querySelector('.cl-content')?.textContent?.length ?? 0;
+      const mix = `${countAttr}|${txtLen}|${document.lastModified}`;
+      let h = 2166136261; // FNV-1a
+      for(let i=0;i<mix.length;i++){ h ^= mix.charCodeAt(i); h = Math.imul(h, 16777619); }
+      return h >>> 0;
+    }
+  
+    initBinaryLines();
+  
+    /** Автообновление «кода», если меняется целевой счётчик/контент
+     *  — мягко, раз в минуту + по MutationObserver. */
+    let refreshTO = null;
+    function refresh(){
+      clearTimeout(refreshTO);
+      refreshTO = setTimeout(() => {
+        const baseSeed = calcSeed();
+        document.querySelectorAll('.cl-bg-binary .binary-line').forEach((line, i) => {
+          const rng = xs32(baseSeed + i * 12345 + (Date.now() & 0xffff));
+          const bits = makeBits(8000, rng);
+          const track = line.querySelector('.track');
+          if(track){
+            // Мягкая подмена без дерганья layout
+            const chunks = track.querySelectorAll('.chunk');
+            chunks.forEach(c => c.textContent = bits);
+          }
+        });
+      }, 120); // антидребезг
+    }
+  
+    // Точечное наблюдение за счётчиком, если он есть
+    const target = document.querySelector('[data-content-count]') || document.querySelector('.cl-content');
+    if(target){
+      const mo = new MutationObserver(refresh);
+      mo.observe(target, {subtree:true, childList:true, characterData:true, attributes:true});
+    }
+  
+    // Периодическая «регенерация» чтобы код плавно менялся
+    setInterval(refresh, 60000);
+  })();
+  </script>
+  

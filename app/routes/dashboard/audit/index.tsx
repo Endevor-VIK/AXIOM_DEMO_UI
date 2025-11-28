@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { AUDIT_HTML, getHtml, isRenderableHtml, ensureTrailingSlash } from '@/app/lib/htmlMaps';
+import RouteWreath from '@/components/counters/RouteWreath';
 import { ErrorBlock } from '@/components/ErrorBlock';
 import { vfs } from '@/lib/vfs';
 import '@/app/styles/red-protocol-overrides.css';
@@ -135,11 +136,25 @@ export default function AuditRoute() {
     };
   }, [current, dataBase]);
 
+  const totalAudits = items.length > 0 ? items.length : current ? 1 : 0;
+  const currentLabel = labelFromName(current);
+  const wreathDescription = totalAudits > 0
+    ? `Loaded ${totalAudits} audit dossier${totalAudits === 1 ? '' : 's'}. Active view: ${currentLabel}.`
+    : 'No audit dossiers detected in the manifest.';
+
   const externalHref = dataBase + 'audits/' + current;
 
   return (
-    <section className="ax-card ax-viewer ax-viewer--audit">
-      <div className="ax-viewer__toolbar">
+    <>
+      <RouteWreath
+        label="AUDIT"
+        value={totalAudits}
+        title="Audit Dossiers"
+        description={wreathDescription}
+        ariaLabel={`AUDIT module total ${totalAudits}`}
+      />
+      <section className="ax-card ax-viewer ax-viewer--audit">
+        <div className="ax-viewer__toolbar">
         <label className="sr-only" htmlFor="audit-select">Выбрать отчёт</label>
         <select
           id="audit-select"
@@ -173,9 +188,9 @@ export default function AuditRoute() {
             Reload
           </button>
         </div>
-      </div>
+        </div>
 
-      {loading ? (
+        {loading ? (
         <div className="ax-skeleton">Загрузка отчёта…</div>
       ) : !processedHtml ? (
         <ErrorBlock
@@ -194,7 +209,8 @@ export default function AuditRoute() {
             sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
           />
         </div>
-      )}
-    </section>
+        )}
+      </section>
+    </>
   );
 }

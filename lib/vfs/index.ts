@@ -35,7 +35,8 @@ export const contentCategories = [
 ] as const
 
 export type ContentCategory = (typeof contentCategories)[number]
-export type ContentStatus = 'draft' | 'published' | 'archived'
+export const contentStatuses = ['draft', 'published', 'archived'] as const
+export type ContentStatus = (typeof contentStatuses)[number]
 export type ContentVisibility = 'public' | 'internal'
 export type ContentFormat = 'html' | 'md' | 'markdown' | 'txt'
 
@@ -241,6 +242,41 @@ function normalizeAssetsBase(value: unknown): string {
   return typeof value === 'string' ? value : ''
 }
 
+const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
+
+function isIsoDate(value: unknown): value is string {
+  if (typeof value !== 'string' || !ISO_DATE_PATTERN.test(value)) {
+    return false
+  }
+  const parts = value.split('-')
+  if (parts.length !== 3) return false
+  const [yearStr, monthStr, dayStr] = parts as [string, string, string]
+  const year = Number.parseInt(yearStr, 10)
+  const month = Number.parseInt(monthStr, 10)
+  const day = Number.parseInt(dayStr, 10)
+  if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
+    return false
+  }
+  if (month < 1 || month > 12) return false
+  if (day < 1 || day > 31) return false
+  const probe = new Date(Date.UTC(year, month - 1, day))
+  return (
+    probe.getUTCFullYear() === year &&
+    probe.getUTCMonth() === month - 1 &&
+    probe.getUTCDate() === day
+  )
+}
+
+function isAllowedCategory(value: unknown): value is ContentItem['category'] {
+  if (typeof value !== 'string') return false
+  if (value === 'all') return true
+  return (contentCategories as readonly string[]).includes(value)
+}
+
+function isAllowedStatus(value: unknown): value is ContentStatus {
+  return typeof value === 'string' && (contentStatuses as readonly string[]).includes(value)
+}
+
 function normalizeContentEntry(entry: ContentItem): ContentItem {
   const normalized: ContentItem = { ...entry }
   normalized.renderMode = determineRenderMode(entry.renderMode)
@@ -434,14 +470,43 @@ export function createVfs(config?: VfsConfig): VfsApi {
     }
     const issues: string[] = []
     const valid: ContentItem[] = []
-    data.forEach((entry, index) => {
-      if (itemValidator(entry)) {
-        valid.push(normalizeContentEntry(entry as ContentItem))
-      } else {
+    const acceptedIds = new Map<string, number>()
+
+    for (let index = 0; index < data.length; index += 1) {
+      const entry = data[index]
+      if (!itemValidator(entry)) {
         const detail = ajvInstance.errorsText(itemValidator.errors ?? [], { separator: '; ' })
         issues.push(`#${index}: ${detail}`)
+        continue
       }
-    })
+
+      const normalized = normalizeContentEntry(entry as ContentItem)
+      const id = normalized.id
+
+      if (acceptedIds.has(id)) {
+        issues.push(`#${index}: duplicate id "${id}" (first seen at #${acceptedIds.get(id)})`)
+        continue
+      }
+
+      if (!isIsoDate(normalized.date)) {
+        issues.push(`#${index}: date "${String((normalized as any).date)}" is not a valid ISO day`)
+        continue
+      }
+
+      if (!isAllowedCategory(normalized.category)) {
+        issues.push(`#${index}: category "${String((normalized as any).category)}" is not registered`)
+        continue
+      }
+
+      if (!isAllowedStatus(normalized.status)) {
+        issues.push(`#${index}: status "${String((normalized as any).status)}" is not allowed`)
+        continue
+      }
+
+      acceptedIds.set(id, index)
+      valid.push(normalized)
+    }
+
     if (issues.length) {
       const message = issues.join(' | ')
       if (strictMode) {

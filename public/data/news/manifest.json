@@ -1,5 +1,14 @@
 [
   {
+    "id": "NEWS-2025-10-23-CONTENT-V21-FIX",
+    "date": "2025-10-23",
+    "title": "Content Hub v2.1 — гибриды без скриптов и готовность к релизу",
+    "kind": "release",
+    "tags": ["content", "hybrid", "telemetry", "release"],
+    "summary": "Завершили итерацию content-v2.1-fix: строгая схема данных, изолированный PreviewPane с sandbox, редизайн Content Hub, стабильные Playwright axe-тесты и запуск телеметрии. Релиз чек-лист готов, остаётся smoke на Preview/Prod.",
+    "file": "items/2025-10-23-content-v21-fix.md"
+  },
+  {
     "id": "NEWS-2025-10-10-AUDIT-AXIOM-DEMO-UI",
     "date": "2025-10-10",
     "title": "AUDIT: подробный отчёт AXIOM_DEMO_UI (05.09–02.10.2025)",

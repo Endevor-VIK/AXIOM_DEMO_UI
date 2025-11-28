@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ContentList from '@/components/ContentList'
-import Modal from '@/components/Modal'
 import PreviewPane from '@/components/PreviewPane'
+import { trackContentView } from '@/lib/analytics'
 import type { ContentCategory, ContentItem, ContentStatus } from '@/lib/vfs'
 
 import { useContentHub } from './context'
@@ -59,7 +59,7 @@ function orderByPins(items: ContentItem[], pinned: string[]): ContentItem[] {
 
 function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState<boolean>(() =>
-    typeof window !== 'undefined' ? window.matchMedia(query).matches : true
+    typeof window !== 'undefined' ? window.matchMedia(query).matches : true,
   )
 
   useEffect(() => {
@@ -81,8 +81,13 @@ export interface ContentCategoryViewProps {
 const noop = () => {}
 
 const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) => {
-  const { aggregate, loading, error, filters, dataBase, pinned } = useContentHub()
+  const { aggregate, loading, error, filters, dataBase, pinned, togglePin, isPinned } = useContentHub()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
+  const previewRef = useRef<HTMLDivElement | null>(null)
+  const lastScrolledId = useRef<string | null>(null)
+  const lastTrackedId = useRef<string | null>(null)
 
   const items = useMemo(() => {
     if (!aggregate) return []
@@ -94,11 +99,8 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   }, [aggregate, category, filters])
 
   const ordered = useMemo(() => orderByPins(items, pinned), [items, pinned])
-  const orderedLength = ordered.length
-
   const itemParam = searchParams.get('item') ?? ''
   const isDesktop = useMediaQuery('(min-width: 1024px)')
-  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     if (!ordered.length) {
@@ -118,18 +120,6 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     setSearchParams(next, { replace: true })
   }, [ordered, itemParam, searchParams, setSearchParams])
 
-  useEffect(() => {
-    if (!orderedLength && modalOpen) {
-      setModalOpen(false)
-    }
-  }, [orderedLength, modalOpen])
-
-  useEffect(() => {
-    if (isDesktop && modalOpen) {
-      setModalOpen(false)
-    }
-  }, [isDesktop, modalOpen])
-
   const selectedItem = useMemo(() => {
     if (!ordered.length) return null
     if (itemParam) {
@@ -140,10 +130,38 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   }, [ordered, itemParam])
 
   useEffect(() => {
-    if (!selectedItem && modalOpen) {
-      setModalOpen(false)
+    if (!selectedItem) return
+    if (lastTrackedId.current === selectedItem.id) return
+    lastTrackedId.current = selectedItem.id
+    trackContentView({
+      id: selectedItem.id,
+      category: selectedItem.category,
+      renderMode: selectedItem.renderMode ?? 'plain',
+      lang: selectedItem.lang ?? null,
+      source: isDesktop ? 'list' : 'reader',
+    })
+  }, [selectedItem, isDesktop])
+
+  useEffect(() => {
+    if (!isDesktop) return
+    if (!selectedItem) return
+    if (typeof window === 'undefined') return
+    if (!previewRef.current) return
+
+    const previousId = lastScrolledId.current
+    lastScrolledId.current = selectedItem.id
+
+    if (!previousId || previousId === selectedItem.id) return
+    const rect = previewRef.current.getBoundingClientRect()
+    const stickyTop = 96
+    const withinViewport = rect.top >= stickyTop && rect.bottom <= window.innerHeight
+    if (!withinViewport) {
+      previewRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: rect.top < stickyTop ? 'start' : 'center',
+      })
     }
-  }, [selectedItem, modalOpen])
+  }, [selectedItem, isDesktop])
 
   const handleSelect = useCallback(
     (item: ContentItem) => {
@@ -153,15 +171,42 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
         setSearchParams(next, { replace: true })
       }
       if (!isDesktop) {
-        setModalOpen(true)
+        const nextSearch = next.toString()
+        const suffix = nextSearch ? `?${nextSearch}` : ''
+        const target = `/dashboard/content/read/${item.id}${suffix}`
+        navigate(target, {
+          state: { from: `${location.pathname}${suffix}` },
+        })
       }
     },
-    [isDesktop, searchParams, setSearchParams]
+    [isDesktop, searchParams, setSearchParams, navigate, location.pathname],
   )
 
-  const handleModalChange = useCallback((open: boolean) => {
-    setModalOpen(open)
-  }, [])
+  const handleExpand = useCallback(
+    (item: ContentItem) => {
+      const next = new URLSearchParams(searchParams)
+      next.set('item', item.id)
+      const suffix = next.toString()
+      const query = suffix ? `?${suffix}` : ''
+      const target = `/dashboard/content/read/${item.id}${query}`
+      navigate(target, {
+        state: { from: `${location.pathname}${query}` },
+      })
+    },
+    [location.pathname, navigate, searchParams],
+  )
+
+  const handleTogglePin = useCallback(
+    (item: ContentItem) => {
+      togglePin(item.id)
+    },
+    [togglePin],
+  )
+
+  const handleIsPinned = useCallback(
+    (item: ContentItem) => isPinned(item.id),
+    [isPinned],
+  )
 
   if (loading) {
     return (
@@ -170,8 +215,10 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
           <ContentList items={[]} selectedId={null} onSelect={noop} />
         </div>
         {isDesktop ? (
-          <aside className='ax-content-preview'>
-            <PreviewPane item={null} dataBase={dataBase} />
+          <aside className='ax-panel-right' aria-label='Preview panel'>
+            <div className='ax-preview-panel' ref={previewRef} role='region' aria-label='Content preview'>
+              <PreviewPane item={null} dataBase={dataBase} />
+            </div>
           </aside>
         ) : null}
       </div>
@@ -189,19 +236,20 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   return (
     <div className='ax-content-split'>
       <div className='ax-content-column list'>
-        <ContentList items={ordered} selectedId={selectedItem?.id ?? null} onSelect={handleSelect} />
+        <ContentList
+          items={ordered}
+          selectedId={selectedItem?.id ?? null}
+          onSelect={handleSelect}
+          onTogglePin={handleTogglePin}
+          isPinned={handleIsPinned}
+        />
       </div>
-
       {isDesktop ? (
-        <aside className='ax-content-preview'>
-          <PreviewPane item={selectedItem} dataBase={dataBase} />
+        <aside className='ax-panel-right' aria-label='Preview panel'>
+          <div className='ax-preview-panel' ref={previewRef} role='region' aria-label='Content preview'>
+            <PreviewPane item={selectedItem} dataBase={dataBase} onExpand={handleExpand} />
+          </div>
         </aside>
-      ) : null}
-
-      {!isDesktop ? (
-        <Modal open={modalOpen} onOpenChange={handleModalChange} title={selectedItem ? selectedItem.title : 'Preview'}>
-          <PreviewPane item={selectedItem} dataBase={dataBase} />
-        </Modal>
       ) : null}
     </div>
   )

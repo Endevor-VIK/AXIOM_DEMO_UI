@@ -39,7 +39,8 @@ export function HeadlinesTicker({ items, speed, gap, height, className = '' }: P
     const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
     // очистка
-    track.style.animation = 'none'
+    track.style.removeProperty('animation')
+    track.style.removeProperty('--ax-loop-to')
     track.innerHTML = ''
 
     const gapToken = parseFloat(
@@ -60,11 +61,12 @@ export function HeadlinesTicker({ items, speed, gap, height, className = '' }: P
     }
 
     if (prefersReduced) {
-      track.style.removeProperty('--ax-loop-to')
       viewport.style.overflow = 'auto'
+      track.dataset.paused = 'true'
       return
     } else {
       viewport.style.overflow = 'hidden'
+      track.dataset.paused = 'false'
     }
 
     const childWidths = Array.from(track.children).map(
@@ -93,14 +95,20 @@ export function HeadlinesTicker({ items, speed, gap, height, className = '' }: P
     const duration = dist / pxPerSec
     track.style.animation = `ax-scroll ${duration}s linear infinite`
 
-    const ro = new ResizeObserver(() => {
-      // перезапустить цикл при изменении размеров
-      requestAnimationFrame(() => {
-        if (track && viewport) {
-          // форс обновления эффекта через изменение dataset
-          track.dataset.resizeToken = String(Date.now())
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === viewport) {
+          requestAnimationFrame(() => {
+            if (!track.parentElement) return
+            track.style.removeProperty('animation')
+            track.style.removeProperty('--ax-loop-to')
+            // trigger layout flush and reapply
+            void track.offsetWidth
+            track.style.setProperty('--ax-loop-to', `${-dist}px`)
+            track.style.animation = `ax-scroll ${duration}s linear infinite`
+          })
         }
-      })
+      }
     })
     ro.observe(viewport)
     return () => ro.disconnect()

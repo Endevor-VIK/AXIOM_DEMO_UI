@@ -1,5 +1,3 @@
-import postcss from 'postcss'
-import prefixSelector from 'postcss-prefix-selector'
 import type { AcceptedPlugin, Declaration } from 'postcss'
 
 export const SCOPE_ATTRIBUTE = 'data-ax-scope'
@@ -7,7 +5,36 @@ const DEFAULT_SCOPE_FALLBACK = 'content'
 const KEYFRAME_NAME_PREFIX = 'ax'
 const SAFE_IDENT_CHARS = /[^a-zA-Z0-9_-]+/g
 
-const listUtils = postcss.list
+let postcssInstance: typeof import('postcss') | null = null
+let prefixSelectorPlugin: typeof import('postcss-prefix-selector') | null = null
+
+async function loadPostcss() {
+  if (typeof window !== 'undefined') {
+    // Skip heavy postcss on the client; just return identity.
+    return null
+  }
+  if (!postcssInstance) {
+    postcssInstance = (await import('postcss')).default
+  }
+  if (!prefixSelectorPlugin) {
+    prefixSelectorPlugin = (await import('postcss-prefix-selector')).default
+  }
+  return { postcss: postcssInstance, prefixSelector: prefixSelectorPlugin }
+}
+
+function getListUtils() {
+  if (!postcssInstance) return null
+  return postcssInstance.list
+}
+
+const listUtils = {
+  comma(value: string) {
+    return getListUtils()?.comma(value) ?? value.split(',')
+  },
+  space(value: string) {
+    return getListUtils()?.space(value) ?? value.split(' ')
+  },
+}
 
 type QuoteInfo = {
   quote: '"' | "'" | ''
@@ -137,6 +164,12 @@ export async function prefixStyles(css: string, scope: string): Promise<string> 
   if (!css.trim()) {
     return css
   }
+
+  const loaded = await loadPostcss()
+  if (!loaded) {
+    return css
+  }
+  const { postcss, prefixSelector } = loaded
 
   const scopeId = normalizeScopeId(scope)
   const scopedSelector = buildScopeSelector(scopeId)

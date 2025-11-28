@@ -6,8 +6,9 @@ import React, {
 } from 'react'
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom'
 
-import CategoryStats, { type CategoryItem } from '@/components/content/CategoryStats' // оставляем (используется для подсчёта)
+import CategoryStats from '@/components/content/CategoryStats'
 import ContentFilters from '@/components/ContentFilters'
+import RouteWreath from '@/components/counters/RouteWreath'
 import { getCategoryStats, type ContentCategoryKey } from '@/lib/contentStats'
 import {
   contentCategories,
@@ -190,7 +191,7 @@ const ContentLayout: React.FC = () => {
     return base
   }, [aggregate])
 
-  // Новый summary для контекста: правильная форма Record<..., ContentCategorySummary>
+  // Build a normalized summary map so dependents see consistent counts
   const categories = useMemo<Record<'all' | ContentCategory, ContentCategorySummary>>(() => {
     const src = aggregate?.categories ?? buildEmptyCategories()
     return {
@@ -206,12 +207,12 @@ const ContentLayout: React.FC = () => {
 
   const activeTab = useMemo(() => parseActiveCategory(location.pathname), [location.pathname])
 
-  const categoryStats: CategoryItem[] = useMemo(() => {
+  const categoryStats = useMemo(() => {
     return getCategoryStats(categoryCounts).map((item) => ({
       ...item,
       active: item.key === activeTab,
     }))
-  }, [activeTab, categoryCounts])
+  }, [categoryCounts, activeTab])
 
   const availableTags = useMemo(() => {
     if (!aggregate) return []
@@ -232,6 +233,17 @@ const ContentLayout: React.FC = () => {
     }
     return Array.from(bag).sort((a, b) => a.localeCompare(b))
   }, [aggregate])
+
+  const contentTotal = aggregate?.items?.length ?? 0
+  const activeCategoryLabel =
+    activeTab === 'all'
+      ? 'All collections'
+      : activeTab.replace(/[-_]/g, ' ')
+  const contentWreathDescription = loading
+    ? 'Loading content manifests...'
+    : contentTotal > 0
+      ? `${contentTotal} entries indexed. Focus: ${activeCategoryLabel.toUpperCase()}.`
+      : 'No content entries synced yet.'
 
   const togglePin = useCallback((id: string) => {
     setPins((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
@@ -258,7 +270,7 @@ const ContentLayout: React.FC = () => {
       loading,
       error,
       dataBase,
-      categories, // важно: зависимость на summary
+      categories, // keep dependency on computed summaries
       availableTags,
       availableLanguages,
       filtersApi,
@@ -272,9 +284,16 @@ const ContentLayout: React.FC = () => {
     <ContentHubContext.Provider value={contextValue}>
       <section className='ax-section'>
         <div className='ax-container ax-content-hub' aria-busy={loading}>
-          {/* Corp-Table категорий (7 колонок, с ALL) */}
+          <RouteWreath
+            label='CONTENT'
+            value={contentTotal}
+            title='Content Library'
+            description={contentWreathDescription}
+            ariaLabel={`CONTENT module total ${contentTotal}`}
+          />
+          {/* Category summary table (7 columns including ALL) */}
           <CategoryStats items={categoryStats} variant='table' />
-          {/* (старый грид плиток удалён по ТЗ Corp-Table) */}
+          {/* Legacy tile grid removed per spec */}
           <ContentFilters disabled={Boolean(error)} />
           <div className='ax-content-outlet'>
             {error ? <div className='ax-dashboard__alert' role='alert'>{error}</div> : <Outlet />}

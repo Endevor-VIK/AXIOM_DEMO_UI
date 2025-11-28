@@ -88,3 +88,9 @@
 Если вы видите этот текст — значит мы уже на красной линии. Добро пожаловать.
 
 — © AXIOM DESIGN. Все права защищены.
+
+---
+
+## Documentation
+
+- [Content v2.1 authoring guide](docs/content-authoring-v2.1.md)

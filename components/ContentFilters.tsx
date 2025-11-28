@@ -1,30 +1,65 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { useContentHub } from '@/app/routes/dashboard/content/context'
+import type { ContentStatus } from '@/lib/vfs'
 
 export interface ContentFiltersProps {
   disabled?: boolean
 }
 
+const SEARCH_DEBOUNCE_MS = 200
+
 const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
   const { filters, availableTags, availableLanguages, loading } = useContentHub()
   const isDisabled = Boolean(disabled) || loading
+  const [queryValue, setQueryValue] = useState(filters.query)
+
+  useEffect(() => {
+    setQueryValue(filters.query)
+  }, [filters.query])
+
+  useEffect(() => {
+    const handle = window.setTimeout(() => {
+      if (filters.query !== queryValue) {
+        filters.setQuery(queryValue)
+      }
+    }, SEARCH_DEBOUNCE_MS)
+    return () => window.clearTimeout(handle)
+  }, [filters, queryValue])
+
+  const statusOptions = useMemo(
+    () =>
+      [
+        { value: 'any', label: 'All' },
+        { value: 'published', label: 'Published' },
+        { value: 'draft', label: 'Draft' },
+        { value: 'archived', label: 'Archived' },
+      ] as Array<{ value: ContentStatus | 'any'; label: string }>,
+    [],
+  )
+
+  const shouldRenderLanguageChips = availableLanguages.length > 0 && availableLanguages.length <= 6
 
   return (
     <section className='ax-content-filters' aria-live='polite'>
       <div className='ax-filter-row'>
-        <label className='visually-hidden' htmlFor='content-search'>Search content</label>
+        <label className='visually-hidden' htmlFor='content-search'>
+          Search content
+        </label>
         <input
           id='content-search'
           className='ax-input'
           type='search'
           placeholder='Search title, summary, tags'
-          value={filters.query}
-          onChange={(event) => filters.setQuery(event.target.value)}
+          value={queryValue}
+          onChange={(event) => setQueryValue(event.target.value)}
           disabled={isDisabled}
+          aria-label='Search content'
         />
 
-        <label className='visually-hidden' htmlFor='content-tag'>Filter by tag</label>
+        <label className='visually-hidden' htmlFor='content-tag'>
+          Filter by tag
+        </label>
         <select
           id='content-tag'
           className='ax-input'
@@ -40,40 +75,82 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
           ))}
         </select>
 
-        <label className='visually-hidden' htmlFor='content-status'>Filter by status</label>
-        <select
-          id='content-status'
-          className='ax-input'
-          value={filters.status}
-          onChange={(event) => filters.setStatus(event.target.value as typeof filters.status)}
-          disabled={isDisabled}
-        >
-          <option value='any'>All statuses</option>
-          <option value='published'>Published</option>
-          <option value='draft'>Draft</option>
-          <option value='archived'>Archived</option>
-        </select>
+        <div className='ax-filter-group' role='group' aria-label='Filter by status'>
+          {statusOptions.map(({ value, label }) => {
+            const pressed = filters.status === value
+            return (
+              <button
+                key={value}
+                type='button'
+                className='ax-chip ax-chip--toggle'
+                data-active={pressed ? 'true' : undefined}
+                aria-pressed={pressed}
+                onClick={() => filters.setStatus(value)}
+                disabled={isDisabled}
+              >
+                {label}
+              </button>
+            )
+          })}
+        </div>
 
-        <label className='visually-hidden' htmlFor='content-lang'>Filter by language</label>
-        <select
-          id='content-lang'
-          className='ax-input'
-          value={filters.lang}
-          onChange={(event) => filters.setLang(event.target.value)}
-          disabled={isDisabled || availableLanguages.length === 0}
-        >
-          <option value='any'>All languages</option>
-          {availableLanguages.map((code) => (
-            <option key={code} value={code}>
-              {code.toUpperCase()}
-            </option>
-          ))}
-        </select>
+        {shouldRenderLanguageChips ? (
+          <div className='ax-filter-group' role='group' aria-label='Filter by language'>
+            <button
+              type='button'
+              className='ax-chip ax-chip--toggle'
+              data-active={filters.lang === 'any' ? 'true' : undefined}
+              aria-pressed={filters.lang === 'any'}
+              onClick={() => filters.setLang('any')}
+              disabled={isDisabled}
+            >
+              All languages
+            </button>
+            {availableLanguages.map((code) => {
+              const normalized = code.toUpperCase()
+              const pressed = filters.lang.toLowerCase() === code.toLowerCase()
+              return (
+                <button
+                  key={code}
+                  type='button'
+                  className='ax-chip ax-chip--toggle'
+                  data-active={pressed ? 'true' : undefined}
+                  aria-pressed={pressed}
+                  onClick={() => filters.setLang(code)}
+                  disabled={isDisabled}
+                >
+                  {normalized}
+                </button>
+              )
+            })}
+          </div>
+        ) : (
+          <>
+            <label className='visually-hidden' htmlFor='content-lang'>
+              Filter by language
+            </label>
+            <select
+              id='content-lang'
+              className='ax-input'
+              value={filters.lang}
+              onChange={(event) => filters.setLang(event.target.value)}
+              disabled={isDisabled || availableLanguages.length === 0}
+            >
+              <option value='any'>All languages</option>
+              {availableLanguages.map((code) => (
+                <option key={code} value={code}>
+                  {code.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
 
         <div className='ax-filter-actions' role='group' aria-label='Change layout'>
           <button
             type='button'
-            className='ax-btn ghost' data-active={filters.view === 'cards' ? 'true' : undefined}
+            className='ax-btn ghost'
+            data-active={filters.view === 'cards' ? 'true' : undefined}
             onClick={() => filters.setView('cards')}
             disabled={isDisabled}
           >
@@ -81,7 +158,8 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
           </button>
           <button
             type='button'
-            className='ax-btn ghost' data-active={filters.view === 'list' ? 'true' : undefined}
+            className='ax-btn ghost'
+            data-active={filters.view === 'list' ? 'true' : undefined}
             onClick={() => filters.setView('list')}
             disabled={isDisabled}
           >
@@ -103,4 +181,3 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
 }
 
 export default ContentFilters
-

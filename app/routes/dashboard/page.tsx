@@ -5,6 +5,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { vfs, type NewsItem } from '@/lib/vfs'
+import CounterWreath from '@/components/counters/CounterWreath'
 
 interface Counts {
   audits: number
@@ -63,7 +64,7 @@ export default function DashboardPage() {
     }
   }, [])
 
-  const statusChips = useMemo(() => {
+  const statusCounters = useMemo(() => {
     return [
       { label: 'AUDIT', value: counts.audits, to: '/dashboard/audit' },
       { label: 'CONTENT', value: counts.content, to: '/dashboard/content' },
@@ -85,17 +86,22 @@ export default function DashboardPage() {
             <h2 className='ax-blade-head'>CONTROL STATUS</h2>
             <p className='ax-dashboard__panel-note'>Live counters from audit, content and news manifests.</p>
           </header>
-          <div className='ax-dashboard__dials'>
-            {statusChips.map((chip) => (
+          <div className='ax-dashboard__wreaths'>
+            {statusCounters.map((counter) => (
               <Link
-                key={chip.label}
-                to={chip.to}
-                className='ax-dashboard__dial'
-                data-variant={resolveCountVariant(chip.value)}
-                aria-label={`${chip.label} total ${chip.value}`}
+                key={counter.label}
+                to={counter.to}
+                className='ax-dashboard__wreath-link'
+                data-variant={resolveCountVariant(counter.value)}
+                aria-label={`${counter.label} total ${counter.value}`}
               >
-                <span className='ax-dashboard__dial-value'>{chip.value}</span>
-                <span className='ax-dashboard__dial-label'>{chip.label}</span>
+                <CounterWreath
+                  value={counter.value}
+                  label={counter.label}
+                  size={260}
+                  className='ax-dashboard__wreath'
+                  ariaHidden
+                />
               </Link>
             ))}
           </div>

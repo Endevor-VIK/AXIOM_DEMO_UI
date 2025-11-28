@@ -25,6 +25,15 @@
     --ax-red: #ff2034;         /* primary accent */
     --ax-red-2: #b10f1e;       /* deep accent (borders) */
     --ax-red-3: #5a0a12;       /* shadow/edge */
+    --ax-red-strong: #ff5462;  /* hover/active accent */
+    --ax-red-neon: #ff395d;    /* high-energy accent */
+    --ax-red-neon-soft: rgba(255,57,93,0.26);
+    /* aliases for backward compatibility */
+    --red: var(--ax-red);
+    --red-2: var(--ax-red-2);
+    --red-3: var(--ax-red-3);
+    --glow: rgba(255,32,52,0.28);    /* normalized accent halo */
+    --red-alert: #ff0d00;           /* system banner / alert */
     --ax-white: #ffffff;
     --ax-black: #0a0d10;
   
@@ -48,11 +57,20 @@
   
     /* Semantic Roles */
     --ax-link:   #ff6b75;      /* links / subtle accents */
+    --ax-accent: var(--ax-red-strong);
     --ax-focus:  #ff5563;      /* focus ring color */
     --ax-info:   #17a2b8;
+    --ax-info-soft: rgba(23,162,184,0.20);
     --ax-warn:   #f1c40f;
+    --ax-warn-soft: rgba(241,196,15,0.20);
     --ax-success:#2ecc71;
+    --ax-success-soft: rgba(46,204,113,0.18);
     --ax-danger: #ff4056;
+    --ax-danger-soft: rgba(255,64,86,0.22);
+    --ax-blue:   #63d6ff;
+    --ax-blue-soft: rgba(99,214,255,0.20);
+    --ax-gold:   #f6c369;
+    --ax-gold-soft: rgba(246,195,105,0.20);
   
     /* Alpha ramps (utility) */
     --ax-red-a08: rgba(255, 32, 52, 0.08);
@@ -125,7 +143,7 @@
     --lh-loose: 1.5;
   
     /* Density preset (RED-XS) */
-    --ax-scale: .86;
+    --ax-scale: .81;
   
     /* Type scale */
     --fs-base: calc(14px * var(--ax-scale));
@@ -158,6 +176,8 @@
     --container-sm: 640px;
     --container-md: 860px;
     --container-lg: 1180px;
+    --container-xl: 1440px;
+    --container-2xl: 1600px;
     --container-max: var(--container-lg);
     --gutter:        var(--space-4);
     --section-vspace: calc(28px * var(--ax-scale));
@@ -176,6 +196,18 @@
     --z-raised: 10;
     --z-overlay: 1000;
     --z-max: 2147483647;
+  }
+  
+  @media (min-width: 1280px) {
+    :root {
+      --container-max: var(--container-xl);
+    }
+  }
+  
+  @media (min-width: 1600px) {
+    :root {
+      --container-max: var(--container-2xl);
+    }
   }
   
   /* Optional light theme hook (values mirror, but project is dark-first) */
@@ -204,12 +236,13 @@
      ============================ */
   :root {
     /* Button sizing */
-    --btn-h: calc(32px * var(--ax-scale));
-    --btn-px: var(--space-3);
+    --btn-h: calc(40px * var(--ax-scale));
+    --btn-px: calc(18px * var(--ax-scale));
+    --chip-h: calc(28px * var(--ax-scale));
     --btn-gap: var(--space-2);
   
     /* Input sizing */
-    --input-h: calc(36px * var(--ax-scale));
+    --input-h: calc(44px * var(--ax-scale));
     --input-px: var(--space-3);
     --input-radius: var(--r-lg);
   

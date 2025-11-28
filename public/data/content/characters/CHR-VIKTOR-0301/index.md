@@ -191,7 +191,7 @@ zone: "03_CHARACTERS"
 
 <!-- AXIOM DESIGN · VIKTOR SPLIT PREVIEW (image left · text right) -->
 <section class="ax-viktor-split" aria-label="Viktor — split preview">
-  <div class="axv-wrap" data-axv-split>
+  <div class="axv-wrap" data-axv-split data-reveal data-reveal-threshold="0.25">
     <!-- Left: portrait -->
     <figure class="axv-media" data-tilt>
       <img src="visual/03.00.v.07_VIKTOR_KNOX.png" alt="Viktor — portrait" loading="lazy" class="axv-img" />
@@ -370,39 +370,7 @@ zone: "03_CHARACTERS"
 @keyframes reveal{ from{ opacity:0; transform: translateY(10px) scale(.98);} to{opacity:1; transform:none;} }
 </style>
 
-<script>
-(() => {
-  // intersection reveal
-  const wrap = document.querySelector('[data-axv-split]');
-  if (wrap){
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting){ wrap.classList.add('is-in'); io.disconnect(); }
-    }, { threshold:.25 });
-    io.observe(wrap);
-  }
-  // gentle tilt on media
-  const media = document.querySelector('.axv-media[data-tilt]');
-  if (media && matchMedia('(pointer:fine)').matches){
-    let frame;
-    const tilt = (x,y)=>{
-      const rX = ((y-.5)*-4).toFixed(2);
-      const rY = ((x-.5)* 4).toFixed(2);
-      media.style.transform = `perspective(900px) rotateX(${rX}deg) rotateY(${rY}deg)`;
-    };
-    media.addEventListener('pointermove', ev=>{
-      const r = media.getBoundingClientRect();
-      const x = (ev.clientX - r.left)/r.width;
-      const y = (ev.clientY - r.top)/r.height;
-      if(frame) cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(()=>tilt(x,y));
-    }, {passive:true});
-    media.addEventListener('pointerleave', ()=>{
-      if(frame) cancelAnimationFrame(frame);
-      media.style.transform = '';
-    });
-  }
-})();
-</script>
+
 
 <!-- /AXIOM DESIGN · VIKTOR SPLIT PREVIEW (image left · text right) -->
 

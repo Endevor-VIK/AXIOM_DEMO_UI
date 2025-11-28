@@ -16,10 +16,12 @@ import ContentLayout from '@/app/routes/dashboard/content/_layout'
 import AllRoute from '@/app/routes/dashboard/content/AllRoute'
 import CategoryRoute from '@/app/routes/dashboard/content/CategoryRoute'
 import LoreRoute from '@/app/routes/dashboard/content/LoreRoute'
+import ReadRoute from '@/app/routes/dashboard/content/ReadRoute'
 import NewsPage from '@/app/routes/dashboard/news/page'
 
 import AuthGate from '@/components/AuthGate'
 import TerminalBoot from '@/components/TerminalBoot'
+import { initAnalyticsBridge } from '@/lib/analytics/init'
 
 const routes = [
   { path: '/', element: <TerminalBoot /> },
@@ -42,6 +44,7 @@ const routes = [
           { index: true, element: <Navigate to='all' replace /> },
           { path: 'all', element: <AllRoute /> },
           { path: 'lore/*', element: <LoreRoute /> },
+          { path: 'read/:id', element: <ReadRoute /> },
           { path: ':category', element: <CategoryRoute /> },
         ],
       },
@@ -54,6 +57,7 @@ const routes = [
 const router = createBrowserRouter(routes, { basename: import.meta.env.BASE_URL })
 
 function mount() {
+  initAnalyticsBridge()
   const el = document.getElementById('root')
   const app = (
     <RouterProvider

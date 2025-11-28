@@ -1,4 +1,4 @@
----
+﻿---
 id: CHR-AXIOM-0303
 slug: axiom
 title: "AXIOM — центральная ИИ-сущность"
@@ -501,7 +501,7 @@ AXIOM – прародитель всего послекатастрофичес
 
 * `03_CHARACTERS`
 
-  * [03.01\_VIKTOR.md](../03_CHARACTERS/03.01_VIKTOR.md) — Виктор (носитель фрагмента AXIOM; потенциальный «второй создатель» только при сценарии слияния AXM|VECTOR)
+  * [03.01\_VIKTOR.md](../CHR-VIKTOR-0301/index.md) — Виктор (носитель фрагмента AXIOM; потенциальный «второй создатель» только при сценарии слияния AXM|VECTOR)
   * [03.02\_LIZA.md](../03_CHARACTERS/03.02_LIZA.md) — Лиза (призрачный хакер c фрагментом сигнала AXIOM)
   * [03.06\_AXIO.md](../03_CHARACTERS/03.06_AXIO.md) — AXIO (ИИ-спутник, отражение AXIOM)
   * [03.05\_CALEB.md](../03_CHARACTERS/03.05_CALEB.md) — Калеб (враг техно-наследия, противостоит AXIOM косвенно)
@@ -806,3 +806,4 @@ AXIOM – прародитель всего послекатастрофичес
 <!-- STYLE LIBRARY SOURCES:
      10_VISUAL_PROTOCOLS/10.00.style_LIBRARY/10.00.style.08_viktor-cover.md
      10_VISUAL_PROTOCOLS/10.00.style_LIBRARY/10.00.style.09_viktor-split.md -->
+
