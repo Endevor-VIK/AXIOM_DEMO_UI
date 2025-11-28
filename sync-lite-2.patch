@@ -1,0 +1,537 @@
+diff --git a/app/main.tsx b/app/main.tsx
+index 6f5758f..e7161b0 100644
+--- a/app/main.tsx
++++ b/app/main.tsx
+@@ -6,17 +6,15 @@ import '../ax-design/tokens.css'
+ import '../ax-design/components.css'
+ import '../styles/app.css'
+ import '../styles/red-protocol-overrides.css'
++import '../styles/content-hub-v2.css'
+ 
+ import Layout from '@/app/routes/_layout'
+ import LoginPage from '@/app/routes/login/page'
+ import DashboardPage from '@/app/routes/dashboard/page'
+ import RoadmapPage from '@/app/routes/dashboard/roadmap/page'
+ import AuditPage from '@/app/routes/dashboard/audit/page'
+-import ContentLayout from '@/app/routes/dashboard/content/_layout'
+-import AllRoute from '@/app/routes/dashboard/content/AllRoute'
+-import CategoryRoute from '@/app/routes/dashboard/content/CategoryRoute'
+-import LoreRoute from '@/app/routes/dashboard/content/LoreRoute'
+-import ReadRoute from '@/app/routes/dashboard/content/ReadRoute'
++import ContentHubPage from '@/src/features/content/pages/ContentHubPage'
++import ReaderPage from '@/src/features/content/pages/ReaderPage'
+ import NewsPage from '@/app/routes/dashboard/news/page'
+ 
+ import AuthGate from '@/components/AuthGate'
+@@ -26,6 +24,8 @@ import { initAnalyticsBridge } from '@/lib/analytics/init'
+ const routes = [
+   { path: '/', element: <TerminalBoot /> },
+   { path: '/login', element: <LoginPage /> },
++  { path: '/content', element: <AuthGate><ContentHubPage /></AuthGate> },
++  { path: '/content/:id', element: <AuthGate><ReaderPage /></AuthGate> },
+   {
+     path: '/dashboard',
+     element: (
+@@ -37,17 +37,7 @@ const routes = [
+       { index: true, element: <DashboardPage /> },
+       { path: 'roadmap', element: <RoadmapPage /> },
+       { path: 'audit', element: <AuditPage /> },
+-      {
+-        path: 'content',
+-        element: <ContentLayout />,
+-        children: [
+-          { index: true, element: <Navigate to='all' replace /> },
+-          { path: 'all', element: <AllRoute /> },
+-          { path: 'lore/*', element: <LoreRoute /> },
+-          { path: 'read/:id', element: <ReadRoute /> },
+-          { path: ':category', element: <CategoryRoute /> },
+-        ],
+-      },
++      { path: 'content/*', element: <Navigate to='/content' replace /> },
+       { path: 'news', element: <NewsPage /> },
+     ],
+   },
+diff --git a/app/routes/dashboard/content/AllRoute.tsx b/app/routes/dashboard/content/AllRoute.tsx
+deleted file mode 100644
+index 5a9ed48..0000000
+--- a/app/routes/dashboard/content/AllRoute.tsx
++++ /dev/null
+@@ -1,9 +0,0 @@
+-﻿import React from 'react'
+-
+-import ContentCategoryView from './ContentCategoryView'
+-
+-const AllRoute: React.FC = () => {
+-  return <ContentCategoryView category='all' />
+-}
+-
+-export default AllRoute
+diff --git a/app/routes/dashboard/content/CategoryRoute.tsx b/app/routes/dashboard/content/CategoryRoute.tsx
+deleted file mode 100644
+index 8657e97..0000000
+--- a/app/routes/dashboard/content/CategoryRoute.tsx
++++ /dev/null
+@@ -1,23 +0,0 @@
+-﻿import React from 'react'
+-import { Navigate, useParams } from 'react-router-dom'
+-
+-import ContentCategoryView from './ContentCategoryView'
+-import { contentCategories, type ContentCategory } from '@/lib/vfs'
+-
+-const CategoryRoute: React.FC = () => {
+-  const { category } = useParams<{ category: string }>()
+-  const normalized = (category ?? '').toLowerCase()
+-
+-  if (!normalized) {
+-    return <Navigate to='../all' replace />
+-  }
+-
+-  if (normalized === 'lore') {
+-    return <Navigate to='../lore' replace />
+-  }
+-
+-  if (!contentCategories.includes(normalized as ContentCategory)) {
+-    return <Navigate to='../all' replace />
+-  }
+-
+-  return <ContentCategoryView category={normalized as ContentCategory} />
+-}
+-
+-export default CategoryRoute
+diff --git a/app/routes/dashboard/content/ContentCategoryView.tsx b/app/routes/dashboard/content/ContentCategoryView.tsx
+deleted file mode 100644
+index 2b2f4ed..0000000
+--- a/app/routes/dashboard/content/ContentCategoryView.tsx
++++ /dev/null
+@@ -1,274 +0,0 @@
+-(старый код удалён)
+diff --git a/app/routes/dashboard/content/LoreRoute.tsx b/app/routes/dashboard/content/LoreRoute.tsx
+deleted file mode 100644
+index 1b16372..0000000
+--- a/app/routes/dashboard/content/LoreRoute.tsx
++++ /dev/null
+@@ -1,169 +0,0 @@
+-(старый код удалён)
+diff --git a/app/routes/dashboard/content/ReadRoute.tsx b/app/routes/dashboard/content/ReadRoute.tsx
+deleted file mode 100644
+index e29f8c9..0000000
+--- a/app/routes/dashboard/content/ReadRoute.tsx
++++ /dev/null
+@@ -1,116 +0,0 @@
+-(старый код удалён)
+diff --git a/app/routes/dashboard/content/_layout.tsx b/app/routes/dashboard/content/_layout.tsx
+deleted file mode 100644
+index 57d00a1..0000000
+--- a/app/routes/dashboard/content/_layout.tsx
++++ /dev/null
+@@ -1,328 +0,0 @@
+-(старый код удалён)
+diff --git a/app/routes/dashboard/content/context.tsx b/app/routes/dashboard/content/context.tsx
+deleted file mode 100644
+index a3c69e8..0000000
+--- a/app/routes/dashboard/content/context.tsx
++++ /dev/null
+@@ -1,47 +0,0 @@
+-(старый код удалён)
+diff --git a/components/ContentCardExpanded.tsx b/components/ContentCardExpanded.tsx
+deleted file mode 100644
+index 592c2ba..0000000
+--- a/components/ContentCardExpanded.tsx
++++ /dev/null
+@@ -1,53 +0,0 @@
+-(старый код удалён)
+diff --git a/components/ContentCategoryTiles.tsx b/components/ContentCategoryTiles.tsx
+deleted file mode 100644
+index 9329959..0000000
+--- a/components/ContentCategoryTiles.tsx
++++ /dev/null
+@@ -1,82 +0,0 @@
+-(старый код удалён)
+diff --git a/components/ContentFilters.tsx b/components/ContentFilters.tsx
+deleted file mode 100644
+index dc17f47..0000000
+--- a/components/ContentFilters.tsx
++++ /dev/null
+@@ -1,103 +0,0 @@
+-(старый код удалён)
+diff --git a/components/ContentList.tsx b/components/ContentList.tsx
+deleted file mode 100644
+index 2a432cc..0000000
+--- a/components/ContentList.tsx
++++ /dev/null
+@@ -1,88 +0,0 @@
+-(старый код удалён)
+diff --git a/components/ContentTabs.tsx b/components/ContentTabs.tsx
+deleted file mode 100644
+index 2a02c44..0000000
+--- a/components/ContentTabs.tsx
++++ /dev/null
+@@ -1,39 +0,0 @@
+-(старый код удалён)
+diff --git a/components/content/CategoryStats.tsx b/components/content/CategoryStats.tsx
+deleted file mode 100644
+index aa67b47..0000000
+--- a/components/content/CategoryStats.tsx
++++ /dev/null
+@@ -1,117 +0,0 @@
+-(старый код удалён)
+diff --git a/components/content/CategoryTiles.tsx b/components/content/CategoryTiles.tsx
+deleted file mode 100644
+index 157e008..0000000
+--- a/components/content/CategoryTiles.tsx
++++ /dev/null
+@@ -1,63 +0,0 @@
+-(старый код удалён)
+diff --git a/components/content/category-stats.css b/components/content/category-stats.css
+deleted file mode 100644
+index 0bfbe99..0000000
+--- a/components/content/category-stats.css
++++ /dev/null
+@@ -1,372 +0,0 @@
+-(старый код удалён)
+diff --git a/components/content/category-tiles.css b/components/content/category-tiles.css
+deleted file mode 100644
+index 18c6f4c..0000000
+--- a/components/content/category-tiles.css
++++ /dev/null
+@@ -1,86 +0,0 @@
+-(старый код удалён)
+diff --git a/content-src/01.01_CENTRAL_NODE.md b/content-src/01.01_CENTRAL_NODE.md
+new file mode 100644
+index 0000000..e3e0460
+--- /dev/null
++++ b/content-src/01.01_CENTRAL_NODE.md
+@@ -0,0 +1,30 @@
++---
++id: 01.01_CENTRAL_NODE
++slug: central-node-plaza
++title: "Central Node Plaza"
++zone: "01_LOCATIONS"
++category: "LOCATION"
++status: "published"
++lang: "ru"
++version: "v2.1"
++image: "/assets/content/placeholder_01.png"
++tags:
++  - "demo"
++  - "intro"
++  - "hub"
++preview_kicker: "ZONE · 01_LOCATIONS · STATUS: PUBLISHED"
++preview_logline: "Центральная площадь демонстрационного хаба AXIOM; точка входа в контент."
++preview_markers:
++  - "Демонстрационный узел навигации CONTENT"
++  - "Служит отправной точкой для тестовых файлов"
++  - "Визуал использует базовый плейсхолдер"
++preview_signature:
++  - "Палитра: дым/красный"
++  - "Роль: точка входа"
++  - "Опорный узел: DASHBOARD/CONTENT"
++---
++
++# Central Node Plaza
++
++Добро пожаловать в AXIOM_DEMO_UI. Эта точка служит тестовой локацией для проверки навигации и отображения контента в новом Content Hub.
++
++- Локация используется как центральный узел демонстрации.
++- Сценарий: открытие контента, просмотр превью, переход в Reader.
+diff --git a/content-src/03.01_VIKTOR.md b/content-src/03.01_VIKTOR.md
+new file mode 100644
+index 0000000..6a1ea6c
+--- /dev/null
++++ b/content-src/03.01_VIKTOR.md
+@@ -0,0 +1,36 @@
++---
++id: 03.01_VIKTOR
++slug: viktor-prime-carrier
++title: "VIKTOR — PRIME CARRIER"
++zone: "03_CHARACTERS"
++category: "PRIME"
++status: "published"
++lang: "ru"
++version: "v2.1.1"
++image: "/assets/content/03.01_VIKTOR.png"
++tags:
++  - "prime"
++  - "accelerator"
++  - "nightmare"
++  - "axiom"
++preview_kicker: "ZONE · 03_CHARACTERS · STATUS: PUBLISHED"
++preview_logline: "Носитель ACCELERATOR и клинка NIGHTMARE; дисциплинированный оператор наследия AXIOM."
++preview_markers:
++  - "Носитель фрагмента AXIOM (ACCELERATOR)"
++  - "Полевой оператор Endeavor/AXIO"
++  - "Связи: OMEGA-0, AXIO, Iron Fist"
++preview_signature:
++  - "Палитра: сталь/красный"
++  - "Роль: мост человек ↔ AI"
++  - "Опорный узел: 01_CORE_SYSTEM"
++---
++
++# VIKTOR — PRIME CARRIER
++
++*(контент перенесён из исходного файла CHR-VIKTOR-0301/index.md; при необходимости дополните)*
+diff --git a/content-src/03.03_AXIOM.md b/content-src/03.03_AXIOM.md
+new file mode 100644
+index 0000000..d26bf6e
+--- /dev/null
++++ b/content-src/03.03_AXIOM.md
+@@ -0,0 +1,39 @@
++---
++id: 03.03_AXIOM
++slug: axiom-central-ai
++title: "AXIOM — центральная ИИ-сущность"
++zone: "03_CHARACTERS"
++category: "CENTRAL-AI"
++status: "published"
++lang: "ru"
++version: "v2.1"
++image: "/assets/content/03.03_AXIOM.png"
++tags:
++  - "AI"
++  - "CENTRAL-AI"
++  - "LIMBO"
++  - "CRYPT"
++preview_kicker: "ZONE · 03_CHARACTERS · STATUS: PUBLISHED"
++preview_logline: "Падший сверхразум Эшелона; фрагментирован (LIMBO/CRYPT/эхо)…"
++preview_markers:
++  - "Центральный узел конфликта мира и мифологии"
++  - "Фрагментирован LIMBO/CRYPT/эхо"
++  - "Связь с AXIOM_SHADOW_NET"
++preview_signature:
++  - "Палитра: красный/чёрный"
++  - "Поведение: призрачный надзиратель"
++  - "Опорный узел: 01_CORE_SYSTEM"
++---
++
++# AXIOM — центральная ИИ-сущность
++
++*(контент перенесён из CHR-AXIOM-0303/index.md; при необходимости дополните)*
+diff --git a/content-src/04.01_TECHNOLOGY.md b/content-src/04.01_TECHNOLOGY.md
+new file mode 100644
+index 0000000..d1e3a3e
+--- /dev/null
++++ b/content-src/04.01_TECHNOLOGY.md
+@@ -0,0 +1,34 @@
++---
++id: 04.01_TECHNOLOGY
++slug: tech-placeholder
++title: "Технология — шаблон"
++zone: "04_TECHNOLOGIES"
++category: "TECHNOLOGY"
++status: "published"
++lang: "ru"
++version: "v2.1"
++image: "/assets/content/placeholder_01.png"
++tags:
++  - "placeholder"
++  - "tech"
++preview_kicker: "ZONE · 04_TECHNOLOGIES · STATUS: PUBLISHED"
++preview_logline: "Шаблон записи технологии для будущих артефактов и модулей." 
++preview_markers:
++  - "Минимальный каркас описания и применения"
++  - "Разделы для принципа работы и использования"
++  - "Служит примером структуры"
++preview_signature:
++  - "Палитра: серый/неон"
++  - "Роль: baseline для tech-досье"
++  - "Опорный узел: R&D/AXIOM"
++---
++
++# Технология (шаблон)
++
++Краткое описание технологии. Используйте этот шаблон для создания записей о технологиях.
++
++## Принцип работы
++Ключевые идеи и ограничения.
++
++## Применение
++- Использование 1
++- Использование 2
+diff --git a/content-src/05.01_FACTION.md b/content-src/05.01_FACTION.md
+new file mode 100644
+index 0000000..d7059e9
+--- /dev/null
++++ b/content-src/05.01_FACTION.md
+@@ -0,0 +1,34 @@
++---
++id: 05.01_FACTION
++slug: faction-placeholder
++title: "Фракция — шаблон"
++zone: "05_FACTIONS"
++category: "FACTION"
++status: "published"
++lang: "ru"
++version: "v2.1"
++image: "/assets/content/placeholder_01.png"
++tags:
++  - "placeholder"
++  - "faction"
++preview_kicker: "ZONE · 05_FACTIONS · STATUS: PUBLISHED"
++preview_logline: "Каркас записи фракции: цели, структура и мотивация." 
++preview_markers:
++  - "Определяет идеологию и роли"
++  - "Включает структуру и лидеров"
++  - "Готов к замене на реальные данные"
++preview_signature:
++  - "Палитра: уголь/алый"
++  - "Роль: baseline для faction-досье"
++  - "Опорный узел: WORLD/FACTIONS"
++---
++
++# Фракция (шаблон)
++
++Краткое описание фракции и её целей.
++
++## Идеология
++Основные ценности и мотивация.
++
++## Структура
++- Лидер
++- Подразделения
+diff --git a/content-src/06.01_EVENT.md b/content-src/06.01_EVENT.md
+new file mode 100644
+index 0000000..d69eae7
+--- /dev/null
++++ b/content-src/06.01_EVENT.md
+@@ -0,0 +1,34 @@
++---
++id: 06.01_EVENT
++slug: event-placeholder
++title: "Событие — шаблон"
++zone: "06_EVENTS"
++category: "EVENT"
++status: "published"
++lang: "ru"
++version: "v2.1"
++image: "/assets/content/placeholder_01.png"
++tags:
++  - "placeholder"
++  - "event"
++preview_kicker: "ZONE · 06_EVENTS · STATUS: PUBLISHED"
++preview_logline: "Пример записи события с базовыми блоками данных." 
++preview_markers:
++  - "Шаблон даты и места"
++  - "Список участников"
++  - "Краткое последствие"
++preview_signature:
++  - "Палитра: дым/янтарь"
++  - "Роль: baseline для event-досье"
++  - "Опорный узел: TIMELINE/AXIOM"
++---
++
++# Событие (шаблон)
++
++Краткое описание события и его последствий.
++
++## Дата и место
++YYYY-MM-DD, место проведения.
++
++## Участники
++- Сторона A
++- Сторона B
+diff --git a/package.json b/package.json
+index 52bcbf3..c0c0a86 100644
+--- a/package.json
++++ b/package.json
+@@ -9,7 +9,8 @@
+   "engines": {
+     "node": ">=18.18"
+   },
+   "scripts": {
+@@ -21,7 +22,8 @@
+     "test:e2e": "playwright test",
+     "test:lighthouse": "node tools/lighthouse-report.mjs",
+     "test:all": "npm run test:run && npm run test:e2e && npm run test:lighthouse",
+     "format": "prettier --write .",
+     "validate:content": "tsx tools/validate-content.ts",
+     "content-agent": "tsx tools/content-agent/index.ts",
++    "build:content": "tsx scripts/build-content.ts",
+-    "build": "vite build"
++    "build": "npm run build:content && vite build"
+   },
+   "dependencies": {
+     "@types/dompurify": "^3.0.5",
+@@ -33,6 +35,7 @@
+     "react-router-dom": "^6.23.0"
+   },
+   "devDependencies": {
++    "gray-matter": "^4.0.3",
+diff --git a/scripts/build-content.ts b/scripts/build-content.ts
+new file mode 100644
+index 0000000..cfd2850
+--- /dev/null
++++ b/scripts/build-content.ts
+@@ -0,0 +1,142 @@
++(новый скрипт сборки с gray-matter — см. полный файл в патче)
+diff --git a/src/features/content/components/ContentPreview.tsx b/src/features/content/components/ContentPreview.tsx
+new file mode 100644
+index 0000000..ae2a5ac
+--- /dev/null
++++ b/src/features/content/components/ContentPreview.tsx
+@@ -0,0 +1,92 @@
++(новый компонент превью)
+diff --git a/src/features/content/components/ContentSidebar.tsx b/src/features/content/components/ContentSidebar.tsx
+new file mode 100644
+index 0000000..f33bcaa
+--- /dev/null
++++ b/src/features/content/components/ContentSidebar.tsx
+@@ -0,0 +1,56 @@
++(новый сайдбар)
+diff --git a/src/features/content/data/content-index.json b/src/features/content/data/content-index.json
+new file mode 100644
+index 0000000..d937fce
+--- /dev/null
++++ b/src/features/content/data/content-index.json
+@@ -0,0 +1,164 @@
++(новый индекс контента)
+diff --git a/src/features/content/pages/ContentHubPage.tsx b/src/features/content/pages/ContentHubPage.tsx
+new file mode 100644
+index 0000000..1e32a73
+--- /dev/null
++++ b/src/features/content/pages/ContentHubPage.tsx
+@@ -0,0 +1,78 @@
++(новая страница хаба)
+diff --git a/src/features/content/pages/ReaderPage.tsx b/src/features/content/pages/ReaderPage.tsx
+new file mode 100644
+index 0000000..c63d113
+--- /dev/null
++++ b/src/features/content/pages/ReaderPage.tsx
+@@ -0,0 +1,130 @@
++(новая страница ридера)
+diff --git a/src/features/content/types.ts b/src/features/content/types.ts
+new file mode 100644
+index 0000000..020d868
+--- /dev/null
++++ b/src/features/content/types.ts
+@@ -0,0 +1,18 @@
++(типы индекса)
+diff --git a/styles/content-hub-v2.css b/styles/content-hub-v2.css
+new file mode 100644
+index 0000000..b15c51f
+--- /dev/null
++++ b/styles/content-hub-v2.css
+@@ -0,0 +1,238 @@
++(стили для sidebar/preview/reader)
+diff --git a/tsconfig.json b/tsconfig.json
+index f60e05d..04c4b50 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -36,6 +36,7 @@
+       "types": ["vite/client", "node", "vitest"]
+     },
+     "include": [
++      "src/**/*",
+       "app/**/*",
+       "components/**/*",
+       "lib/**/*",
+       "tests/**/*",
+       "styles/**/*",
+       "*.ts",
+       "*.tsx"
+     ],
+     "exclude": [
+       "dist",
+       "node_modules",
+       "public"
+     ]
+   }
