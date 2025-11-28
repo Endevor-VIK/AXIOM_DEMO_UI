@@ -6,14 +6,10 @@
 - IDE: Visual Studio Code.
 - Локальный путь к проекту:  
   /e/ENDEAVOR/AXIOM WEB CORE/ui/
-- Корень Git-репозитория (ROOT):  
-  папка ui/ (именно её открывают в VS Code как рабочую директорию).
-- Удалённый Git-репозиторий:  
-  https://github.com/Endevor-VIK/AXIOM_DEMO_UI
 - Основной файл спецификации задачи:  
   docs/AXIOM_CONTENT_HUB_v2_SPEC.md (путь относительно ROOT).
 - Рабочая ветка по умолчанию:  
-  feat/content-v2.1-fix/content-hub-redesign (если явно не указано иное).
+  feat/content-v2.2/content-hub-v2-reader-v1 (если явно не указано иное).
 
 ⚠ КРИТИЧЕСКИЕ ОГРАНИЧЕНИЯ
 
