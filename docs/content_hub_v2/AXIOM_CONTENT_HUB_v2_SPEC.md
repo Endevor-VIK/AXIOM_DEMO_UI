@@ -1,4 +1,4 @@
-
+<!--docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_SPEC.md-->
 # AXIOM_DEMO_UI · CONTENT HUB v2 + READER v1.0  
 Техническое задание (Часть 1 — план работ)
 
@@ -489,19 +489,19 @@
 
 1. Основной файл спецификации (ТЗ):
 
-   - `docs/AXIOM_CONTENT_HUB_v2_SPEC.md`  
+   - `docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_SPEC.md`  
    - Содержит:
      - Часть 1 — план работ (разделы 0–6);
      - Часть 2 — текущий раздел (7–10).
 
 2. Файл лога по работам над CONTENT HUB v2:
 
-   - `docs/AXIOM_CONTENT_HUB_v2_LOG.md`
+   - `docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_LOG.md`
 
 3. Дополнительно (по необходимости агента) могут быть созданы:
 
-   - `docs/AXIOM_CONTENT_HUB_v2_ISSUES.md` — список проблем/багов, которые нельзя закрыть в рамках текущего цикла;
-   - `docs/AXIOM_CONTENT_HUB_v2_IDEAS.md` — предложения на будущие версии, не входящие в текущий объём ТЗ.
+   - `docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_ISSUES.md` — список проблем/багов, которые нельзя закрыть в рамках текущего цикла;
+   - `docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_IDEAS.md` — предложения на будущие версии, не входящие в текущий объём ТЗ.
 
 Агент обязан явно указать в отчёте, если создал дополнительные файлы документации: путь и назначение.
 
@@ -753,7 +753,7 @@
 
 ### 10.1. Общая структура файла лога
 
-Файл `docs/AXIOM_CONTENT_HUB_v2_LOG.md` должен иметь следующую структуру:
+Файл `docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_LOG.md` должен иметь следующую структуру:
 
 1. Заголовок и мета:
    - Название;
@@ -773,8 +773,8 @@
 ```md
 # AXIOM CONTENT HUB v2 — LOG
 
-- Spec file: `docs/AXIOM_CONTENT_HUB_v2_SPEC.md`
-- Log file: `docs/AXIOM_CONTENT_HUB_v2_LOG.md`
+- Spec file: `docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_SPEC.md`
+- Log file: `docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_LOG.md`
 - Agent: <имя или идентификатор агента>
 - Started: <YYYY-MM-DD HH:MM (TZ)>
 - Finished: <заполняется после завершения всех работ>
@@ -815,7 +815,7 @@
 - `content-src/03.01_VIKTOR.md` — исходник VIKTOR, добавлен front-matter и тело.
 
 **Files changed:**
-- `docs/AXIOM_CONTENT_HUB_v2_SPEC.md` — обновлена ссылка на новые пути (если применимо).
+- `docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_SPEC.md` — обновлена ссылка на новые пути (если применимо).
 
 **Files removed:**
 - _(если нет — явно указать: «нет»)_  
@@ -880,7 +880,7 @@
 ---
 
 На этом спецификация **Части 2** завершена.
-Файл `docs/AXIOM_CONTENT_HUB_v2_SPEC.md` в итоговом виде должен содержать **и план работ (Часть 1), и систему логирования/чек-листы (Часть 2)**, чтобы агент мог, опираясь только на этот документ, выполнить и задокументировать всю интеграцию CONTENT HUB v2 + READER.
+Файл `docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_SPEC.md` в итоговом виде должен содержать **и план работ (Часть 1), и систему логирования/чек-листы (Часть 2)**, чтобы агент мог, опираясь только на этот документ, выполнить и задокументировать всю интеграцию CONTENT HUB v2 + READER.
 
 ---
 
@@ -889,4 +889,3 @@
 Ниже этой строки агент ведёт свой фактический лог выполнения задач по данному ТЗ  
 (формат записей — по разделу 10).
 
-<!-- AXIOM_AGENT_LOG_START -->

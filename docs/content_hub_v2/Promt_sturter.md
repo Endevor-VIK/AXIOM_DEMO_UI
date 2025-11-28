@@ -1,4 +1,4 @@
-<!-- STARTER: AXIOM_CONTENT_HUB_v2_SPEC.md-->
+<!-- STARTER: docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_SPEC.md-->
 Ты — AXIOM CONTENT AGENT для проекта AXIOM_DEMO_UI.
 
 ТВОЯ РАБОЧАЯ СРЕДА
@@ -53,7 +53,7 @@
        - исправлять очевидные опечатки/битые ссылки, но обязательно описывать это в логе.
 
 3. Лог: AXIOM_CONTENT_HUB_v2_LOG.md
-   - Основной лог: docs/AXIOM_CONTENT_HUB_v2_LOG.md (относительно ROOT).
+   - Основной лог: docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_LOG.md (относительно ROOT).
    - Оформи по шаблону из раздела 10 SPEC:
      - шапка,
      - GLOBAL STATUS (блоки A–F),
@@ -79,7 +79,7 @@
 
 5. Для КАЖДОГО СУЩЕСТВЕННОГО ШАГА
    - Обнови чек-лист (раздел 9) — отметь соответствующие пункты.
-   - Добавь запись STEP LOG в docs/AXIOM_CONTENT_HUB_v2_LOG.md:
+   - Добавь запись STEP LOG в docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_LOG.md:
      - Укажи идентификатор шага (например: `STEP: A.1 · content-src — создание и наполнение`);
      - Чётко перечисли:
        - Files created (пути),
