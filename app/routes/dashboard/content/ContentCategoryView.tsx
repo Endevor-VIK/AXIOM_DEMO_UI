@@ -2,9 +2,11 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ContentList from '@/components/ContentList'
-import PreviewPane from '@/components/PreviewPane'
 import { trackContentView } from '@/lib/analytics'
 import type { ContentCategory, ContentItem, ContentStatus } from '@/lib/vfs'
+import ContentPreview from '@/src/features/content/components/ContentPreview'
+import type { ContentPreviewData } from '@/src/features/content/types'
+import '@/styles/content-hub-v2.css'
 
 import { useContentHub } from './context'
 
@@ -80,8 +82,52 @@ export interface ContentCategoryViewProps {
 
 const noop = () => {}
 
+function pickImage(item: ContentItem): string {
+  if (item.id === 'CHR-AXIOM-0303') return '/assets/content/03.03_AXIOM.png'
+  if (item.id === 'CHR-VIKTOR-0301') return '/assets/content/03.00_VIKTOR.png'
+  return '/assets/content/placeholder_01.png'
+}
+
+function mapToPreview(entry: ContentItem | null): ContentPreviewData | null {
+  if (!entry) return null
+  const version = entry.version || (entry.meta as any)?.fileVersion || 'v1.0'
+  const zone = (entry.meta as any)?.zone || entry.category.toUpperCase()
+  const summary = entry.summary || ''
+  const markers =
+    (entry.tags && entry.tags.length
+      ? entry.tags.slice(0, 3)
+      : summary
+          .split('.')
+          .map((x) => x.trim())
+          .filter(Boolean)
+          .slice(0, 3)) || []
+
+  return {
+    id: entry.id,
+    slug: (entry as any).slug || entry.id.toLowerCase(),
+    title: entry.title,
+    zone,
+    category: entry.category,
+    status: entry.status,
+    lang: entry.lang || 'ru',
+    version,
+    tags: entry.tags || [],
+    preview: {
+      kicker: `${zone} · STATUS: ${entry.status.toUpperCase()}`,
+      logline: summary || entry.title,
+      markers: markers.length ? markers : ['Content preview'],
+      signature: [
+        `Author: ${entry.author || 'AXIOM'}`,
+        `Version: ${version}`,
+        `Lang: ${(entry.lang || 'ru').toUpperCase()}`,
+      ],
+      image: pickImage(entry),
+    },
+  }
+}
+
 const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) => {
-  const { aggregate, loading, error, filters, dataBase, pinned, togglePin, isPinned } = useContentHub()
+  const { aggregate, loading, error, filters, pinned, togglePin, isPinned } = useContentHub()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -128,6 +174,7 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     }
     return ordered[0] ?? null
   }, [ordered, itemParam])
+  const previewEntry = useMemo(() => mapToPreview(selectedItem), [selectedItem])
 
   useEffect(() => {
     if (!selectedItem) return
@@ -173,7 +220,7 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
       if (!isDesktop) {
         const nextSearch = next.toString()
         const suffix = nextSearch ? `?${nextSearch}` : ''
-        const target = `/dashboard/content/read/${item.id}${suffix}`
+        const target = `/content/${item.id}${suffix}`
         navigate(target, {
           state: { from: `${location.pathname}${suffix}` },
         })
@@ -182,18 +229,19 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     [isDesktop, searchParams, setSearchParams, navigate, location.pathname],
   )
 
-  const handleExpand = useCallback(
-    (item: ContentItem) => {
+  const handleOpenSource = useCallback(
+    (id: string) => {
+      const targetItem = ordered.find((entry) => entry.id === id) ?? selectedItem
+      if (!targetItem) return
       const next = new URLSearchParams(searchParams)
-      next.set('item', item.id)
+      next.set('item', targetItem.id)
       const suffix = next.toString()
       const query = suffix ? `?${suffix}` : ''
-      const target = `/dashboard/content/read/${item.id}${query}`
-      navigate(target, {
+      navigate(`/content/${targetItem.id}${query}`, {
         state: { from: `${location.pathname}${query}` },
       })
     },
-    [location.pathname, navigate, searchParams],
+    [location.pathname, navigate, ordered, searchParams, selectedItem],
   )
 
   const handleTogglePin = useCallback(
@@ -216,8 +264,8 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
         </div>
         {isDesktop ? (
           <aside className='ax-panel-right' aria-label='Preview panel'>
-            <div className='ax-preview-panel' ref={previewRef} role='region' aria-label='Content preview'>
-              <PreviewPane item={null} dataBase={dataBase} />
+            <div className='ax-preview-panel ax-preview-panel--v2' ref={previewRef} role='region' aria-label='Content preview'>
+              <ContentPreview entry={null} />
             </div>
           </aside>
         ) : null}
@@ -246,8 +294,8 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
       </div>
       {isDesktop ? (
         <aside className='ax-panel-right' aria-label='Preview panel'>
-          <div className='ax-preview-panel' ref={previewRef} role='region' aria-label='Content preview'>
-            <PreviewPane item={selectedItem} dataBase={dataBase} onExpand={handleExpand} />
+          <div className='ax-preview-panel ax-preview-panel--v2' ref={previewRef} role='region' aria-label='Content preview'>
+            <ContentPreview entry={previewEntry} onOpenSource={(id) => handleOpenSource(id)} />
           </div>
         </aside>
       ) : null}

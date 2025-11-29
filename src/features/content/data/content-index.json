@@ -1,0 +1,214 @@
+[
+  {
+    "id": "01.01_CENTRAL_NODE",
+    "slug": "central-node-plaza",
+    "title": "Central Node Plaza",
+    "zone": "01_LOCATIONS",
+    "category": "locations",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "intro",
+      "demo",
+      "hub"
+    ],
+    "preview": {
+      "kicker": "ZONE · 01_LOCATIONS · STATUS: PUBLISHED",
+      "logline": "Демо-сцена CONTENT HUB: приветствие и ссылка на базовый HTML-файл.",
+      "markers": [
+        "Тестовый HTML из старого манифеста",
+        "Используется для проверки сборки и рендера",
+        "Локация-хаб для демонстрации"
+      ],
+      "signature": [
+        "Палитра: серый/красный",
+        "Роль: демо-локация",
+        "Статус: published (demo)"
+      ],
+      "image": "/assets/content/placeholder_01.png"
+    }
+  },
+  {
+    "id": "03.00_CHARACTER_TEMPLATE",
+    "slug": "character-template",
+    "title": "Шаблон персонажа",
+    "zone": "03_CHARACTERS",
+    "category": "characters",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "placeholder",
+      "demo"
+    ],
+    "preview": {
+      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
+      "logline": "Базовый шаблон карточки персонажа для наполнения контента.",
+      "markers": [
+        "Структура: происхождение, черты, примечания",
+        "Используется как болванка для новых героев",
+        "Совместим с CONTENT HUB v2"
+      ],
+      "signature": [
+        "Палитра: серый/красный",
+        "Роль: шаблон персонажа",
+        "Статус: published (demo)"
+      ],
+      "image": "/assets/content/placeholder_01.png"
+    }
+  },
+  {
+    "id": "03.01_VIKTOR",
+    "slug": "viktor",
+    "title": "Виктор (VIKTOR)",
+    "zone": "03_CHARACTERS",
+    "category": "characters",
+    "status": "published",
+    "lang": "ru",
+    "version": "v2.1.1",
+    "tags": [
+      "prime",
+      "viktor",
+      "nightmare",
+      "accelerator",
+      "host-axm",
+      "echelon"
+    ],
+    "preview": {
+      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
+      "logline": "Носитель ACCELERATOR и клинка NIGHTMARE; дисциплина и мост между человеком и AXIOM.",
+      "markers": [
+        "Prime-оператор, отвечающий за связь с AXIOM",
+        "Боевой стиль: NIGHTMARE · ACCELERATOR",
+        "Роль: мост между людьми и AI"
+      ],
+      "signature": [
+        "Палитра: красный/чёрный",
+        "Поведение: холодная дисциплина",
+        "Опорный узел: ACCELERATOR core"
+      ],
+      "image": "/assets/content/03.00_VIKTOR.png"
+    }
+  },
+  {
+    "id": "03.03_AXIOM",
+    "slug": "axiom-central-ai",
+    "title": "AXIOM — центральная ИИ-сущность",
+    "zone": "03_CHARACTERS",
+    "category": "characters",
+    "status": "published",
+    "lang": "ru",
+    "version": "v2.1",
+    "tags": [
+      "ai",
+      "central-ai",
+      "ghost",
+      "limbo",
+      "crypt",
+      "veil"
+    ],
+    "preview": {
+      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
+      "logline": "Падший сверхразум Эшелона; фрагментирован (LIMBO/CRYPT/эхо) — центральный узел конфликта.",
+      "markers": [
+        "Центральный узел мифологии и конфликта",
+        "Фрагменты LIMBO / CRYPT / эхо",
+        "Связь с AXIOM_SHADOW_NET"
+      ],
+      "signature": [
+        "Палитра: красный/чёрный",
+        "Поведение: призрачный надзиратель",
+        "Опорный узел: 01_CORE_SYSTEM"
+      ],
+      "image": "/assets/content/03.03_AXIOM.png"
+    }
+  },
+  {
+    "id": "04.00_TECH_TEMPLATE",
+    "slug": "technology-template",
+    "title": "Шаблон технологии",
+    "zone": "04_TECHNOLOGIES",
+    "category": "technologies",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "placeholder",
+      "tech"
+    ],
+    "preview": {
+      "kicker": "ZONE · 04_TECHNOLOGIES · STATUS: PUBLISHED",
+      "logline": "Болванка записи для технологий: принципы, применение и пометки.",
+      "markers": [
+        "Шаблон секций: принцип работы, применение",
+        "Служит исходником для новых техно-файлов",
+        "Можно расширять под CONTENT HUB v2"
+      ],
+      "signature": [
+        "Палитра: серый/красный",
+        "Роль: шаблон технологии",
+        "Статус: published (demo)"
+      ],
+      "image": "/assets/content/placeholder_01.png"
+    }
+  },
+  {
+    "id": "05.00_FACTION_TEMPLATE",
+    "slug": "faction-template",
+    "title": "Шаблон фракции",
+    "zone": "05_FACTIONS",
+    "category": "factions",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "placeholder",
+      "faction"
+    ],
+    "preview": {
+      "kicker": "ZONE · 05_FACTIONS · STATUS: PUBLISHED",
+      "logline": "Каркас записи о фракции: идеология, структура, заметки.",
+      "markers": [
+        "Разделы: идеология, структура",
+        "Используется для быстрых черновиков",
+        "Совместим с CONTENT HUB v2"
+      ],
+      "signature": [
+        "Палитра: серый/красный",
+        "Роль: шаблон фракции",
+        "Статус: published (demo)"
+      ],
+      "image": "/assets/content/placeholder_01.png"
+    }
+  },
+  {
+    "id": "06.00_EVENT_TEMPLATE",
+    "slug": "event-template",
+    "title": "Шаблон события",
+    "zone": "06_EVENTS",
+    "category": "events",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "placeholder",
+      "event"
+    ],
+    "preview": {
+      "kicker": "ZONE · 06_EVENTS · STATUS: PUBLISHED",
+      "logline": "Шаблон записи события: когда, где и кто участвует.",
+      "markers": [
+        "Секции: дата/место, участники",
+        "Используется как демо-файл",
+        "Совместим с CONTENT HUB v2"
+      ],
+      "signature": [
+        "Палитра: серый/красный",
+        "Роль: шаблон события",
+        "Статус: published (demo)"
+      ],
+      "image": "/assets/content/placeholder_01.png"
+    }
+  }
+]
