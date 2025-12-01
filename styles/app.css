@@ -154,7 +154,7 @@
 /* Глобальные размеры баров */
 :root{
   --ax-header-h: 66px;
-  --ax-footer-h: 40px;
+  --ax-footer-h: 32px;
 }
 
    .ax-topbar { position: sticky; top: 0; z-index: var(--z-modal, 50); border-bottom: 1px solid rgba(255, 32, 52, 0.16); background: linear-gradient(180deg, rgba(12, 13, 17, 0.95), rgba(16, 8, 12, 0.85)); backdrop-filter: blur(var(--backdrop-2)); padding-block: 6px !important; }
@@ -195,7 +195,7 @@
    .ax-main { flex: 1 1 auto; padding-block-start: calc(var(--ax-header-h) + var(--space-3)); padding-block-end: calc(var(--ax-footer-h) + var(--space-3)); background: var(--ax-bg); }
    
    .ax-status { border-top: 1px solid rgba(255, 32, 52, 0.16); background: linear-gradient(180deg, rgba(10, 11, 14, 0.9), rgba(8, 6, 9, 0.95)); color: var(--ax-muted); font-size: var(--fs-12); position: sticky; bottom: 0; z-index: var(--z-floating, 40); }
-   .ax-status .ax-container { padding-block: var(--space-2); }
+   .ax-status .ax-container { padding-block: 2px; }
    
    /* ============================
       2) Legacy Layout Helpers (kept for compatibility)
@@ -225,7 +225,7 @@
      justify-items: center;
      gap: clamp(12px, 3vh, 32px);
      padding-block-start: clamp(16px, 4vh, 48px);
-     --ax-hint-reserve: 96px;
+     --ax-hint-reserve: 64px;
      padding-block-end: calc(clamp(16px, 4vh, 48px) + var(--safe-bottom) + var(--ax-hint-reserve));
      padding-inline: clamp(16px, 5vw, 64px);
      background: var(--ax-login-grad);
@@ -379,13 +379,13 @@
    /* ============================
       5) Status Line
       ============================ */
-   .ax-status-line { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; padding-block: var(--space-1); }
-   .ax-status-line__group { display: inline-flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+   .ax-status-line { display: flex; align-items: center; justify-content: space-between; gap: var(--space-1); row-gap: calc(var(--space-1) - 2px); flex-wrap: wrap; padding-block: 2px; }
+   .ax-status-line__group { display: inline-flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; }
    .ax-status-line__group--crumbs { flex: 1 1 auto; }
    .ax-status-line__group--meta { flex: 0 0 auto; }
-   .ax-status-line__time { font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: .08em; color: var(--ax-muted); }
-   .ax-status-line__route { font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: .08em; color: var(--ax-muted); white-space: nowrap; }
-   .ax-status-line__chip { display: inline-flex; align-items: center; gap: 6px; }
+   .ax-status-line__time { font-family: var(--font-mono); font-size: var(--fs-10); letter-spacing: .08em; color: var(--ax-muted); }
+   .ax-status-line__route { font-family: var(--font-mono); font-size: var(--fs-10); letter-spacing: .08em; color: var(--ax-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: clamp(160px, 26vw, 320px); }
+   .ax-status-line__chip { display: inline-flex; align-items: center; gap: 6px; min-height: calc(20px * var(--ax-scale)); padding-inline: calc(var(--space-2) - 4px); font-size: var(--fs-12); line-height: 1.2; }
    @media (max-width: 720px){
      .ax-status-line [data-hide-sm='true']{ display: none; }
    }
