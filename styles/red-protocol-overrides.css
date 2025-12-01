@@ -3,7 +3,7 @@
 /* Design tokens (fallbacks) */
 :root {
   --ax-header-h: 68px;
-  --ax-footer-h: 44px;
+  --ax-footer-h: 32px;
   --ax-gap: 16px;
   --ax-gap-lg: 20px;
   --ax-radius: 10px;
