@@ -1,12 +1,12 @@
 .ax-CategoryStats {
   --ax-bg: #0a0a0b;
   --ax-panel: #0f0f12;
-  --ax-red: var(--ax-red-neon, #ff395d);
-  --ax-red-700: color-mix(in srgb, var(--ax-red-neon, #ff395d) 70%, #4b0b12);
-  --ax-neon-soft: rgba(255,57,93,0.22);
-  --ax-neon-strong: rgba(255,57,93,0.34);
-  --ax-fg: color-mix(in srgb, var(--ax-red-neon, #ff395d) 32%, #e9eaf0);
-  --ax-accent: color-mix(in srgb, var(--ax-red-neon, #ff395d) 42%, rgba(255,255,255,0.78));
+  --ax-red: #ff1a2e;
+  --ax-red-700: color-mix(in srgb, #ff1a2e 70%, #4b0b12);
+  --ax-neon-soft: rgba(255,26,46,0.22);
+  --ax-neon-strong: rgba(255,26,46,0.34);
+  --ax-fg: color-mix(in srgb, #ff1a2e 36%, #e9eaf0);
+  --ax-accent: color-mix(in srgb, #ff1a2e 48%, rgba(255,255,255,0.78));
   --ax-radius: 18px;
   --ax-border: rgba(255, 255, 255, 0.1);
   --ax-border-strong: rgba(255, 255, 255, 0.16);
@@ -83,17 +83,17 @@
 .ax-Cell__link::after {
   content: '';
   position: absolute;
-  left: clamp(16px, 18%, 32px);
-  right: clamp(16px, 18%, 32px);
-  bottom: 12px;
-  height: 2px;
-  border-radius: 1px;
-  background: linear-gradient(90deg, rgba(255,57,93,0), rgba(255,57,93,0.75) 50%, rgba(255,57,93,0));
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  border-radius: 999px;
+  background: #ff1a2e;
   transform: scaleX(0);
   transform-origin: 0 50%;
   transition: transform 320ms var(--ax-ease, cubic-bezier(.2,.8,.2,1));
-  box-shadow: 0 0 14px var(--ax-neon-strong);
-  opacity: .88;
+  box-shadow: 0 0 12px rgba(255,26,46,0.32);
+  opacity: .9;
   pointer-events: none;
 }
 
@@ -185,22 +185,23 @@
 .ax-Cell__count {
   position: absolute;
   left: .65rem;
-  bottom: .5rem;
+  bottom: .7rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 30px;
-  height: 24px;
+  min-width: 28px;
+  height: 22px;
   padding: 0 10px;
   border-radius: 999px;
-  background: rgba(255,57,93,0.22);
-  border: 1px solid color-mix(in srgb, var(--ax-red) 65%, transparent);
+  background: linear-gradient(180deg, #0b0609, #16070b);
+  border: 1px solid rgba(255,26,46,0.75);
+  box-shadow: 0 0 0 1px rgba(255,26,46,0.25) inset, 0 0 12px rgba(255,26,46,0.28);
   font-size: .55rem;
-  font-weight: 600;
-  letter-spacing: .07em;
-  color: var(--ax-red);
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: #ff1a2e;
   backdrop-filter: blur(2px);
-  text-shadow: 0 0 10px rgba(255,57,93,0.36);
+  text-shadow: 0 0 8px rgba(255,26,46,0.32);
   z-index: 4;
 }
 
