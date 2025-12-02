@@ -3,7 +3,7 @@
 /* Design tokens (fallbacks) */
 :root {
   --ax-header-h: 68px;
-  --ax-footer-h: 44px;
+  --ax-footer-h: 32px;
   --ax-gap: 16px;
   --ax-gap-lg: 20px;
   --ax-radius: 10px;
@@ -633,6 +633,13 @@ body.ax-no-scroll {
     linear-gradient(180deg, rgba(255, 32, 52, 0.16) 0%, rgba(10, 8, 9, 0.85) 65%),
     radial-gradient(120% 120% at 50% 0%, rgba(255, 32, 52, 0.22), transparent 75%);
   box-shadow: 0 22px 44px rgba(0, 0, 0, 0.45);
+}
+
+.ax-preview-panel--v2 {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .ax-content-card__meta {

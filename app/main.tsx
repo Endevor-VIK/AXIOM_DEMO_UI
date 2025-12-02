@@ -18,6 +18,7 @@ import CategoryRoute from '@/app/routes/dashboard/content/CategoryRoute'
 import LoreRoute from '@/app/routes/dashboard/content/LoreRoute'
 import ReadRoute from '@/app/routes/dashboard/content/ReadRoute'
 import NewsPage from '@/app/routes/dashboard/news/page'
+import ReaderPage from '@/src/features/content/pages/ReaderPage'
 
 import AuthGate from '@/components/AuthGate'
 import TerminalBoot from '@/components/TerminalBoot'
@@ -51,6 +52,14 @@ const routes = [
       { path: 'news', element: <NewsPage /> },
     ],
   },
+  {
+    path: '/content/:id',
+    element: (
+      <AuthGate>
+        <ReaderPage />
+      </AuthGate>
+    ),
+  },
   { path: '*', element: <Navigate to='/' replace /> },
 ]
 
@@ -75,6 +84,3 @@ function mount() {
 }
 
 mount()
-
-
-

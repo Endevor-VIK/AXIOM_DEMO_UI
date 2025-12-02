@@ -171,14 +171,18 @@
 }
 
 /* --- Hover-reveal bottom hint (pill-triggered) --- */
-/* встроена в низ секции (.ax-login — grid: 1fr auto) */
+/* закреплена у нижнего края (фиксируется к вьюпорту, центрируется) */
 .ax-login .ax-bottom-hint{
-  position: relative;          /* больше не absolute/fixed */
-  z-index: 2;                  /* над фоновыми слоями */
-  grid-row: 2;                 /* нижний ряд сетки */
+  position: fixed;
+  left: 50%;
+  bottom: clamp(8px, 2vh, 18px);
+  transform: translateX(-50%);
+  z-index: 5;                  /* над фоновыми слоями */
+  grid-row: auto;
   justify-self: center;        /* по центру по горизонтали */
   width: min(96vw, 1100px);
-  margin: 8px 0 0; /* без нижнего внешнего отступа — не увеличиваем высоту страницы */
+  margin: 0;                   /* без нижнего внешнего отступа — не увеличиваем высоту страницы */
+  padding-bottom: var(--safe-bottom, 0px);
   display: grid; place-items: center;
   pointer-events: auto;
 }
