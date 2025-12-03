@@ -170,6 +170,21 @@ const ReaderPage: React.FC = () => {
           <span className='axr-label'>Content</span>
         </button>
 
+        <button
+          className={`axr-menu-btn${menuOpen ? ' is-active' : ''}`}
+          type='button'
+          aria-label='Меню файлов'
+          aria-expanded={menuOpen}
+          aria-pressed={menuOpen}
+          onClick={() => setMenuOpen((prev) => !prev)}
+        >
+          <span className='axr-menu-btn__icon' aria-hidden='true'>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+
         <div className='axr-fileinfo'>
           <span className='axr-id'>[{entry.id}]</span>
           <span className='axr-dot'>•</span>
@@ -177,18 +192,6 @@ const ReaderPage: React.FC = () => {
             {entry.version} · {entry.status.toUpperCase()} · {entry.lang.toUpperCase()}
           </span>
         </div>
-
-        <button
-          className='axr-toggle'
-          type='button'
-          aria-label='Меню файлов'
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((prev) => !prev)}
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
       </header>
 
       <div className='axr-container'>
