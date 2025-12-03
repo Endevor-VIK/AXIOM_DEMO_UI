@@ -3,13 +3,18 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
 const REPO = 'AXIOM_DEMO_UI'
-const isCI = process.env.GITHUB_ACTIONS === 'true'
+const repoBase = `/${REPO}/`
+const envBase = process.env.VITE_BASE?.trim()
+const isCI =
+  process.env.GITHUB_PAGES === 'true' ||
+  process.env.GITHUB_ACTIONS === 'true' ||
+  process.env.CI === 'true'
 const DEV_HOST = process.env.DEV_HOST || ''  // set to "192.168.0.11" for LAN
 const PORT = Number(process.env.PORT || 5173)
 
 export default defineConfig({
   plugins: [react()],
-  base: isCI ? `/${REPO}/` : '/',
+  base: envBase || (isCI ? repoBase : '/'),
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./', import.meta.url)),

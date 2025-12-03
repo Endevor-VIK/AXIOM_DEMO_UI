@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": 2,
-    "generatedAt": "2025-09-17T16:56:32Z",
-    "source": "manual-run"
+    "generatedAt": "2025-12-03T18:00:25.738Z",
+    "source": "tools/export.ts"
   },
   "items": [
     {
@@ -29,13 +29,88 @@
       }
     },
     {
+      "id": "CHR-VIKTOR-0301",
+      "category": "characters",
+      "subCategory": "prime",
+      "title": "Виктор (VIKTOR)",
+      "summary": "Prime-персонаж: носитель ACCELERATOR и клинка NIGHTMARE; холодная дисциплина и роль «моста» между человеком и AXIOM.",
+      "date": "2025-09-25",
+      "tags": [
+        "prime",
+        "viktor",
+        "nightmare",
+        "accelerator",
+        "host-axm",
+        "echelon"
+      ],
+      "file": "characters/CHR-VIKTOR-0301/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
+      "assetsBase": "characters/CHR-VIKTOR-0301/",
+      "author": "CREATOR & AXIOM",
+      "status": "published",
+      "visibility": "public",
+      "weight": 10,
+      "lang": "ru",
+      "version": "v2.1.1",
+      "slug": "viktor",
+      "numericSuffix": "0301",
+      "links": [],
+      "meta": {
+        "v": 2,
+        "fileVersion": "v2.1.1",
+        "fileStatus": "SYSTEM STRUCTURE",
+        "zone": "03_CHARACTERS"
+      }
+    },
+    {
+      "id": "CHR-AXIOM-0303",
+      "category": "characters",
+      "subCategory": "central-ai",
+      "title": "AXIOM — центральная ИИ-сущность",
+      "summary": "Падший сверхразум Эшелона; фрагментирован (LIMBO/CRYPT/эхо). Центральный узел конфликта мира и мифологии.",
+      "date": "2025-09-25",
+      "tags": [
+        "ai",
+        "axiom",
+        "central-ai",
+        "ghost",
+        "veil",
+        "neurogrid",
+        "limbo",
+        "crypt"
+      ],
+      "file": "characters/CHR-AXIOM-0303/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
+      "assetsBase": "characters/CHR-AXIOM-0303/",
+      "author": "CREATOR & AXIOM",
+      "status": "published",
+      "visibility": "public",
+      "weight": 20,
+      "lang": "ru",
+      "version": "v2.1",
+      "slug": "axiom",
+      "numericSuffix": "0303",
+      "links": [],
+      "meta": {
+        "v": 2,
+        "fileVersion": "v2.1",
+        "fileStatus": "DRAFT",
+        "zone": "03_CHARACTERS"
+      }
+    },
+    {
       "id": "CHR-PLACEHOLDER-0001",
       "category": "characters",
       "subCategory": "demo",
       "title": "Шаблон персонажа",
       "summary": "Заглушка персонажа для раздела Characters.",
       "date": "2025-09-22",
-      "tags": ["placeholder", "demo"],
+      "tags": [
+        "placeholder",
+        "demo"
+      ],
       "file": "characters/2025-09-22__character-placeholder.md",
       "format": "md",
       "author": "AXIOM CORE",
@@ -43,44 +118,12 @@
       "visibility": "public",
       "weight": 100,
       "lang": "ru",
+      "slug": "character-placeholder",
+      "numericSuffix": "0001",
       "links": [],
-      "meta": { "v": 2 }
-    },
-    {
-      "id": "TEC-PLACEHOLDER-0001",
-      "category": "technologies",
-      "subCategory": "demo",
-      "title": "Шаблон технологии",
-      "summary": "Заглушка технологии для раздела Technologies.",
-      "date": "2025-09-22",
-      "tags": ["placeholder", "tech"],
-      "file": "technologies/2025-09-22__technology-placeholder.md",
-      "format": "md",
-      "author": "AXIOM CORE",
-      "status": "published",
-      "visibility": "public",
-      "weight": 100,
-      "lang": "ru",
-      "links": [],
-      "meta": { "v": 2 }
-    },
-    {
-      "id": "FAC-PLACEHOLDER-0001",
-      "category": "factions",
-      "subCategory": "demo",
-      "title": "Шаблон фракции",
-      "summary": "Заглушка фракции для раздела Factions.",
-      "date": "2025-09-22",
-      "tags": ["placeholder", "faction"],
-      "file": "factions/2025-09-22__faction-placeholder.md",
-      "format": "md",
-      "author": "AXIOM CORE",
-      "status": "published",
-      "visibility": "public",
-      "weight": 100,
-      "lang": "ru",
-      "links": [],
-      "meta": { "v": 2 }
+      "meta": {
+        "v": 2
+      }
     },
     {
       "id": "EVT-PLACEHOLDER-0001",
@@ -89,7 +132,10 @@
       "title": "Шаблон события",
       "summary": "Заглушка события для раздела Events.",
       "date": "2025-09-22",
-      "tags": ["placeholder", "event"],
+      "tags": [
+        "placeholder",
+        "event"
+      ],
       "file": "events/2025-09-22__event-placeholder.md",
       "format": "md",
       "author": "AXIOM CORE",
@@ -98,12 +144,60 @@
       "weight": 100,
       "lang": "ru",
       "links": [],
-      "meta": { "v": 2 }
+      "meta": {
+        "v": 2
+      }
+    },
+    {
+      "id": "FAC-PLACEHOLDER-0001",
+      "category": "factions",
+      "subCategory": "demo",
+      "title": "Шаблон фракции",
+      "summary": "Заглушка фракции для раздела Factions.",
+      "date": "2025-09-22",
+      "tags": [
+        "placeholder",
+        "faction"
+      ],
+      "file": "factions/2025-09-22__faction-placeholder.md",
+      "format": "md",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 100,
+      "lang": "ru",
+      "links": [],
+      "meta": {
+        "v": 2
+      }
+    },
+    {
+      "id": "TEC-PLACEHOLDER-0001",
+      "category": "technologies",
+      "subCategory": "demo",
+      "title": "Шаблон технологии",
+      "summary": "Заглушка технологии для раздела Technologies.",
+      "date": "2025-09-22",
+      "tags": [
+        "placeholder",
+        "tech"
+      ],
+      "file": "technologies/2025-09-22__technology-placeholder.md",
+      "format": "md",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 100,
+      "lang": "ru",
+      "links": [],
+      "meta": {
+        "v": 2
+      }
     }
   ],
   "categories": {
     "all": {
-      "count": 5,
+      "count": 7,
       "manifest": "content/manifest.json"
     },
     "locations": {
@@ -111,7 +205,7 @@
       "manifest": "content/locations/manifest.json"
     },
     "characters": {
-      "count": 1,
+      "count": 3,
       "manifest": "content/characters/manifest.json"
     },
     "technologies": {

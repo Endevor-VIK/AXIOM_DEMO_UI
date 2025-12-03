@@ -3,6 +3,17 @@ import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'fs'
 import { promises as fs } from 'fs'
 import { join } from 'path'
 
+// Ensure GitHub Pages base path is applied during the export build.
+if (!process.env.VITE_BASE) {
+  process.env.VITE_BASE = '/AXIOM_DEMO_UI/'
+}
+if (!process.env.GITHUB_PAGES) {
+  process.env.GITHUB_PAGES = 'true'
+}
+if (!process.env.CI) {
+  process.env.CI = 'true'
+}
+
 const OUT = 'dist'
 const TARGET = 'export/site'
 const CONTENT_DIR = join(process.cwd(), 'public', 'data', 'content')
