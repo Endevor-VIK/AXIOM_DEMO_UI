@@ -38,7 +38,6 @@ test.describe('Accessibility', () => {
           iframes: false,
           runOnly: { type: 'rule', values: selectedRules },
         },
-        undefined,
       )
       return {
         violations: output.violations.map((violation) => ({
@@ -66,4 +65,3 @@ test.describe('Accessibility', () => {
 })
 
 export {}
-

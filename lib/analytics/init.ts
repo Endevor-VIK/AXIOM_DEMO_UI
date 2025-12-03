@@ -19,7 +19,8 @@ export function initAnalyticsBridge(): void {
   if (posthog && typeof posthog.capture === 'function') {
     setAnalyticsAdapter({
       track(event) {
-        posthog.capture(event.name, event)
+        const payload: Record<string, unknown> = { ...event }
+        posthog.capture(event.name, payload)
       },
     })
     initialized = true

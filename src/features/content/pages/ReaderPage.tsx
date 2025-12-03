@@ -39,13 +39,15 @@ function resolveEntry(rawId: string | undefined): ContentPreviewData | null {
   // 3) Legacy character ids: CHR-VIKTOR-0301 -> 03.01_VIKTOR
   const legacy = normalized.match(/^chr[-_]?([a-z0-9-]+?)[-_](\d{3,4})$/i)
   if (legacy) {
-    const name = legacy[1].replace(/-/g, '_').toUpperCase()
-    const digits = legacy[2]
-    const zone = digits.slice(0, 2)
-    const idx = digits.slice(2)
-    const candidateId = `${zone}.${idx}_${name}`
-    const candidate = entries.find((item) => item.id.toLowerCase() === candidateId.toLowerCase())
-    if (candidate) return candidate
+    const [, rawName, digits] = legacy
+    if (rawName && digits) {
+      const name = rawName.replace(/-/g, '_').toUpperCase()
+      const zone = digits.slice(0, 2)
+      const idx = digits.slice(2)
+      const candidateId = `${zone}.${idx}_${name}`
+      const candidate = entries.find((item) => item.id.toLowerCase() === candidateId.toLowerCase())
+      if (candidate) return candidate
+    }
   }
 
   // 4) Match by numeric suffix (e.g., 0301 -> 03.01_VIKTOR)

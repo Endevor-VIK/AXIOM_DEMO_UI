@@ -1,14 +1,23 @@
 import type { AcceptedPlugin, Declaration } from 'postcss'
 
+type PostcssInstance = typeof import('postcss')['default']
+
+type PrefixSelectorOptions = {
+  prefix: string
+  transform?: (prefix: string, selector: string, prefixedSelector: string) => string
+}
+
+type PrefixSelector = (options: PrefixSelectorOptions) => AcceptedPlugin
+
 export const SCOPE_ATTRIBUTE = 'data-ax-scope'
 const DEFAULT_SCOPE_FALLBACK = 'content'
 const KEYFRAME_NAME_PREFIX = 'ax'
 const SAFE_IDENT_CHARS = /[^a-zA-Z0-9_-]+/g
 
-let postcssInstance: typeof import('postcss') | null = null
-let prefixSelectorPlugin: typeof import('postcss-prefix-selector') | null = null
+let postcssInstance: PostcssInstance | null = null
+let prefixSelectorPlugin: PrefixSelector | null = null
 
-async function loadPostcss() {
+async function loadPostcss(): Promise<{ postcss: PostcssInstance; prefixSelector: PrefixSelector } | null> {
   if (typeof window !== 'undefined') {
     // Skip heavy postcss on the client; just return identity.
     return null
@@ -17,7 +26,12 @@ async function loadPostcss() {
     postcssInstance = (await import('postcss')).default
   }
   if (!prefixSelectorPlugin) {
-    prefixSelectorPlugin = (await import('postcss-prefix-selector')).default
+    const loaded = (await import('postcss-prefix-selector')) as
+      | { default?: PrefixSelector }
+      | PrefixSelector
+    const resolved = typeof loaded === 'function' ? loaded : loaded.default
+    if (!resolved) return null
+    prefixSelectorPlugin = resolved
   }
   return { postcss: postcssInstance, prefixSelector: prefixSelectorPlugin }
 }
