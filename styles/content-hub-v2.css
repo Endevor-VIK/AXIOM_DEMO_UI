@@ -464,20 +464,28 @@
 }
 
 .axr-overlay {
-  position: fixed;
-  top: var(--axr-header-h);
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: absolute;
+  inset: 0;
   background: rgba(0, 0, 0, 0.65);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
-  z-index: 50;
+  z-index: 1;
 }
 
 .axr-overlay--open {
   opacity: 1;
+  pointer-events: auto;
+}
+
+.axr-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.axr-layer.is-open {
   pointer-events: auto;
 }
 
@@ -711,12 +719,14 @@
 }
 
 .axr-menu {
-  position: fixed;
-  top: calc(var(--axr-header-h) + 6px);
+  position: absolute;
+  top: calc(var(--axr-header-h, 48px) + 6px);
   left: 10px;
   width: min(320px, 84vw);
-  max-height: calc(100vh - var(--axr-header-h) - 10px);
-  overflow-y: auto;
+  max-height: calc(100vh - var(--axr-header-h, 48px) - 10px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: linear-gradient(180deg, rgba(13, 16, 23, 0.96), rgba(10, 12, 18, 0.9));
   border: 1px solid rgba(255, 37, 57, 0.14);
   border-radius: 14px;
@@ -733,7 +743,7 @@
     visibility 0.2s ease,
     box-shadow 0.25s ease,
     border-color 0.25s ease;
-  z-index: 60;
+  z-index: 2;
 }
 
 .axr-menu--open {
@@ -744,7 +754,7 @@
 }
 
 .axr-menu-inner {
-  height: 100%;
+  flex: 1;
   overflow: auto;
   box-sizing: border-box;
   overscroll-behavior: contain;

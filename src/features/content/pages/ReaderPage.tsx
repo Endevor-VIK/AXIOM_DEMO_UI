@@ -125,6 +125,15 @@ const ReaderPage: React.FC = () => {
     setModalRoot(node)
   }, [])
 
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menuOpen])
+
   const handleSelect = (nextId: string) => {
     navigate(`/content/${encodeURIComponent(nextId)}`)
     setMenuOpen(false)
@@ -134,57 +143,51 @@ const ReaderPage: React.FC = () => {
     navigate(`/dashboard/content?id=${encodeURIComponent(entry?.id ?? '')}`, { replace: true })
   }
 
-  const menuLayer = modalRoot
-    ? createPortal(
-        <>
-          <div
-            className={`axr-overlay${menuOpen ? ' axr-overlay--open' : ''}`}
-            data-overlay
-            onClick={() => setMenuOpen(false)}
-          />
-
-          <nav
-            className={`axr-menu${menuOpen ? ' axr-menu--open' : ''}`}
-            aria-label='Файлы контента'
-          >
-            <div className='axr-menu-inner'>
-              <div className='axr-menu-header'>
-                <div className='axr-menu-title'>AXIOM FILES</div>
-                <div className='axr-menu-note'>Быстрый поиск и переход</div>
-              </div>
-
-              <div className='axr-menu-search'>
-                <input
-                  type='search'
-                  placeholder='Поиск файла…'
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  aria-label='Поиск по списку файлов'
-                />
-              </div>
-
-              <ul className='axr-menu-list'>
-                {filtered.map((item) => {
-                  const active = item.id === entry?.id
-                  return (
-                    <li
-                      key={item.id}
-                      className={`axr-menu-item${active ? ' axr-menu-item--active' : ''}`}
-                    >
-                      <button type='button' onClick={() => handleSelect(item.id)}>
-                        <span className='axr-menu-id'>[{item.id}]</span>
-                        <span className='axr-menu-name'>{item.title}</span>
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
+  const menuLayerContent = (
+    <>
+      <div
+        className={`axr-overlay${menuOpen ? ' axr-overlay--open' : ''}`}
+        data-overlay
+        onClick={() => setMenuOpen(false)}
+      />
+      <div className='axr-menu-shell'>
+        <nav className={`axr-menu${menuOpen ? ' axr-menu--open' : ''}`} aria-label='Файлы контента'>
+          <div className='axr-menu-inner'>
+            <div className='axr-menu-header'>
+              <div className='axr-menu-title'>AXIOM FILES</div>
+              <div className='axr-menu-note'>Быстрый поиск и переход</div>
             </div>
-          </nav>
-        </>,
-        modalRoot
-      )
-    : null
+
+            <div className='axr-menu-search'>
+              <input
+                type='search'
+                placeholder='Поиск файла…'
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                aria-label='Поиск по списку файлов'
+              />
+            </div>
+
+            <ul className='axr-menu-list'>
+              {filtered.map((item) => {
+                const active = item.id === entry?.id
+                return (
+                  <li key={item.id} className={`axr-menu-item${active ? ' axr-menu-item--active' : ''}`}>
+                    <button type='button' onClick={() => handleSelect(item.id)}>
+                      <span className='axr-menu-id'>[{item.id}]</span>
+                      <span className='axr-menu-name'>{item.title}</span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </>
+  )
+
+  const menuLayer = modalRoot ? createPortal(menuLayerContent, modalRoot) : menuLayerContent
 
   if (!entry) {
     return (
