@@ -1,3 +1,7 @@
+:root {
+  --axr-header-h: 48px;
+}
+
 .axch-shell {
   padding: 8px 0 16px;
 }
@@ -449,7 +453,7 @@
   --accent-soft: #b81226;
   --border: #1a1d29;
   --glow: rgba(255, 37, 57, 0.25);
-  --header-h: 48px;
+  --header-h: var(--axr-header-h);
   min-height: 100vh;
   position: relative;
   background:
@@ -461,7 +465,7 @@
 
 .axr-overlay {
   position: fixed;
-  top: var(--header-h);
+  top: var(--axr-header-h);
   left: 0;
   right: 0;
   bottom: 0;
@@ -472,7 +476,7 @@
   z-index: 50;
 }
 
-.ax-reader.is-menu-open .axr-overlay {
+.axr-overlay--open {
   opacity: 1;
   pointer-events: auto;
 }
@@ -480,7 +484,7 @@
 .axr-header {
   position: sticky;
   top: 0;
-  z-index: 60;
+  z-index: 70;
   display: grid;
   grid-template-columns: auto auto 1fr;
   align-items: center;
@@ -708,13 +712,11 @@
 
 .axr-menu {
   position: fixed;
-  top: calc(var(--header-h) + 6px);
+  top: calc(var(--axr-header-h) + 6px);
   left: 10px;
-  right: auto;
   width: min(320px, 84vw);
-  max-height: calc(100vh - var(--header-h) - 10px);
-  height: auto;
-  align-self: flex-start;
+  max-height: calc(100vh - var(--axr-header-h) - 10px);
+  overflow-y: auto;
   background: linear-gradient(180deg, rgba(13, 16, 23, 0.96), rgba(10, 12, 18, 0.9));
   border: 1px solid rgba(255, 37, 57, 0.14);
   border-radius: 14px;
@@ -731,16 +733,14 @@
     visibility 0.2s ease,
     box-shadow 0.25s ease,
     border-color 0.25s ease;
-  z-index: 55;
+  z-index: 60;
 }
 
-.ax-reader.is-menu-open .axr-menu {
+.axr-menu--open {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
   transform: translateX(0);
-  width: min(320px, 84vw);
-  max-height: calc(100vh - var(--header-h) - 10px);
 }
 
 .axr-menu-inner {
@@ -863,7 +863,7 @@
   text-align: center;
 }
 
-
+.axr-hero {
   margin-bottom: 0;
   padding: 0;
   border-radius: 14px;
@@ -989,40 +989,13 @@
   }
 
   .axr-menu {
-    position: fixed;
-    top: var(--header-h);
     left: 0;
-    bottom: 0;
     width: min(340px, 88vw);
     max-width: none;
-    height: auto;
     border-radius: 0;
     border-right: 1px solid rgba(255, 37, 57, 0.12);
     border-left: none;
     box-shadow: 12px 0 28px rgba(0, 0, 0, 0.55);
-    transform: translateX(-100%);
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: transform 0.25s ease, opacity 0.2s ease, visibility 0.2s ease;
-    z-index: 50;
-  }
-
-  .ax-reader.is-menu-open .axr-menu {
-    transform: translateX(0);
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  .axr-overlay {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .ax-reader.is-menu-open .axr-overlay {
-    opacity: 1;
-    pointer-events: auto;
   }
 
 }

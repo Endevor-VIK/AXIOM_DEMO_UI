@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import type { ContentPreviewData } from '../types'
@@ -72,6 +73,7 @@ const ReaderPage: React.FC = () => {
   const [search, setSearch] = useState('')
   const [state, setState] = useState<LoadState>({ html: '', loading: true, error: null })
   const [fetchKey, setFetchKey] = useState(0)
+  const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null)
 
   // Redirect to canonical id if resolved from legacy
   useEffect(() => {
@@ -118,6 +120,11 @@ const ReaderPage: React.FC = () => {
     return () => controller.abort()
   }, [entry, fetchKey])
 
+  useEffect(() => {
+    const node = document.getElementById('modal-root')
+    setModalRoot(node)
+  }, [])
+
   const handleSelect = (nextId: string) => {
     navigate(`/content/${encodeURIComponent(nextId)}`)
     setMenuOpen(false)
@@ -127,134 +134,155 @@ const ReaderPage: React.FC = () => {
     navigate(`/dashboard/content?id=${encodeURIComponent(entry?.id ?? '')}`, { replace: true })
   }
 
+  const menuLayer = modalRoot
+    ? createPortal(
+        <>
+          <div
+            className={`axr-overlay${menuOpen ? ' axr-overlay--open' : ''}`}
+            data-overlay
+            onClick={() => setMenuOpen(false)}
+          />
+
+          <nav
+            className={`axr-menu${menuOpen ? ' axr-menu--open' : ''}`}
+            aria-label='Файлы контента'
+          >
+            <div className='axr-menu-inner'>
+              <div className='axr-menu-header'>
+                <div className='axr-menu-title'>AXIOM FILES</div>
+                <div className='axr-menu-note'>Быстрый поиск и переход</div>
+              </div>
+
+              <div className='axr-menu-search'>
+                <input
+                  type='search'
+                  placeholder='Поиск файла…'
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  aria-label='Поиск по списку файлов'
+                />
+              </div>
+
+              <ul className='axr-menu-list'>
+                {filtered.map((item) => {
+                  const active = item.id === entry?.id
+                  return (
+                    <li
+                      key={item.id}
+                      className={`axr-menu-item${active ? ' axr-menu-item--active' : ''}`}
+                    >
+                      <button type='button' onClick={() => handleSelect(item.id)}>
+                        <span className='axr-menu-id'>[{item.id}]</span>
+                        <span className='axr-menu-name'>{item.title}</span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          </nav>
+        </>,
+        modalRoot
+      )
+    : null
+
   if (!entry) {
     return (
-      <section className='ax-reader axr-empty'>
-        <header className='axr-header'>
-          <button className='axr-back' type='button' onClick={() => navigate('/dashboard/content')}>
-            <span className='axr-icon'>←</span>
-            <span className='axr-label'>Content</span>
-          </button>
-          <div className='axr-fileinfo'>
-            <span className='axr-id'>NOT FOUND</span>
-          </div>
-        </header>
-        <main className='axr-main'>
-          <article className='axr-body axr-body--constrained axr-body--centered'>
-            <div className='axr-state axr-state--error'>
-              Файл не найден.<br />
-              Запрошенный контент недоступен или был удалён. Вернитесь в CONTENT HUB, чтобы выбрать другой файл.
+      <>
+        {menuLayer}
+        <section className='ax-reader axr-empty'>
+          <header className='axr-header'>
+            <button className='axr-back' type='button' onClick={() => navigate('/dashboard/content')}>
+              <span className='axr-icon'>←</span>
+              <span className='axr-label'>Content</span>
+            </button>
+            <div className='axr-fileinfo'>
+              <span className='axr-id'>NOT FOUND</span>
             </div>
-            <div className='axr-state__actions'>
-              <button
-                className='axcp-btn axcp-btn--primary'
-                type='button'
-                onClick={() => navigate('/dashboard/content')}
-              >
-                Вернуться в CONTENT
-              </button>
-            </div>
-          </article>
-        </main>
-      </section>
+          </header>
+          <main className='axr-main'>
+            <article className='axr-body axr-body--constrained axr-body--centered'>
+              <div className='axr-state axr-state--error'>
+                Файл не найден.<br />
+                Запрошенный контент недоступен или был удалён. Вернитесь в CONTENT HUB, чтобы выбрать другой файл.
+              </div>
+              <div className='axr-state__actions'>
+                <button
+                  className='axcp-btn axcp-btn--primary'
+                  type='button'
+                  onClick={() => navigate('/dashboard/content')}
+                >
+                  Вернуться в CONTENT
+                </button>
+              </div>
+            </article>
+          </main>
+        </section>
+      </>
     )
   }
 
   return (
-    <section className={`ax-reader${menuOpen ? ' is-menu-open' : ''}`} aria-label='AXIOM file reader'>
-      <div className='axr-overlay' data-overlay onClick={() => setMenuOpen(false)}></div>
+    <>
+      {menuLayer}
 
-      <header className='axr-header'>
-        <button className='axr-back' type='button' onClick={handleBack}>
-          <span className='axr-icon'>←</span>
-          <span className='axr-label'>Content</span>
-        </button>
+      <section className={`ax-reader${menuOpen ? ' is-menu-open' : ''}`} aria-label='AXIOM file reader'>
+        <header className='axr-header'>
+          <button className='axr-back' type='button' onClick={handleBack}>
+            <span className='axr-icon'>←</span>
+            <span className='axr-label'>Content</span>
+          </button>
 
-        <button
-          className={`axr-menu-btn${menuOpen ? ' is-active' : ''}`}
-          type='button'
-          aria-label='Меню файлов'
-          aria-expanded={menuOpen}
-          aria-pressed={menuOpen}
-          onClick={() => setMenuOpen((prev) => !prev)}
-        >
-          <span className='axr-menu-btn__icon' aria-hidden='true'>
-            <span></span>
-            <span></span>
-            <span></span>
-          </span>
-        </button>
+          <button
+            className={`axr-menu-btn${menuOpen ? ' is-active' : ''}`}
+            type='button'
+            aria-label='Меню файлов'
+            aria-expanded={menuOpen}
+            aria-pressed={menuOpen}
+            onClick={() => setMenuOpen((prev) => !prev)}
+          >
+            <span className='axr-menu-btn__icon' aria-hidden='true'>
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </button>
 
-        <div className='axr-fileinfo'>
-          <span className='axr-id'>[{entry.id}]</span>
-          <span className='axr-dot'>•</span>
-          <span className='axr-status'>
-            {entry.version} · {entry.status.toUpperCase()} · {entry.lang.toUpperCase()}
-          </span>
-        </div>
-      </header>
-
-      <div className='axr-container'>
-        <nav className='axr-menu' aria-label='Файлы контента'>
-          <div className='axr-menu-inner'>
-            <div className='axr-menu-header'>
-              <div className='axr-menu-title'>AXIOM FILES</div>
-              <div className='axr-menu-note'>Быстрый поиск и переход</div>
-            </div>
-
-            <div className='axr-menu-search'>
-              <input
-                type='search'
-                placeholder='Поиск файла…'
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                aria-label='Поиск по списку файлов'
-              />
-            </div>
-
-            <ul className='axr-menu-list'>
-              {filtered.map((item) => {
-                const active = item.id === entry.id
-                return (
-                  <li
-                    key={item.id}
-                    className={`axr-menu-item${active ? ' axr-menu-item--active' : ''}`}
-                  >
-                    <button type='button' onClick={() => handleSelect(item.id)}>
-                      <span className='axr-menu-id'>[{item.id}]</span>
-                      <span className='axr-menu-name'>{item.title}</span>
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
+          <div className='axr-fileinfo'>
+            <span className='axr-id'>[{entry.id}]</span>
+            <span className='axr-dot'>•</span>
+            <span className='axr-status'>
+              {entry.version} · {entry.status.toUpperCase()} · {entry.lang.toUpperCase()}
+            </span>
           </div>
-        </nav>
+        </header>
 
-        <main className='axr-main'>
-          <article className='axr-body axr-body--constrained' aria-live='polite'>
-            {state.loading && <div className='axr-state'>LOADING …</div>}
-            {!state.loading && state.error && (
-              <div className='axr-state axr-state--error'>
-                Не удалось загрузить файл {entry.id}. Ошибка: {state.error}
-                <div style={{ marginTop: '10px' }}>
-                  <button
-                    className='axcp-btn axcp-btn--primary'
-                    type='button'
-                    onClick={() => setFetchKey((x) => x + 1)}
-                  >
-                    Повторить загрузку
-                  </button>
+        <div className='axr-container'>
+          <main className='axr-main'>
+            <article className='axr-body axr-body--constrained' aria-live='polite'>
+              {state.loading && <div className='axr-state'>LOADING …</div>}
+              {!state.loading && state.error && (
+                <div className='axr-state axr-state--error'>
+                  Не удалось загрузить файл {entry.id}. Ошибка: {state.error}
+                  <div style={{ marginTop: '10px' }}>
+                    <button
+                      className='axcp-btn axcp-btn--primary'
+                      type='button'
+                      onClick={() => setFetchKey((x) => x + 1)}
+                    >
+                      Повторить загрузку
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-            {!state.loading && !state.error && (
-              <div dangerouslySetInnerHTML={{ __html: state.html }} />
-            )}
-          </article>
-        </main>
-      </div>
-    </section>
+              )}
+              {!state.loading && !state.error && (
+                <div dangerouslySetInnerHTML={{ __html: state.html }} />
+              )}
+            </article>
+          </main>
+        </div>
+      </section>
+    </>
   )
 }
 
