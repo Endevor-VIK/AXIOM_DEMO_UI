@@ -65,5 +65,6 @@ Next: повторить QA, когда будет доступен Vite (WSL2/�
 - 2025-12-19T18:52:40+03:00 — Commit `chore(devtools): add tunnel dev implementation log` (files: `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_LOG.md`).
 - 2025-12-19T18:53:00+03:00 — Command `git status -sb` → ветка `feature/profile-auth-v2.3.1` ahead 3; `.gitignore`/`scripts/run_local.py` остаются модифицированными; `docs/devtools/Promt_starter.md` и `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC.md` остаются untracked (как и было).
 - 2025-12-19T18:54:00+03:00 — Commit `chore(devtools): update tunnel dev implementation log` (добавил Git-сводку/acceptance статус; остальные файлы не трогал).
+- 2025-12-19T19:07:00+03:00 — Commit `docs(devtools): localize tunnel dev readme to ru` (перевёл README на русский, зафиксировал изменение в логе).
 
 Next: повторить QA, когда Vite доступен (WSL2 или другой хост), и обновить acceptance checklist при необходимости.
