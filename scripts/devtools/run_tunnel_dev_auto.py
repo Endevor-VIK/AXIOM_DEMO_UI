@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-Обёртка: автоматически стартует Vite (run_local.py), ждёт готовности и запускает туннель (run_tunnel_dev.py) с bcrypt.
+Интерактивная обёртка: автоматически стартует Vite (run_local.py), ждёт готовности и запускает туннель (run_tunnel_dev.py) с bcrypt.
 
 Поток выполнения:
 - Переиспользует уже работающий Vite (по умолчанию), иначе запускает run_local.py и ждёт готовности.
 - Затем стартует run_tunnel_dev.py с нужными флагами (hash-файл/путь по умолчанию).
 - По Ctrl+C корректно гасит туннель, потом dev-сервер.
+- Если запустить без аргументов — откроется меню с типовыми действиями (старт с дефолтами/кастом портами/путём хэша).
 """
 
 from __future__ import annotations
@@ -25,6 +26,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(SCRIPT_DIR)
 RUN_LOCAL = os.path.join(SCRIPT_DIR, "run_local.py")
 RUN_TUNNEL = os.path.join(SCRIPT_DIR, "run_tunnel_dev.py")
+DEFAULT_HASH_PATH = os.path.join(SCRIPT_DIR, "data", "auth.bcrypt")
 
 
 def wait_for_http_ok(url: str, timeout: int) -> bool:
@@ -149,6 +151,33 @@ def parse_bool(value: str) -> bool:
     raise argparse.ArgumentTypeError(f"Expected boolean, got '{value}'")
 
 
+def prompt_default(prompt: str, default: str) -> str:
+    sys.stdout.write(f"{prompt} [{default}]: ")
+    sys.stdout.flush()
+    val = sys.stdin.readline().strip()
+    return val or default
+
+
+def prompt_int(prompt: str, default: int) -> int:
+    val = prompt_default(prompt, str(default))
+    try:
+        return int(val)
+    except ValueError:
+        sys.stdout.write("Некорректное число, использую значение по умолчанию.\n")
+        sys.stdout.flush()
+        return default
+
+
+def prompt_bool(prompt: str, default: bool) -> bool:
+    default_str = "Y/n" if default else "y/N"
+    sys.stdout.write(f"{prompt} ({default_str}): ")
+    sys.stdout.flush()
+    val = sys.stdin.readline().strip().lower()
+    if not val:
+        return default
+    return val in {"y", "yes", "1", "true", "on"}
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Авто-старт Vite (run_local) и туннеля (run_tunnel_dev).")
     parser.add_argument("--vite-host", default="127.0.0.1", help="Хост Vite (по умолчанию 127.0.0.1)")
@@ -158,7 +187,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--auth-user", default="axiom", help="Имя пользователя BasicAuth (по умолчанию axiom)")
     parser.add_argument("--auth-pass", help="Пароль в открытом виде (опционально; предпочтителен ENV/хэш).")
     parser.add_argument("--auth-pass-env", default="AXIOM_TUNNEL_PASS", help="Имя ENV с паролем (по умолчанию AXIOM_TUNNEL_PASS)")
-    parser.add_argument("--auth-hash-file", help="Путь к файлу bcrypt (по умолчанию авто в run_tunnel_dev).")
+    parser.add_argument("--auth-hash-file", help=f"Путь к файлу bcrypt (по умолчанию {DEFAULT_HASH_PATH}).")
     parser.add_argument("--write-hash-file", action="store_true", help="Сохранять сгенерированный bcrypt в файл при хэшировании пароля.")
     parser.add_argument("--protocol", default="http2", help="Протокол cloudflared (по умолчанию http2)")
     parser.add_argument("--edge-ip-version", default="4", help="Версия edge IP для cloudflared (по умолчанию 4)")
@@ -166,15 +195,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--tunnel-url", help="Переопределить цель туннеля (по умолчанию локальный прокси).")
     parser.add_argument("--verify", type=parse_bool, nargs="?", const=True, default=True, help="Проверять Vite перед туннелем (по умолчанию true)")
     parser.add_argument("--timeout", type=int, default=30, help="Таймаут ожидания готовности Vite (сек, по умолчанию 30)")
-    parser.add_argument("--reuse-if-running", action="store_true", default=True, help="Если Vite уже отвечает, не запускать run_local.py (по умолчанию включено)")
+    parser.add_argument("--reuse-if-running", type=parse_bool, nargs="?", const=True, default=True, help="Если Vite уже отвечает, не запускать run_local.py (по умолчанию true)")
     parser.add_argument("--quiet", action="store_true", help="Меньше логов (префиксы сохраняются).")
     return parser
 
 
-def main() -> int:
-    parser = build_parser()
-    args = parser.parse_args()
-
+def run_with_args(args: argparse.Namespace) -> int:
     vite_url = args.vite_url or f"http://{args.vite_host}:{args.vite_port}/"
     env = os.environ.copy()
 
@@ -211,6 +237,51 @@ def main() -> int:
         stop_process(tunnel_proc, "tunnel")
         stop_process(dev_proc, "run_local")
     return 0
+
+
+def interactive_menu(default_args: argparse.Namespace) -> None:
+    sys.stdout.write(
+        "\n[run_tunnel_dev_auto — меню]\n"
+        "1) Старт с параметрами по умолчанию (reuse Vite, verify=true, hash файл по умолчанию)\n"
+        "2) Старт с кастомными портами/путём хэша\n"
+        "0) Выход\n"
+        "Выберите действие: "
+    )
+    sys.stdout.flush()
+    choice = sys.stdin.readline().strip()
+
+    if choice == "0":
+        sys.stdout.write("Выход.\n")
+        sys.stdout.flush()
+        return
+
+    # Базовые значения
+    args = argparse.Namespace(**vars(default_args))
+
+    if choice == "2":
+        args.vite_host = prompt_default("Vite host", args.vite_host)
+        args.vite_port = prompt_int("Vite port", args.vite_port)
+        args.proxy_port = prompt_int("Proxy port", args.proxy_port)
+        args.auth_hash_file = prompt_default("Путь к bcrypt-файлу", args.auth_hash_file or DEFAULT_HASH_PATH)
+        args.verify = prompt_bool("Проверять Vite перед стартом (verify)", True)
+        args.reuse_if_running = prompt_bool("Переиспользовать уже запущенный Vite", True)
+        args.quiet = not prompt_bool("Подробный вывод (Y = подробно, N = тише)", True)
+    else:
+        # Опция 1 или неизвестная — старт с дефолтами
+        args.auth_hash_file = args.auth_hash_file or DEFAULT_HASH_PATH
+
+    run_with_args(args)
+
+
+def main() -> int:
+    parser = build_parser()
+    if len(sys.argv) == 1:
+        default_args = parser.parse_args([])
+        interactive_menu(default_args=default_args)
+        return 0
+
+    args = parser.parse_args()
+    return run_with_args(args)
 
 
 if __name__ == "__main__":
