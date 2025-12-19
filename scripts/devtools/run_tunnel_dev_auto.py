@@ -228,11 +228,18 @@ def run_with_args(args: argparse.Namespace) -> int:
         while True:
             if tunnel_proc.poll() is not None:
                 if tunnel_proc.returncode not in (0, None):
-                    raise RuntimeError(f"Tunnel exited with code {tunnel_proc.returncode}")
+                    raise RuntimeError(
+                        f"Tunnel exited with code {tunnel_proc.returncode}. "
+                        "Проверьте порт прокси (--proxy-port) или настройки cloudflared."
+                    )
                 break
             time.sleep(0.5)
     except KeyboardInterrupt:
         sys.stdout.write("\nCtrl+C received, shutting down...\n")
+        return 1
+    except Exception as exc:  # noqa: BLE001
+        sys.stderr.write(f"Error: {exc}\n")
+        return 1
     finally:
         stop_process(tunnel_proc, "tunnel")
         stop_process(dev_proc, "run_local")
@@ -270,7 +277,10 @@ def interactive_menu(default_args: argparse.Namespace) -> None:
         # Опция 1 или неизвестная — старт с дефолтами
         args.auth_hash_file = args.auth_hash_file or DEFAULT_HASH_PATH
 
-    run_with_args(args)
+    rc = run_with_args(args)
+    if rc != 0:
+        sys.stdout.write("\nСтарт не удался. Частая причина: порт прокси занят (попробуйте 8081 или другой).\n")
+        sys.stdout.flush()
 
 
 def main() -> int:
