@@ -75,5 +75,7 @@ Next: повторить QA, когда будет доступен Vite (WSL2/�
 - 2025-12-19T19:22:20+03:00 — Commit `chore(devtools): update tunnel dev implementation log` (фиксировал новое поведение/команды).
 - 2025-12-19T19:23:00+03:00 — Commit `chore(devtools): log auth hash file changes` (синхронизировал лог).
 - 2025-12-19T19:36:00+03:00 — План: закоммитить изменения по default hash path/тулзой helper + лог.
+- 2025-12-19T19:43:59+03:00 — Commit `feat(devtools): add auto runner for vite + tunnel` (обёртка run_tunnel_dev_auto.py + README + лог; включает default hash path/--write-hash-file/helper).
+- 2025-12-19T19:45:00+03:00 — Commit `chore(devtools): update log for auth helper and hash defaults` (фиксировал добавление helper/default path).
 
 Next: повторить QA, когда Vite доступен (WSL2 или другой хост), и обновить acceptance checklist при необходимости.
