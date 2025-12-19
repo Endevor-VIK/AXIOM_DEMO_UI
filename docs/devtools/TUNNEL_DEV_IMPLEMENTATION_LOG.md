@@ -55,3 +55,14 @@ Acceptance checklist (current env WSL1):
 - [ ] Ctrl+C корректно завершает cloudflared и caddy (не проверено в окружении без Vite).
 
 Next: повторить QA, когда будет доступен Vite (WSL2/нормальное окружение), затем финализировать лог и подготовить коммиты (шаг E).
+
+## Step E — Git
+
+- 2025-12-19T18:51:00+03:00 — Command `git status -sb` → увидел имеющиеся изменения `.gitignore` и `scripts/run_local.py` (не трогал), `docs/devtools/` как untracked.
+- 2025-12-19T18:52:00+03:00 — Commit `feat(devtools): add run_tunnel_dev script (caddy basic auth + cloudflared http2)` (files: `scripts/run_tunnel_dev.py`).
+- 2025-12-19T18:52:20+03:00 — Commit `docs(devtools): add tunnel dev readme + troubleshooting` (files: `docs/devtools/TUNNEL_DEV_README.md`).
+- 2025-12-19T18:52:40+03:00 — Commit `chore(devtools): add tunnel dev implementation log` (files: `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_LOG.md`).
+- 2025-12-19T18:53:00+03:00 — Command `git status -sb` → ветка `feature/profile-auth-v2.3.1` ahead 3; `.gitignore`/`scripts/run_local.py` остаются модифицированными; `docs/devtools/Promt_starter.md` и `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC.md` остаются untracked (как и было).
+- 2025-12-19T18:54:00+03:00 — Commit `chore(devtools): update tunnel dev implementation log` (добавил Git-сводку/acceptance статус; остальные файлы не трогал).
+
+Next: повторить QA, когда Vite доступен (WSL2 или другой хост), и обновить acceptance checklist при необходимости.
