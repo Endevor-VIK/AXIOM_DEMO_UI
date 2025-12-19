@@ -161,7 +161,7 @@ def menu(args: argparse.Namespace) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Хелпер для bcrypt: генерация/сохранение хэша для туннеля.")
-    sub = parser.add_subparsers(dest="cmd", required=True)
+    sub = parser.add_subparsers(dest="cmd")
 
     init_p = sub.add_parser("init", help="Сгенерировать или записать готовый bcrypt в файл.")
     init_p.add_argument(
@@ -203,6 +203,11 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    # По умолчанию открываем меню, если команда не указана
+    if args.cmd is None:
+        args.cmd = "menu"
+        args.path = DEFAULT_HASH_PATH
+
     if args.cmd == "init":
         init_hash(args)
     elif args.cmd == "show-path":
