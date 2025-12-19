@@ -3,16 +3,16 @@
 Вспомогательный раннер: поднимает Caddy с BasicAuth и Cloudflare Quick Tunnel поверх уже запущенного Vite dev сервера.
 
 ## Предпосылки
-- Vite запущен отдельно (например, `python3 scripts/run_local.py` или `npm run dev`) на `http://127.0.0.1:5173` по умолчанию.
+- Vite запущен отдельно (например, `python3 scripts/devtools/run_local.py` или `npm run dev`) на `http://127.0.0.1:5173` по умолчанию.
 - На PATH доступны `cloudflared` (`cloudflared --version`) и `caddy` (`caddy version`).
 - Пароль берём из окружения (по умолчанию `AXIOM_TUNNEL_PASS`) или передаём `--auth-pass`. Секреты в git не коммитим.
 
 ## Быстрый старт
-1) Запустите Vite: `python3 scripts/run_local.py` (или аналог).  
+1) Запустите Vite: `python3 scripts/devtools/run_local.py` (или аналог).  
 2) Экспортируйте пароль: `export AXIOM_TUNNEL_PASS='StrongPassHere'`  
    или подготовьте bcrypt и сохраните в файле, затем:  
-   `python3 scripts/run_tunnel_dev.py --auth-hash-file /path/to/bcrypt.txt`  
-3) Поднимите туннель: `python3 scripts/run_tunnel_dev.py`.  
+   `python3 scripts/devtools/run_tunnel_dev.py --auth-hash-file /path/to/bcrypt.txt`  
+3) Поднимите туннель: `python3 scripts/devtools/run_tunnel_dev.py`.  
 4) Дождитесь вывода:
    - `Vite: http://127.0.0.1:5173 (OK)`
    - `Proxy (BasicAuth): http://127.0.0.1:8080 (401 expected)`
@@ -22,34 +22,34 @@
 
 ## Частые примеры
 - Генерация/хранение bcrypt (один раз):  
-  `AXIOM_TUNNEL_PASS='...' python3 scripts/tunnel_auth_helper.py init`  
+  `AXIOM_TUNNEL_PASS='...' python3 scripts/devtools/tunnel_auth_helper.py init`  
   (по умолчанию пишет в `~/.axiom_tunnel_dev/auth.bcrypt`, вне репозитория).
 - Использовать готовый bcrypt без ввода пароля:  
-  `python3 scripts/run_tunnel_dev.py --auth-hash-file ~/.axiom_tunnel_dev/auth.bcrypt`
+  `python3 scripts/devtools/run_tunnel_dev.py --auth-hash-file ~/.axiom_tunnel_dev/auth.bcrypt`
 - Другой порт Vite:  
-  `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --vite-port 5174`
+  `AXIOM_TUNNEL_PASS='...' python3 scripts/devtools/run_tunnel_dev.py --vite-port 5174`
 - Свой URL Vite (заменяет host/port):  
-  `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --vite-url http://127.0.0.1:5173`
+  `AXIOM_TUNNEL_PASS='...' python3 scripts/devtools/run_tunnel_dev.py --vite-url http://127.0.0.1:5173`
 - Другой порт прокси:  
-  `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --proxy-port 8081`
+  `AXIOM_TUNNEL_PASS='...' python3 scripts/devtools/run_tunnel_dev.py --proxy-port 8081`
 - Отключить verify (не рекомендуется):  
-  `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --verify false`
+  `AXIOM_TUNNEL_PASS='...' python3 scripts/devtools/run_tunnel_dev.py --verify false`
 - Протокол (по умолчанию http2; quic может быть нестабилен):  
-  `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --protocol http2`
+  `AXIOM_TUNNEL_PASS='...' python3 scripts/devtools/run_tunnel_dev.py --protocol http2`
 
 ## Автоматический запуск (Vite + Tunnel одним шагом)
-- Подготовьте пароль/хэш один раз (см. выше или `scripts/tunnel_auth_helper.py init`).
+- Подготовьте пароль/хэш один раз (см. выше или `scripts/devtools/tunnel_auth_helper.py init`).
 - Запустите обёртку:  
-  `python3 scripts/run_tunnel_dev_auto.py`
+  `python3 scripts/devtools/run_tunnel_dev_auto.py`
   - если Vite уже запущен и отвечает, скрипт его переиспользует (флаг `--reuse-if-running` включён по умолчанию);
   - если нет — сам стартует `run_local.py`, дождётся готовности, потом запустит `run_tunnel_dev.py`.
 - Примеры:
   - Использовать готовый хэш по умолчанию:  
-    `python3 scripts/run_tunnel_dev_auto.py`
+    `python3 scripts/devtools/run_tunnel_dev_auto.py`
   - Задать свой файл хэша и писать в него при генерации:  
-    `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev_auto.py --auth-hash-file ~/.axiom_tunnel_dev/auth.bcrypt --write-hash-file`
+    `AXIOM_TUNNEL_PASS='...' python3 scripts/devtools/run_tunnel_dev_auto.py --auth-hash-file ~/.axiom_tunnel_dev/auth.bcrypt --write-hash-file`
   - Поменять порты:  
-    `python3 scripts/run_tunnel_dev_auto.py --vite-port 5174 --proxy-port 8081`
+    `python3 scripts/devtools/run_tunnel_dev_auto.py --vite-port 5174 --proxy-port 8081`
 
 ## Флаги (шпаргалка)
 - `--auth-user` по умолчанию `axiom`; пароль через `--auth-pass` или env `--auth-pass-env` (по умолчанию `AXIOM_TUNNEL_PASS`).
@@ -71,4 +71,4 @@
 - Пароль не печатается в открытом виде (только маска).
 - Секреты держим в окружении или локальном `.env.local` (уже в .gitignore); не коммитим. Если используете файл с bcrypt, храните его вне git (по умолчанию `~/.axiom_tunnel_dev/auth.bcrypt`).
 - Авто-обёртка использует те же секреты/хэши; убеждайтесь, что путь к хэшу лежит вне репозитория.
-- `scripts/run_local.py` не трогаем; туннель ожидает уже запущенный Vite.
+- `scripts/devtools/run_local.py` не трогаем; туннель ожидает уже запущенный Vite.
