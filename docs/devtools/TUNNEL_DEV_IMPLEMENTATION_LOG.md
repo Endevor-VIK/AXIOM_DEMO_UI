@@ -69,5 +69,7 @@ Next: повторить QA, когда будет доступен Vite (WSL2/�
 - 2025-12-19T18:54:00+03:00 — Commit `chore(devtools): update tunnel dev implementation log` (добавил Git-сводку/acceptance статус; остальные файлы не трогал).
 - 2025-12-19T19:07:00+03:00 — Commit `docs(devtools): localize tunnel dev readme to ru` (перевёл README на русский, зафиксировал изменение в логе).
 - 2025-12-19T19:21:00+03:00 — Plan: новый коммит для `--auth-hash-file` (script+README) и обновления лога (после фиксации).
+- 2025-12-19T19:22:00+03:00 — Commit `feat(devtools): support bcrypt hash file for tunnel auth` (script + README).
+- 2025-12-19T19:22:20+03:00 — Commit `chore(devtools): update tunnel dev implementation log` (фиксировал новое поведение/команды).
 
 Next: повторить QA, когда Vite доступен (WSL2 или другой хост), и обновить acceptance checklist при необходимости.
