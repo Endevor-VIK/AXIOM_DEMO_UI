@@ -200,6 +200,17 @@ def stop_process(proc: subprocess.Popen | None, name: str, quiet: bool) -> None:
             sys.stderr.write(f"Failed to kill {name}\n")
 
 
+def read_bcrypt_from_file(path: str) -> str:
+    if not os.path.exists(path):
+        raise RuntimeError(f"Auth hash file not found: {path}")
+    with open(path, "r", encoding="utf-8") as fh:
+        for line in fh:
+            val = line.strip()
+            if val:
+                return val
+    raise RuntimeError(f"Auth hash file is empty: {path}")
+
+
 def get_password(args: argparse.Namespace) -> str:
     if args.auth_pass:
         return args.auth_pass
@@ -209,6 +220,22 @@ def get_password(args: argparse.Namespace) -> str:
     raise RuntimeError(
         f"Auth password is required. Pass via --auth-pass or set env {args.auth_pass_env}."
     )
+
+
+def resolve_bcrypt(args: argparse.Namespace) -> tuple[str, str]:
+    """
+    Return (bcrypt_hash, display_mask).
+
+    If --auth-hash-file is provided, read bcrypt from there and mask as 'bcrypt-file'.
+    Otherwise, derive bcrypt via caddy hash-password using provided/plain password.
+    """
+    if args.auth_hash_file:
+        bcrypt = read_bcrypt_from_file(args.auth_hash_file)
+        return bcrypt, "bcrypt-file"
+    password = get_password(args)
+    masked = mask_secret(password)
+    bcrypt = caddy_hash_password(password)
+    return bcrypt, masked
 
 
 def build_cloudflared_cmd(target: str, args: argparse.Namespace) -> list[str]:
@@ -235,9 +262,6 @@ def run(args: argparse.Namespace) -> int:
     proxy_url = f"http://127.0.0.1:{args.proxy_port}"
     tunnel_target = normalize_url(args.tunnel_url) if args.tunnel_url else f"http://localhost:{args.proxy_port}"
 
-    password = get_password(args)
-    masked_pass = mask_secret(password)
-
     if args.protocol.lower() != "http2" and not args.quiet:
         sys.stdout.write("Note: --protocol is not http2; QUIC/UDP may be unstable. Recommend --protocol http2.\n")
 
@@ -252,7 +276,7 @@ def run(args: argparse.Namespace) -> int:
     if not is_port_free(args.proxy_port):
         raise RuntimeError(f"Port {args.proxy_port} is busy. Choose another via --proxy-port.")
 
-    bcrypt = caddy_hash_password(password)
+    bcrypt, masked_pass = resolve_bcrypt(args)
     caddyfile_path = build_temp_caddyfile(args.auth_user, bcrypt, vite_origin, args.proxy_port)
     caddy_buf: Deque[str] = deque(maxlen=80)
     caddy_proc: subprocess.Popen | None = None
@@ -383,6 +407,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--auth-pass-env",
         default="AXIOM_TUNNEL_PASS",
         help="Env var name for password (default: AXIOM_TUNNEL_PASS)",
+    )
+    parser.add_argument(
+        "--auth-hash-file",
+        help="Path to file containing bcrypt hash (skips plain password/env).",
     )
     parser.add_argument("--protocol", default="http2", help="cloudflared protocol (default: http2)")
     parser.add_argument(

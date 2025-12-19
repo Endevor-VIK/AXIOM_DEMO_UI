@@ -9,7 +9,9 @@
 
 ## Быстрый старт
 1) Запустите Vite: `python3 scripts/run_local.py` (или аналог).  
-2) Экспортируйте пароль: `export AXIOM_TUNNEL_PASS='StrongPassHere'`.  
+2) Экспортируйте пароль: `export AXIOM_TUNNEL_PASS='StrongPassHere'`  
+   или подготовьте bcrypt и сохраните в файле, затем:  
+   `python3 scripts/run_tunnel_dev.py --auth-hash-file /path/to/bcrypt.txt`  
 3) Поднимите туннель: `python3 scripts/run_tunnel_dev.py`.  
 4) Дождитесь вывода:
    - `Vite: http://127.0.0.1:5173 (OK)`
@@ -29,9 +31,12 @@
   `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --verify false`
 - Протокол (по умолчанию http2; quic может быть нестабилен):  
   `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --protocol http2`
+- Использовать готовый bcrypt без ввода пароля:  
+  `python3 scripts/run_tunnel_dev.py --auth-hash-file /path/to/bcrypt.txt`
 
 ## Флаги (шпаргалка)
 - `--auth-user` по умолчанию `axiom`; пароль через `--auth-pass` или env `--auth-pass-env` (по умолчанию `AXIOM_TUNNEL_PASS`).
+- `--auth-hash-file` — путь к файлу с готовым bcrypt (пропускает ввод пароля/ENV).
 - `--proxy-port` по умолчанию `8080` (BasicAuth reverse proxy).
 - `--edge-ip-version` по умолчанию `4`; оставляйте http2, если нет явной причины идти в quic.
 - `--tunnel-url` — свой таргет для cloudflared (по умолчанию локальный прокси). Если меняете, убедитесь, что BasicAuth всё ещё защищает цель.
@@ -46,5 +51,5 @@
 
 ## Безопасность
 - Пароль не печатается в открытом виде (только маска).
-- Секреты держим в окружении или локальном `.env.local` (уже в .gitignore); не коммитим.
+- Секреты держим в окружении или локальном `.env.local` (уже в .gitignore); не коммитим. Если используете файл с bcrypt, храните его вне git.
 - `scripts/run_local.py` не трогаем; туннель ожидает уже запущенный Vite.
