@@ -17,3 +17,4 @@ reports/
 scripts/__pycache__
 scripts/netlog/
 temp
+Caddyfile

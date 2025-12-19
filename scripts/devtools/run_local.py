@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-Lightweight local runner with robust readiness wait.
+Лёгкий раннер Vite с ожиданием готовности.
 
 Usage:
-  python scripts/run_local.py
+  python scripts/devtools/run_local.py
 
-Environment:
-  PORT           Dev server port (default: 5173)
-  HOST           Host to probe (default: 127.0.0.1)
-  DEV_HOST       Host for Vite server (auto 0.0.0.0 on WSL)
-  SKIP_WSL_PORTPROXY  Disable auto netsh portproxy setup on WSL
+Переменные окружения:
+  PORT                 Порт dev-сервера (по умолчанию 5173)
+  HOST                 Хост для проб (по умолчанию 127.0.0.1)
+  DEV_HOST             Хост для Vite (авто 0.0.0.0 в WSL)
+  SKIP_WSL_PORTPROXY   Выключить auto netsh portproxy в WSL
 
-Notes:
-  - Uses HEAD requests with backoff to avoid early timeouts.
-  - Cross-platform npm dev spawn (npm.cmd on Windows).
+Примечания:
+  - Делает HEAD-пробы с бэкоффом, чтобы не падать раньше времени.
+  - Кросс-платформенный запуск npm dev (npm.cmd на Windows).
 """
 
 from __future__ import annotations

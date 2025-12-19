@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Wrapper to auto-start Vite (run_local.py) and then tunnel (run_tunnel_dev.py) with stored bcrypt.
+Обёртка: автоматически стартует Vite (run_local.py), ждёт готовности и запускает туннель (run_tunnel_dev.py) с bcrypt.
 
-Flow:
-- Optionally reuse already running Vite (default true).
-- If not running, start run_local.py and wait for readiness.
-- Start run_tunnel_dev.py with provided flags (hash file/default hash path supported).
-- Graceful shutdown on Ctrl+C: stop tunnel first, then dev server.
+Поток выполнения:
+- Переиспользует уже работающий Vite (по умолчанию), иначе запускает run_local.py и ждёт готовности.
+- Затем стартует run_tunnel_dev.py с нужными флагами (hash-файл/путь по умолчанию).
+- По Ctrl+C корректно гасит туннель, потом dev-сервер.
 """
 
 from __future__ import annotations
@@ -151,24 +150,24 @@ def parse_bool(value: str) -> bool:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Auto-start Vite (run_local) then tunnel (run_tunnel_dev).")
-    parser.add_argument("--vite-host", default="127.0.0.1", help="Vite host (default: 127.0.0.1)")
-    parser.add_argument("--vite-port", type=int, default=5173, help="Vite port (default: 5173)")
-    parser.add_argument("--vite-url", help="Full Vite URL; if set, overrides host/port.")
-    parser.add_argument("--proxy-port", type=int, default=8080, help="Proxy port for tunnel (default: 8080)")
-    parser.add_argument("--auth-user", default="axiom", help="BasicAuth username (default: axiom)")
-    parser.add_argument("--auth-pass", help="Plain password (optional; prefer env/hash file).")
-    parser.add_argument("--auth-pass-env", default="AXIOM_TUNNEL_PASS", help="Env var for password (default: AXIOM_TUNNEL_PASS)")
-    parser.add_argument("--auth-hash-file", help="Path to bcrypt hash file (default: auto in run_tunnel_dev).")
-    parser.add_argument("--write-hash-file", action="store_true", help="Persist generated bcrypt to hash file when hashing from password.")
-    parser.add_argument("--protocol", default="http2", help="cloudflared protocol (default: http2)")
-    parser.add_argument("--edge-ip-version", default="4", help="cloudflared edge IP version (default: 4)")
-    parser.add_argument("--no-autoupdate", type=parse_bool, nargs="?", const=True, default=True, help="Pass --no-autoupdate to cloudflared (default: true)")
-    parser.add_argument("--tunnel-url", help="Override tunnel target (default: local proxy).")
-    parser.add_argument("--verify", type=parse_bool, nargs="?", const=True, default=True, help="Verify Vite before tunnel (default: true)")
-    parser.add_argument("--timeout", type=int, default=30, help="Timeout for Vite readiness check (seconds, default: 30)")
-    parser.add_argument("--reuse-if-running", action="store_true", default=True, help="If Vite already responds, skip spawning run_local.py (default: true)")
-    parser.add_argument("--quiet", action="store_true", help="Reduce log noise (prefixes remain).")
+    parser = argparse.ArgumentParser(description="Авто-старт Vite (run_local) и туннеля (run_tunnel_dev).")
+    parser.add_argument("--vite-host", default="127.0.0.1", help="Хост Vite (по умолчанию 127.0.0.1)")
+    parser.add_argument("--vite-port", type=int, default=5173, help="Порт Vite (по умолчанию 5173)")
+    parser.add_argument("--vite-url", help="Полный URL Vite; если указан, переопределяет host/port.")
+    parser.add_argument("--proxy-port", type=int, default=8080, help="Порт прокси для туннеля (по умолчанию 8080)")
+    parser.add_argument("--auth-user", default="axiom", help="Имя пользователя BasicAuth (по умолчанию axiom)")
+    parser.add_argument("--auth-pass", help="Пароль в открытом виде (опционально; предпочтителен ENV/хэш).")
+    parser.add_argument("--auth-pass-env", default="AXIOM_TUNNEL_PASS", help="Имя ENV с паролем (по умолчанию AXIOM_TUNNEL_PASS)")
+    parser.add_argument("--auth-hash-file", help="Путь к файлу bcrypt (по умолчанию авто в run_tunnel_dev).")
+    parser.add_argument("--write-hash-file", action="store_true", help="Сохранять сгенерированный bcrypt в файл при хэшировании пароля.")
+    parser.add_argument("--protocol", default="http2", help="Протокол cloudflared (по умолчанию http2)")
+    parser.add_argument("--edge-ip-version", default="4", help="Версия edge IP для cloudflared (по умолчанию 4)")
+    parser.add_argument("--no-autoupdate", type=parse_bool, nargs="?", const=True, default=True, help="Пробрасывать --no-autoupdate в cloudflared (по умолчанию true)")
+    parser.add_argument("--tunnel-url", help="Переопределить цель туннеля (по умолчанию локальный прокси).")
+    parser.add_argument("--verify", type=parse_bool, nargs="?", const=True, default=True, help="Проверять Vite перед туннелем (по умолчанию true)")
+    parser.add_argument("--timeout", type=int, default=30, help="Таймаут ожидания готовности Vite (сек, по умолчанию 30)")
+    parser.add_argument("--reuse-if-running", action="store_true", default=True, help="Если Vite уже отвечает, не запускать run_local.py (по умолчанию включено)")
+    parser.add_argument("--quiet", action="store_true", help="Меньше логов (префиксы сохраняются).")
     return parser
 
 

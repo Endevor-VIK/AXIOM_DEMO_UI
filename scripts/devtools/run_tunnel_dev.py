@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Protected Quick Tunnel runner for Vite dev server (Caddy BasicAuth + cloudflared).
+Запуск защищённого Quick Tunnel для Vite (Caddy BasicAuth + cloudflared).
 
-- Verifies local Vite (optional).
-- Spins up Caddy reverse proxy with BasicAuth (bcrypt via `caddy hash-password`).
-- Opens Cloudflare Quick Tunnel to the protected proxy (http2 by default).
-- Cleans up subprocesses and temp Caddyfile on Ctrl+C.
+- Проверяет доступность Vite (опционально).
+- Поднимает Caddy reverse proxy с BasicAuth (bcrypt через `caddy hash-password`).
+- Открывает Cloudflare Quick Tunnel к защищённому прокси (по умолчанию http2).
+- Корректно гасит процессы и временный Caddyfile по Ctrl+C.
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ TRY_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.trycloudflare\.com")
 
 
 def parse_bool(value: str) -> bool:
-    """Parse common truthy/falsey strings for CLI flags."""
+    """Парсинг булевых строк для флагов CLI."""
     if isinstance(value, bool):
         return value
     val = value.strip().lower()
@@ -47,7 +47,7 @@ def parse_bool(value: str) -> bool:
 
 
 def mask_secret(secret: str) -> str:
-    """Return masked placeholder for secrets."""
+    """Вернуть маску для секретов (без утечки значения)."""
     if not secret:
         return "******"
     return "*" * max(6, min(12, len(secret)))
@@ -63,7 +63,7 @@ def require_command(cmd: str, install_hint: str) -> None:
 
 
 def normalize_url(url: str) -> str:
-    """Ensure URL has scheme (http)."""
+    """Гарантировать наличие схемы http в URL."""
     parsed = urllib.parse.urlparse(url)
     if not parsed.scheme:
         return f"http://{url}"
@@ -71,7 +71,7 @@ def normalize_url(url: str) -> str:
 
 
 def wait_for_http_ok(url: str, timeout: int) -> bool:
-    """Wait until HTTP returns 2xx/3xx."""
+    """Ждать ответа HTTP 2xx/3xx."""
     deadline = time.time() + timeout
     last_error: Optional[Exception] = None
     while time.time() < deadline:
@@ -91,7 +91,7 @@ def wait_for_http_ok(url: str, timeout: int) -> bool:
 
 
 def wait_for_status(url: str, expected_status: int, timeout: int, proc: subprocess.Popen | None = None) -> bool:
-    """Wait until HTTP returns expected status (e.g., 401)."""
+    """Ждать заданный HTTP статус (например, 401)."""
     deadline = time.time() + timeout
     last_error: Optional[Exception] = None
     while time.time() < deadline:
@@ -115,7 +115,7 @@ def wait_for_status(url: str, expected_status: int, timeout: int, proc: subproce
 
 
 def caddy_hash_password(plaintext: str) -> str:
-    """Get bcrypt hash via caddy helper."""
+    """Получить bcrypt через `caddy hash-password`."""
     res = subprocess.run(
         ["caddy", "hash-password", "--plaintext", plaintext],
         capture_output=True,
@@ -409,32 +409,32 @@ def run(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Protected Quick Tunnel for Vite dev server.")
-    parser.add_argument("--vite-host", default="127.0.0.1", help="Vite host (default: 127.0.0.1)")
-    parser.add_argument("--vite-port", type=int, default=5173, help="Vite port (default: 5173)")
-    parser.add_argument("--vite-url", help="Full Vite URL (overrides host/port).")
-    parser.add_argument("--proxy-port", type=int, default=8080, help="Local BasicAuth proxy port (default: 8080)")
-    parser.add_argument("--auth-user", default="axiom", help="BasicAuth username (default: axiom)")
-    parser.add_argument("--auth-pass", help="BasicAuth password (optional, prefer env).")
+    parser = argparse.ArgumentParser(description="Защищённый Quick Tunnel для Vite (Caddy + cloudflared).")
+    parser.add_argument("--vite-host", default="127.0.0.1", help="Хост Vite (по умолчанию 127.0.0.1)")
+    parser.add_argument("--vite-port", type=int, default=5173, help="Порт Vite (по умолчанию 5173)")
+    parser.add_argument("--vite-url", help="Полный URL Vite (переопределяет host/port).")
+    parser.add_argument("--proxy-port", type=int, default=8080, help="Порт локального BasicAuth-прокси (по умолчанию 8080)")
+    parser.add_argument("--auth-user", default="axiom", help="Имя пользователя BasicAuth (по умолчанию axiom)")
+    parser.add_argument("--auth-pass", help="Пароль BasicAuth (опционально, предпочтительно через ENV).")
     parser.add_argument(
         "--auth-pass-env",
         default="AXIOM_TUNNEL_PASS",
-        help="Env var name for password (default: AXIOM_TUNNEL_PASS)",
+        help="Имя переменной окружения для пароля (по умолчанию AXIOM_TUNNEL_PASS)",
     )
     parser.add_argument(
         "--auth-hash-file",
-        help="Path to file containing bcrypt hash (skips plain password/env).",
+        help="Путь к файлу с bcrypt (пропускает ввод пароля/ENV).",
     )
     parser.add_argument(
         "--write-hash-file",
         action="store_true",
-        help="If hashing from password, also write bcrypt to auth-hash-file (or default path).",
+        help="Если хэш считан из пароля, сохранить bcrypt в файл (или путь по умолчанию).",
     )
-    parser.add_argument("--protocol", default="http2", help="cloudflared protocol (default: http2)")
+    parser.add_argument("--protocol", default="http2", help="Протокол cloudflared (по умолчанию http2)")
     parser.add_argument(
         "--edge-ip-version",
         default="4",
-        help="cloudflared edge IP version (default: 4)",
+        help="Версия edge IP для cloudflared (по умолчанию 4)",
     )
     parser.add_argument(
         "--no-autoupdate",
@@ -442,27 +442,27 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="?",
         const=True,
         default=True,
-        help="Pass --no-autoupdate to cloudflared (default: true).",
+        help="Пробрасывать --no-autoupdate в cloudflared (по умолчанию true).",
     )
-    parser.add_argument("--tunnel-url", help="Override cloudflared --url target (defaults to local proxy).")
+    parser.add_argument("--tunnel-url", help="Переопределить цель cloudflared --url (по умолчанию локальный прокси).")
     parser.add_argument(
         "--verify",
         type=parse_bool,
         nargs="?",
         const=True,
         default=True,
-        help="Verify Vite before starting (default: true).",
+        help="Проверять доступность Vite перед стартом (по умолчанию true).",
     )
     parser.add_argument(
         "--timeout",
         type=int,
         default=20,
-        help="Timeout in seconds for Vite/proxy readiness checks (default: 20).",
+        help="Таймаут (сек) проверки готовности Vite/прокси (по умолчанию 20).",
     )
     parser.add_argument(
         "--quiet",
         action="store_true",
-        help="Reduce log noise (still prints essentials).",
+        help="Меньше логов (ключевые сообщения остаются).",
     )
     return parser
 

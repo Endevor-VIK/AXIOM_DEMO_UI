@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Utility helpers for tunnel auth: generate bcrypt once and reuse from a safe path.
+Хелпер для аутентификации туннеля: генерирует/хранит bcrypt в безопасном пути.
 
-Usage examples:
-  # Generate bcrypt from password via caddy and save to default path
-  AXIOM_TUNNEL_PASS='MyPass' python3 scripts/tunnel_auth_helper.py init
+Примеры:
+  # Сгенерировать bcrypt из пароля через caddy и сохранить в путь по умолчанию
+  AXIOM_TUNNEL_PASS='MyPass' python3 scripts/devtools/tunnel_auth_helper.py init
 
-  # Generate bcrypt from provided hash string (skip caddy)
-  python3 scripts/tunnel_auth_helper.py init --auth-hash "$2a$14$...."
+  # Сохранить уже готовый bcrypt (без вызова caddy)
+  python3 scripts/devtools/tunnel_auth_helper.py init --auth-hash "$2a$14$...."
 
-  # Print current stored bcrypt path
-  python3 scripts/tunnel_auth_helper.py show-path
+  # Показать путь хранения bcrypt
+  python3 scripts/devtools/tunnel_auth_helper.py show-path
 """
 
 from __future__ import annotations
@@ -71,34 +71,34 @@ def show_path(args: argparse.Namespace) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Tunnel auth helper (bcrypt file management).")
+    parser = argparse.ArgumentParser(description="Хелпер для bcrypt: генерация/сохранение хэша для туннеля.")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    init_p = sub.add_parser("init", help="Generate or store bcrypt to file.")
+    init_p = sub.add_parser("init", help="Сгенерировать или записать готовый bcrypt в файл.")
     init_p.add_argument(
         "--path",
         default=DEFAULT_HASH_PATH,
-        help=f"Target file path for bcrypt (default: {DEFAULT_HASH_PATH})",
+        help=f"Путь для хранения bcrypt (по умолчанию {DEFAULT_HASH_PATH})",
     )
     init_p.add_argument(
         "--auth-pass",
-        help="Plain password to hash (fallback to env).",
+        help="Пароль в открытом виде (если не указан, берётся из ENV).",
     )
     init_p.add_argument(
         "--auth-pass-env",
         default="AXIOM_TUNNEL_PASS",
-        help="Env var for password (default: AXIOM_TUNNEL_PASS).",
+        help="Имя переменной окружения с паролем (по умолчанию AXIOM_TUNNEL_PASS).",
     )
     init_p.add_argument(
         "--auth-hash",
-        help="Provide ready bcrypt hash (skips caddy hash-password).",
+        help="Указать готовый bcrypt (пропускает caddy hash-password).",
     )
 
-    show_p = sub.add_parser("show-path", help="Print default bcrypt path.")
+    show_p = sub.add_parser("show-path", help="Показать путь хранения bcrypt по умолчанию.")
     show_p.add_argument(
         "--path",
         default=DEFAULT_HASH_PATH,
-        help=f"Path to show (default: {DEFAULT_HASH_PATH})",
+        help=f"Путь для вывода (по умолчанию {DEFAULT_HASH_PATH})",
     )
 
     return parser
