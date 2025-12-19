@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -20,13 +21,14 @@ import threading
 import time
 import urllib.error
 import urllib.request
-from typing import Optional
+from typing import Callable, Optional
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(SCRIPT_DIR)
 RUN_LOCAL = os.path.join(SCRIPT_DIR, "run_local.py")
 RUN_TUNNEL = os.path.join(SCRIPT_DIR, "run_tunnel_dev.py")
 DEFAULT_HASH_PATH = os.path.join(SCRIPT_DIR, "data", "auth.bcrypt")
+TRY_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.trycloudflare\.com")
 
 
 def wait_for_http_ok(url: str, timeout: int) -> bool:
@@ -46,10 +48,12 @@ def wait_for_http_ok(url: str, timeout: int) -> bool:
     return False
 
 
-def stream_output(proc: subprocess.Popen, label: str, quiet: bool) -> None:
+def stream_output(proc: subprocess.Popen, label: str, quiet: bool, on_line: Callable[[str], None] | None = None) -> None:
     if proc.stdout is None:
         return
     for line in proc.stdout:
+        if on_line:
+            on_line(line.rstrip("\n"))
         if not quiet:
             sys.stdout.write(f"[{label}] {line}")
             sys.stdout.flush()
@@ -142,13 +146,13 @@ def start_run_local(env: dict[str, str], quiet: bool) -> subprocess.Popen:
     )
     threading.Thread(
         target=stream_output,
-        args=(proc, "dev", quiet),
+        args=(proc, "dev", quiet, None),
         daemon=True,
     ).start()
     return proc
 
 
-def start_tunnel(cmd: list[str], quiet: bool) -> subprocess.Popen:
+def start_tunnel(cmd: list[str], quiet: bool, on_line: Callable[[str], None] | None = None) -> subprocess.Popen:
     proc = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -158,7 +162,7 @@ def start_tunnel(cmd: list[str], quiet: bool) -> subprocess.Popen:
     )
     threading.Thread(
         target=stream_output,
-        args=(proc, "tunnel", quiet),
+        args=(proc, "tunnel", quiet, on_line),
         daemon=True,
     ).start()
     return proc
@@ -228,6 +232,23 @@ def run_with_args(args: argparse.Namespace) -> int:
 
     dev_proc: Optional[subprocess.Popen] = None
     tunnel_proc: Optional[subprocess.Popen] = None
+    tunnel_url: str | None = None
+
+    def handle_tunnel_line(line: str) -> None:
+        nonlocal tunnel_url
+        found = TRY_URL_RE.search(line)
+        if found and tunnel_url is None:
+            tunnel_url = found.group(0)
+            if not args.quiet:
+                sys.stdout.write(
+                    "\n------ Tunnel ready (auto) ------\n"
+                    f"Vite: {vite_url}\n"
+                    f"Proxy (BasicAuth): http://127.0.0.1:{args.proxy_port} (401 expected)\n"
+                    f"Tunnel: {tunnel_url}\n"
+                    f"Auth user: {args.auth_user}\n"
+                    "Отдай публичный URL пользователю; для входа нужен логин/пароль.\n"
+                )
+                sys.stdout.flush()
 
     try:
         # Авто-подбор порта, если занято
@@ -252,7 +273,7 @@ def run_with_args(args: argparse.Namespace) -> int:
                 sys.stdout.write(f"Vite: {vite_url} (OK)\n")
 
         tunnel_cmd = build_tunnel_cmd(args)
-        tunnel_proc = start_tunnel(tunnel_cmd, args.quiet)
+        tunnel_proc = start_tunnel(tunnel_cmd, args.quiet, on_line=handle_tunnel_line)
         if not args.quiet:
             sys.stdout.write(f"Started tunnel: {' '.join(tunnel_cmd)}\n")
         # Wait while processes alive
