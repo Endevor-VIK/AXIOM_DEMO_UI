@@ -27,6 +27,10 @@ import urllib.request
 from collections import deque
 from typing import Deque, Optional
 
+DEFAULT_HASH_PATH = os.path.expanduser(
+    os.environ.get("AXIOM_TUNNEL_HASH_FILE", "~/.axiom_tunnel_dev/auth.bcrypt")
+)
+
 TRY_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.trycloudflare\.com")
 
 
@@ -229,12 +233,21 @@ def resolve_bcrypt(args: argparse.Namespace) -> tuple[str, str]:
     If --auth-hash-file is provided, read bcrypt from there and mask as 'bcrypt-file'.
     Otherwise, derive bcrypt via caddy hash-password using provided/plain password.
     """
-    if args.auth_hash_file:
-        bcrypt = read_bcrypt_from_file(args.auth_hash_file)
+    hash_path = args.auth_hash_file or DEFAULT_HASH_PATH
+    if hash_path and os.path.exists(hash_path):
+        bcrypt = read_bcrypt_from_file(hash_path)
         return bcrypt, "bcrypt-file"
+
     password = get_password(args)
     masked = mask_secret(password)
     bcrypt = caddy_hash_password(password)
+    if args.write_hash_file:
+        target = args.auth_hash_file or DEFAULT_HASH_PATH
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        with open(target, "w", encoding="utf-8") as fh:
+            fh.write(bcrypt + "\n")
+        if not args.quiet:
+            sys.stdout.write(f"Stored bcrypt at {target}\n")
     return bcrypt, masked
 
 
@@ -411,6 +424,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--auth-hash-file",
         help="Path to file containing bcrypt hash (skips plain password/env).",
+    )
+    parser.add_argument(
+        "--write-hash-file",
+        action="store_true",
+        help="If hashing from password, also write bcrypt to auth-hash-file (or default path).",
     )
     parser.add_argument("--protocol", default="http2", help="cloudflared protocol (default: http2)")
     parser.add_argument(
