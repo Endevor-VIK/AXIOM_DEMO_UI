@@ -81,5 +81,7 @@ Next: повторить QA, когда будет доступен Vite (WSL2/�
 - 2025-12-19T19:45:30+03:00 — Commit `chore(devtools): record auto runner commits` (синхронизировал лог).
 - 2025-12-19T19:53:21+03:00 — Commit `chore(devtools): relocate tunnel scripts under devtools` (перенос run_local/run_tunnel_dev/run_tunnel_dev_auto/tunnel_auth_helper в scripts/devtools + README ссылка).
 - 2025-12-19T19:55:00+03:00 — Commit `chore(devtools): drop legacy script locations` (убрал старые пути скриптов из корня scripts/, чтобы не болтались удалённые файлы).
+- 2025-12-19T20:17:00+03:00 — Добавил интерактивное меню в `scripts/devtools/tunnel_auth_helper.py` (создание/замена/удаление bcrypt, безопасный ввод пароля), сменил default hash path на `scripts/devtools/data/auth.bcrypt` (gitignore), обновил README под новый путь.
+- 2025-12-19T20:17:30+03:00 — Commit `chore(devtools): update helper docs and references` (задокументировал новые пути/файлы; добавил .gitignore scripts/devtools/data/).
 
 Next: повторить QA, когда Vite доступен (WSL2 или другой хост), и обновить acceptance checklist при необходимости.

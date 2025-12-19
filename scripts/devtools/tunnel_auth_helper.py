@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
-Хелпер для аутентификации туннеля: генерирует/хранит bcrypt в безопасном пути.
+Хелпер для аутентификации туннеля: генерирует/хранит/удаляет bcrypt в безопасном пути.
 
 Примеры:
+  # Меню управления (создание/замена/удаление/показ пути)
+  python3 scripts/devtools/tunnel_auth_helper.py menu
+
   # Сгенерировать bcrypt из пароля через caddy и сохранить в путь по умолчанию
   AXIOM_TUNNEL_PASS='MyPass' python3 scripts/devtools/tunnel_auth_helper.py init
 
@@ -16,12 +19,15 @@
 from __future__ import annotations
 
 import argparse
+import getpass
 import os
 import subprocess
 import sys
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_DATA_DIR = os.path.join(SCRIPT_DIR, "data")
 DEFAULT_HASH_PATH = os.path.expanduser(
-    os.environ.get("AXIOM_TUNNEL_HASH_FILE", "~/.axiom_tunnel_dev/auth.bcrypt")
+    os.environ.get("AXIOM_TUNNEL_HASH_FILE", os.path.join(DEFAULT_DATA_DIR, "auth.bcrypt"))
 )
 
 
@@ -29,6 +35,13 @@ def is_command_available(cmd: str) -> bool:
     from shutil import which
 
     return which(cmd) is not None
+
+
+def ensure_data_dir(path: str) -> None:
+    """Создать директорию для хранения хэша, если её нет."""
+    directory = os.path.dirname(path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
 
 
 def caddy_hash_password(plaintext: str) -> str:
@@ -49,7 +62,7 @@ def caddy_hash_password(plaintext: str) -> str:
 
 
 def init_hash(args: argparse.Namespace) -> None:
-    os.makedirs(os.path.dirname(args.path), exist_ok=True)
+    ensure_data_dir(args.path)
     if args.auth_hash:
         bcrypt = args.auth_hash.strip()
     else:
@@ -68,6 +81,82 @@ def init_hash(args: argparse.Namespace) -> None:
 def show_path(args: argparse.Namespace) -> None:
     sys.stdout.write(f"Default bcrypt path: {args.path}\n")
     sys.stdout.flush()
+
+
+def prompt_password() -> str:
+    """Безопасный ввод пароля с подтверждением."""
+    pwd1 = getpass.getpass("Введите пароль: ")
+    pwd2 = getpass.getpass("Повторите пароль: ")
+    if pwd1 != pwd2:
+        raise SystemExit("Пароли не совпадают, повторите попытку.")
+    if not pwd1:
+        raise SystemExit("Пароль не может быть пустым.")
+    return pwd1
+
+
+def delete_hash(path: str) -> None:
+    if os.path.exists(path):
+        os.remove(path)
+        sys.stdout.write(f"Удалён файл хэша: {path}\n")
+    else:
+        sys.stdout.write("Файл хэша не найден, удалять нечего.\n")
+    sys.stdout.flush()
+
+
+def menu(args: argparse.Namespace) -> None:
+    path = args.path or DEFAULT_HASH_PATH
+    ensure_data_dir(path)
+    while True:
+        sys.stdout.write(
+            "\n[tunnel-auth-helper]\n"
+            "1) Создать/обновить хэш (ввести пароль)\n"
+            "2) Записать готовый bcrypt\n"
+            "3) Удалить текущий хэш\n"
+            "4) Показать путь хэша\n"
+            "0) Выход\n"
+            "Выберите действие: "
+        )
+        sys.stdout.flush()
+        choice = sys.stdin.readline().strip()
+
+        if choice == "1":
+            password = prompt_password()
+            if not is_command_available("caddy"):
+                sys.stderr.write("Нужен установленный caddy для генерации bcrypt.\n")
+                continue
+            bcrypt = caddy_hash_password(password)
+            ensure_data_dir(path)
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(bcrypt + "\n")
+            sys.stdout.write(f"Сохранён новый bcrypt в {path}\n")
+            sys.stdout.flush()
+        elif choice == "2":
+            sys.stdout.write("Вставьте готовый bcrypt: ")
+            sys.stdout.flush()
+            bcrypt = sys.stdin.readline().strip()
+            if not bcrypt.startswith("$2"):
+                sys.stderr.write("Похоже, строка не похожа на bcrypt. Проверьте ввод.\n")
+                continue
+            ensure_data_dir(path)
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(bcrypt + "\n")
+            sys.stdout.write(f"Сохранён bcrypt в {path}\n")
+            sys.stdout.flush()
+        elif choice == "3":
+            delete_hash(path)
+        elif choice == "4":
+            sys.stdout.write(f"Текущий путь: {path}\n")
+            if os.path.exists(path):
+                sys.stdout.write("Файл существует.\n")
+            else:
+                sys.stdout.write("Файл пока не создан.\n")
+            sys.stdout.flush()
+        elif choice == "0":
+            sys.stdout.write("Выход.\n")
+            sys.stdout.flush()
+            break
+        else:
+            sys.stdout.write("Неизвестный выбор, повторите.\n")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -101,6 +190,13 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"Путь для вывода (по умолчанию {DEFAULT_HASH_PATH})",
     )
 
+    menu_p = sub.add_parser("menu", help="Интерактивное меню (создать/заменить/удалить хэш).")
+    menu_p.add_argument(
+        "--path",
+        default=DEFAULT_HASH_PATH,
+        help=f"Путь для хранения bcrypt (по умолчанию {DEFAULT_HASH_PATH})",
+    )
+
     return parser
 
 
@@ -111,6 +207,8 @@ def main() -> int:
         init_hash(args)
     elif args.cmd == "show-path":
         show_path(args)
+    elif args.cmd == "menu":
+        menu(args)
     else:
         parser.error("Unknown command")
     return 0

@@ -23,7 +23,8 @@
 ## Частые примеры
 - Генерация/хранение bcrypt (один раз):  
   `AXIOM_TUNNEL_PASS='...' python3 scripts/devtools/tunnel_auth_helper.py init`  
-  (по умолчанию пишет в `~/.axiom_tunnel_dev/auth.bcrypt`, вне репозитория).
+  или интерактивное меню: `python3 scripts/devtools/tunnel_auth_helper.py menu`  
+  (по умолчанию пишет в `scripts/devtools/data/auth.bcrypt`, каталог gitignore).
 - Использовать готовый bcrypt без ввода пароля:  
   `python3 scripts/devtools/run_tunnel_dev.py --auth-hash-file ~/.axiom_tunnel_dev/auth.bcrypt`
 - Другой порт Vite:  
@@ -53,7 +54,7 @@
 
 ## Флаги (шпаргалка)
 - `--auth-user` по умолчанию `axiom`; пароль через `--auth-pass` или env `--auth-pass-env` (по умолчанию `AXIOM_TUNNEL_PASS`).
-- `--auth-hash-file` — путь к файлу с готовым bcrypt (пропускает ввод пароля/ENV). Если файл не указан, но существует `~/.axiom_tunnel_dev/auth.bcrypt`, он будет использован автоматически. Флаг `--write-hash-file` сохранит сгенерированный bcrypt в этот файл.
+- `--auth-hash-file` — путь к файлу с готовым bcrypt (пропускает ввод пароля/ENV). Если файл не указан, но существует `scripts/devtools/data/auth.bcrypt`, он будет использован автоматически. Флаг `--write-hash-file` сохранит сгенерированный bcrypt в этот файл.
 - `--reuse-if-running` (в авто-обёртке) — если Vite уже отвечает, не запускает run_local.py (по умолчанию включён).
 - `--proxy-port` по умолчанию `8080` (BasicAuth reverse proxy).
 - `--edge-ip-version` по умолчанию `4`; оставляйте http2, если нет явной причины идти в quic.
@@ -69,6 +70,6 @@
 
 ## Безопасность
 - Пароль не печатается в открытом виде (только маска).
-- Секреты держим в окружении или локальном `.env.local` (уже в .gitignore); не коммитим. Если используете файл с bcrypt, храните его вне git (по умолчанию `~/.axiom_tunnel_dev/auth.bcrypt`).
+- Секреты держим в окружении или локальном `.env.local` (уже в .gitignore); не коммитим. Если используете файл с bcrypt, храните его вне git (по умолчанию `scripts/devtools/data/auth.bcrypt` в gitignore).
 - Авто-обёртка использует те же секреты/хэши; убеждайтесь, что путь к хэшу лежит вне репозитория.
 - `scripts/devtools/run_local.py` не трогаем; туннель ожидает уже запущенный Vite.
