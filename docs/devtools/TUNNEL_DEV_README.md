@@ -37,9 +37,24 @@
 - Протокол (по умолчанию http2; quic может быть нестабилен):  
   `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --protocol http2`
 
+## Автоматический запуск (Vite + Tunnel одним шагом)
+- Подготовьте пароль/хэш один раз (см. выше или `scripts/tunnel_auth_helper.py init`).
+- Запустите обёртку:  
+  `python3 scripts/run_tunnel_dev_auto.py`
+  - если Vite уже запущен и отвечает, скрипт его переиспользует (флаг `--reuse-if-running` включён по умолчанию);
+  - если нет — сам стартует `run_local.py`, дождётся готовности, потом запустит `run_tunnel_dev.py`.
+- Примеры:
+  - Использовать готовый хэш по умолчанию:  
+    `python3 scripts/run_tunnel_dev_auto.py`
+  - Задать свой файл хэша и писать в него при генерации:  
+    `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev_auto.py --auth-hash-file ~/.axiom_tunnel_dev/auth.bcrypt --write-hash-file`
+  - Поменять порты:  
+    `python3 scripts/run_tunnel_dev_auto.py --vite-port 5174 --proxy-port 8081`
+
 ## Флаги (шпаргалка)
 - `--auth-user` по умолчанию `axiom`; пароль через `--auth-pass` или env `--auth-pass-env` (по умолчанию `AXIOM_TUNNEL_PASS`).
 - `--auth-hash-file` — путь к файлу с готовым bcrypt (пропускает ввод пароля/ENV). Если файл не указан, но существует `~/.axiom_tunnel_dev/auth.bcrypt`, он будет использован автоматически. Флаг `--write-hash-file` сохранит сгенерированный bcrypt в этот файл.
+- `--reuse-if-running` (в авто-обёртке) — если Vite уже отвечает, не запускает run_local.py (по умолчанию включён).
 - `--proxy-port` по умолчанию `8080` (BasicAuth reverse proxy).
 - `--edge-ip-version` по умолчанию `4`; оставляйте http2, если нет явной причины идти в quic.
 - `--tunnel-url` — свой таргет для cloudflared (по умолчанию локальный прокси). Если меняете, убедитесь, что BasicAuth всё ещё защищает цель.
@@ -55,4 +70,5 @@
 ## Безопасность
 - Пароль не печатается в открытом виде (только маска).
 - Секреты держим в окружении или локальном `.env.local` (уже в .gitignore); не коммитим. Если используете файл с bcrypt, храните его вне git (по умолчанию `~/.axiom_tunnel_dev/auth.bcrypt`).
+- Авто-обёртка использует те же секреты/хэши; убеждайтесь, что путь к хэшу лежит вне репозитория.
 - `scripts/run_local.py` не трогаем; туннель ожидает уже запущенный Vite.
