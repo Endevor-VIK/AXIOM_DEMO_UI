@@ -12,7 +12,6 @@
 from __future__ import annotations
 
 import argparse
-import os
 import signal
 import subprocess
 import sys
@@ -70,6 +69,28 @@ def stop_process(proc: subprocess.Popen | None, name: str) -> None:
         proc.kill()
     except Exception:
         pass
+
+
+def is_port_free(port: int, host: str = "127.0.0.1") -> bool:
+    import socket
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            sock.bind((host, port))
+        except OSError:
+            return False
+    return True
+
+
+def find_free_port(preferred: int, attempts: int = 10) -> int:
+    """Найти свободный порт, начиная с preferred и инкрементируя."""
+    port = preferred
+    for _ in range(attempts):
+        if is_port_free(port):
+            return port
+        port += 1
+    raise RuntimeError("Не удалось подобрать свободный порт для прокси.")
 
 
 def build_tunnel_cmd(args: argparse.Namespace) -> list[str]:
@@ -208,6 +229,15 @@ def run_with_args(args: argparse.Namespace) -> int:
     tunnel_proc: Optional[subprocess.Popen] = None
 
     try:
+        # Авто-подбор порта, если занято
+        if not is_port_free(args.proxy_port):
+            new_port = find_free_port(args.proxy_port + 1)
+            if not args.quiet:
+                sys.stdout.write(
+                    f"Proxy port {args.proxy_port} занят, переключаюсь на {new_port}\n"
+                )
+            args.proxy_port = new_port
+
         if args.reuse_if_running and wait_for_http_ok(vite_url, timeout=3):
             if not args.quiet:
                 sys.stdout.write(f"Vite already running at {vite_url}; skipping run_local.py\n")
