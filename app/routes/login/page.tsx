@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import {
   hashPassword, verifyPassword, loadUsers, saveUser, type AuthUser,
 } from "@/lib/auth";
+import { loginDemo } from "@/lib/identity/authService";
 
 import "@/styles/login-bg.css";
 import "@/styles/login-cyber.css";
@@ -176,10 +177,6 @@ function CyberDeckOverlay({ root }: { root: React.RefObject<HTMLElement> }) {
 }
 /* ---------- /overlay ---------- */
 
-function safeSetAuth(payload: unknown) {
-  try { localStorage.setItem("axiom.auth", JSON.stringify(payload)); } catch {}
-}
-
 export default function LoginPage() {
   const nav = useNavigate();
   const rootRef = useRef<HTMLElement>(null);
@@ -229,7 +226,13 @@ export default function LoginPage() {
         const ok = await verifyPassword(key, found.password);
         if (!ok) throw new Error("Invalid credentials");
       }
-      safeSetAuth({ login: user, ts: Date.now() }); nav("/dashboard", { replace: true });
+      loginDemo({
+        id: `user-${user.toLowerCase()}`,
+        displayName: user.toUpperCase(),
+        handle: `@${user.toLowerCase()}`,
+        role: "user",
+      });
+      nav("/dashboard", { replace: true });
     } catch (error: any) { setErr(error?.message || "Unable to authenticate"); } finally { setBusy(false); }
   }, [busy, login, password, mode, nav]);
 

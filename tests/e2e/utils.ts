@@ -30,11 +30,29 @@ export async function stubContentApi(page: Page): Promise<void> {
 }
 
 export async function bootstrapSession(page: Page, options?: { pins?: string[] }): Promise<void> {
+  const favorites = (options?.pins ?? []).map((id) => ({
+    key: `content:${id}`,
+    id,
+    type: 'content',
+    title: id,
+    route: `/dashboard/content/all?item=${id}`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }))
   await page.addInitScript(({ auth, pins }) => {
-    window.localStorage.setItem('axiom.auth', auth)
-    window.localStorage.setItem('axiom.content.pins', pins)
+    window.localStorage.setItem('ax_session_v1', auth)
+    window.localStorage.setItem('ax_favorites_v1', pins)
   }, {
-    auth: JSON.stringify({ login: 'playwright', ts: Date.now() }),
-    pins: JSON.stringify(options?.pins ?? []),
+    auth: JSON.stringify({
+      isAuthenticated: true,
+      user: {
+        id: 'playwright',
+        displayName: 'PLAYWRIGHT',
+        handle: '@playwright',
+        role: 'user',
+        lang: 'EN',
+      },
+    }),
+    pins: JSON.stringify(favorites),
   })
 }
