@@ -1,51 +1,50 @@
-# TUNNEL_DEV_README — Protected Quick Tunnel for Vite
+# TUNNEL_DEV_README — защищённый Quick Tunnel для Vite
 
-Dev helper that wraps Caddy (BasicAuth) and Cloudflare Quick Tunnel around an already running Vite dev server.
+Вспомогательный раннер: поднимает Caddy с BasicAuth и Cloudflare Quick Tunnel поверх уже запущенного Vite dev сервера.
 
-## Prerequisites
-- Vite dev server running separately (e.g. `python3 scripts/run_local.py` or `npm run dev`) on `http://127.0.0.1:5173` by default.
-- `cloudflared` installed and on PATH (`cloudflared --version`).
-- `caddy` installed and on PATH (`caddy version`).
-- Set a password via env (default env var: `AXIOM_TUNNEL_PASS`) or `--auth-pass`. Do **not** commit secrets.
+## Предпосылки
+- Vite запущен отдельно (например, `python3 scripts/run_local.py` или `npm run dev`) на `http://127.0.0.1:5173` по умолчанию.
+- На PATH доступны `cloudflared` (`cloudflared --version`) и `caddy` (`caddy version`).
+- Пароль берём из окружения (по умолчанию `AXIOM_TUNNEL_PASS`) или передаём `--auth-pass`. Секреты в git не коммитим.
 
-## Quick start
-1) Start Vite: `python3 scripts/run_local.py` (or equivalent).  
-2) Export password: `export AXIOM_TUNNEL_PASS='StrongPassHere'`.  
-3) Run tunnel: `python3 scripts/run_tunnel_dev.py`.  
-4) Wait for output:
+## Быстрый старт
+1) Запустите Vite: `python3 scripts/run_local.py` (или аналог).  
+2) Экспортируйте пароль: `export AXIOM_TUNNEL_PASS='StrongPassHere'`.  
+3) Поднимите туннель: `python3 scripts/run_tunnel_dev.py`.  
+4) Дождитесь вывода:
    - `Vite: http://127.0.0.1:5173 (OK)`
    - `Proxy (BasicAuth): http://127.0.0.1:8080 (401 expected)`
    - `Tunnel: https://....trycloudflare.com`
-   - `Auth user: axiom` (default)  
-   Press `Ctrl+C` to stop (cloudflared → caddy shutdown + temp file cleanup).
+   - `Auth user: axiom` (по умолчанию)  
+   Остановить: `Ctrl+C` (cloudflared → caddy, удаляется временный Caddyfile).
 
-## Common examples
-- Change Vite port:  
+## Частые примеры
+- Другой порт Vite:  
   `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --vite-port 5174`
-- Custom Vite URL (overrides host/port):  
+- Свой URL Vite (заменяет host/port):  
   `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --vite-url http://127.0.0.1:5173`
-- Change proxy port:  
+- Другой порт прокси:  
   `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --proxy-port 8081`
-- Disable preflight verify (not recommended):  
+- Отключить verify (не рекомендуется):  
   `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --verify false`
-- Protocol override (default http2; quic can be flaky):  
+- Протокол (по умолчанию http2; quic может быть нестабилен):  
   `AXIOM_TUNNEL_PASS='...' python3 scripts/run_tunnel_dev.py --protocol http2`
 
-## Flags (cheat sheet)
-- `--auth-user` default `axiom`; password from `--auth-pass` or env `--auth-pass-env` (default `AXIOM_TUNNEL_PASS`).
-- `--proxy-port` default `8080` (BasicAuth reverse proxy).
-- `--edge-ip-version` default `4`; keep http2 protocol unless quic is explicitly needed.
-- `--tunnel-url` points cloudflared to a custom target (default: local proxy). If you override, ensure BasicAuth still protects the target.
+## Флаги (шпаргалка)
+- `--auth-user` по умолчанию `axiom`; пароль через `--auth-pass` или env `--auth-pass-env` (по умолчанию `AXIOM_TUNNEL_PASS`).
+- `--proxy-port` по умолчанию `8080` (BasicAuth reverse proxy).
+- `--edge-ip-version` по умолчанию `4`; оставляйте http2, если нет явной причины идти в quic.
+- `--tunnel-url` — свой таргет для cloudflared (по умолчанию локальный прокси). Если меняете, убедитесь, что BasicAuth всё ещё защищает цель.
 
 ## Troubleshooting
-- **Vite not reachable**: ensure dev server is running on the chosen host/port; try `curl http://127.0.0.1:5173/`. Use `--vite-url` if host differs. As a last resort run with `--verify false` (not recommended).
-- **WSL1 host**: Vite may refuse to start on WSL1 (`WSL 1 is not supported`). Upgrade to WSL2 or run dev server on a compatible host and point `--vite-url` to it.
-- **Port 8080 busy**: pick another proxy port (`--proxy-port 8081`) or free the port.
-- **QUIC fails**: stick with the default `--protocol http2`. If you tried `quic` and it flaps, switch back to http2.
-- **cloudflared/caddy not installed**: install caddy via https://caddyserver.com/docs/install; install cloudflared via Cloudflare docs (Quick Tunnel binary). Confirm with `caddy version` / `cloudflared --version`.
-- **Tunnel URL never appears**: network restrictions or Cloudflare rate limits can delay Quick Tunnel; the script times out and prints the last log lines. Re-run later or check VPN/firewall rules.
+- **Vite не отвечает**: убедитесь, что dev сервер запущен на нужном host/port; проверьте `curl http://127.0.0.1:5173/`. Можно указать `--vite-url`. В крайнем случае `--verify false` (не рекомендуется).
+- **WSL1**: Vite может падать с `WSL 1 is not supported`. Используйте WSL2 или другой хост и пробросьте `--vite-url`.
+- **Порт 8080 занят**: выберите другой (`--proxy-port 8081`) или освободите порт.
+- **QUIC/UDP отваливается**: используйте дефолтный `--protocol http2`. Если quic флапает, вернитесь на http2.
+- **Нет cloudflared/caddy**: установите caddy (https://caddyserver.com/docs/install) и cloudflared (Quick Tunnel бинарь по документации Cloudflare). Проверьте `caddy version` / `cloudflared --version`.
+- **Нет публичного URL**: Quick Tunnel может задерживаться из-за сети/лимитов Cloudflare; скрипт затаймаутит и покажет последние строки. Повторите позже или проверьте VPN/фаервол.
 
-## Safety notes
-- Password is never printed in clear text; only masked in stdout.
-- Keep secrets out of git. Use env vars or a local `.env.local` (already ignored).
-- `scripts/run_local.py` is untouched; the tunnel script assumes Vite is already running.
+## Безопасность
+- Пароль не печатается в открытом виде (только маска).
+- Секреты держим в окружении или локальном `.env.local` (уже в .gitignore); не коммитим.
+- `scripts/run_local.py` не трогаем; туннель ожидает уже запущенный Vite.
