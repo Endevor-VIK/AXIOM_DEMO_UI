@@ -31,6 +31,8 @@
 
 ## Step E — Git
 - 2025-12-20T18:17:45+03:00 — Commit: `36eb718` — `docs(agent-ops): add log system spec, templates, and README` — Files: `docs/agent_ops/AXIOM_AGENTOPS_LOG_SYSTEM_SPEC_v0.2.3.1.md`, `docs/agent_ops/README.md`, `docs/agent_ops/templates/LOG_TEMPLATE.md`, `docs/agent_ops/templates/TASK_LOG_LINK_TEMPLATE.md`
+- 2025-12-20T18:18:33+03:00 — Commit: `0ea6ebd` — `docs(agent-ops): add first global log and index entry` — Files: `docs/agent_ops/logs/0001_tunnel-dev-implementation.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`, `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC_LOG_LINK.md`
+- 2025-12-20T18:19:07+03:00 — Commit: (this commit) — `chore(agent-ops): log commits for session 0001` — Files: `docs/agent_ops/logs/0001_tunnel-dev-implementation.md`
 
 ---
 
