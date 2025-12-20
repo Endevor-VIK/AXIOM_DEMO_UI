@@ -18,7 +18,7 @@
    - `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC.md`
 
 2) **Implementation LOG (вести в процессе выполнения):**  
-   - `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_LOG.md`
+   - `docs/agent_ops/logs/0002_tunnel-dev-implementation.md`
 
 3) **README (создать/обновить по итогам):**  
    - `docs/devtools/TUNNEL_DEV_README.md`
@@ -60,7 +60,7 @@
    - `cloudflared --version`
    - `caddy version`
 
-✅ Результаты (OK/FAIL + команды) занести в `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_LOG.md` (блок A).
+✅ Результаты (OK/FAIL + команды) занести в `docs/agent_ops/logs/0002_tunnel-dev-implementation.md` (блок A).
 
 ---
 
@@ -134,7 +134,7 @@
 - `docs/devtools/TUNNEL_DEV_README.md`
 
 3) Лог реализации:
-- `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_LOG.md`
+- `docs/agent_ops/logs/0002_tunnel-dev-implementation.md`
 
 4) В конце — краткое резюме:
 - что готово

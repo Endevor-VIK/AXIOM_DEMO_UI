@@ -2,7 +2,7 @@
 
 # AXIOM AgentOps — Log & Commit System
 
-Единый стандарт для AI-агента: фиксируй каждое действие в GLOBAL LOG, веди индекс, клади TASK LOG LINK рядом со SPEC, коммить маленькими шагами. Референс реального лога: `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_LOG.md`.
+Единый стандарт для AI-агента: фиксируй каждое действие в GLOBAL LOG, веди индекс, клади TASK LOG LINK рядом со SPEC, коммить маленькими шагами. Референс реального лога: `docs/agent_ops/logs/0002_tunnel-dev-implementation.md`.
 
 ## Термины
 - SPEC (SoT) — документ требований задачи.

@@ -43,7 +43,7 @@
   - типовые ошибки (QUIC/UDP, 8080 занят, нет caddy/cloudflared)
 
 ### 3.3 Лог выполнения работ агентом
-- ✅ `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_LOG.md`
+- ✅ `docs/agent_ops/logs/0002_tunnel-dev-implementation.md`
   - что создано/изменено/проверено
   - команды теста
   - какие проблемы обнаружены
@@ -271,7 +271,7 @@ cloudflared tunnel \
 
 ## 11) Формат implementation log (обязательный)
 
-`docs/devtools/TUNNEL_DEV_IMPLEMENTATION_LOG.md` должен включать:
+`docs/agent_ops/logs/0002_tunnel-dev-implementation.md` должен включать:
 
 * что сделано по шагам A/B/C/D
 * какие файлы созданы/изменены
@@ -292,4 +292,3 @@ cloudflared tunnel \
 * [ ] Нет утечек паролей в репозиторий
 
 ```
-

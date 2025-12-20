@@ -1,9 +1,14 @@
-<!--docs/devtools/TUNNEL_DEV_IMPLEMENTATION_LOG.md-->
+<!-- docs/agent_ops/logs/0002_tunnel-dev-implementation.md -->
 
-# TUNNEL_DEV_IMPLEMENTATION_LOG
+# GLOBAL LOG — 0002_tunnel-dev-implementation
 
-- Start: 2025-12-19T18:36:56+03:00 (UTC+3)
-- Agent: Codex (ChatGPT)
+- Старт: 2025-12-19T18:36:56+03:00 (UTC+3)
+- Агент: Codex (ChatGPT)
+- Репозиторий: AXIOM_DEMO_UI (ui)
+- Ветка: feature/profile-auth-v2.3.1
+- Задача: Защищенный туннель для Vite (run_tunnel_dev)
+- SPEC: docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC.md
+- Статус: BLOCKED (WSL1: Vite не стартует, QA не завершён)
 
 ## Step A — Discovery
 
@@ -54,14 +59,6 @@ Note: run_local.py падает в текущем WSL1 окружении, дл�
 - 2025-12-19T18:50:08+03:00 — Command `tail -n 40 /tmp/vite_dev.log` → FAIL: `WSL 1 is not supported. Please upgrade to WSL 2 or above. Could not determine Node.js install directory`. Vite не стартовал.
 - 2025-12-19T18:50:12+03:00 — Commands `ps -p 10294` / `pgrep -f "vite"` / `pgrep -f "npm run dev"` → OK (процессов нет; dev сервер не поднялся).
 
-Acceptance checklist (current env WSL1):
-- [ ] Vite запущен и скрипт печатает публичный URL (блокер: Vite не стартует в WSL1).
-- [ ] Публичный URL требует BasicAuth (не проверено).
-- [ ] После ввода логина/пароля UI грузится (не проверено).
-- [ ] Ctrl+C корректно завершает cloudflared и caddy (не проверено в окружении без Vite).
-
-Next: повторить QA, когда будет доступен Vite (WSL2/нормальное окружение), затем финализировать лог и подготовить коммиты (шаг E).
-
 ## Step E — Git
 
 - 2025-12-19T18:51:00+03:00 — Command `git status -sb` → увидел имеющиеся изменения `.gitignore` и `scripts/run_local.py` (не трогал), `docs/devtools/` как untracked.
@@ -84,4 +81,14 @@ Next: повторить QA, когда будет доступен Vite (WSL2/�
 - 2025-12-19T20:17:00+03:00 — Добавил интерактивное меню в `scripts/devtools/tunnel_auth_helper.py` (создание/замена/удаление bcrypt, безопасный ввод пароля), сменил default hash path на `scripts/devtools/data/auth.bcrypt` (gitignore), обновил README под новый путь.
 - 2025-12-19T20:17:30+03:00 — Commit `chore(devtools): update helper docs and references` (задокументировал новые пути/файлы; добавил .gitignore scripts/devtools/data/).
 
-Next: повторить QA, когда Vite доступен (WSL2 или другой хост), и обновить acceptance checklist при необходимости.
+## Notes / Decisions
+- Лог перенесён в картотеку AgentOps (`docs/agent_ops/logs/0002_tunnel-dev-implementation.md`) как каноническая запись для SPEC TUNNEL_DEV_IMPLEMENTATION_SPEC.
+
+## Risks / Open Points
+- QA заблокирован WSL1: Vite не стартует, поэтому недоступна проверка cloudflared+caddy. Требуется WSL2/другой хост для повторного QA и закрытия чеклиста.
+
+## Acceptance Checklist
+- [ ] Vite запущен и скрипт печатает публичный URL
+- [ ] Публичный URL требует BasicAuth
+- [ ] UI грузится после ввода логина/пароля
+- [ ] Ctrl+C корректно завершает cloudflared и caddy
