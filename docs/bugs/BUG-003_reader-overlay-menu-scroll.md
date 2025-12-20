@@ -3,11 +3,11 @@
 ---
 id: BUG-003
 title: Reader: overlay + меню не открываются корректно на любой позиции страницы (привязка к “верхней точке”)
-status: OPEN
+status: IN_PROGRESS
 severity: Critical
 area: Reader / Overlay / Menu
 created: 2025-12-19
-updated: 2025-12-19
+updated: 2025-12-20
 ---
 
 ## Summary

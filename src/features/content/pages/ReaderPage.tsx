@@ -134,6 +134,24 @@ const ReaderPage: React.FC = () => {
     return () => document.removeEventListener('keydown', onKey)
   }, [menuOpen])
 
+  useEffect(() => {
+    if (!menuOpen) return
+    const body = document.body
+    const scrollY = window.scrollY
+    body.style.position = 'fixed'
+    body.style.top = `-${scrollY}px`
+    body.style.width = '100%'
+    body.style.overflow = 'hidden'
+
+    return () => {
+      body.style.position = ''
+      body.style.top = ''
+      body.style.width = ''
+      body.style.overflow = ''
+      window.scrollTo({ top: scrollY })
+    }
+  }, [menuOpen])
+
   const handleSelect = (nextId: string) => {
     navigate(`/content/${encodeURIComponent(nextId)}`)
     setMenuOpen(false)
