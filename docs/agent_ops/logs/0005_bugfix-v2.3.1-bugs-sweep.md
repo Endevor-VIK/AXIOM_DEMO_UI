@@ -28,7 +28,7 @@
 - 
 
 ## Step E — Git
-- 
+- 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 
 ---
 
