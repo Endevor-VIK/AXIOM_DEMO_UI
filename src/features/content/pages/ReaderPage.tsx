@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import type { ContentPreviewData } from '../types'
 import contentIndex from '../data/content-index.json'
 import { withBasePath } from '../utils'
+import { ReaderMenuLayer } from '../components/ReaderMenuLayer'
 
 import '@/styles/content-hub-v2.css'
 
@@ -15,13 +15,6 @@ interface LoadState {
 }
 
 const entries = contentIndex as ContentPreviewData[]
-
-function matches(entry: ContentPreviewData, query: string): boolean {
-  const term = query.trim().toLowerCase()
-  if (!term) return true
-  const haystack = [entry.id, entry.title, entry.tags.join(' ')].join(' ').toLowerCase()
-  return haystack.includes(term)
-}
 
 function resolveEntry(rawId: string | undefined): ContentPreviewData | null {
   if (!rawId) return null
@@ -73,7 +66,6 @@ const ReaderPage: React.FC = () => {
   const [search, setSearch] = useState('')
   const [state, setState] = useState<LoadState>({ html: '', loading: true, error: null })
   const [fetchKey, setFetchKey] = useState(0)
-  const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null)
 
   // Redirect to canonical id if resolved from legacy
   useEffect(() => {
@@ -85,11 +77,6 @@ const ReaderPage: React.FC = () => {
   useEffect(() => {
     setMenuOpen(false)
   }, [rawId])
-
-  const filtered = useMemo(
-    () => entries.filter((item) => matches(item, search)),
-    [search]
-  )
 
   useEffect(() => {
     setMenuOpen(false)
@@ -121,35 +108,12 @@ const ReaderPage: React.FC = () => {
   }, [entry, fetchKey])
 
   useEffect(() => {
-    const node = document.getElementById('modal-root')
-    setModalRoot(node)
-  }, [])
-
-  useEffect(() => {
     if (!menuOpen) return
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setMenuOpen(false)
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [menuOpen])
-
-  useEffect(() => {
-    if (!menuOpen) return
-    const body = document.body
-    const scrollY = window.scrollY
-    body.style.position = 'fixed'
-    body.style.top = `-${scrollY}px`
-    body.style.width = '100%'
-    body.style.overflow = 'hidden'
-
-    return () => {
-      body.style.position = ''
-      body.style.top = ''
-      body.style.width = ''
-      body.style.overflow = ''
-      window.scrollTo({ top: scrollY })
-    }
   }, [menuOpen])
 
   const handleSelect = (nextId: string) => {
@@ -161,56 +125,18 @@ const ReaderPage: React.FC = () => {
     navigate(`/dashboard/content?id=${encodeURIComponent(entry?.id ?? '')}`, { replace: true })
   }
 
-  const menuLayerContent = (
-    <>
-      <div
-        className={`axr-overlay${menuOpen ? ' axr-overlay--open' : ''}`}
-        data-overlay
-        onClick={() => setMenuOpen(false)}
-      />
-      <div className='axr-menu-shell'>
-        <nav className={`axr-menu${menuOpen ? ' axr-menu--open' : ''}`} aria-label='Файлы контента'>
-          <div className='axr-menu-inner'>
-            <div className='axr-menu-header'>
-              <div className='axr-menu-title'>AXIOM FILES</div>
-              <div className='axr-menu-note'>Быстрый поиск и переход</div>
-            </div>
-
-            <div className='axr-menu-search'>
-              <input
-                type='search'
-                placeholder='Поиск файла…'
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                aria-label='Поиск по списку файлов'
-              />
-            </div>
-
-            <ul className='axr-menu-list'>
-              {filtered.map((item) => {
-                const active = item.id === entry?.id
-                return (
-                  <li key={item.id} className={`axr-menu-item${active ? ' axr-menu-item--active' : ''}`}>
-                    <button type='button' onClick={() => handleSelect(item.id)}>
-                      <span className='axr-menu-id'>[{item.id}]</span>
-                      <span className='axr-menu-name'>{item.title}</span>
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        </nav>
-      </div>
-    </>
-  )
-
-  const menuLayer = modalRoot ? createPortal(menuLayerContent, modalRoot) : menuLayerContent
-
   if (!entry) {
     return (
       <>
-        {menuLayer}
+        <ReaderMenuLayer
+          open={menuOpen}
+          entries={entries}
+          activeId={entry ? entry.id : undefined}
+          search={search}
+          onSearchChange={setSearch}
+          onSelect={handleSelect}
+          onClose={() => setMenuOpen(false)}
+        />
         <section className='ax-reader axr-empty'>
           <header className='axr-header'>
             <button className='axr-back' type='button' onClick={() => navigate('/dashboard/content')}>
@@ -245,7 +171,15 @@ const ReaderPage: React.FC = () => {
 
   return (
     <>
-      {menuLayer}
+      <ReaderMenuLayer
+        open={menuOpen}
+        entries={entries}
+        activeId={entry ? entry.id : undefined}
+        search={search}
+        onSearchChange={setSearch}
+        onSelect={handleSelect}
+        onClose={() => setMenuOpen(false)}
+      />
 
       <section className={`ax-reader${menuOpen ? ' is-menu-open' : ''}`} aria-label='AXIOM file reader'>
         <header className='axr-header'>
