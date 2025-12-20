@@ -2,12 +2,15 @@
 // Canvas: C04 - app/routes/_layout.tsx
 // Purpose: Shared dashboard layout with Red Protocol navigation and system status shell.
 
-import React, { useCallback, useMemo, useState } from 'react'
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import HeadlinesTicker from '../../components/news/HeadlinesTicker'
 import { useNewsManifest } from '../../lib/useNewsManifest'
 import StatusLine from '@/components/StatusLine'
+import UserMenuDropdown from '@/components/UserMenuDropdown'
+import { logout } from '@/lib/identity/authService'
+import { useSession } from '@/lib/identity/useSession'
 
 type NavItem = {
   to: string
@@ -26,6 +29,8 @@ const NAV_ITEMS: NavItem[] = [
 export default function Layout() {
   const location = useLocation()
   const route = location.pathname || '/'
+  const navigate = useNavigate()
+  const avatarRef = useRef<HTMLButtonElement | null>(null)
 
   const section = useMemo(() => {
     const parts = route.split('/').filter(Boolean)
@@ -39,17 +44,38 @@ export default function Layout() {
   const toggleLanguage = useCallback(() => {
     setLanguage((prev) => (prev === 'RU' ? 'EN' : 'RU'))
   }, [])
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const statusMeta = useMemo(
     () => ({
       mode: modeLabel,
       section,
-      version: 'v0.5.5.1',
+      version: 'v0.2.3.1',
     }),
     [modeLabel, section],
   )
 
   const tickerItems = useNewsManifest()
+  const session = useSession()
+
+  const handleLogout = useCallback(() => {
+    logout()
+    navigate('/', { replace: true })
+  }, [navigate])
+
+  const handleMenuNavigate = useCallback(
+    (path: string) => {
+      navigate(path)
+      setMenuOpen(false)
+    },
+    [navigate],
+  )
+
+  const closeMenu = useCallback(() => setMenuOpen(false), [])
+
+  React.useEffect(() => {
+    setMenuOpen(false)
+  }, [route])
 
   return (
     <div className='ax-page'>
@@ -82,9 +108,17 @@ export default function Layout() {
               >
                 {language}
               </button>
-              <div className='ax-avatar' role='img' aria-label='User avatar'>
+              <button
+                ref={avatarRef}
+                type='button'
+                className='ax-avatar'
+                aria-label='User avatar'
+                aria-haspopup='menu'
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((prev) => !prev)}
+              >
                 AX
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -108,8 +142,14 @@ export default function Layout() {
         </div>
       </footer>
 
-      {/* Портал для модалок */}
-      <div id='modal-root' />
+      <UserMenuDropdown
+        anchorEl={avatarRef.current}
+        open={menuOpen}
+        onClose={closeMenu}
+        onNavigate={handleMenuNavigate}
+        onLogout={handleLogout}
+        user={session.user ?? null}
+      />
     </div>
   )
 }

@@ -160,7 +160,7 @@
 5. **Документация**
 
    * Короткий `docs/RED_PROTOCOL_NOTES.md` (что, где и как подключено).
-   * Обновление `docs/GETTING_STARTED.md` (заметка про HMR и шрифты).
+   * Обновление `docs/guides/getting-started.md` (заметка про HMR и шрифты).
 6. **PR/Repo**
 
    * PR в `main` со сквош‑коммитом и чеклистом DoD.
@@ -345,7 +345,7 @@
 
 **C5‑T3 — Документация и PR**
 
-* **Files:** `docs/RED_PROTOCOL_NOTES.md`, `docs/GETTING_STARTED.md`.
+* **Files:** `docs/RED_PROTOCOL_NOTES.md`, `docs/guides/getting-started.md`.
 * **Changes:** заметки по подключению, ограничениями, будущим шагам; PR с чеклистом.
 * **Acceptance:** PR готов к ревью без дополнительных вопросов.
 

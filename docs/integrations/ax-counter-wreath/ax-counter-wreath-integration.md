@@ -3,7 +3,7 @@
 **Дата:** 2025-10-24 (Europe/Berlin)  
 **Область:** HOME → CONTROL STATUS (3 счётчика: AUDIT / CONTENT / NEWS)
 
-<!-- fiele: docs/ax-counter-wreath-integration.md -->
+<!-- file: docs/integrations/ax-counter-wreath/ax-counter-wreath-integration.md -->
 
 ---
 
@@ -362,10 +362,9 @@ canvas.height = Math.round(size * DPR);
 - ✅ `styles/app.css`: настроен новый грид и сняты декоративные бэкграунды, hover-эффекты теперь точечно подсвечивают венок вместо подсветки всей секции.
 - ✅ `components/counters/RouteWreath.tsx`: выделен переиспользуемый блок с описанием и CounterWreath, подключён на AUDIT/CONTENT/NEWS.
 - ✅ `styles/counter-wreath.css`: фон и подсветки удалены; rely на canvas-рендер без псевдоэлементов.
-- ✅ Документировано всё в `docs/ax-counter-wreath-integration.md` и отмечены выполненные пункты «Definition of Done».
+- ✅ Документировано всё в `docs/integrations/ax-counter-wreath/ax-counter-wreath-integration.md` и отмечены выполненные пункты «Definition of Done».
 
 **Оставшиеся риски**
 - ⚠️ Подтвердить удержание 60 fps (hover/click/реверс) в профайлере и приложить снимки.
 - ⚠️ Проверить prefers-reduced-motion на целевых устройствах и задокументировать вывод для QA.
-
 

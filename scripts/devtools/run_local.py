@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """
-Lightweight local runner with robust readiness wait.
+Лёгкий раннер Vite с ожиданием готовности.
 
 Usage:
-  python scripts/run_local.py
+  python scripts/devtools/run_local.py
 
-Environment:
-  PORT           Dev server port (default: 5173)
-  HOST           Host to probe (default: 127.0.0.1)
+Переменные окружения:
+  PORT                 Порт dev-сервера (по умолчанию 5173)
+  HOST                 Хост для проб (по умолчанию 127.0.0.1)
+  DEV_HOST             Хост для Vite (авто 0.0.0.0 в WSL)
+  SKIP_WSL_PORTPROXY   Выключить auto netsh portproxy в WSL
 
-Notes:
-  - Uses HEAD requests with backoff to avoid early timeouts.
-  - Cross-platform npm dev spawn (npm.cmd on Windows).
+Примечания:
+  - Делает HEAD-пробы с бэкоффом, чтобы не падать раньше времени.
+  - Кросс-платформенный запуск npm dev (npm.cmd на Windows).
 """
 
 from __future__ import annotations
@@ -22,6 +24,66 @@ import time
 import signal
 import urllib.request
 import subprocess
+
+
+def is_wsl() -> bool:
+    """Detect WSL2 environment."""
+    try:
+        return 'microsoft' in os.uname().release.lower()
+    except Exception:
+        return False
+
+
+def wsl_ip() -> str | None:
+    """Best-effort primary WSL IPv4 address."""
+    try:
+        out = subprocess.check_output(['hostname', '-I'], text=True).strip().split()
+        return out[0] if out else None
+    except Exception:
+        return None
+
+
+def ensure_windows_localhost(port: int, target_ip: str) -> None:
+    """
+    Create a Windows portproxy so localhost:<port> reaches the WSL IP.
+
+    Some hosts disable automatic mirroring; this mirrors explicitly via netsh.
+    """
+    netsh = '/mnt/c/Windows/System32/netsh.exe'
+    if not os.path.exists(netsh):
+        return
+
+    delete_cmd = [
+        netsh,
+        'interface',
+        'portproxy',
+        'delete',
+        'v4tov4',
+        f'listenport={port}',
+        'listenaddress=127.0.0.1',
+    ]
+    add_cmd = [
+        netsh,
+        'interface',
+        'portproxy',
+        'add',
+        'v4tov4',
+        f'listenport={port}',
+        'listenaddress=127.0.0.1',
+        f'connectport={port}',
+        f'connectaddress={target_ip}',
+    ]
+
+    subprocess.run(delete_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    res = subprocess.run(add_cmd, capture_output=True, text=True)
+    if res.returncode == 0:
+        print(f"WSL portproxy: Windows localhost:{port} → {target_ip}:{port}", flush=True)
+    else:
+        sys.stderr.write(
+            "WSL portproxy failed (needs admin). "
+            f"Use http://{target_ip}:{port}/ or run netsh manually.\n"
+        )
+        sys.stderr.flush()
 
 
 def wait_for_http(url: str, attempts: int = 40) -> bool:
@@ -43,6 +105,15 @@ def main() -> int:
     host = os.environ.get('HOST') or '127.0.0.1'
     url = f"http://{host}:{port}/"
 
+    env = os.environ.copy()
+
+    # In WSL, explicitly mirror to Windows localhost if possible
+    if is_wsl() and not env.get('SKIP_WSL_PORTPROXY'):
+        env.setdefault('DEV_HOST', '0.0.0.0')
+        ip = wsl_ip()
+        if ip:
+            ensure_windows_localhost(port, ip)
+
     # Choose platform-appropriate npm executable
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
 
@@ -53,7 +124,7 @@ def main() -> int:
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
-        env=os.environ.copy(),
+        env=env,
     )
 
     print(f"Dev server starting (PID {proc.pid}). Waiting for {url} ...", flush=True)

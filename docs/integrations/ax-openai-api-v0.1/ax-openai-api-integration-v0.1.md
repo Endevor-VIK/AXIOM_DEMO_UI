@@ -6,7 +6,7 @@
 
 ## META
 
-* **PATH:** `docs/AX_OPENAI_API_INTEGRATION_v0.1.md`
+* **PATH:** `docs/integrations/ax-openai-api-v0.1/ax-openai-api-integration-v0.1.md`
 * **STATUS:** Draft → Ready‑to‑Use
 * **OWNER:** CREATOR · AXIOM
 * **LAST UPDATE:** 20.09.25
@@ -48,7 +48,7 @@
 ├─ components/
 ├─ dist/                     # Сборка фронта (генерируется)
 ├─ docs/
-│  └─ AX_OPENAI_API_INTEGRATION_v0.1.md  # этот файл
+│  └─ ax-openai-api-integration-v0.1.md  # этот файл
 ├─ export/
 ├─ public/
 ├─ scripts/

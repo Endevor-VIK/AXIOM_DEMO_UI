@@ -7,7 +7,7 @@
 
 ## 2. Code Review Package (AC: §12.12-P0)
 - Confirm reviewers receive:
-  - Link to this checklist and `docs/content-authoring-v2.1.md`.
+  - Link to this checklist and `docs/content/content-authoring-v2.1/content-authoring-v2.1.md`.
   - Summary of core changes:
     - VFS/schema strict validation (`renderMode`, `assetsBase`, `lang`, `version`, `links`).
     - PrefixStyles/resolveAssets hybrid pipeline + `PreviewPane`/`PreviewBar` rework.

@@ -18,6 +18,8 @@ import {
   type ContentStatus,
   vfs,
 } from '@/lib/vfs'
+import { buildContentFavorite, makeFavoriteKey } from '@/lib/identity/favoritesService'
+import { useFavorites } from '@/lib/identity/useFavorites'
 
 import {
   ContentHubContext,
@@ -26,7 +28,6 @@ import {
   type ContentViewMode,
 } from './context'
 
-const PIN_STORAGE_KEY = 'axiom.content.pins'
 const DEFAULT_FILTERS: ContentFiltersSnapshot = {
   query: '',
   tag: '',
@@ -71,25 +72,14 @@ function parseStatus(raw: string | null): ContentStatus | 'any' {
   return 'any'
 }
 
-function loadPins(): string[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const raw = window.localStorage.getItem(PIN_STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? (parsed.filter((id) => typeof id === 'string') as string[]) : []
-  } catch {
-    return []
-  }
-}
-
 const ContentLayout: React.FC = () => {
   const [aggregate, setAggregate] = useState<ContentAggregate | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
-  const [pins, setPins] = useState<string[]>(loadPins)
   const location = useLocation()
+  const { favorites, addFavorite, removeFavorite, isPinned: isFavoritePinned } = useFavorites()
+  const aggregateItems = aggregate?.items ?? []
 
   const dataBase = useMemo(
     () => ensureTrailingSlash(((import.meta as any)?.env?.VITE_DATA_BASE as string) ?? 'data/'),
@@ -117,15 +107,6 @@ const ContentLayout: React.FC = () => {
       alive = false
     }
   }, [])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    try {
-      window.localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pins))
-    } catch {
-      // ignore quota errors
-    }
-  }, [pins])
 
   const filters = useMemo<ContentFiltersSnapshot>(() => {
     const query = searchParams.get('q') ?? DEFAULT_FILTERS.query
@@ -241,15 +222,38 @@ const ContentLayout: React.FC = () => {
       : activeTab.replace(/[-_]/g, ' ')
   const contentWreathDescription = loading
     ? 'Loading content manifests...'
-    : contentTotal > 0
-      ? `${contentTotal} entries indexed. Focus: ${activeCategoryLabel.toUpperCase()}.`
-      : 'No content entries synced yet.'
+      : contentTotal > 0
+        ? `${contentTotal} entries indexed. Focus: ${activeCategoryLabel.toUpperCase()}.`
+        : 'No content entries synced yet.'
 
-  const togglePin = useCallback((id: string) => {
-    setPins((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
-  }, [])
+  const pinnedContentIds = useMemo(
+    () => favorites.filter((entry) => entry.type === 'content').map((entry) => entry.id),
+    [favorites],
+  )
 
-  const isPinned = useCallback((id: string) => pins.includes(id), [pins])
+  const togglePin = useCallback(
+    (id: string) => {
+      const key = makeFavoriteKey('content', id)
+      if (isFavoritePinned(key)) {
+        removeFavorite(key)
+        return
+      }
+      const content = aggregateItems.find((item) => item.id === id) ?? null
+      const favorite = buildContentFavorite({
+        id,
+        title: content?.title ?? id,
+        category: content?.category ?? 'content',
+        tags: content?.tags,
+        route: `/dashboard/content/all?item=${encodeURIComponent(id)}`,
+      })
+      addFavorite(favorite)
+    },
+    [addFavorite, aggregateItems, isFavoritePinned, removeFavorite],
+  )
+
+  const isPinned = useCallback((id: string) => isFavoritePinned(makeFavoriteKey('content', id)), [
+    isFavoritePinned,
+  ])
 
   const contextValue = useMemo<ContentHubContextValue>(
     () => ({
@@ -261,7 +265,7 @@ const ContentLayout: React.FC = () => {
       availableTags,
       availableLanguages,
       filters: filtersApi,
-      pinned: pins,
+      pinned: pinnedContentIds,
       togglePin,
       isPinned,
     }),
@@ -274,7 +278,7 @@ const ContentLayout: React.FC = () => {
       availableTags,
       availableLanguages,
       filtersApi,
-      pins,
+      pinnedContentIds,
       togglePin,
       isPinned,
     ]
@@ -305,4 +309,3 @@ const ContentLayout: React.FC = () => {
 }
 
 export default ContentLayout
-

@@ -1,6 +1,6 @@
 # Content v2.1 Authoring Guide
 
-This guide explains how to create and maintain content items for the AXIOM Content Hub after the v2.1 refactor. It complements the SOP in `docs/iterations/content‑v2.1‑fix.md` and focuses on three areas:
+This guide explains how to create and maintain content items for the AXIOM Content Hub after the v2.1 refactor. It complements the SOP in `docs/iterations/content-v2.1-fix/content-v2.1-fix.md` and focuses on three areas:
 
 1. Manifest schema requirements (new fields, validation rules).
 2. Hybrid markup conventions and `data-*` hooks that replace inline scripts.

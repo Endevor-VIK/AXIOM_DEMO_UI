@@ -19,6 +19,11 @@ import LoreRoute from '@/app/routes/dashboard/content/LoreRoute'
 import ReadRoute from '@/app/routes/dashboard/content/ReadRoute'
 import NewsPage from '@/app/routes/dashboard/news/page'
 import ReaderPage from '@/src/features/content/pages/ReaderPage'
+import FavoritesPage from '@/app/routes/favorites/page'
+import ProfilePage from '@/app/routes/profile/page'
+import SettingsPage from '@/app/routes/settings/page'
+import PersonalizationPage from '@/app/routes/settings/personalization/page'
+import HelpPage from '@/app/routes/help/page'
 
 import AuthGate from '@/components/AuthGate'
 import TerminalBoot from '@/components/TerminalBoot'
@@ -28,28 +33,37 @@ const routes = [
   { path: '/', element: <TerminalBoot /> },
   { path: '/login', element: <LoginPage /> },
   {
-    path: '/dashboard',
     element: (
       <AuthGate>
         <Layout />
       </AuthGate>
     ),
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: 'roadmap', element: <RoadmapPage /> },
-      { path: 'audit', element: <AuditPage /> },
       {
-        path: 'content',
-        element: <ContentLayout />,
+        path: 'dashboard',
         children: [
-          { index: true, element: <Navigate to='all' replace /> },
-          { path: 'all', element: <AllRoute /> },
-          { path: 'lore/*', element: <LoreRoute /> },
-          { path: 'read/:id', element: <ReadRoute /> },
-          { path: ':category', element: <CategoryRoute /> },
+          { index: true, element: <DashboardPage /> },
+          { path: 'roadmap', element: <RoadmapPage /> },
+          { path: 'audit', element: <AuditPage /> },
+          {
+            path: 'content',
+            element: <ContentLayout />,
+            children: [
+              { index: true, element: <Navigate to='all' replace /> },
+              { path: 'all', element: <AllRoute /> },
+              { path: 'lore/*', element: <LoreRoute /> },
+              { path: 'read/:id', element: <ReadRoute /> },
+              { path: ':category', element: <CategoryRoute /> },
+            ],
+          },
+          { path: 'news', element: <NewsPage /> },
         ],
       },
-      { path: 'news', element: <NewsPage /> },
+      { path: 'profile', element: <ProfilePage /> },
+      { path: 'favorites', element: <FavoritesPage /> },
+      { path: 'settings', element: <SettingsPage /> },
+      { path: 'settings/personalization', element: <PersonalizationPage /> },
+      { path: 'help', element: <HelpPage /> },
     ],
   },
   {
