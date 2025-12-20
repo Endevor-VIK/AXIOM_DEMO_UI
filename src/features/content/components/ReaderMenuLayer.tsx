@@ -6,7 +6,7 @@ import type { ContentPreviewData } from '../types'
 interface ReaderMenuLayerProps {
   open: boolean
   entries: ContentPreviewData[]
-  activeId?: string
+  activeId?: string | null
   search: string
   onSearchChange: (value: string) => void
   onSelect: (id: string) => void

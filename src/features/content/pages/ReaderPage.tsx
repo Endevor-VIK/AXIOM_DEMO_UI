@@ -61,6 +61,7 @@ const ReaderPage: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const entry = useMemo(() => resolveEntry(rawId), [rawId])
+  const activeId = entry?.id ?? null
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -131,7 +132,7 @@ const ReaderPage: React.FC = () => {
         <ReaderMenuLayer
           open={menuOpen}
           entries={entries}
-          activeId={entry ? entry.id : undefined}
+          activeId={activeId}
           search={search}
           onSearchChange={setSearch}
           onSelect={handleSelect}
@@ -174,7 +175,7 @@ const ReaderPage: React.FC = () => {
       <ReaderMenuLayer
         open={menuOpen}
         entries={entries}
-        activeId={entry ? entry.id : undefined}
+        activeId={activeId}
         search={search}
         onSearchChange={setSearch}
         onSelect={handleSelect}
