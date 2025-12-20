@@ -21,6 +21,7 @@
 - 2025-12-20T17:37:50+03:00 — Действие: Добавил шаблон TASK LOG LINK (`docs/agent_ops/templates/TASK_LOG_LINK_TEMPLATE.md`) для размещения рядом со SPEC. → Результат: OK
 - 2025-12-20T17:38:40+03:00 — Действие: Создал индекс логов `docs/agent_ops/logs/00_LOG_INDEX.md` с таблицей ID/Date/Task/Branch/SPEC/GLOBAL LOG/Status и первой записью 0001. → Результат: OK
 - 2025-12-20T17:54:53+03:00 — Действие: Проставил комментарии с путём файла во все новые артефакты (README, LOG/LINK шаблоны, индекс, GLOBAL LOG, LINK для SPEC) и локализовал таблицу индекса на ru. → Результат: OK
+- 2025-12-20T18:24:21+03:00 — Действие: Перенёс содержание SPEC в расширенный README (термины, структура, ритуал, формат, policy, чеклист) и удалил дублирующий SPEC-файл. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-20T17:40:30+03:00 — Действие: Создал `docs/agent_ops/README.md` (ритуал новой сессии, формат лога, commit policy, расположение файлов, чеклист ревьюера). → Результат: OK
@@ -33,6 +34,7 @@
 - 2025-12-20T18:17:45+03:00 — Commit: `36eb718` — `docs(agent-ops): add log system spec, templates, and README` — Files: `docs/agent_ops/AXIOM_AGENTOPS_LOG_SYSTEM_SPEC_v0.2.3.1.md`, `docs/agent_ops/README.md`, `docs/agent_ops/templates/LOG_TEMPLATE.md`, `docs/agent_ops/templates/TASK_LOG_LINK_TEMPLATE.md`
 - 2025-12-20T18:18:33+03:00 — Commit: `0ea6ebd` — `docs(agent-ops): add first global log and index entry` — Files: `docs/agent_ops/logs/0001_tunnel-dev-implementation.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`, `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC_LOG_LINK.md`
 - 2025-12-20T18:19:07+03:00 — Commit: (this commit) — `chore(agent-ops): log commits for session 0001` — Files: `docs/agent_ops/logs/0001_tunnel-dev-implementation.md`
+- 2025-12-20T18:25:57+03:00 — Commit: `c7bd542` — `docs(agent-ops): consolidate spec into README` — Files: `docs/agent_ops/README.md`, `docs/agent_ops/AXIOM_AGENTOPS_LOG_SYSTEM_SPEC_v0.2.3.1.md`
 
 ---
 
