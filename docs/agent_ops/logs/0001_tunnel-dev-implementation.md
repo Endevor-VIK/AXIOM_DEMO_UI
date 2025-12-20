@@ -38,6 +38,8 @@
 - 2025-12-20T18:19:07+03:00 — Commit: (this commit) — `chore(agent-ops): log commits for session 0001` — Files: `docs/agent_ops/logs/0001_tunnel-dev-implementation.md`
 - 2025-12-20T18:25:57+03:00 — Commit: `c7bd542` — `docs(agent-ops): consolidate spec into README` — Files: `docs/agent_ops/README.md`, `docs/agent_ops/AXIOM_AGENTOPS_LOG_SYSTEM_SPEC_v0.2.3.1.md`
 - 2025-12-20T18:53:06+03:00 — Commit: `a35f232` — `docs(agent-ops): migrate tunnel implementation log to registry` — Files: `docs/agent_ops/logs/0002_tunnel-dev-implementation.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`, `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC_LOG_LINK.md`, `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC.md`, `docs/devtools/Promt_starter.md`, `docs/agent_ops/README.md`, `docs/agent_ops/logs/0001_tunnel-dev-implementation.md`
+- 2025-12-20T18:54:24+03:00 — Commit: `2813576` — `chore(agent-ops): log tunnel migration commit` — Files: `docs/agent_ops/logs/0001_tunnel-dev-implementation.md`
+- 2025-12-20T18:55:03+03:00 — Commit: (this commit) — `chore(agent-ops): sync log after migration` — Files: `docs/agent_ops/logs/0001_tunnel-dev-implementation.md`
 
 ---
 
