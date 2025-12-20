@@ -27,7 +27,8 @@
 - 
 
 ## Step E — Git
-- 
+- 2025-12-20T19:11:00+03:00 — Commit: `fef5f34` — `chore(agent-ops): add docs cleanup session log 0003` — Files: `docs/agent_ops/logs/0003_docs-structure-cleanup.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`
+- 2025-12-20T19:15:11+03:00 — Commit: `8d11fbe` — `docs: reorganize docs structure and paths` — Files: перемещения/обновления для iterations/releases/integrations/specs/guides/plans (см. git show)
 
 ---
 
@@ -38,8 +39,8 @@
 - Нужно обновить все ссылки после переездов; возможны скрытые ссылки в других документах.
 
 ## Acceptance Checklist
-- [ ] Созданы директории под выявленные документы (iterations/releases/specs)
-- [ ] Файлы перемещены/переименованы в ASCII и структурированы
-- [ ] Ссылки обновлены (SPEC/README/Prompt и др.)
-- [ ] AgentOps индекс/лог дополнен (ID 0003)
+- [x] Созданы директории под выявленные документы (iterations/releases/specs)
+- [x] Файлы перемещены/переименованы в ASCII и структурированы
+- [x] Ссылки обновлены (SPEC/README/Prompt и др.)
+- [x] AgentOps индекс/лог дополнен (ID 0003)
 - [ ] Статусы (ACTIVE/BLOCKED/DONE) проставлены при необходимости
