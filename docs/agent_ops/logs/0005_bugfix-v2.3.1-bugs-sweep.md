@@ -37,6 +37,8 @@
 
 ## Step E — Git
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-20T21:25:30+03:00 — Commit: `a04d710` — `chore(reader-menu): refactor layer component and fix ts error (BUG-003 wip)` — Files: `src/features/content/components/ReaderMenuLayer.tsx`, `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-20T21:40:58+03:00 — Commit: `2e1abe9` — `chore(reader-menu): update props for ts strict mode (BUG-003 still open)` — Files: `src/features/content/pages/ReaderPage.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 
 ---
 
