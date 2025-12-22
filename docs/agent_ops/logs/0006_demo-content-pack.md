@@ -59,6 +59,7 @@
 - 2025-12-22T16:09:10+03:00 — Commit: `6d15bc7` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
 - 2025-12-22T16:09:10+03:00 — Commit: `933fa39` — `docs(content): update global log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`
 - 2025-12-22T16:29:56+03:00 — Commit: `516c310` — `feat(news): add demo content pack updates` — Файлы: `public/data/news/manifest.json`, `public/data/news/items/2025-12-22-demo-content-pack.md`, `public/data/news/items/2025-12-22-showcase-refresh.md`
+- 2025-12-22T16:32:18+03:00 — Commit: `ddad843` — `docs(content): close demo content pack logs` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`, `docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_LOG_LINK.md`
 
 ---
 
