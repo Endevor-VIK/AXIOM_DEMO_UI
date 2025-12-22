@@ -23,6 +23,8 @@
 - 2025-12-22T14:07:25+03:00 — Действие: Расширена витрина (TOMMY, EVA, SPECTRE GT, BLOODTECH, REAPERS), добавлены PNG и обновлены VFS/HTML/индексы → Результат: OK
 - 2025-12-22T14:50:55+03:00 — Действие: Добавлены технологии (Harpoon, Magnetic, Neural Scanner, Grom Fist, T-Collar) + превью PNG, обновлены VFS/HTML/индексы → Результат: OK
 - 2025-12-22T14:50:55+03:00 — Действие: Исправлена санитизация текста для кириллицы в витрине (safeText) → Результат: OK
+- 2025-12-22T16:04:24+03:00 — Действие: Переставлены превью (EVA получила noface), для списка объектов выставлен placeholder, обновлены content-src/public/data/content/public/content-html/content-index → Результат: OK
+- 2025-12-22T16:04:24+03:00 — Действие: Скорректированы веса/даты для префиксной хронологии и топ-3 витрины → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T11:19:10+03:00 — Действие: Созданы GLOBAL LOG, запись в индексе и TASK LOG LINK → Результат: OK
@@ -30,6 +32,7 @@
 - 2025-12-22T12:20:58+03:00 — Действие: Сформирован content_manifest → Результат: OK
 - 2025-12-22T14:07:25+03:00 — Действие: Обновлён content_manifest (новые объекты и ассеты) → Результат: OK
 - 2025-12-22T14:50:55+03:00 — Действие: Обновлён content_manifest (добавлены технологии) → Результат: OK
+- 2025-12-22T16:04:24+03:00 — Действие: Обновлён content_manifest (замена превью на placeholder/noface) → Результат: OK
 
 ## Step D — QA
 - 2025-12-22T12:25:49+03:00 — Действие: Проверка дубликатов/cover в манифестах (python3) → Результат: OK
@@ -37,6 +40,7 @@
 - 2025-12-22T12:39:39+03:00 — Действие: Поиск упоминаний заглушек (rg) → Результат: OK (совпадения только в docs и ax-design/preview)
 - 2025-12-22T14:07:25+03:00 — Действие: Проверка JSON/дубликатов/счётчиков (python3) → Результат: OK
 - 2025-12-22T14:50:55+03:00 — Действие: Повторная проверка JSON/дубликатов/счётчиков (python3) → Результат: OK
+- 2025-12-22T16:04:24+03:00 — Действие: Проверка топ-3 витрины и cover/preview (python3) → Результат: OK
 
 ## Step E — Git
 - 2025-12-22T12:39:39+03:00 — Commit: `b337371` — `feat(content): add demo content pack` — Файлы: `app/routes/dashboard/content/ContentCategoryView.tsx`, `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
@@ -48,6 +52,7 @@
 - 2025-12-22T14:55:43+03:00 — Commit: `ba3db08` — `fix(ui): support cyrillic summaries` — Файлы: `components/utils.ts`
 - 2025-12-22T14:55:43+03:00 — Commit: `4688d69` — `feat(content): add technology showcase entries` — Файлы: `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
 - 2025-12-22T14:56:41+03:00 — Commit: `99b0754` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
+- 2025-12-22T16:07:15+03:00 — Commit: `3f72392` — `feat(content): update showcase previews and ordering` — Файлы: `content-src/*`, `public/assets/content/placeholder.png`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
 
 ---
 
