@@ -1,31 +1,60 @@
 {
   "meta": {
     "version": 2,
-    "generatedAt": "2025-12-03T18:21:40.308Z",
-    "source": "tools/export.ts"
+    "generatedAt": "2025-12-22T09:13:02.000Z",
+    "source": "manual"
   },
   "items": [
     {
-      "id": "LOC-0001",
+      "id": "LOC-ECHELON-CORE",
       "category": "locations",
-      "subCategory": "demo",
-      "title": "Central Node Plaza",
-      "summary": "Demo scene for the content hub redesign.",
-      "date": "2025-09-06",
-      "tags": [
-        "intro",
-        "demo"
-      ],
-      "file": "locations/2025-09-06__content-demo.html",
-      "format": "html",
+      "subCategory": "core",
+      "title": "Echelon — вертикальная мегаструктура",
+      "summary": "Архитектурное ядро ECHELON: вертикальная иерархия, контроль и допуски.",
+      "date": "2025-12-22",
+      "tags": ["echelon", "locations", "control", "megastructure"],
+      "file": "locations/LOC-ECHELON-CORE/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
       "author": "AXIOM CORE",
       "status": "published",
       "visibility": "public",
-      "weight": 0,
+      "weight": 5,
       "lang": "ru",
+      "version": "v1.0",
+      "slug": "echelon-core",
+      "numericSuffix": "0204",
+      "cover": "/assets/content/echelon-core.png",
       "links": [],
       "meta": {
-        "v": 2
+        "v": 2,
+        "zone": "02_LOCATIONS"
+      }
+    },
+    {
+      "id": "LOC-ECHELON-UNDERCITY",
+      "category": "locations",
+      "subCategory": "undercity",
+      "title": "Undercity — глубинный инфрастратум",
+      "summary": "Глубинный уровень ECHELON: чёрные рынки, арены и выживание.",
+      "date": "2025-12-22",
+      "tags": ["undercity", "echelon", "black-market", "survival"],
+      "file": "locations/LOC-ECHELON-UNDERCITY/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 6,
+      "lang": "ru",
+      "version": "v1.0",
+      "slug": "echelon-undercity",
+      "numericSuffix": "0240",
+      "cover": "/assets/content/echelon-undercity.png",
+      "links": [],
+      "meta": {
+        "v": 2,
+        "zone": "02_LOCATIONS"
       }
     },
     {
@@ -35,18 +64,10 @@
       "title": "Виктор (VIKTOR)",
       "summary": "Prime-персонаж: носитель ACCELERATOR и клинка NIGHTMARE; холодная дисциплина и роль «моста» между человеком и AXIOM.",
       "date": "2025-09-25",
-      "tags": [
-        "prime",
-        "viktor",
-        "nightmare",
-        "accelerator",
-        "host-axm",
-        "echelon"
-      ],
+      "tags": ["prime", "viktor", "nightmare", "accelerator", "host-axm", "echelon"],
       "file": "characters/CHR-VIKTOR-0301/index.md",
       "format": "md",
       "renderMode": "hybrid",
-      "assetsBase": "characters/CHR-VIKTOR-0301/",
       "author": "CREATOR & AXIOM",
       "status": "published",
       "visibility": "public",
@@ -55,6 +76,7 @@
       "version": "v2.1.1",
       "slug": "viktor",
       "numericSuffix": "0301",
+      "cover": "/assets/content/03.00_VIKTOR.png",
       "links": [],
       "meta": {
         "v": 2,
@@ -70,20 +92,10 @@
       "title": "AXIOM — центральная ИИ-сущность",
       "summary": "Падший сверхразум Эшелона; фрагментирован (LIMBO/CRYPT/эхо). Центральный узел конфликта мира и мифологии.",
       "date": "2025-09-25",
-      "tags": [
-        "ai",
-        "axiom",
-        "central-ai",
-        "ghost",
-        "veil",
-        "neurogrid",
-        "limbo",
-        "crypt"
-      ],
+      "tags": ["ai", "axiom", "central-ai", "ghost", "veil", "neurogrid", "limbo", "crypt"],
       "file": "characters/CHR-AXIOM-0303/index.md",
       "format": "md",
       "renderMode": "hybrid",
-      "assetsBase": "characters/CHR-AXIOM-0303/",
       "author": "CREATOR & AXIOM",
       "status": "published",
       "visibility": "public",
@@ -92,6 +104,7 @@
       "version": "v2.1",
       "slug": "axiom",
       "numericSuffix": "0303",
+      "cover": "/assets/content/03.03_AXIOM.png",
       "links": [],
       "meta": {
         "v": 2,
@@ -101,115 +114,177 @@
       }
     },
     {
-      "id": "CHR-PLACEHOLDER-0001",
+      "id": "CHR-LIZA-0302",
       "category": "characters",
-      "subCategory": "demo",
-      "title": "Шаблон персонажа",
-      "summary": "Заглушка персонажа для раздела Characters.",
-      "date": "2025-09-22",
-      "tags": [
-        "placeholder",
-        "demo"
-      ],
-      "file": "characters/2025-09-22__character-placeholder.md",
+      "subCategory": "resistance",
+      "title": "Лиза Синклер — призрачный хакер",
+      "summary": "Одиночка сопротивления, слияние боли и кода в ECHELON.",
+      "date": "2025-12-22",
+      "tags": ["hacker", "resistance", "voidlink", "ghost"],
+      "file": "characters/CHR-LIZA-0302/index.md",
       "format": "md",
+      "renderMode": "hybrid",
       "author": "AXIOM CORE",
       "status": "published",
       "visibility": "public",
-      "weight": 100,
+      "weight": 30,
       "lang": "ru",
-      "slug": "character-placeholder",
-      "numericSuffix": "0001",
+      "version": "v1.0",
+      "slug": "liza",
+      "numericSuffix": "0302",
+      "cover": "/assets/content/liza.png",
       "links": [],
       "meta": {
-        "v": 2
+        "v": 2,
+        "zone": "03_CHARACTERS"
       }
     },
     {
-      "id": "EVT-PLACEHOLDER-0001",
-      "category": "events",
-      "subCategory": "demo",
-      "title": "Шаблон события",
-      "summary": "Заглушка события для раздела Events.",
-      "date": "2025-09-22",
-      "tags": [
-        "placeholder",
-        "event"
-      ],
-      "file": "events/2025-09-22__event-placeholder.md",
+      "id": "CHR-WHITE-CONTOUR-0317",
+      "category": "characters",
+      "subCategory": "anomaly",
+      "title": "White Contour — призрачный агент",
+      "summary": "Глитч-сущность ECHELON, ломает сенсоры и линии наблюдения.",
+      "date": "2025-12-22",
+      "tags": ["anomaly", "ghost", "contour", "echelon"],
+      "file": "characters/CHR-WHITE-CONTOUR-0317/index.md",
       "format": "md",
+      "renderMode": "hybrid",
       "author": "AXIOM CORE",
       "status": "published",
       "visibility": "public",
-      "weight": 100,
+      "weight": 40,
       "lang": "ru",
+      "version": "v1.0",
+      "slug": "white-contour",
+      "numericSuffix": "0317",
+      "cover": "/assets/content/white-contour.png",
       "links": [],
       "meta": {
-        "v": 2
+        "v": 2,
+        "zone": "03_CHARACTERS"
       }
     },
     {
-      "id": "FAC-PLACEHOLDER-0001",
-      "category": "factions",
-      "subCategory": "demo",
-      "title": "Шаблон фракции",
-      "summary": "Заглушка фракции для раздела Factions.",
-      "date": "2025-09-22",
-      "tags": [
-        "placeholder",
-        "faction"
-      ],
-      "file": "factions/2025-09-22__faction-placeholder.md",
+      "id": "CHR-NOFACE-0318",
+      "category": "characters",
+      "subCategory": "broker",
+      "title": "NoFace — теневой куратор",
+      "summary": "Брокер данных и связующее звено между подпольем и AXIOM_SHADOW_NET.",
+      "date": "2025-12-22",
+      "tags": ["broker", "shadow", "data", "undercity"],
+      "file": "characters/CHR-NOFACE-0318/index.md",
       "format": "md",
+      "renderMode": "hybrid",
       "author": "AXIOM CORE",
       "status": "published",
       "visibility": "public",
-      "weight": 100,
+      "weight": 45,
       "lang": "ru",
+      "version": "v1.0",
+      "slug": "noface",
+      "numericSuffix": "0318",
+      "cover": "/assets/content/noface.png",
       "links": [],
       "meta": {
-        "v": 2
+        "v": 2,
+        "zone": "03_CHARACTERS"
       }
     },
     {
-      "id": "TEC-PLACEHOLDER-0001",
+      "id": "TEC-ACCELERATOR-0501",
       "category": "technologies",
-      "subCategory": "demo",
-      "title": "Шаблон технологии",
-      "summary": "Заглушка технологии для раздела Technologies.",
-      "date": "2025-09-22",
-      "tags": [
-        "placeholder",
-        "tech"
-      ],
-      "file": "technologies/2025-09-22__technology-placeholder.md",
+      "subCategory": "implant",
+      "title": "Accelerator — нейро-ускоряющее ядро",
+      "summary": "Базовый драйвер ускорения и синхронизации имплантов.",
+      "date": "2025-12-22",
+      "tags": ["accelerator", "implant", "neural", "combat"],
+      "file": "technologies/TEC-ACCELERATOR-0501/index.md",
       "format": "md",
+      "renderMode": "hybrid",
       "author": "AXIOM CORE",
       "status": "published",
       "visibility": "public",
-      "weight": 100,
+      "weight": 10,
       "lang": "ru",
+      "version": "v1.0",
+      "slug": "accelerator",
+      "numericSuffix": "0501",
+      "cover": "/assets/content/accelerator-core.png",
       "links": [],
       "meta": {
-        "v": 2
+        "v": 2,
+        "zone": "05_TECHNOLOGIES"
+      }
+    },
+    {
+      "id": "TEC-NIGHTMARE-0502",
+      "category": "technologies",
+      "subCategory": "artifact",
+      "title": "Nightmare — трансцендентный клинок",
+      "summary": "Цифровая сущность в форме клинка, резонанс и выбор носителя.",
+      "date": "2025-12-22",
+      "tags": ["nightmare", "artifact", "resonance", "blade"],
+      "file": "technologies/TEC-NIGHTMARE-0502/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 20,
+      "lang": "ru",
+      "version": "v1.0",
+      "slug": "nightmare",
+      "numericSuffix": "0502",
+      "cover": "/assets/content/nightmare-benchmark.png",
+      "links": [],
+      "meta": {
+        "v": 2,
+        "zone": "05_TECHNOLOGIES"
+      }
+    },
+    {
+      "id": "FAC-CHROME-SYNDICATE-0610",
+      "category": "factions",
+      "subCategory": "cartel",
+      "title": "Chrome Syndicate — кибер-наркокартель",
+      "summary": "Подпольный рынок имплантов и психоактивных модулей ECHELON.",
+      "date": "2025-12-22",
+      "tags": ["syndicate", "black-market", "implants", "undercity"],
+      "file": "factions/FAC-CHROME-SYNDICATE-0610/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 10,
+      "lang": "ru",
+      "version": "v1.0",
+      "slug": "chrome-syndicate",
+      "numericSuffix": "0610",
+      "cover": "/assets/content/chrome-syndicate.png",
+      "links": [],
+      "meta": {
+        "v": 2,
+        "zone": "06_FACTIONS"
       }
     }
   ],
   "categories": {
     "all": {
-      "count": 7,
+      "count": 10,
       "manifest": "content/manifest.json"
     },
     "locations": {
-      "count": 1,
+      "count": 2,
       "manifest": "content/locations/manifest.json"
     },
     "characters": {
-      "count": 3,
+      "count": 5,
       "manifest": "content/characters/manifest.json"
     },
     "technologies": {
-      "count": 1,
+      "count": 2,
       "manifest": "content/technologies/manifest.json"
     },
     "factions": {
@@ -217,7 +292,7 @@
       "manifest": "content/factions/manifest.json"
     },
     "events": {
-      "count": 1,
+      "count": 0,
       "manifest": "content/events/manifest.json"
     },
     "lore": {

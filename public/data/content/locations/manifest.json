@@ -1,25 +1,54 @@
 [
   {
-    "id": "LOC-0001",
+    "id": "LOC-ECHELON-CORE",
     "category": "locations",
-    "subCategory": "demo",
-    "title": "Central Node Plaza",
-    "summary": "Demo scene for the content hub redesign.",
-    "date": "2025-09-06",
-    "tags": [
-      "intro",
-      "demo"
-    ],
-    "file": "locations/2025-09-06__content-demo.html",
-    "format": "html",
+    "subCategory": "core",
+    "title": "Echelon — вертикальная мегаструктура",
+    "summary": "Архитектурное ядро ECHELON: вертикальная иерархия, контроль и допуски.",
+    "date": "2025-12-22",
+    "tags": ["echelon", "locations", "control", "megastructure"],
+    "file": "locations/LOC-ECHELON-CORE/index.md",
+    "format": "md",
+    "renderMode": "hybrid",
     "author": "AXIOM CORE",
     "status": "published",
     "visibility": "public",
-    "weight": 0,
+    "weight": 5,
     "lang": "ru",
+    "version": "v1.0",
+    "slug": "echelon-core",
+    "numericSuffix": "0204",
+    "cover": "/assets/content/echelon-core.png",
     "links": [],
     "meta": {
-      "v": 2
+      "v": 2,
+      "zone": "02_LOCATIONS"
+    }
+  },
+  {
+    "id": "LOC-ECHELON-UNDERCITY",
+    "category": "locations",
+    "subCategory": "undercity",
+    "title": "Undercity — глубинный инфрастратум",
+    "summary": "Глубинный уровень ECHELON: чёрные рынки, арены и выживание.",
+    "date": "2025-12-22",
+    "tags": ["undercity", "echelon", "black-market", "survival"],
+    "file": "locations/LOC-ECHELON-UNDERCITY/index.md",
+    "format": "md",
+    "renderMode": "hybrid",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 6,
+    "lang": "ru",
+    "version": "v1.0",
+    "slug": "echelon-undercity",
+    "numericSuffix": "0240",
+    "cover": "/assets/content/echelon-undercity.png",
+    "links": [],
+    "meta": {
+      "v": 2,
+      "zone": "02_LOCATIONS"
     }
   }
 ]

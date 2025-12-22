@@ -1,20 +1,54 @@
 [
   {
-    "id": "TEC-PLACEHOLDER-0001",
+    "id": "TEC-ACCELERATOR-0501",
     "category": "technologies",
-    "subCategory": "demo",
-    "title": "Шаблон технологии",
-    "summary": "Заглушка технологии для раздела Technologies.",
-    "date": "2025-09-22",
-    "tags": ["placeholder", "tech"],
-    "file": "technologies/2025-09-22__technology-placeholder.md",
+    "subCategory": "implant",
+    "title": "Accelerator — нейро-ускоряющее ядро",
+    "summary": "Базовый драйвер ускорения и синхронизации имплантов.",
+    "date": "2025-12-22",
+    "tags": ["accelerator", "implant", "neural", "combat"],
+    "file": "technologies/TEC-ACCELERATOR-0501/index.md",
     "format": "md",
+    "renderMode": "hybrid",
     "author": "AXIOM CORE",
     "status": "published",
     "visibility": "public",
-    "weight": 100,
+    "weight": 10,
     "lang": "ru",
+    "version": "v1.0",
+    "slug": "accelerator",
+    "numericSuffix": "0501",
+    "cover": "/assets/content/accelerator-core.png",
     "links": [],
-    "meta": { "v": 2 }
+    "meta": {
+      "v": 2,
+      "zone": "05_TECHNOLOGIES"
+    }
+  },
+  {
+    "id": "TEC-NIGHTMARE-0502",
+    "category": "technologies",
+    "subCategory": "artifact",
+    "title": "Nightmare — трансцендентный клинок",
+    "summary": "Цифровая сущность в форме клинка, резонанс и выбор носителя.",
+    "date": "2025-12-22",
+    "tags": ["nightmare", "artifact", "resonance", "blade"],
+    "file": "technologies/TEC-NIGHTMARE-0502/index.md",
+    "format": "md",
+    "renderMode": "hybrid",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 20,
+    "lang": "ru",
+    "version": "v1.0",
+    "slug": "nightmare",
+    "numericSuffix": "0502",
+    "cover": "/assets/content/nightmare-benchmark.png",
+    "links": [],
+    "meta": {
+      "v": 2,
+      "zone": "05_TECHNOLOGIES"
+    }
   }
 ]

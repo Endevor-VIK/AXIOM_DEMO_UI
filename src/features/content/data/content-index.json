@@ -1,64 +1,5 @@
 [
   {
-    "id": "01.01_CENTRAL_NODE",
-    "slug": "central-node-plaza",
-    "title": "Central Node Plaza",
-    "zone": "01_LOCATIONS",
-    "category": "locations",
-    "status": "published",
-    "lang": "ru",
-    "version": "v1.0",
-    "tags": [
-      "intro",
-      "demo",
-      "hub"
-    ],
-    "preview": {
-      "kicker": "ZONE · 01_LOCATIONS · STATUS: PUBLISHED",
-      "logline": "Демо-сцена CONTENT HUB: приветствие и ссылка на базовый HTML-файл.",
-      "markers": [
-        "Тестовый HTML из старого манифеста",
-        "Используется для проверки сборки и рендера",
-        "Локация-хаб для демонстрации"
-      ],
-      "signature": [
-        "Палитра: серый/красный",
-        "Роль: демо-локация",
-        "Статус: published (demo)"
-      ],
-      "image": "/assets/content/placeholder_01.png"
-    }
-  },
-  {
-    "id": "03.00_CHARACTER_TEMPLATE",
-    "slug": "character-template",
-    "title": "Шаблон персонажа",
-    "zone": "03_CHARACTERS",
-    "category": "characters",
-    "status": "published",
-    "lang": "ru",
-    "version": "v1.0",
-    "tags": [
-      "placeholder",
-      "demo"
-    ],
-    "preview": {
-      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
-      "logline": "Базовый шаблон карточки персонажа для наполнения контента.",
-      "markers": [
-        "Структура: происхождение, черты, примечания",
-        "Используется как болванка для новых героев",
-        "Совместим с CONTENT HUB v2"
-      ],
-      "signature": [
-        "Палитра: серый/красный",
-        "Роль: шаблон персонажа",
-        "Статус: published (demo)"
-      ],
-      "image": "/assets/content/placeholder_01.png"
-    }
-  },
-  {
     "id": "03.01_VIKTOR",
     "slug": "viktor",
     "title": "Виктор (VIKTOR)",
@@ -89,6 +30,38 @@
         "Опорный узел: ACCELERATOR core"
       ],
       "image": "/assets/content/03.00_VIKTOR.png"
+    }
+  },
+  {
+    "id": "03.02_LIZA",
+    "slug": "liza",
+    "title": "Лиза Синклер — призрачный хакер",
+    "zone": "03_CHARACTERS",
+    "category": "characters",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "hacker",
+      "resistance",
+      "voidlink",
+      "ghost",
+      "infiltration"
+    ],
+    "preview": {
+      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
+      "logline": "Призрачный хакер сопротивления, слияние боли и кода в сердце ECHELON.",
+      "markers": [
+        "Одиночка и агент хаоса",
+        "Импланты: сканеры, харпун, нейроскан",
+        "Личная вендетта против корпораций"
+      ],
+      "signature": [
+        "Палитра: холодный неон",
+        "Поведение: скрытность и анализ",
+        "Опора: VOIDLINK"
+      ],
+      "image": "/assets/content/liza.png"
     }
   },
   {
@@ -125,90 +98,220 @@
     }
   },
   {
-    "id": "04.00_TECH_TEMPLATE",
-    "slug": "technology-template",
-    "title": "Шаблон технологии",
-    "zone": "04_TECHNOLOGIES",
-    "category": "technologies",
+    "id": "03.17_WHITE_CONTOUR",
+    "slug": "white-contour",
+    "title": "White Contour — призрачный агент",
+    "zone": "03_CHARACTERS",
+    "category": "characters",
     "status": "published",
     "lang": "ru",
     "version": "v1.0",
     "tags": [
-      "placeholder",
-      "tech"
+      "anomaly",
+      "ghost",
+      "contour",
+      "echelon"
     ],
     "preview": {
-      "kicker": "ZONE · 04_TECHNOLOGIES · STATUS: PUBLISHED",
-      "logline": "Болванка записи для технологий: принципы, применение и пометки.",
+      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
+      "logline": "Глитч-сущность ECHELON: белый контур вместо лица и шум в сенсорах наблюдения.",
       "markers": [
-        "Шаблон секций: принцип работы, применение",
-        "Служит исходником для новых техно-файлов",
-        "Можно расширять под CONTENT HUB v2"
+        "Аномалия сенсоров и камер",
+        "Связь с Project Contour",
+        "Тихие диверсии и шум данных"
       ],
       "signature": [
-        "Палитра: серый/красный",
-        "Роль: шаблон технологии",
-        "Статус: published (demo)"
+        "Палитра: белый/алый",
+        "Режим: ghost protocol",
+        "Статус: published"
       ],
-      "image": "/assets/content/placeholder_01.png"
+      "image": "/assets/content/white-contour.png"
     }
   },
   {
-    "id": "05.00_FACTION_TEMPLATE",
-    "slug": "faction-template",
-    "title": "Шаблон фракции",
-    "zone": "05_FACTIONS",
+    "id": "03.18_NOFACE",
+    "slug": "noface",
+    "title": "NoFace — теневой куратор",
+    "zone": "03_CHARACTERS",
+    "category": "characters",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "broker",
+      "shadow",
+      "data",
+      "undercity"
+    ],
+    "preview": {
+      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
+      "logline": "Теневой куратор и брокер данных, который управляет маршрутами утечек, а не людьми.",
+      "markers": [
+        "Связь с White Contour",
+        "Работа через прокси и шум",
+        "Узел AXIOM_SHADOW_NET"
+      ],
+      "signature": [
+        "Палитра: фиолет/сталь",
+        "Режим: data broker",
+        "Статус: published"
+      ],
+      "image": "/assets/content/noface.png"
+    }
+  },
+  {
+    "id": "FAC-CHROME-SYNDICATE-0610",
+    "slug": "chrome-syndicate",
+    "title": "Chrome Syndicate — кибер-наркокартель",
+    "zone": "06_FACTIONS",
     "category": "factions",
     "status": "published",
     "lang": "ru",
     "version": "v1.0",
     "tags": [
-      "placeholder",
-      "faction"
+      "syndicate",
+      "black-market",
+      "implants",
+      "undercity"
     ],
     "preview": {
-      "kicker": "ZONE · 05_FACTIONS · STATUS: PUBLISHED",
-      "logline": "Каркас записи о фракции: идеология, структура, заметки.",
+      "kicker": "ZONE · 06_FACTIONS · STATUS: PUBLISHED",
+      "logline": "Картель ECHELON: импланты, психоактивные модули и чёрный рынок технологий.",
       "markers": [
-        "Разделы: идеология, структура",
-        "Используется для быстрых черновиков",
-        "Совместим с CONTENT HUB v2"
+        "Контроль нелегальных апгрейдов",
+        "Подпольные клиники и лаборатории",
+        "Связи с Project Contour"
       ],
       "signature": [
-        "Палитра: серый/красный",
-        "Роль: шаблон фракции",
-        "Статус: published (demo)"
+        "Палитра: хром/кислота",
+        "Режим: debt chain",
+        "Статус: published"
       ],
-      "image": "/assets/content/placeholder_01.png"
+      "image": "/assets/content/chrome-syndicate.png"
     }
   },
   {
-    "id": "06.00_EVENT_TEMPLATE",
-    "slug": "event-template",
-    "title": "Шаблон события",
-    "zone": "06_EVENTS",
-    "category": "events",
+    "id": "LOC-ECHELON-CORE",
+    "slug": "echelon-core",
+    "title": "Echelon — вертикальная мегаструктура",
+    "zone": "02_LOCATIONS",
+    "category": "locations",
     "status": "published",
     "lang": "ru",
     "version": "v1.0",
     "tags": [
-      "placeholder",
-      "event"
+      "echelon",
+      "locations",
+      "control",
+      "megastructure"
     ],
     "preview": {
-      "kicker": "ZONE · 06_EVENTS · STATUS: PUBLISHED",
-      "logline": "Шаблон записи события: когда, где и кто участвует.",
+      "kicker": "ZONE · 02_LOCATIONS · STATUS: PUBLISHED",
+      "logline": "Архитектурное ядро ECHELON: вертикальная иерархия, контроль и допуски.",
       "markers": [
-        "Секции: дата/место, участники",
-        "Используется как демо-файл",
-        "Совместим с CONTENT HUB v2"
+        "Вертикальная структура уровней",
+        "Психогеография как архитектура",
+        "Триада: технологии, контроль, порядок"
       ],
       "signature": [
-        "Палитра: серый/красный",
-        "Роль: шаблон события",
-        "Статус: published (demo)"
+        "Палитра: неон/сталь",
+        "Принцип: допуск или изгнание",
+        "Статус: published"
       ],
-      "image": "/assets/content/placeholder_01.png"
+      "image": "/assets/content/echelon-core.png"
+    }
+  },
+  {
+    "id": "LOC-ECHELON-UNDERCITY",
+    "slug": "echelon-undercity",
+    "title": "Undercity — глубинный инфрастратум",
+    "zone": "02_LOCATIONS",
+    "category": "locations",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "undercity",
+      "echelon",
+      "survival",
+      "black-market"
+    ],
+    "preview": {
+      "kicker": "ZONE · 02_LOCATIONS · STATUS: PUBLISHED",
+      "logline": "Глубинный уровень ECHELON, где выживание важнее правил, а рынок — чернее света.",
+      "markers": [
+        "Зона, где заканчиваются маски",
+        "Чёрные рынки и арены",
+        "Сектора как открытые раны"
+      ],
+      "signature": [
+        "Палитра: ржавчина/неон",
+        "Режим: выживание",
+        "Статус: published"
+      ],
+      "image": "/assets/content/echelon-undercity.png"
+    }
+  },
+  {
+    "id": "TEC-ACCELERATOR-0501",
+    "slug": "accelerator",
+    "title": "Accelerator — нейро-ускоряющее ядро",
+    "zone": "05_TECHNOLOGIES",
+    "category": "technologies",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "accelerator",
+      "implant",
+      "neural",
+      "combat"
+    ],
+    "preview": {
+      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
+      "logline": "Базовый драйвер ускорения: ядро имплантов, которые меняют скорость и волю носителя.",
+      "markers": [
+        "Resonant Core Driver",
+        "Модульная архитектура",
+        "Синхронизация с AXIOM"
+      ],
+      "signature": [
+        "Палитра: холодный неон",
+        "Режим: adaptive",
+        "Статус: published"
+      ],
+      "image": "/assets/content/accelerator-core.png"
+    }
+  },
+  {
+    "id": "TEC-NIGHTMARE-0502",
+    "slug": "nightmare",
+    "title": "Nightmare — трансцендентный клинок",
+    "zone": "05_TECHNOLOGIES",
+    "category": "technologies",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "nightmare",
+      "artifact",
+      "resonance",
+      "blade"
+    ],
+    "preview": {
+      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
+      "logline": "Цифровая сущность, застывшая в форме оружия: память боли и резонанса.",
+      "markers": [
+        "Ex-artifact класса AXIOM",
+        "Искажает восприятие",
+        "Выбирает носителя"
+      ],
+      "signature": [
+        "Палитра: фиолет/чёрный",
+        "Режим: transcendence",
+        "Статус: published"
+      ],
+      "image": "/assets/content/nightmare-benchmark.png"
     }
   }
 ]

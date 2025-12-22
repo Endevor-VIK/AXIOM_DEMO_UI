@@ -83,9 +83,11 @@ export interface ContentCategoryViewProps {
 const noop = () => {}
 
 function pickImage(item: ContentItem): string {
+  const cover = item.cover
+  if (typeof cover === 'string' && cover.trim()) return cover
   if (item.id === 'CHR-AXIOM-0303') return '/assets/content/03.03_AXIOM.png'
   if (item.id === 'CHR-VIKTOR-0301') return '/assets/content/03.00_VIKTOR.png'
-  return '/assets/content/placeholder_01.png'
+  return '/assets/content/03.03_AXIOM.png'
 }
 
 function mapToPreview(entry: ContentItem | null): ContentPreviewData | null {

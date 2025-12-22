@@ -1,20 +1,28 @@
 [
   {
-    "id": "FAC-PLACEHOLDER-0001",
+    "id": "FAC-CHROME-SYNDICATE-0610",
     "category": "factions",
-    "subCategory": "demo",
-    "title": "Шаблон фракции",
-    "summary": "Заглушка фракции для раздела Factions.",
-    "date": "2025-09-22",
-    "tags": ["placeholder", "faction"],
-    "file": "factions/2025-09-22__faction-placeholder.md",
+    "subCategory": "cartel",
+    "title": "Chrome Syndicate — кибер-наркокартель",
+    "summary": "Подпольный рынок имплантов и психоактивных модулей ECHELON.",
+    "date": "2025-12-22",
+    "tags": ["syndicate", "black-market", "implants", "undercity"],
+    "file": "factions/FAC-CHROME-SYNDICATE-0610/index.md",
     "format": "md",
+    "renderMode": "hybrid",
     "author": "AXIOM CORE",
     "status": "published",
     "visibility": "public",
-    "weight": 100,
+    "weight": 10,
     "lang": "ru",
+    "version": "v1.0",
+    "slug": "chrome-syndicate",
+    "numericSuffix": "0610",
+    "cover": "/assets/content/chrome-syndicate.png",
     "links": [],
-    "meta": { "v": 2 }
+    "meta": {
+      "v": 2,
+      "zone": "06_FACTIONS"
+    }
   }
 ]

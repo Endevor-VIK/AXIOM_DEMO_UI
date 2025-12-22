@@ -1,26 +1,5 @@
 [
   {
-    "id": "CHR-PLACEHOLDER-0001",
-    "category": "characters",
-    "subCategory": "demo",
-    "title": "Шаблон персонажа",
-    "summary": "Заглушка персонажа для раздела Characters.",
-    "date": "2025-09-22",
-    "tags": ["placeholder", "demo"],
-    "file": "characters/2025-09-22__character-placeholder.md",
-    "format": "md",
-    "author": "AXIOM CORE",
-    "status": "published",
-    "visibility": "public",
-    "weight": 100,
-    "lang": "ru",
-    "slug": "character-placeholder",
-    "numericSuffix": "0001",
-    "links": [],
-    "meta": { "v": 2 }
-  },
-
-  {
     "id": "CHR-VIKTOR-0301",
     "category": "characters",
     "subCategory": "prime",
@@ -31,7 +10,6 @@
     "file": "characters/CHR-VIKTOR-0301/index.md",
     "format": "md",
     "renderMode": "hybrid",
-    "assetsBase": "characters/CHR-VIKTOR-0301/",
     "author": "CREATOR & AXIOM",
     "status": "published",
     "visibility": "public",
@@ -40,6 +18,7 @@
     "version": "v2.1.1",
     "slug": "viktor",
     "numericSuffix": "0301",
+    "cover": "/assets/content/03.00_VIKTOR.png",
     "links": [],
     "meta": {
       "v": 2,
@@ -48,7 +27,6 @@
       "zone": "03_CHARACTERS"
     }
   },
-
   {
     "id": "CHR-AXIOM-0303",
     "category": "characters",
@@ -60,7 +38,6 @@
     "file": "characters/CHR-AXIOM-0303/index.md",
     "format": "md",
     "renderMode": "hybrid",
-    "assetsBase": "characters/CHR-AXIOM-0303/",
     "author": "CREATOR & AXIOM",
     "status": "published",
     "visibility": "public",
@@ -69,11 +46,90 @@
     "version": "v2.1",
     "slug": "axiom",
     "numericSuffix": "0303",
+    "cover": "/assets/content/03.03_AXIOM.png",
     "links": [],
     "meta": {
       "v": 2,
       "fileVersion": "v2.1",
       "fileStatus": "DRAFT",
+      "zone": "03_CHARACTERS"
+    }
+  },
+  {
+    "id": "CHR-LIZA-0302",
+    "category": "characters",
+    "subCategory": "resistance",
+    "title": "Лиза Синклер — призрачный хакер",
+    "summary": "Одиночка сопротивления, слияние боли и кода в ECHELON.",
+    "date": "2025-12-22",
+    "tags": ["hacker", "resistance", "voidlink", "ghost"],
+    "file": "characters/CHR-LIZA-0302/index.md",
+    "format": "md",
+    "renderMode": "hybrid",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 30,
+    "lang": "ru",
+    "version": "v1.0",
+    "slug": "liza",
+    "numericSuffix": "0302",
+    "cover": "/assets/content/liza.png",
+    "links": [],
+    "meta": {
+      "v": 2,
+      "zone": "03_CHARACTERS"
+    }
+  },
+  {
+    "id": "CHR-WHITE-CONTOUR-0317",
+    "category": "characters",
+    "subCategory": "anomaly",
+    "title": "White Contour — призрачный агент",
+    "summary": "Глитч-сущность ECHELON, ломает сенсоры и линии наблюдения.",
+    "date": "2025-12-22",
+    "tags": ["anomaly", "ghost", "contour", "echelon"],
+    "file": "characters/CHR-WHITE-CONTOUR-0317/index.md",
+    "format": "md",
+    "renderMode": "hybrid",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 40,
+    "lang": "ru",
+    "version": "v1.0",
+    "slug": "white-contour",
+    "numericSuffix": "0317",
+    "cover": "/assets/content/white-contour.png",
+    "links": [],
+    "meta": {
+      "v": 2,
+      "zone": "03_CHARACTERS"
+    }
+  },
+  {
+    "id": "CHR-NOFACE-0318",
+    "category": "characters",
+    "subCategory": "broker",
+    "title": "NoFace — теневой куратор",
+    "summary": "Брокер данных и связующее звено между подпольем и AXIOM_SHADOW_NET.",
+    "date": "2025-12-22",
+    "tags": ["broker", "shadow", "data", "undercity"],
+    "file": "characters/CHR-NOFACE-0318/index.md",
+    "format": "md",
+    "renderMode": "hybrid",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 45,
+    "lang": "ru",
+    "version": "v1.0",
+    "slug": "noface",
+    "numericSuffix": "0318",
+    "cover": "/assets/content/noface.png",
+    "links": [],
+    "meta": {
+      "v": 2,
       "zone": "03_CHARACTERS"
     }
   }
