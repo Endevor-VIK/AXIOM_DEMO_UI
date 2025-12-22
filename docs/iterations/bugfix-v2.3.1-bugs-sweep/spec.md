@@ -34,7 +34,7 @@
 - [ ] BUG-007 reader legacy dataset
 - [ ] PERF-001 avatar menu reflow
 - [ ] ARCH-001 dual-content-pipeline
-- [ ] BUG-003 reader overlay/menu scroll (позиционирование overlay/menu, scroll-lock)
+- [x] BUG-003 reader overlay/menu scroll (позиционирование overlay/menu, scroll-lock)
 
 (Можно дополнять из индекса; отмечать P0/P1 в теле карточек.)
 

@@ -31,6 +31,7 @@
 - 2025-12-20T22:18:40+03:00 — Действие: По фидбэку UI (меню открывается от любой точки, но перекрывает header/overlay не закрывает контент/скролл контента блокируется) скорректировал слои: `axr-menu-layer` ограничен областью под header (top/height через `--axr-header-h-dyn`), обновлён поиск scrollRoot при open. Требуется повторная проверка, баг остаётся OPEN. Файлы: `src/features/content/components/ReaderMenuLayer.tsx`, `styles/content-hub-v2.css`. → Результат: WIP/FAIL
 - 2025-12-20T22:33:10+03:00 — Действие: Для стабилизации высоты header добавил `ResizeObserver` в `ReaderMenuLayer` (динамическое обновление `--axr-header-h-dyn`), чтобы слой меню/overlay не перекрывал шапку и корректно рассчитывал высоту под viewport. Коммита нет, требуется повторная проверка UI и подтверждение. Файлы: `src/features/content/components/ReaderMenuLayer.tsx`. → Результат: WIP
 - 2025-12-22T19:12:40+03:00 — Действие: Пересчёт высоты header перевёл на `offsetHeight` (исключение двойного масштаба при `zoom/transform`), слой меню/overlay перевёл на `top + bottom` вместо `height: 100dvh` (стабилизация покрытия под шапкой). Добавил ленивое восстановление scrollRoot в overlay. Требуется повторная проверка UI. Файлы: `src/features/content/components/ReaderMenuLayer.tsx`, `styles/content-hub-v2.css`. → Результат: WIP
+- 2025-12-22T18:12:33+03:00 — Действие: Перенёс прокрутку при открытом меню на глобальные `wheel/touch` обработчики (document-level) с проверкой цели: меню скроллится самостоятельно, фон прокручивается через `#axr-scroll` при событиях вне меню. Overlay теперь только кликабельный слой закрытия. Файлы: `src/features/content/components/ReaderMenuLayer.tsx`. → Результат: WIP
 
 ## Step C — Documentation
 - 
@@ -39,6 +40,7 @@
 - 2025-12-20T20:44:20+03:00 — Действие: Ручная проверка BUG-003 в UI (локал): меню всё ещё открывается от верхней точки, фон полностью залочен (нет скролла страницы при открытом меню). Подозрение: жёсткий scroll-lock `body { position: fixed }` + меню фиксировано к top header; различие между scroll документа и вложенного HTML контента. → Результат: FAIL (требуется доработка)
 - 2025-12-20T20:55:00+03:00 — Действие: Вторая проверка после снятия scroll-lock: скролл доступен, но меню остаётся привязано к верхней части и перекрывает header; overlay не отделён от шапки. → Результат: FAIL
 - 2025-12-22T18:01:42+03:00 — Действие: Проверка текущей сборки: меню открывается из любой точки, header кликается, overlay корректен; проблема осталась — при открытом меню не скроллится основной HTML-контент под overlay. → Результат: FAIL (нужен фикс прокрутки при active menu)
+- 2025-12-22T18:21:32+03:00 — Действие: Финальная проверка (по фидбэку пользователя): меню, overlay и скролл HTML-контента работают корректно при открытом меню. BUG-003 закрыт как DONE. → Результат: PASS
 
 ## Step E — Git
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
@@ -46,6 +48,7 @@
 - 2025-12-20T21:40:58+03:00 — Commit: `2e1abe9` — `chore(reader-menu): update props for ts strict mode (BUG-003 still open)` — Files: `src/features/content/pages/ReaderPage.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-22T17:09:58+03:00 — Commit: `7790519` — `chore(reader-menu): add scroll container and refine layer bounds (BUG-003 wip)` — Files: `src/features/content/pages/ReaderPage.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-22T18:02:35+03:00 — Commit: `1e4bd1f` — `chore(reader-menu): stabilize header sizing and layer bounds` — Files: `src/features/content/components/ReaderMenuLayer.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md` (BUG-003 остаётся OPEN)
+- 2025-12-22T18:21:32+03:00 — Commit: `080a699` — `fix(reader-menu): congratulations!!! BUG-003 resolved` — Files: `src/features/content/components/ReaderMenuLayer.tsx`
 
 ---
 

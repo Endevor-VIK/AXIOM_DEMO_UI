@@ -3,11 +3,11 @@
 ---
 id: BUG-003
 title: Reader: overlay + меню не открываются корректно на любой позиции страницы (привязка к “верхней точке”)
-status: IN_PROGRESS
+status: DONE
 severity: Critical
 area: Reader / Overlay / Menu
 created: 2025-12-19
-updated: 2025-12-20
+updated: 2025-12-22
 ---
 
 ## Summary
@@ -69,3 +69,8 @@ updated: 2025-12-20
 - Overlay покрывает viewport полностью, клики вне меню закрывают меню.
 - Нет “скачка” страницы при open/close меню.
 - Нет конфликтов с global scale / transform.
+
+## Resolution
+- Меню и overlay стабильно работают от любой позиции скролла.
+- Прокрутка HTML-контента сохраняется при открытом меню; меню скроллится независимо.
+- Overlay покрывает область под шапкой и не блокирует header.
