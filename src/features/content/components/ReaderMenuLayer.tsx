@@ -26,7 +26,7 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
   onClose,
 }) => {
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null)
-  const [scrollRoot, setScrollRoot] = useState<HTMLElement | null>(null)
+  const scrollRootRef = useRef<HTMLElement | null>(null)
   const lastTouchY = useRef<number | null>(null)
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
   useEffect(() => {
     if (!open) return
     const node = document.getElementById('axr-scroll')
-    if (node) setScrollRoot(node)
+    if (node) scrollRootRef.current = node
   }, [open])
 
   useLayoutEffect(() => {
@@ -45,14 +45,24 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
     const root = document.documentElement
 
     const setHeaderSize = () => {
-      const h = header?.getBoundingClientRect().height ?? 48
+      if (!header) return
+      const measured = header.offsetHeight
+      const fallback = Number.parseFloat(getComputedStyle(header).height) || 48
+      const h = measured || fallback
       root.style.setProperty('--axr-header-h-dyn', `${h}px`)
     }
 
     setHeaderSize()
+    const resizeObserver = header ? new ResizeObserver(setHeaderSize) : null
+    if (header && resizeObserver) resizeObserver.observe(header)
     window.addEventListener('resize', setHeaderSize)
-    return () => window.removeEventListener('resize', setHeaderSize)
+    return () => {
+      if (resizeObserver) resizeObserver.disconnect()
+      window.removeEventListener('resize', setHeaderSize)
+    }
   }, [])
+
+  const resolveScrollRoot = () => scrollRootRef.current ?? document.getElementById('axr-scroll')
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase()
@@ -71,6 +81,7 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
         aria-hidden={!open}
         onClick={onClose}
         onWheel={(event) => {
+          const scrollRoot = resolveScrollRoot()
           if (!scrollRoot) return
           scrollRoot.scrollBy({ top: event.deltaY, left: event.deltaX })
           event.preventDefault()
@@ -81,6 +92,7 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
           }
         }}
         onTouchMove={(event) => {
+          const scrollRoot = resolveScrollRoot()
           if (!scrollRoot || event.touches.length !== 1 || lastTouchY.current === null) return
           const current = event.touches[0].clientY
           const delta = lastTouchY.current - current
