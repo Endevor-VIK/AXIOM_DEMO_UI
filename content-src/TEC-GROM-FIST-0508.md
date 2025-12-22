@@ -7,7 +7,7 @@ category: "technologies"
 status: "published"
 lang: "ru"
 version: "v1.0"
-image: "/assets/content/grom-fist.png"
+image: "/assets/content/placeholder.png"
 tags:
   - grom-fist
   - thunder-dogs
@@ -92,7 +92,7 @@ preview_signature:
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/grom-fist.png" alt="Grom Fist module" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Grom Fist module" loading="lazy" />
       <figcaption>Контуры боевого усилителя ударной руки.</figcaption>
     </figure>
   </section>

@@ -7,7 +7,7 @@ category: "technologies"
 status: "published"
 lang: "ru"
 version: "v1.0"
-image: "/assets/content/neural-scanner.png"
+image: "/assets/content/placeholder.png"
 tags:
   - neural
   - scanner
@@ -92,7 +92,7 @@ preview_signature:
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/neural-scanner.png" alt="Neural scanner interface" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Neural scanner interface" loading="lazy" />
       <figcaption>Матрица анализа боя и прогнозов.</figcaption>
     </figure>
   </section>

@@ -70,7 +70,7 @@
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/echelon-undercity.png" alt="Undercity sector map" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Undercity sector map" loading="lazy" />
       <figcaption>Undercity: хаос, рынки и арены в глубинах ECHELON.</figcaption>
     </figure>
   </section>

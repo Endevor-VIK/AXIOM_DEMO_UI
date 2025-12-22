@@ -66,7 +66,7 @@
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/neural-scanner.png" alt="Neural scanner interface" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Neural scanner interface" loading="lazy" />
       <figcaption>Матрица анализа боя и прогнозов.</figcaption>
     </figure>
   </section>

@@ -7,7 +7,7 @@ category: "technologies"
 status: "published"
 lang: "ru"
 version: "v1.0"
-image: "/assets/content/harpoon-implant.png"
+image: "/assets/content/placeholder.png"
 tags:
   - harpoon
   - implant
@@ -92,7 +92,7 @@ preview_signature:
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/harpoon-implant.png" alt="Harpoon implant schematic" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Harpoon implant schematic" loading="lazy" />
       <figcaption>Контуры кинетической системы закрепления.</figcaption>
     </figure>
   </section>

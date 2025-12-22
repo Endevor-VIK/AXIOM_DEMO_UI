@@ -66,7 +66,7 @@
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/eva-dream.png" alt="EVA dream entity" loading="lazy" />
+      <img src="/assets/content/noface.png" alt="EVA dream entity" loading="lazy" />
       <figcaption>EVA — тонкая грань между светом и тенью, зафиксированная в ECHELON.</figcaption>
     </figure>
   </section>

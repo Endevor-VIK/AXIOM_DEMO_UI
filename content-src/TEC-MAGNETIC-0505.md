@@ -7,7 +7,7 @@ category: "technologies"
 status: "published"
 lang: "ru"
 version: "v1.0"
-image: "/assets/content/magnetic-implant.png"
+image: "/assets/content/placeholder.png"
 tags:
   - magnetic
   - implant
@@ -92,7 +92,7 @@ preview_signature:
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/magnetic-implant.png" alt="Magnetic implant core" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Magnetic implant core" loading="lazy" />
       <figcaption>Ядро грави-контроля и магнитной сцепки.</figcaption>
     </figure>
   </section>

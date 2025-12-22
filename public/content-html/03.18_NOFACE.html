@@ -66,7 +66,7 @@
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/noface.png" alt="NoFace abstract entity" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="NoFace abstract entity" loading="lazy" />
       <figcaption>Узел без лица: информация важнее носителя.</figcaption>
     </figure>
   </section>

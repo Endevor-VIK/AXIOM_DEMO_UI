@@ -66,7 +66,7 @@
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/grom-fist.png" alt="Grom Fist module" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Grom Fist module" loading="lazy" />
       <figcaption>Контуры боевого усилителя ударной руки.</figcaption>
     </figure>
   </section>

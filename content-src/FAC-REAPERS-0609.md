@@ -7,7 +7,7 @@ category: "factions"
 status: "published"
 lang: "ru"
 version: "v1.0"
-image: "/assets/content/reapers.png"
+image: "/assets/content/placeholder.png"
 tags:
   - reapers
   - exile
@@ -92,7 +92,7 @@ preview_signature:
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/reapers.png" alt="Reapers sigil" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Reapers sigil" loading="lazy" />
       <figcaption>Знак изгнанников, выросший из боли и хрома.</figcaption>
     </figure>
   </section>

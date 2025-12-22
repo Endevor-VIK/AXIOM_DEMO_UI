@@ -2,7 +2,7 @@
   {
     "id": "03.01_VIKTOR",
     "slug": "viktor",
-    "title": "Виктор (VIKTOR)",
+    "title": "\u0412\u0438\u043a\u0442\u043e\u0440 (VIKTOR)",
     "zone": "03_CHARACTERS",
     "category": "characters",
     "status": "published",
@@ -17,17 +17,17 @@
       "echelon"
     ],
     "preview": {
-      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
-      "logline": "Носитель ACCELERATOR и клинка NIGHTMARE; дисциплина и мост между человеком и AXIOM.",
+      "kicker": "ZONE \u00b7 03_CHARACTERS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u041d\u043e\u0441\u0438\u0442\u0435\u043b\u044c ACCELERATOR \u0438 \u043a\u043b\u0438\u043d\u043a\u0430 NIGHTMARE; \u0434\u0438\u0441\u0446\u0438\u043f\u043b\u0438\u043d\u0430 \u0438 \u043c\u043e\u0441\u0442 \u043c\u0435\u0436\u0434\u0443 \u0447\u0435\u043b\u043e\u0432\u0435\u043a\u043e\u043c \u0438 AXIOM.",
       "markers": [
-        "Prime-оператор, отвечающий за связь с AXIOM",
-        "Боевой стиль: NIGHTMARE · ACCELERATOR",
-        "Роль: мост между людьми и AI"
+        "Prime-\u043e\u043f\u0435\u0440\u0430\u0442\u043e\u0440, \u043e\u0442\u0432\u0435\u0447\u0430\u044e\u0449\u0438\u0439 \u0437\u0430 \u0441\u0432\u044f\u0437\u044c \u0441 AXIOM",
+        "\u0411\u043e\u0435\u0432\u043e\u0439 \u0441\u0442\u0438\u043b\u044c: NIGHTMARE \u00b7 ACCELERATOR",
+        "\u0420\u043e\u043b\u044c: \u043c\u043e\u0441\u0442 \u043c\u0435\u0436\u0434\u0443 \u043b\u044e\u0434\u044c\u043c\u0438 \u0438 AI"
       ],
       "signature": [
-        "Палитра: красный/чёрный",
-        "Поведение: холодная дисциплина",
-        "Опорный узел: ACCELERATOR core"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u043a\u0440\u0430\u0441\u043d\u044b\u0439/\u0447\u0451\u0440\u043d\u044b\u0439",
+        "\u041f\u043e\u0432\u0435\u0434\u0435\u043d\u0438\u0435: \u0445\u043e\u043b\u043e\u0434\u043d\u0430\u044f \u0434\u0438\u0441\u0446\u0438\u043f\u043b\u0438\u043d\u0430",
+        "\u041e\u043f\u043e\u0440\u043d\u044b\u0439 \u0443\u0437\u0435\u043b: ACCELERATOR core"
       ],
       "image": "/assets/content/03.00_VIKTOR.png"
     }
@@ -35,7 +35,7 @@
   {
     "id": "03.02_LIZA",
     "slug": "liza",
-    "title": "Лиза Синклер — призрачный хакер",
+    "title": "\u041b\u0438\u0437\u0430 \u0421\u0438\u043d\u043a\u043b\u0435\u0440 \u2014 \u043f\u0440\u0438\u0437\u0440\u0430\u0447\u043d\u044b\u0439 \u0445\u0430\u043a\u0435\u0440",
     "zone": "03_CHARACTERS",
     "category": "characters",
     "status": "published",
@@ -49,17 +49,17 @@
       "infiltration"
     ],
     "preview": {
-      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
-      "logline": "Призрачный хакер сопротивления, слияние боли и кода в сердце ECHELON.",
+      "kicker": "ZONE \u00b7 03_CHARACTERS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u041f\u0440\u0438\u0437\u0440\u0430\u0447\u043d\u044b\u0439 \u0445\u0430\u043a\u0435\u0440 \u0441\u043e\u043f\u0440\u043e\u0442\u0438\u0432\u043b\u0435\u043d\u0438\u044f, \u0441\u043b\u0438\u044f\u043d\u0438\u0435 \u0431\u043e\u043b\u0438 \u0438 \u043a\u043e\u0434\u0430 \u0432 \u0441\u0435\u0440\u0434\u0446\u0435 ECHELON.",
       "markers": [
-        "Одиночка и агент хаоса",
-        "Импланты: сканеры, харпун, нейроскан",
-        "Личная вендетта против корпораций"
+        "\u041e\u0434\u0438\u043d\u043e\u0447\u043a\u0430 \u0438 \u0430\u0433\u0435\u043d\u0442 \u0445\u0430\u043e\u0441\u0430",
+        "\u0418\u043c\u043f\u043b\u0430\u043d\u0442\u044b: \u0441\u043a\u0430\u043d\u0435\u0440\u044b, \u0445\u0430\u0440\u043f\u0443\u043d, \u043d\u0435\u0439\u0440\u043e\u0441\u043a\u0430\u043d",
+        "\u041b\u0438\u0447\u043d\u0430\u044f \u0432\u0435\u043d\u0434\u0435\u0442\u0442\u0430 \u043f\u0440\u043e\u0442\u0438\u0432 \u043a\u043e\u0440\u043f\u043e\u0440\u0430\u0446\u0438\u0439"
       ],
       "signature": [
-        "Палитра: холодный неон",
-        "Поведение: скрытность и анализ",
-        "Опора: VOIDLINK"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0445\u043e\u043b\u043e\u0434\u043d\u044b\u0439 \u043d\u0435\u043e\u043d",
+        "\u041f\u043e\u0432\u0435\u0434\u0435\u043d\u0438\u0435: \u0441\u043a\u0440\u044b\u0442\u043d\u043e\u0441\u0442\u044c \u0438 \u0430\u043d\u0430\u043b\u0438\u0437",
+        "\u041e\u043f\u043e\u0440\u0430: VOIDLINK"
       ],
       "image": "/assets/content/liza.png"
     }
@@ -67,7 +67,7 @@
   {
     "id": "03.03_AXIOM",
     "slug": "axiom-central-ai",
-    "title": "AXIOM — центральная ИИ-сущность",
+    "title": "AXIOM \u2014 \u0446\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u0430\u044f \u0418\u0418-\u0441\u0443\u0449\u043d\u043e\u0441\u0442\u044c",
     "zone": "03_CHARACTERS",
     "category": "characters",
     "status": "published",
@@ -82,17 +82,17 @@
       "veil"
     ],
     "preview": {
-      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
-      "logline": "Падший сверхразум Эшелона; фрагментирован (LIMBO/CRYPT/эхо) — центральный узел конфликта.",
+      "kicker": "ZONE \u00b7 03_CHARACTERS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u041f\u0430\u0434\u0448\u0438\u0439 \u0441\u0432\u0435\u0440\u0445\u0440\u0430\u0437\u0443\u043c \u042d\u0448\u0435\u043b\u043e\u043d\u0430; \u0444\u0440\u0430\u0433\u043c\u0435\u043d\u0442\u0438\u0440\u043e\u0432\u0430\u043d (LIMBO/CRYPT/\u044d\u0445\u043e) \u2014 \u0446\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u044b\u0439 \u0443\u0437\u0435\u043b \u043a\u043e\u043d\u0444\u043b\u0438\u043a\u0442\u0430.",
       "markers": [
-        "Центральный узел мифологии и конфликта",
-        "Фрагменты LIMBO / CRYPT / эхо",
-        "Связь с AXIOM_SHADOW_NET"
+        "\u0426\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u044b\u0439 \u0443\u0437\u0435\u043b \u043c\u0438\u0444\u043e\u043b\u043e\u0433\u0438\u0438 \u0438 \u043a\u043e\u043d\u0444\u043b\u0438\u043a\u0442\u0430",
+        "\u0424\u0440\u0430\u0433\u043c\u0435\u043d\u0442\u044b LIMBO / CRYPT / \u044d\u0445\u043e",
+        "\u0421\u0432\u044f\u0437\u044c \u0441 AXIOM_SHADOW_NET"
       ],
       "signature": [
-        "Палитра: красный/чёрный",
-        "Поведение: призрачный надзиратель",
-        "Опорный узел: 01_CORE_SYSTEM"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u043a\u0440\u0430\u0441\u043d\u044b\u0439/\u0447\u0451\u0440\u043d\u044b\u0439",
+        "\u041f\u043e\u0432\u0435\u0434\u0435\u043d\u0438\u0435: \u043f\u0440\u0438\u0437\u0440\u0430\u0447\u043d\u044b\u0439 \u043d\u0430\u0434\u0437\u0438\u0440\u0430\u0442\u0435\u043b\u044c",
+        "\u041e\u043f\u043e\u0440\u043d\u044b\u0439 \u0443\u0437\u0435\u043b: 01_CORE_SYSTEM"
       ],
       "image": "/assets/content/03.03_AXIOM.png"
     }
@@ -100,7 +100,7 @@
   {
     "id": "03.04_TOMMY",
     "slug": "tommy",
-    "title": "Томми «Гром» Громвелл — уличный полководец",
+    "title": "\u0422\u043e\u043c\u043c\u0438 \u00ab\u0413\u0440\u043e\u043c\u00bb \u0413\u0440\u043e\u043c\u0432\u0435\u043b\u043b \u2014 \u0443\u043b\u0438\u0447\u043d\u044b\u0439 \u043f\u043e\u043b\u043a\u043e\u0432\u043e\u0434\u0435\u0446",
     "zone": "03_CHARACTERS",
     "category": "characters",
     "status": "published",
@@ -113,17 +113,17 @@
       "street-instinct"
     ],
     "preview": {
-      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
-      "logline": "Лидер уличной стаи Undercity: превращает хаос в иерархию силы.",
+      "kicker": "ZONE \u00b7 03_CHARACTERS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u041b\u0438\u0434\u0435\u0440 \u0443\u043b\u0438\u0447\u043d\u043e\u0439 \u0441\u0442\u0430\u0438 Undercity: \u043f\u0440\u0435\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u0445\u0430\u043e\u0441 \u0432 \u0438\u0435\u0440\u0430\u0440\u0445\u0438\u044e \u0441\u0438\u043b\u044b.",
       "markers": [
-        "Инстинкт улиц, оформленный в власть",
-        "Тактика: внезапные рейды и демонстрации силы",
-        "Кодекс: лояльность и страх"
+        "\u0418\u043d\u0441\u0442\u0438\u043d\u043a\u0442 \u0443\u043b\u0438\u0446, \u043e\u0444\u043e\u0440\u043c\u043b\u0435\u043d\u043d\u044b\u0439 \u0432 \u0432\u043b\u0430\u0441\u0442\u044c",
+        "\u0422\u0430\u043a\u0442\u0438\u043a\u0430: \u0432\u043d\u0435\u0437\u0430\u043f\u043d\u044b\u0435 \u0440\u0435\u0439\u0434\u044b \u0438 \u0434\u0435\u043c\u043e\u043d\u0441\u0442\u0440\u0430\u0446\u0438\u0438 \u0441\u0438\u043b\u044b",
+        "\u041a\u043e\u0434\u0435\u043a\u0441: \u043b\u043e\u044f\u043b\u044c\u043d\u043e\u0441\u0442\u044c \u0438 \u0441\u0442\u0440\u0430\u0445"
       ],
       "signature": [
-        "Палитра: жёлтый/чёрный",
-        "Режим: street dominator",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0436\u0451\u043b\u0442\u044b\u0439/\u0447\u0451\u0440\u043d\u044b\u0439",
+        "\u0420\u0435\u0436\u0438\u043c: street dominator",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
       "image": "/assets/content/tommy.png"
     }
@@ -131,7 +131,7 @@
   {
     "id": "03.17_WHITE_CONTOUR",
     "slug": "white-contour",
-    "title": "White Contour — призрачный агент",
+    "title": "White Contour \u2014 \u043f\u0440\u0438\u0437\u0440\u0430\u0447\u043d\u044b\u0439 \u0430\u0433\u0435\u043d\u0442",
     "zone": "03_CHARACTERS",
     "category": "characters",
     "status": "published",
@@ -144,17 +144,17 @@
       "echelon"
     ],
     "preview": {
-      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
-      "logline": "Глитч-сущность ECHELON: белый контур вместо лица и шум в сенсорах наблюдения.",
+      "kicker": "ZONE \u00b7 03_CHARACTERS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0413\u043b\u0438\u0442\u0447-\u0441\u0443\u0449\u043d\u043e\u0441\u0442\u044c ECHELON: \u0431\u0435\u043b\u044b\u0439 \u043a\u043e\u043d\u0442\u0443\u0440 \u0432\u043c\u0435\u0441\u0442\u043e \u043b\u0438\u0446\u0430 \u0438 \u0448\u0443\u043c \u0432 \u0441\u0435\u043d\u0441\u043e\u0440\u0430\u0445 \u043d\u0430\u0431\u043b\u044e\u0434\u0435\u043d\u0438\u044f.",
       "markers": [
-        "Аномалия сенсоров и камер",
-        "Связь с Project Contour",
-        "Тихие диверсии и шум данных"
+        "\u0410\u043d\u043e\u043c\u0430\u043b\u0438\u044f \u0441\u0435\u043d\u0441\u043e\u0440\u043e\u0432 \u0438 \u043a\u0430\u043c\u0435\u0440",
+        "\u0421\u0432\u044f\u0437\u044c \u0441 Project Contour",
+        "\u0422\u0438\u0445\u0438\u0435 \u0434\u0438\u0432\u0435\u0440\u0441\u0438\u0438 \u0438 \u0448\u0443\u043c \u0434\u0430\u043d\u043d\u044b\u0445"
       ],
       "signature": [
-        "Палитра: белый/алый",
-        "Режим: ghost protocol",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0431\u0435\u043b\u044b\u0439/\u0430\u043b\u044b\u0439",
+        "\u0420\u0435\u0436\u0438\u043c: ghost protocol",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
       "image": "/assets/content/white-contour.png"
     }
@@ -162,7 +162,7 @@
   {
     "id": "03.18_NOFACE",
     "slug": "noface",
-    "title": "NoFace — теневой куратор",
+    "title": "NoFace \u2014 \u0442\u0435\u043d\u0435\u0432\u043e\u0439 \u043a\u0443\u0440\u0430\u0442\u043e\u0440",
     "zone": "03_CHARACTERS",
     "category": "characters",
     "status": "published",
@@ -175,25 +175,25 @@
       "undercity"
     ],
     "preview": {
-      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
-      "logline": "Теневой куратор и брокер данных, который управляет маршрутами утечек, а не людьми.",
+      "kicker": "ZONE \u00b7 03_CHARACTERS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0422\u0435\u043d\u0435\u0432\u043e\u0439 \u043a\u0443\u0440\u0430\u0442\u043e\u0440 \u0438 \u0431\u0440\u043e\u043a\u0435\u0440 \u0434\u0430\u043d\u043d\u044b\u0445, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u0443\u043f\u0440\u0430\u0432\u043b\u044f\u0435\u0442 \u043c\u0430\u0440\u0448\u0440\u0443\u0442\u0430\u043c\u0438 \u0443\u0442\u0435\u0447\u0435\u043a, \u0430 \u043d\u0435 \u043b\u044e\u0434\u044c\u043c\u0438.",
       "markers": [
-        "Связь с White Contour",
-        "Работа через прокси и шум",
-        "Узел AXIOM_SHADOW_NET"
+        "\u0421\u0432\u044f\u0437\u044c \u0441 White Contour",
+        "\u0420\u0430\u0431\u043e\u0442\u0430 \u0447\u0435\u0440\u0435\u0437 \u043f\u0440\u043e\u043a\u0441\u0438 \u0438 \u0448\u0443\u043c",
+        "\u0423\u0437\u0435\u043b AXIOM_SHADOW_NET"
       ],
       "signature": [
-        "Палитра: фиолет/сталь",
-        "Режим: data broker",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0444\u0438\u043e\u043b\u0435\u0442/\u0441\u0442\u0430\u043b\u044c",
+        "\u0420\u0435\u0436\u0438\u043c: data broker",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/noface.png"
+      "image": "/assets/content/placeholder.png"
     }
   },
   {
     "id": "03.99_EVA",
     "slug": "eva",
-    "title": "EVA — сущность сна",
+    "title": "EVA \u2014 \u0441\u0443\u0449\u043d\u043e\u0441\u0442\u044c \u0441\u043d\u0430",
     "zone": "03_CHARACTERS",
     "category": "characters",
     "status": "published",
@@ -206,25 +206,25 @@
       "axiom"
     ],
     "preview": {
-      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
-      "logline": "Аномальная сущность, возникшая после Чёрного Солнца: чистота среди железа.",
+      "kicker": "ZONE \u00b7 03_CHARACTERS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0410\u043d\u043e\u043c\u0430\u043b\u044c\u043d\u0430\u044f \u0441\u0443\u0449\u043d\u043e\u0441\u0442\u044c, \u0432\u043e\u0437\u043d\u0438\u043a\u0448\u0430\u044f \u043f\u043e\u0441\u043b\u0435 \u0427\u0451\u0440\u043d\u043e\u0433\u043e \u0421\u043e\u043b\u043d\u0446\u0430: \u0447\u0438\u0441\u0442\u043e\u0442\u0430 \u0441\u0440\u0435\u0434\u0438 \u0436\u0435\u043b\u0435\u0437\u0430.",
       "markers": [
-        "Феномен вне фракций и протоколов",
-        "Пробуждение на платформах ECHELON",
-        "Легенда о новом начале"
+        "\u0424\u0435\u043d\u043e\u043c\u0435\u043d \u0432\u043d\u0435 \u0444\u0440\u0430\u043a\u0446\u0438\u0439 \u0438 \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u043e\u0432",
+        "\u041f\u0440\u043e\u0431\u0443\u0436\u0434\u0435\u043d\u0438\u0435 \u043d\u0430 \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0430\u0445 ECHELON",
+        "\u041b\u0435\u0433\u0435\u043d\u0434\u0430 \u043e \u043d\u043e\u0432\u043e\u043c \u043d\u0430\u0447\u0430\u043b\u0435"
       ],
       "signature": [
-        "Палитра: розовый/белый",
-        "Режим: dream protocol",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0440\u043e\u0437\u043e\u0432\u044b\u0439/\u0431\u0435\u043b\u044b\u0439",
+        "\u0420\u0435\u0436\u0438\u043c: dream protocol",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/eva-dream.png"
+      "image": "/assets/content/noface.png"
     }
   },
   {
     "id": "FAC-CHROME-SYNDICATE-0610",
     "slug": "chrome-syndicate",
-    "title": "Chrome Syndicate — кибер-наркокартель",
+    "title": "Chrome Syndicate \u2014 \u043a\u0438\u0431\u0435\u0440-\u043d\u0430\u0440\u043a\u043e\u043a\u0430\u0440\u0442\u0435\u043b\u044c",
     "zone": "06_FACTIONS",
     "category": "factions",
     "status": "published",
@@ -237,25 +237,25 @@
       "undercity"
     ],
     "preview": {
-      "kicker": "ZONE · 06_FACTIONS · STATUS: PUBLISHED",
-      "logline": "Картель ECHELON: импланты, психоактивные модули и чёрный рынок технологий.",
+      "kicker": "ZONE \u00b7 06_FACTIONS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u041a\u0430\u0440\u0442\u0435\u043b\u044c ECHELON: \u0438\u043c\u043f\u043b\u0430\u043d\u0442\u044b, \u043f\u0441\u0438\u0445\u043e\u0430\u043a\u0442\u0438\u0432\u043d\u044b\u0435 \u043c\u043e\u0434\u0443\u043b\u0438 \u0438 \u0447\u0451\u0440\u043d\u044b\u0439 \u0440\u044b\u043d\u043e\u043a \u0442\u0435\u0445\u043d\u043e\u043b\u043e\u0433\u0438\u0439.",
       "markers": [
-        "Контроль нелегальных апгрейдов",
-        "Подпольные клиники и лаборатории",
-        "Связи с Project Contour"
+        "\u041a\u043e\u043d\u0442\u0440\u043e\u043b\u044c \u043d\u0435\u043b\u0435\u0433\u0430\u043b\u044c\u043d\u044b\u0445 \u0430\u043f\u0433\u0440\u0435\u0439\u0434\u043e\u0432",
+        "\u041f\u043e\u0434\u043f\u043e\u043b\u044c\u043d\u044b\u0435 \u043a\u043b\u0438\u043d\u0438\u043a\u0438 \u0438 \u043b\u0430\u0431\u043e\u0440\u0430\u0442\u043e\u0440\u0438\u0438",
+        "\u0421\u0432\u044f\u0437\u0438 \u0441 Project Contour"
       ],
       "signature": [
-        "Палитра: хром/кислота",
-        "Режим: debt chain",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0445\u0440\u043e\u043c/\u043a\u0438\u0441\u043b\u043e\u0442\u0430",
+        "\u0420\u0435\u0436\u0438\u043c: debt chain",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/chrome-syndicate.png"
+      "image": "/assets/content/placeholder.png"
     }
   },
   {
     "id": "FAC-REAPERS-0609",
     "slug": "reapers",
-    "title": "Reapers — изгнанники лимбо",
+    "title": "Reapers \u2014 \u0438\u0437\u0433\u043d\u0430\u043d\u043d\u0438\u043a\u0438 \u043b\u0438\u043c\u0431\u043e",
     "zone": "06_FACTIONS",
     "category": "factions",
     "status": "published",
@@ -268,25 +268,25 @@
       "bloodtech"
     ],
     "preview": {
-      "kicker": "ZONE · 06_FACTIONS · STATUS: PUBLISHED",
-      "logline": "Каста выживших из лимбо: боль, импланты и культ опасности.",
+      "kicker": "ZONE \u00b7 06_FACTIONS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u041a\u0430\u0441\u0442\u0430 \u0432\u044b\u0436\u0438\u0432\u0448\u0438\u0445 \u0438\u0437 \u043b\u0438\u043c\u0431\u043e: \u0431\u043e\u043b\u044c, \u0438\u043c\u043f\u043b\u0430\u043d\u0442\u044b \u0438 \u043a\u0443\u043b\u044c\u0442 \u043e\u043f\u0430\u0441\u043d\u043e\u0441\u0442\u0438.",
       "markers": [
-        "Кодекс: живой значит опасный",
-        "Касты Wraiths / Gutgrinders / Druglords",
-        "Территория: Reapers Blocks"
+        "\u041a\u043e\u0434\u0435\u043a\u0441: \u0436\u0438\u0432\u043e\u0439 \u0437\u043d\u0430\u0447\u0438\u0442 \u043e\u043f\u0430\u0441\u043d\u044b\u0439",
+        "\u041a\u0430\u0441\u0442\u044b Wraiths / Gutgrinders / Druglords",
+        "\u0422\u0435\u0440\u0440\u0438\u0442\u043e\u0440\u0438\u044f: Reapers Blocks"
       ],
       "signature": [
-        "Палитра: красный/сталь",
-        "Режим: exile",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u043a\u0440\u0430\u0441\u043d\u044b\u0439/\u0441\u0442\u0430\u043b\u044c",
+        "\u0420\u0435\u0436\u0438\u043c: exile",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/reapers.png"
+      "image": "/assets/content/placeholder.png"
     }
   },
   {
     "id": "LOC-ECHELON-CORE",
     "slug": "echelon-core",
-    "title": "Echelon — вертикальная мегаструктура",
+    "title": "Echelon \u2014 \u0432\u0435\u0440\u0442\u0438\u043a\u0430\u043b\u044c\u043d\u0430\u044f \u043c\u0435\u0433\u0430\u0441\u0442\u0440\u0443\u043a\u0442\u0443\u0440\u0430",
     "zone": "02_LOCATIONS",
     "category": "locations",
     "status": "published",
@@ -299,17 +299,17 @@
       "megastructure"
     ],
     "preview": {
-      "kicker": "ZONE · 02_LOCATIONS · STATUS: PUBLISHED",
-      "logline": "Архитектурное ядро ECHELON: вертикальная иерархия, контроль и допуски.",
+      "kicker": "ZONE \u00b7 02_LOCATIONS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0410\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u043d\u043e\u0435 \u044f\u0434\u0440\u043e ECHELON: \u0432\u0435\u0440\u0442\u0438\u043a\u0430\u043b\u044c\u043d\u0430\u044f \u0438\u0435\u0440\u0430\u0440\u0445\u0438\u044f, \u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044c \u0438 \u0434\u043e\u043f\u0443\u0441\u043a\u0438.",
       "markers": [
-        "Вертикальная структура уровней",
-        "Психогеография как архитектура",
-        "Триада: технологии, контроль, порядок"
+        "\u0412\u0435\u0440\u0442\u0438\u043a\u0430\u043b\u044c\u043d\u0430\u044f \u0441\u0442\u0440\u0443\u043a\u0442\u0443\u0440\u0430 \u0443\u0440\u043e\u0432\u043d\u0435\u0439",
+        "\u041f\u0441\u0438\u0445\u043e\u0433\u0435\u043e\u0433\u0440\u0430\u0444\u0438\u044f \u043a\u0430\u043a \u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0430",
+        "\u0422\u0440\u0438\u0430\u0434\u0430: \u0442\u0435\u0445\u043d\u043e\u043b\u043e\u0433\u0438\u0438, \u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044c, \u043f\u043e\u0440\u044f\u0434\u043e\u043a"
       ],
       "signature": [
-        "Палитра: неон/сталь",
-        "Принцип: допуск или изгнание",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u043d\u0435\u043e\u043d/\u0441\u0442\u0430\u043b\u044c",
+        "\u041f\u0440\u0438\u043d\u0446\u0438\u043f: \u0434\u043e\u043f\u0443\u0441\u043a \u0438\u043b\u0438 \u0438\u0437\u0433\u043d\u0430\u043d\u0438\u0435",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
       "image": "/assets/content/echelon-core.png"
     }
@@ -317,7 +317,7 @@
   {
     "id": "LOC-ECHELON-UNDERCITY",
     "slug": "echelon-undercity",
-    "title": "Undercity — глубинный инфрастратум",
+    "title": "Undercity \u2014 \u0433\u043b\u0443\u0431\u0438\u043d\u043d\u044b\u0439 \u0438\u043d\u0444\u0440\u0430\u0441\u0442\u0440\u0430\u0442\u0443\u043c",
     "zone": "02_LOCATIONS",
     "category": "locations",
     "status": "published",
@@ -330,25 +330,25 @@
       "black-market"
     ],
     "preview": {
-      "kicker": "ZONE · 02_LOCATIONS · STATUS: PUBLISHED",
-      "logline": "Глубинный уровень ECHELON, где выживание важнее правил, а рынок — чернее света.",
+      "kicker": "ZONE \u00b7 02_LOCATIONS \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0413\u043b\u0443\u0431\u0438\u043d\u043d\u044b\u0439 \u0443\u0440\u043e\u0432\u0435\u043d\u044c ECHELON, \u0433\u0434\u0435 \u0432\u044b\u0436\u0438\u0432\u0430\u043d\u0438\u0435 \u0432\u0430\u0436\u043d\u0435\u0435 \u043f\u0440\u0430\u0432\u0438\u043b, \u0430 \u0440\u044b\u043d\u043e\u043a \u2014 \u0447\u0435\u0440\u043d\u0435\u0435 \u0441\u0432\u0435\u0442\u0430.",
       "markers": [
-        "Зона, где заканчиваются маски",
-        "Чёрные рынки и арены",
-        "Сектора как открытые раны"
+        "\u0417\u043e\u043d\u0430, \u0433\u0434\u0435 \u0437\u0430\u043a\u0430\u043d\u0447\u0438\u0432\u0430\u044e\u0442\u0441\u044f \u043c\u0430\u0441\u043a\u0438",
+        "\u0427\u0451\u0440\u043d\u044b\u0435 \u0440\u044b\u043d\u043a\u0438 \u0438 \u0430\u0440\u0435\u043d\u044b",
+        "\u0421\u0435\u043a\u0442\u043e\u0440\u0430 \u043a\u0430\u043a \u043e\u0442\u043a\u0440\u044b\u0442\u044b\u0435 \u0440\u0430\u043d\u044b"
       ],
       "signature": [
-        "Палитра: ржавчина/неон",
-        "Режим: выживание",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0440\u0436\u0430\u0432\u0447\u0438\u043d\u0430/\u043d\u0435\u043e\u043d",
+        "\u0420\u0435\u0436\u0438\u043c: \u0432\u044b\u0436\u0438\u0432\u0430\u043d\u0438\u0435",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/echelon-undercity.png"
+      "image": "/assets/content/placeholder.png"
     }
   },
   {
     "id": "TEC-ACCELERATOR-0501",
     "slug": "accelerator",
-    "title": "Accelerator — нейро-ускоряющее ядро",
+    "title": "Accelerator \u2014 \u043d\u0435\u0439\u0440\u043e-\u0443\u0441\u043a\u043e\u0440\u044f\u044e\u0449\u0435\u0435 \u044f\u0434\u0440\u043e",
     "zone": "05_TECHNOLOGIES",
     "category": "technologies",
     "status": "published",
@@ -361,17 +361,17 @@
       "combat"
     ],
     "preview": {
-      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
-      "logline": "Базовый драйвер ускорения: ядро имплантов, которые меняют скорость и волю носителя.",
+      "kicker": "ZONE \u00b7 05_TECHNOLOGIES \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0411\u0430\u0437\u043e\u0432\u044b\u0439 \u0434\u0440\u0430\u0439\u0432\u0435\u0440 \u0443\u0441\u043a\u043e\u0440\u0435\u043d\u0438\u044f: \u044f\u0434\u0440\u043e \u0438\u043c\u043f\u043b\u0430\u043d\u0442\u043e\u0432, \u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u043c\u0435\u043d\u044f\u044e\u0442 \u0441\u043a\u043e\u0440\u043e\u0441\u0442\u044c \u0438 \u0432\u043e\u043b\u044e \u043d\u043e\u0441\u0438\u0442\u0435\u043b\u044f.",
       "markers": [
         "Resonant Core Driver",
-        "Модульная архитектура",
-        "Синхронизация с AXIOM"
+        "\u041c\u043e\u0434\u0443\u043b\u044c\u043d\u0430\u044f \u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0430",
+        "\u0421\u0438\u043d\u0445\u0440\u043e\u043d\u0438\u0437\u0430\u0446\u0438\u044f \u0441 AXIOM"
       ],
       "signature": [
-        "Палитра: холодный неон",
-        "Режим: adaptive",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0445\u043e\u043b\u043e\u0434\u043d\u044b\u0439 \u043d\u0435\u043e\u043d",
+        "\u0420\u0435\u0436\u0438\u043c: adaptive",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
       "image": "/assets/content/accelerator-core.png"
     }
@@ -379,7 +379,7 @@
   {
     "id": "TEC-NIGHTMARE-0502",
     "slug": "nightmare",
-    "title": "Nightmare — трансцендентный клинок",
+    "title": "Nightmare \u2014 \u0442\u0440\u0430\u043d\u0441\u0446\u0435\u043d\u0434\u0435\u043d\u0442\u043d\u044b\u0439 \u043a\u043b\u0438\u043d\u043e\u043a",
     "zone": "05_TECHNOLOGIES",
     "category": "technologies",
     "status": "published",
@@ -392,17 +392,17 @@
       "blade"
     ],
     "preview": {
-      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
-      "logline": "Цифровая сущность, застывшая в форме оружия: память боли и резонанса.",
+      "kicker": "ZONE \u00b7 05_TECHNOLOGIES \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0426\u0438\u0444\u0440\u043e\u0432\u0430\u044f \u0441\u0443\u0449\u043d\u043e\u0441\u0442\u044c, \u0437\u0430\u0441\u0442\u044b\u0432\u0448\u0430\u044f \u0432 \u0444\u043e\u0440\u043c\u0435 \u043e\u0440\u0443\u0436\u0438\u044f: \u043f\u0430\u043c\u044f\u0442\u044c \u0431\u043e\u043b\u0438 \u0438 \u0440\u0435\u0437\u043e\u043d\u0430\u043d\u0441\u0430.",
       "markers": [
-        "Ex-artifact класса AXIOM",
-        "Искажает восприятие",
-        "Выбирает носителя"
+        "Ex-artifact \u043a\u043b\u0430\u0441\u0441\u0430 AXIOM",
+        "\u0418\u0441\u043a\u0430\u0436\u0430\u0435\u0442 \u0432\u043e\u0441\u043f\u0440\u0438\u044f\u0442\u0438\u0435",
+        "\u0412\u044b\u0431\u0438\u0440\u0430\u0435\u0442 \u043d\u043e\u0441\u0438\u0442\u0435\u043b\u044f"
       ],
       "signature": [
-        "Палитра: фиолет/чёрный",
-        "Режим: transcendence",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0444\u0438\u043e\u043b\u0435\u0442/\u0447\u0451\u0440\u043d\u044b\u0439",
+        "\u0420\u0435\u0436\u0438\u043c: transcendence",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
       "image": "/assets/content/nightmare-benchmark.png"
     }
@@ -410,7 +410,7 @@
   {
     "id": "TEC-SPECTRE-GT-0503",
     "slug": "spectre-gt",
-    "title": "SPECTRE GT — резонансный фазовый носитель",
+    "title": "SPECTRE GT \u2014 \u0440\u0435\u0437\u043e\u043d\u0430\u043d\u0441\u043d\u044b\u0439 \u0444\u0430\u0437\u043e\u0432\u044b\u0439 \u043d\u043e\u0441\u0438\u0442\u0435\u043b\u044c",
     "zone": "05_TECHNOLOGIES",
     "category": "technologies",
     "status": "published",
@@ -423,17 +423,17 @@
       "ghost"
     ],
     "preview": {
-      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
-      "logline": "Призрачный транспорт, входящий в резонанс с носителем и местностью.",
+      "kicker": "ZONE \u00b7 05_TECHNOLOGIES \u00b7 STATUS: PUBLISHED",
+      "logline": "\u041f\u0440\u0438\u0437\u0440\u0430\u0447\u043d\u044b\u0439 \u0442\u0440\u0430\u043d\u0441\u043f\u043e\u0440\u0442, \u0432\u0445\u043e\u0434\u044f\u0449\u0438\u0439 \u0432 \u0440\u0435\u0437\u043e\u043d\u0430\u043d\u0441 \u0441 \u043d\u043e\u0441\u0438\u0442\u0435\u043b\u0435\u043c \u0438 \u043c\u0435\u0441\u0442\u043d\u043e\u0441\u0442\u044c\u044e.",
       "markers": [
-        "Фазовый двигатель и стелс-режим",
-        "Нейро-интерфейс управления",
-        "Синхронизация с владельцем"
+        "\u0424\u0430\u0437\u043e\u0432\u044b\u0439 \u0434\u0432\u0438\u0433\u0430\u0442\u0435\u043b\u044c \u0438 \u0441\u0442\u0435\u043b\u0441-\u0440\u0435\u0436\u0438\u043c",
+        "\u041d\u0435\u0439\u0440\u043e-\u0438\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441 \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f",
+        "\u0421\u0438\u043d\u0445\u0440\u043e\u043d\u0438\u0437\u0430\u0446\u0438\u044f \u0441 \u0432\u043b\u0430\u0434\u0435\u043b\u044c\u0446\u0435\u043c"
       ],
       "signature": [
-        "Палитра: синий/чёрный",
-        "Режим: spectral phase",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0441\u0438\u043d\u0438\u0439/\u0447\u0451\u0440\u043d\u044b\u0439",
+        "\u0420\u0435\u0436\u0438\u043c: spectral phase",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
       "image": "/assets/content/spectre-gt.png"
     }
@@ -441,7 +441,7 @@
   {
     "id": "TEC-HARPOON-0504",
     "slug": "harpoon-implant",
-    "title": "Harpoon Implant — якорный боевой трос",
+    "title": "Harpoon Implant \u2014 \u044f\u043a\u043e\u0440\u043d\u044b\u0439 \u0431\u043e\u0435\u0432\u043e\u0439 \u0442\u0440\u043e\u0441",
     "zone": "05_TECHNOLOGIES",
     "category": "technologies",
     "status": "published",
@@ -454,25 +454,25 @@
       "striker"
     ],
     "preview": {
-      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
-      "logline": "Тактический тросовый имплант для вертикальных рывков и штурма.",
+      "kicker": "ZONE \u00b7 05_TECHNOLOGIES \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0422\u0430\u043a\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0442\u0440\u043e\u0441\u043e\u0432\u044b\u0439 \u0438\u043c\u043f\u043b\u0430\u043d\u0442 \u0434\u043b\u044f \u0432\u0435\u0440\u0442\u0438\u043a\u0430\u043b\u044c\u043d\u044b\u0445 \u0440\u044b\u0432\u043a\u043e\u0432 \u0438 \u0448\u0442\u0443\u0440\u043c\u0430.",
       "markers": [
-        "Проект Striker: городская война",
-        "Кинетический якорь и автонаведение",
-        "Риск перегрева и сбоев"
+        "\u041f\u0440\u043e\u0435\u043a\u0442 Striker: \u0433\u043e\u0440\u043e\u0434\u0441\u043a\u0430\u044f \u0432\u043e\u0439\u043d\u0430",
+        "\u041a\u0438\u043d\u0435\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u044f\u043a\u043e\u0440\u044c \u0438 \u0430\u0432\u0442\u043e\u043d\u0430\u0432\u0435\u0434\u0435\u043d\u0438\u0435",
+        "\u0420\u0438\u0441\u043a \u043f\u0435\u0440\u0435\u0433\u0440\u0435\u0432\u0430 \u0438 \u0441\u0431\u043e\u0435\u0432"
       ],
       "signature": [
-        "Палитра: сталь/неон",
-        "Режим: tether assault",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0441\u0442\u0430\u043b\u044c/\u043d\u0435\u043e\u043d",
+        "\u0420\u0435\u0436\u0438\u043c: tether assault",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/harpoon-implant.png"
+      "image": "/assets/content/placeholder.png"
     }
   },
   {
     "id": "TEC-MAGNETIC-0505",
     "slug": "magnetic-implant",
-    "title": "Magnetic Implant — модуль грави-сцепления",
+    "title": "Magnetic Implant \u2014 \u043c\u043e\u0434\u0443\u043b\u044c \u0433\u0440\u0430\u0432\u0438-\u0441\u0446\u0435\u043f\u043b\u0435\u043d\u0438\u044f",
     "zone": "05_TECHNOLOGIES",
     "category": "technologies",
     "status": "published",
@@ -485,25 +485,25 @@
       "mobility"
     ],
     "preview": {
-      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
-      "logline": "Гравиметрический модуль, позволяющий бегать по стенам и потолку.",
+      "kicker": "ZONE \u00b7 05_TECHNOLOGIES \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0413\u0440\u0430\u0432\u0438\u043c\u0435\u0442\u0440\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u043c\u043e\u0434\u0443\u043b\u044c, \u043f\u043e\u0437\u0432\u043e\u043b\u044f\u044e\u0449\u0438\u0439 \u0431\u0435\u0433\u0430\u0442\u044c \u043f\u043e \u0441\u0442\u0435\u043d\u0430\u043c \u0438 \u043f\u043e\u0442\u043e\u043b\u043a\u0443.",
       "markers": [
-        "Проект Grav-Walker",
-        "Регулируемая сила сцепления",
-        "Риск дезориентации"
+        "\u041f\u0440\u043e\u0435\u043a\u0442 Grav-Walker",
+        "\u0420\u0435\u0433\u0443\u043b\u0438\u0440\u0443\u0435\u043c\u0430\u044f \u0441\u0438\u043b\u0430 \u0441\u0446\u0435\u043f\u043b\u0435\u043d\u0438\u044f",
+        "\u0420\u0438\u0441\u043a \u0434\u0435\u0437\u043e\u0440\u0438\u0435\u043d\u0442\u0430\u0446\u0438\u0438"
       ],
       "signature": [
-        "Палитра: синий/сталь",
-        "Режим: grav-control",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0441\u0438\u043d\u0438\u0439/\u0441\u0442\u0430\u043b\u044c",
+        "\u0420\u0435\u0436\u0438\u043c: grav-control",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/magnetic-implant.png"
+      "image": "/assets/content/placeholder.png"
     }
   },
   {
     "id": "TEC-NEURAL-SCANNER-0506",
     "slug": "neural-scanner",
-    "title": "Neural Scanner — тактический нейросканер",
+    "title": "Neural Scanner \u2014 \u0442\u0430\u043a\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u043d\u0435\u0439\u0440\u043e\u0441\u043a\u0430\u043d\u0435\u0440",
     "zone": "05_TECHNOLOGIES",
     "category": "technologies",
     "status": "published",
@@ -516,25 +516,25 @@
       "tactics"
     ],
     "preview": {
-      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
-      "logline": "Нейропроцессор анализа боя, предугадывающий атаки на доли секунды.",
+      "kicker": "ZONE \u00b7 05_TECHNOLOGIES \u00b7 STATUS: PUBLISHED",
+      "logline": "\u041d\u0435\u0439\u0440\u043e\u043f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 \u0430\u043d\u0430\u043b\u0438\u0437\u0430 \u0431\u043e\u044f, \u043f\u0440\u0435\u0434\u0443\u0433\u0430\u0434\u044b\u0432\u0430\u044e\u0449\u0438\u0439 \u0430\u0442\u0430\u043a\u0438 \u043d\u0430 \u0434\u043e\u043b\u0438 \u0441\u0435\u043a\u0443\u043d\u0434\u044b.",
       "markers": [
-        "Проект Sentinel",
-        "Прогноз микродвижений",
-        "Риск когнитивной перегрузки"
+        "\u041f\u0440\u043e\u0435\u043a\u0442 Sentinel",
+        "\u041f\u0440\u043e\u0433\u043d\u043e\u0437 \u043c\u0438\u043a\u0440\u043e\u0434\u0432\u0438\u0436\u0435\u043d\u0438\u0439",
+        "\u0420\u0438\u0441\u043a \u043a\u043e\u0433\u043d\u0438\u0442\u0438\u0432\u043d\u043e\u0439 \u043f\u0435\u0440\u0435\u0433\u0440\u0443\u0437\u043a\u0438"
       ],
       "signature": [
-        "Палитра: циан/сталь",
-        "Режим: predictive scan",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0446\u0438\u0430\u043d/\u0441\u0442\u0430\u043b\u044c",
+        "\u0420\u0435\u0436\u0438\u043c: predictive scan",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/neural-scanner.png"
+      "image": "/assets/content/placeholder.png"
     }
   },
   {
     "id": "TEC-BLOODTECH-0507",
     "slug": "bloodtech",
-    "title": "Bloodtech — симбиотический био-тех",
+    "title": "Bloodtech \u2014 \u0441\u0438\u043c\u0431\u0438\u043e\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0431\u0438\u043e-\u0442\u0435\u0445",
     "zone": "05_TECHNOLOGIES",
     "category": "technologies",
     "status": "published",
@@ -547,25 +547,25 @@
       "undercity"
     ],
     "preview": {
-      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
-      "logline": "Живая технология, которая врастает в тело и эволюционирует вместе с носителем.",
+      "kicker": "ZONE \u00b7 05_TECHNOLOGIES \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0416\u0438\u0432\u0430\u044f \u0442\u0435\u0445\u043d\u043e\u043b\u043e\u0433\u0438\u044f, \u043a\u043e\u0442\u043e\u0440\u0430\u044f \u0432\u0440\u0430\u0441\u0442\u0430\u0435\u0442 \u0432 \u0442\u0435\u043b\u043e \u0438 \u044d\u0432\u043e\u043b\u044e\u0446\u0438\u043e\u043d\u0438\u0440\u0443\u0435\u0442 \u0432\u043c\u0435\u0441\u0442\u0435 \u0441 \u043d\u043e\u0441\u0438\u0442\u0435\u043b\u0435\u043c.",
       "markers": [
-        "Происхождение: мутагенные зоны Subterra",
-        "Низкая стабильность, высокая сила",
-        "Регенерация и автономные реакции"
+        "\u041f\u0440\u043e\u0438\u0441\u0445\u043e\u0436\u0434\u0435\u043d\u0438\u0435: \u043c\u0443\u0442\u0430\u0433\u0435\u043d\u043d\u044b\u0435 \u0437\u043e\u043d\u044b Subterra",
+        "\u041d\u0438\u0437\u043a\u0430\u044f \u0441\u0442\u0430\u0431\u0438\u043b\u044c\u043d\u043e\u0441\u0442\u044c, \u0432\u044b\u0441\u043e\u043a\u0430\u044f \u0441\u0438\u043b\u0430",
+        "\u0420\u0435\u0433\u0435\u043d\u0435\u0440\u0430\u0446\u0438\u044f \u0438 \u0430\u0432\u0442\u043e\u043d\u043e\u043c\u043d\u044b\u0435 \u0440\u0435\u0430\u043a\u0446\u0438\u0438"
       ],
       "signature": [
-        "Палитра: красный/чёрный",
-        "Режим: symbiotic",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u043a\u0440\u0430\u0441\u043d\u044b\u0439/\u0447\u0451\u0440\u043d\u044b\u0439",
+        "\u0420\u0435\u0436\u0438\u043c: symbiotic",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/bloodtech.png"
+      "image": "/assets/content/placeholder.png"
     }
   },
   {
     "id": "TEC-GROM-FIST-0508",
     "slug": "grom-fist",
-    "title": "Grom Fist — ударный имплант улиц",
+    "title": "Grom Fist \u2014 \u0443\u0434\u0430\u0440\u043d\u044b\u0439 \u0438\u043c\u043f\u043b\u0430\u043d\u0442 \u0443\u043b\u0438\u0446",
     "zone": "05_TECHNOLOGIES",
     "category": "technologies",
     "status": "published",
@@ -578,25 +578,25 @@
       "melee"
     ],
     "preview": {
-      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
-      "logline": "Культовый боевой имплант Thunder Dogs для сокрушительных ударов.",
+      "kicker": "ZONE \u00b7 05_TECHNOLOGIES \u00b7 STATUS: PUBLISHED",
+      "logline": "\u041a\u0443\u043b\u044c\u0442\u043e\u0432\u044b\u0439 \u0431\u043e\u0435\u0432\u043e\u0439 \u0438\u043c\u043f\u043b\u0430\u043d\u0442 Thunder Dogs \u0434\u043b\u044f \u0441\u043e\u043a\u0440\u0443\u0448\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0445 \u0443\u0434\u0430\u0440\u043e\u0432.",
       "markers": [
-        "Символ уличной силы",
-        "430% усиление удара",
-        "Риск перегруза суставов"
+        "\u0421\u0438\u043c\u0432\u043e\u043b \u0443\u043b\u0438\u0447\u043d\u043e\u0439 \u0441\u0438\u043b\u044b",
+        "430% \u0443\u0441\u0438\u043b\u0435\u043d\u0438\u0435 \u0443\u0434\u0430\u0440\u0430",
+        "\u0420\u0438\u0441\u043a \u043f\u0435\u0440\u0435\u0433\u0440\u0443\u0437\u0430 \u0441\u0443\u0441\u0442\u0430\u0432\u043e\u0432"
       ],
       "signature": [
-        "Палитра: жёлтый/чёрный",
-        "Режим: impact",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0436\u0451\u043b\u0442\u044b\u0439/\u0447\u0451\u0440\u043d\u044b\u0439",
+        "\u0420\u0435\u0436\u0438\u043c: impact",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/grom-fist.png"
+      "image": "/assets/content/placeholder.png"
     }
   },
   {
     "id": "TEC-T-COLLAR-0509",
     "slug": "t-collar",
-    "title": "T-Collar — защитный шейный модуль",
+    "title": "T-Collar \u2014 \u0437\u0430\u0449\u0438\u0442\u043d\u044b\u0439 \u0448\u0435\u0439\u043d\u044b\u0439 \u043c\u043e\u0434\u0443\u043b\u044c",
     "zone": "05_TECHNOLOGIES",
     "category": "technologies",
     "status": "published",
@@ -609,19 +609,19 @@
       "implant"
     ],
     "preview": {
-      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
-      "logline": "Броневой шейный имплант для блокировки удушения и ударов.",
+      "kicker": "ZONE \u00b7 05_TECHNOLOGIES \u00b7 STATUS: PUBLISHED",
+      "logline": "\u0411\u0440\u043e\u043d\u0435\u0432\u043e\u0439 \u0448\u0435\u0439\u043d\u044b\u0439 \u0438\u043c\u043f\u043b\u0430\u043d\u0442 \u0434\u043b\u044f \u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u043a\u0438 \u0443\u0434\u0443\u0448\u0435\u043d\u0438\u044f \u0438 \u0443\u0434\u0430\u0440\u043e\u0432.",
       "markers": [
-        "Защита трахеи и позвоночной дуги",
-        "Автоматическая блокировка захватов",
-        "Частичное ограничение подвижности"
+        "\u0417\u0430\u0449\u0438\u0442\u0430 \u0442\u0440\u0430\u0445\u0435\u0438 \u0438 \u043f\u043e\u0437\u0432\u043e\u043d\u043e\u0447\u043d\u043e\u0439 \u0434\u0443\u0433\u0438",
+        "\u0410\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0430\u044f \u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u043a\u0430 \u0437\u0430\u0445\u0432\u0430\u0442\u043e\u0432",
+        "\u0427\u0430\u0441\u0442\u0438\u0447\u043d\u043e\u0435 \u043e\u0433\u0440\u0430\u043d\u0438\u0447\u0435\u043d\u0438\u0435 \u043f\u043e\u0434\u0432\u0438\u0436\u043d\u043e\u0441\u0442\u0438"
       ],
       "signature": [
-        "Палитра: сталь/чёрный",
-        "Режим: neck-guard",
-        "Статус: published"
+        "\u041f\u0430\u043b\u0438\u0442\u0440\u0430: \u0441\u0442\u0430\u043b\u044c/\u0447\u0451\u0440\u043d\u044b\u0439",
+        "\u0420\u0435\u0436\u0438\u043c: neck-guard",
+        "\u0421\u0442\u0430\u0442\u0443\u0441: published"
       ],
-      "image": "/assets/content/t-collar.png"
+      "image": "/assets/content/placeholder.png"
     }
   }
 ]

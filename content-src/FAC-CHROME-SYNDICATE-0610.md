@@ -7,7 +7,7 @@ category: "factions"
 status: "published"
 lang: "ru"
 version: "v1.0"
-image: "/assets/content/chrome-syndicate.png"
+image: "/assets/content/placeholder.png"
 tags:
   - syndicate
   - black-market
@@ -92,7 +92,7 @@ preview_signature:
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/chrome-syndicate.png" alt="Chrome Syndicate emblem" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Chrome Syndicate emblem" loading="lazy" />
       <figcaption>Chrome Syndicate: импланты, подполье и долговая спираль.</figcaption>
     </figure>
   </section>

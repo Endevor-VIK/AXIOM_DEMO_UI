@@ -66,7 +66,7 @@
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/harpoon-implant.png" alt="Harpoon implant schematic" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Harpoon implant schematic" loading="lazy" />
       <figcaption>Контуры кинетической системы закрепления.</figcaption>
     </figure>
   </section>

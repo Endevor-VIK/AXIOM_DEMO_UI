@@ -7,7 +7,7 @@ category: "technologies"
 status: "published"
 lang: "ru"
 version: "v1.0"
-image: "/assets/content/bloodtech.png"
+image: "/assets/content/placeholder.png"
 tags:
   - bloodtech
   - biotech
@@ -92,7 +92,7 @@ preview_signature:
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/bloodtech.png" alt="Bloodtech interface map" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="Bloodtech interface map" loading="lazy" />
       <figcaption>Симбиотические контуры: ядро, ткани и импульсы.</figcaption>
     </figure>
   </section>

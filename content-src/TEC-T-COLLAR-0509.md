@@ -7,7 +7,7 @@ category: "technologies"
 status: "published"
 lang: "ru"
 version: "v1.0"
-image: "/assets/content/t-collar.png"
+image: "/assets/content/placeholder.png"
 tags:
   - t-collar
   - defense
@@ -92,7 +92,7 @@ preview_signature:
 
   <section class="ax-demo-gallery">
     <figure>
-      <img src="/assets/content/t-collar.png" alt="T-Collar defense module" loading="lazy" />
+      <img src="/assets/content/placeholder.png" alt="T-Collar defense module" loading="lazy" />
       <figcaption>Шейный модуль защиты для ближнего боя.</figcaption>
     </figure>
   </section>
