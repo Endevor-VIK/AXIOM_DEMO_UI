@@ -27,6 +27,7 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
 }) => {
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null)
   const scrollRootRef = useRef<HTMLElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
   const lastTouchY = useRef<number | null>(null)
 
   useEffect(() => {
@@ -73,6 +74,61 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
     })
   }, [entries, search])
 
+  const isMenuTarget = (target: EventTarget | null) => {
+    if (!target || !(target instanceof Node)) return false
+    const menu = menuRef.current
+    return !!menu && menu.contains(target)
+  }
+
+  useEffect(() => {
+    if (!open) return
+
+    const handleWheel = (event: WheelEvent) => {
+      if (isMenuTarget(event.target)) return
+      const scrollRoot = resolveScrollRoot()
+      if (!scrollRoot) return
+      scrollRoot.scrollBy({ top: event.deltaY, left: event.deltaX })
+      event.preventDefault()
+    }
+
+    const handleTouchStart = (event: TouchEvent) => {
+      if (isMenuTarget(event.target)) {
+        lastTouchY.current = null
+        return
+      }
+      if (event.touches.length === 1) {
+        lastTouchY.current = event.touches[0].clientY
+      }
+    }
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (isMenuTarget(event.target)) return
+      const scrollRoot = resolveScrollRoot()
+      if (!scrollRoot || event.touches.length !== 1 || lastTouchY.current === null) return
+      const current = event.touches[0].clientY
+      const delta = lastTouchY.current - current
+      scrollRoot.scrollBy({ top: delta })
+      lastTouchY.current = current
+      event.preventDefault()
+    }
+
+    const handleTouchEnd = () => {
+      lastTouchY.current = null
+    }
+
+    document.addEventListener('wheel', handleWheel, { passive: false })
+    document.addEventListener('touchstart', handleTouchStart, { passive: false })
+    document.addEventListener('touchmove', handleTouchMove, { passive: false })
+    document.addEventListener('touchend', handleTouchEnd)
+
+    return () => {
+      document.removeEventListener('wheel', handleWheel)
+      document.removeEventListener('touchstart', handleTouchStart)
+      document.removeEventListener('touchmove', handleTouchMove)
+      document.removeEventListener('touchend', handleTouchEnd)
+    }
+  }, [open])
+
   const layer = (
     <div className={`axr-menu-layer${open ? ' is-open' : ''}`} style={{ zIndex: OVERLAY_Z }}>
       <div
@@ -80,32 +136,13 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
         data-overlay
         aria-hidden={!open}
         onClick={onClose}
-        onWheel={(event) => {
-          const scrollRoot = resolveScrollRoot()
-          if (!scrollRoot) return
-          scrollRoot.scrollBy({ top: event.deltaY, left: event.deltaX })
-          event.preventDefault()
-        }}
-        onTouchStart={(event) => {
-          if (event.touches.length === 1) {
-            lastTouchY.current = event.touches[0].clientY
-          }
-        }}
-        onTouchMove={(event) => {
-          const scrollRoot = resolveScrollRoot()
-          if (!scrollRoot || event.touches.length !== 1 || lastTouchY.current === null) return
-          const current = event.touches[0].clientY
-          const delta = lastTouchY.current - current
-          scrollRoot.scrollBy({ top: delta })
-          lastTouchY.current = current
-          event.preventDefault()
-        }}
-        onTouchEnd={() => {
-          lastTouchY.current = null
-        }}
       />
       <div className='axr-menu-shell' style={{ zIndex: MENU_Z }}>
-        <nav className={`axr-menu${open ? ' axr-menu--open' : ''}`} aria-label='Файлы контента'>
+        <nav
+          ref={menuRef}
+          className={`axr-menu${open ? ' axr-menu--open' : ''}`}
+          aria-label='Файлы контента'
+        >
           <div className='axr-menu-inner'>
             <div className='axr-menu-header'>
               <div className='axr-menu-title'>AXIOM FILES</div>
