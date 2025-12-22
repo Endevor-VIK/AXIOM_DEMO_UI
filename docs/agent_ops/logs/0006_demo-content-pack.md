@@ -39,6 +39,7 @@
 - 2025-12-22T12:41:13+03:00 — Commit: `f23ee14` — `docs(content): add demo content pack logs` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`, `docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_LOG_LINK.md`, `docs/content/demo-content-pack/content_manifest.md`, `docs/content/demo-content-pack/stub_cleanup_report.md`
 - 2025-12-22T12:43:41+03:00 — Commit: `204eea0` — `docs(content): finalize demo content pack log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/stub_cleanup_report.md`
 - 2025-12-22T14:10:08+03:00 — Commit: `5a89eec` — `feat(content): expand demo content pack` — Файлы: `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
+- 2025-12-22T14:11:32+03:00 — Commit: `7ff7d77` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
 
 ---
 
@@ -52,7 +53,7 @@
 - Для BLOODTECH/REAPERS превью-изображения взяты из `.f_FRAMEWORK` (только визуальные PNG, без использования framework-контента).
 
 ## Финальное резюме
-- Что сделано: удалены заглушки, добавлен демо-контент (2 локации, 3 персонажа, 2 технологии, 1 фракция), обновлены VFS-манифесты/индекс и превью, контент-линки актуализированы.
+- Что сделано: удалены заглушки, добавлен демо-контент (2 локации, 7 персонажей, 4 технологии, 2 фракции), обновлены VFS-манифесты/индекс и превью, контент-линки актуализированы.
 - Где: `content-src/*`, `public/data/content/*`, `public/content-html/*`, `public/assets/content/*`, `src/features/content/data/content-index.json`, `app/routes/dashboard/content/ContentCategoryView.tsx`.
 - Как проверить: открыть `/dashboard/content` и `/content/LOC-ECHELON-CORE` (и другие ID), убедиться в превью/HTML; при наличии Node — запустить `npm run build:content` и сверить выход.
 
