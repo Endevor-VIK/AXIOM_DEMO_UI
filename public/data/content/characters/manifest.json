@@ -132,5 +132,57 @@
       "v": 2,
       "zone": "03_CHARACTERS"
     }
+  },
+  {
+    "id": "CHR-TOMMY-0304",
+    "category": "characters",
+    "subCategory": "undercity",
+    "title": "Томми «Гром» Громвелл — уличный полководец",
+    "summary": "Лидер уличной стаи Undercity, строит власть на страхе и силе.",
+    "date": "2025-12-22",
+    "tags": ["undercity", "warlord", "thunder-dogs", "street-instinct"],
+    "file": "characters/CHR-TOMMY-0304/index.md",
+    "format": "md",
+    "renderMode": "hybrid",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 50,
+    "lang": "ru",
+    "version": "v1.0",
+    "slug": "tommy",
+    "numericSuffix": "0304",
+    "cover": "/assets/content/tommy.png",
+    "links": [],
+    "meta": {
+      "v": 2,
+      "zone": "03_CHARACTERS"
+    }
+  },
+  {
+    "id": "CHR-EVA-0399",
+    "category": "characters",
+    "subCategory": "anomaly",
+    "title": "EVA — сущность сна",
+    "summary": "Аномальный феномен после Чёрного Солнца, вне фракций и протоколов.",
+    "date": "2025-12-22",
+    "tags": ["eva", "dream", "anomaly", "axiom"],
+    "file": "characters/CHR-EVA-0399/index.md",
+    "format": "md",
+    "renderMode": "hybrid",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 55,
+    "lang": "ru",
+    "version": "v1.0",
+    "slug": "eva",
+    "numericSuffix": "0399",
+    "cover": "/assets/content/eva-dream.png",
+    "links": [],
+    "meta": {
+      "v": 2,
+      "zone": "03_CHARACTERS"
+    }
   }
 ]

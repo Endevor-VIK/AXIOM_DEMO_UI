@@ -98,6 +98,37 @@
     }
   },
   {
+    "id": "03.04_TOMMY",
+    "slug": "tommy",
+    "title": "Томми «Гром» Громвелл — уличный полководец",
+    "zone": "03_CHARACTERS",
+    "category": "characters",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "undercity",
+      "warlord",
+      "thunder-dogs",
+      "street-instinct"
+    ],
+    "preview": {
+      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
+      "logline": "Лидер уличной стаи Undercity: превращает хаос в иерархию силы.",
+      "markers": [
+        "Инстинкт улиц, оформленный в власть",
+        "Тактика: внезапные рейды и демонстрации силы",
+        "Кодекс: лояльность и страх"
+      ],
+      "signature": [
+        "Палитра: жёлтый/чёрный",
+        "Режим: street dominator",
+        "Статус: published"
+      ],
+      "image": "/assets/content/tommy.png"
+    }
+  },
+  {
     "id": "03.17_WHITE_CONTOUR",
     "slug": "white-contour",
     "title": "White Contour — призрачный агент",
@@ -160,6 +191,37 @@
     }
   },
   {
+    "id": "03.99_EVA",
+    "slug": "eva",
+    "title": "EVA — сущность сна",
+    "zone": "03_CHARACTERS",
+    "category": "characters",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "eva",
+      "dream",
+      "anomaly",
+      "axiom"
+    ],
+    "preview": {
+      "kicker": "ZONE · 03_CHARACTERS · STATUS: PUBLISHED",
+      "logline": "Аномальная сущность, возникшая после Чёрного Солнца: чистота среди железа.",
+      "markers": [
+        "Феномен вне фракций и протоколов",
+        "Пробуждение на платформах ECHELON",
+        "Легенда о новом начале"
+      ],
+      "signature": [
+        "Палитра: розовый/белый",
+        "Режим: dream protocol",
+        "Статус: published"
+      ],
+      "image": "/assets/content/eva-dream.png"
+    }
+  },
+  {
     "id": "FAC-CHROME-SYNDICATE-0610",
     "slug": "chrome-syndicate",
     "title": "Chrome Syndicate — кибер-наркокартель",
@@ -188,6 +250,37 @@
         "Статус: published"
       ],
       "image": "/assets/content/chrome-syndicate.png"
+    }
+  },
+  {
+    "id": "FAC-REAPERS-0609",
+    "slug": "reapers",
+    "title": "Reapers — изгнанники лимбо",
+    "zone": "06_FACTIONS",
+    "category": "factions",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "reapers",
+      "exile",
+      "undercity",
+      "bloodtech"
+    ],
+    "preview": {
+      "kicker": "ZONE · 06_FACTIONS · STATUS: PUBLISHED",
+      "logline": "Каста выживших из лимбо: боль, импланты и культ опасности.",
+      "markers": [
+        "Кодекс: живой значит опасный",
+        "Касты Wraiths / Gutgrinders / Druglords",
+        "Территория: Reapers Blocks"
+      ],
+      "signature": [
+        "Палитра: красный/сталь",
+        "Режим: exile",
+        "Статус: published"
+      ],
+      "image": "/assets/content/reapers.png"
     }
   },
   {
@@ -312,6 +405,68 @@
         "Статус: published"
       ],
       "image": "/assets/content/nightmare-benchmark.png"
+    }
+  },
+  {
+    "id": "TEC-SPECTRE-GT-0503",
+    "slug": "spectre-gt",
+    "title": "SPECTRE GT — резонансный фазовый носитель",
+    "zone": "05_TECHNOLOGIES",
+    "category": "technologies",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "spectre",
+      "vehicle",
+      "resonance",
+      "ghost"
+    ],
+    "preview": {
+      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
+      "logline": "Призрачный транспорт, входящий в резонанс с носителем и местностью.",
+      "markers": [
+        "Фазовый двигатель и стелс-режим",
+        "Нейро-интерфейс управления",
+        "Синхронизация с владельцем"
+      ],
+      "signature": [
+        "Палитра: синий/чёрный",
+        "Режим: spectral phase",
+        "Статус: published"
+      ],
+      "image": "/assets/content/spectre-gt.png"
+    }
+  },
+  {
+    "id": "TEC-BLOODTECH-0507",
+    "slug": "bloodtech",
+    "title": "Bloodtech — симбиотический био-тех",
+    "zone": "05_TECHNOLOGIES",
+    "category": "technologies",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "bloodtech",
+      "biotech",
+      "mutation",
+      "undercity"
+    ],
+    "preview": {
+      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
+      "logline": "Живая технология, которая врастает в тело и эволюционирует вместе с носителем.",
+      "markers": [
+        "Происхождение: мутагенные зоны Subterra",
+        "Низкая стабильность, высокая сила",
+        "Регенерация и автономные реакции"
+      ],
+      "signature": [
+        "Палитра: красный/чёрный",
+        "Режим: symbiotic",
+        "Статус: published"
+      ],
+      "image": "/assets/content/bloodtech.png"
     }
   }
 ]

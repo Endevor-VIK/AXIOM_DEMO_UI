@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": 2,
-    "generatedAt": "2025-12-22T09:13:02.000Z",
+    "generatedAt": "2025-12-22T11:00:18.000Z",
     "source": "manual"
   },
   "items": [
@@ -192,6 +192,58 @@
       }
     },
     {
+      "id": "CHR-TOMMY-0304",
+      "category": "characters",
+      "subCategory": "undercity",
+      "title": "Томми «Гром» Громвелл — уличный полководец",
+      "summary": "Лидер уличной стаи Undercity, строит власть на страхе и силе.",
+      "date": "2025-12-22",
+      "tags": ["undercity", "warlord", "thunder-dogs", "street-instinct"],
+      "file": "characters/CHR-TOMMY-0304/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 50,
+      "lang": "ru",
+      "version": "v1.0",
+      "slug": "tommy",
+      "numericSuffix": "0304",
+      "cover": "/assets/content/tommy.png",
+      "links": [],
+      "meta": {
+        "v": 2,
+        "zone": "03_CHARACTERS"
+      }
+    },
+    {
+      "id": "CHR-EVA-0399",
+      "category": "characters",
+      "subCategory": "anomaly",
+      "title": "EVA — сущность сна",
+      "summary": "Аномальный феномен после Чёрного Солнца, вне фракций и протоколов.",
+      "date": "2025-12-22",
+      "tags": ["eva", "dream", "anomaly", "axiom"],
+      "file": "characters/CHR-EVA-0399/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 55,
+      "lang": "ru",
+      "version": "v1.0",
+      "slug": "eva",
+      "numericSuffix": "0399",
+      "cover": "/assets/content/eva-dream.png",
+      "links": [],
+      "meta": {
+        "v": 2,
+        "zone": "03_CHARACTERS"
+      }
+    },
+    {
       "id": "TEC-ACCELERATOR-0501",
       "category": "technologies",
       "subCategory": "implant",
@@ -244,6 +296,58 @@
       }
     },
     {
+      "id": "TEC-SPECTRE-GT-0503",
+      "category": "technologies",
+      "subCategory": "vehicle",
+      "title": "SPECTRE GT — резонансный фазовый носитель",
+      "summary": "Призрачный транспорт, входящий в резонанс с носителем.",
+      "date": "2025-12-22",
+      "tags": ["spectre", "vehicle", "resonance", "ghost"],
+      "file": "technologies/TEC-SPECTRE-GT-0503/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 30,
+      "lang": "ru",
+      "version": "v1.0",
+      "slug": "spectre-gt",
+      "numericSuffix": "0503",
+      "cover": "/assets/content/spectre-gt.png",
+      "links": [],
+      "meta": {
+        "v": 2,
+        "zone": "05_TECHNOLOGIES"
+      }
+    },
+    {
+      "id": "TEC-BLOODTECH-0507",
+      "category": "technologies",
+      "subCategory": "biotech",
+      "title": "Bloodtech — симбиотический био-тех",
+      "summary": "Живая технология, врастает в тело и эволюционирует.",
+      "date": "2025-12-22",
+      "tags": ["bloodtech", "biotech", "mutation", "undercity"],
+      "file": "technologies/TEC-BLOODTECH-0507/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 40,
+      "lang": "ru",
+      "version": "v1.0",
+      "slug": "bloodtech",
+      "numericSuffix": "0507",
+      "cover": "/assets/content/bloodtech.png",
+      "links": [],
+      "meta": {
+        "v": 2,
+        "zone": "05_TECHNOLOGIES"
+      }
+    },
+    {
       "id": "FAC-CHROME-SYNDICATE-0610",
       "category": "factions",
       "subCategory": "cartel",
@@ -268,11 +372,37 @@
         "v": 2,
         "zone": "06_FACTIONS"
       }
+    },
+    {
+      "id": "FAC-REAPERS-0609",
+      "category": "factions",
+      "subCategory": "exile",
+      "title": "Reapers — изгнанники лимбо",
+      "summary": "Каста выживших из Undercity, культ опасности и имплантов.",
+      "date": "2025-12-22",
+      "tags": ["reapers", "exile", "undercity", "bloodtech"],
+      "file": "factions/FAC-REAPERS-0609/index.md",
+      "format": "md",
+      "renderMode": "hybrid",
+      "author": "AXIOM CORE",
+      "status": "published",
+      "visibility": "public",
+      "weight": 20,
+      "lang": "ru",
+      "version": "v1.0",
+      "slug": "reapers",
+      "numericSuffix": "0609",
+      "cover": "/assets/content/reapers.png",
+      "links": [],
+      "meta": {
+        "v": 2,
+        "zone": "06_FACTIONS"
+      }
     }
   ],
   "categories": {
     "all": {
-      "count": 10,
+      "count": 15,
       "manifest": "content/manifest.json"
     },
     "locations": {
@@ -280,15 +410,15 @@
       "manifest": "content/locations/manifest.json"
     },
     "characters": {
-      "count": 5,
+      "count": 7,
       "manifest": "content/characters/manifest.json"
     },
     "technologies": {
-      "count": 2,
+      "count": 4,
       "manifest": "content/technologies/manifest.json"
     },
     "factions": {
-      "count": 1,
+      "count": 2,
       "manifest": "content/factions/manifest.json"
     },
     "events": {

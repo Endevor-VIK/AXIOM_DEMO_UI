@@ -24,5 +24,31 @@
       "v": 2,
       "zone": "06_FACTIONS"
     }
+  },
+  {
+    "id": "FAC-REAPERS-0609",
+    "category": "factions",
+    "subCategory": "exile",
+    "title": "Reapers — изгнанники лимбо",
+    "summary": "Каста выживших из Undercity, культ опасности и имплантов.",
+    "date": "2025-12-22",
+    "tags": ["reapers", "exile", "undercity", "bloodtech"],
+    "file": "factions/FAC-REAPERS-0609/index.md",
+    "format": "md",
+    "renderMode": "hybrid",
+    "author": "AXIOM CORE",
+    "status": "published",
+    "visibility": "public",
+    "weight": 20,
+    "lang": "ru",
+    "version": "v1.0",
+    "slug": "reapers",
+    "numericSuffix": "0609",
+    "cover": "/assets/content/reapers.png",
+    "links": [],
+    "meta": {
+      "v": 2,
+      "zone": "06_FACTIONS"
+    }
   }
 ]
