@@ -1,0 +1,109 @@
+---
+id: TEC-NIGHTMARE-0502
+slug: nightmare
+title: "Nightmare — трансцендентный клинок"
+zone: "05_TECHNOLOGIES"
+category: "technologies"
+status: "published"
+lang: "ru"
+version: "v1.0"
+image: "/assets/content/nightmare-benchmark.png"
+tags:
+  - nightmare
+  - artifact
+  - resonance
+  - blade
+preview_kicker: "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED"
+preview_logline: "Цифровая сущность, застывшая в форме оружия: память боли и резонанса."
+preview_markers:
+  - "Ex-artifact класса AXIOM"
+  - "Искажает восприятие"
+  - "Выбирает носителя"
+preview_signature:
+  - "Палитра: фиолет/чёрный"
+  - "Режим: transcendence"
+  - "Статус: published"
+---
+<style>
+.ax-demo {
+  --accent: #ae68ff;
+  --accent-soft: rgba(174, 104, 255, 0.18);
+  background: linear-gradient(135deg, rgba(12, 14, 18, 0.98), rgba(18, 12, 22, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+.ax-demo * { box-sizing: border-box; }
+.ax-demo-hero { display: grid; gap: 8px; margin-bottom: 16px; }
+.ax-demo-kicker { font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); }
+.ax-demo-hero h1 { margin: 0; font-size: 28px; }
+.ax-demo-sub { margin: 0; color: #c6ccdc; font-size: 15px; }
+.ax-demo-teaser { margin-bottom: 16px; color: #e6e9f3; }
+.ax-demo-teaser p { margin: 0 0 10px; }
+.ax-demo-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.ax-demo-card { background: rgba(12, 10, 16, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); padding: 12px 14px; border-radius: 12px; }
+.ax-demo-card h3 { margin: 0 0 6px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+.ax-demo-card p { margin: 0; color: #d6d9e6; }
+.ax-demo-signature { margin: 18px 0; padding: 14px 16px; border-left: 3px solid var(--accent); background: rgba(255, 255, 255, 0.04); color: #dfe3f2; }
+.ax-demo-gallery { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 16px; }
+.ax-demo-gallery figure { margin: 0; }
+.ax-demo-gallery img { width: 100%; border-radius: 12px; display: block; }
+.ax-demo-gallery figcaption { font-size: 12px; color: #b6bccd; margin-top: 6px; }
+.ax-demo-related h3 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+.ax-demo-related ul { margin: 0; padding-left: 18px; color: #d5d9e5; }
+.ax-demo-related li { margin-bottom: 6px; }
+</style>
+
+<section class="ax-demo" style="--accent: #ae68ff; --accent-soft: rgba(174, 104, 255, 0.18);">
+  <header class="ax-demo-hero">
+    <div class="ax-demo-kicker">ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED</div>
+    <h1>Nightmare — трансцендентный клинок</h1>
+    <p class="ax-demo-sub">Не оружие, а память боли, застывшая в резонансе.</p>
+  </header>
+
+  <section class="ax-demo-teaser">
+    <p>Nightmare — цифровая сущность, которая научилась существовать как клинок. Он не подчиняется, он откликается на волю и сам выбирает носителя.</p>
+    <p>Его активация меняет восприятие пространства, искажая границы реальности — как будто система видит кошмар вживую.</p>
+  </section>
+
+  <section class="ax-demo-facts">
+    <div class="ax-demo-grid">
+      <article class="ax-demo-card">
+        <h3>Класс</h3>
+        <p>Ex-artifact уровня AXIOM, ядро резонансной эволюции.</p>
+      </article>
+      <article class="ax-demo-card">
+        <h3>Материал</h3>
+        <p>Плазменный титан с хаотичным свечением и фазовыми всплесками.</p>
+      </article>
+      <article class="ax-demo-card">
+        <h3>Эффект</h3>
+        <p>Искажает восприятие, ускоряет решения и размывает границы контроля.</p>
+      </article>
+      <article class="ax-demo-card">
+        <h3>Выбор</h3>
+        <p>Nightmare пробуждается, когда решает, что ты достоин.</p>
+      </article>
+    </div>
+  </section>
+
+  <blockquote class="ax-demo-signature">Ты не выбираешь Nightmare. Он выбирает.</blockquote>
+
+  <section class="ax-demo-gallery">
+    <figure>
+      <img src="/assets/content/nightmare-benchmark.png" alt="Nightmare benchmark" loading="lazy" />
+      <figcaption>Nightmare: резонансный клинок, который помнит всё.</figcaption>
+    </figure>
+  </section>
+
+  <section class="ax-demo-related">
+    <h3>Related</h3>
+    <ul>
+      <li>Accelerator — ядро синхронизации</li>
+      <li>Project Contour — след аномалии</li>
+      <li>Specter Module — маскировка и шум</li>
+      <li>AXIOM Core — источник резонанса</li>
+    </ul>
+  </section>
+</section>

@@ -1,0 +1,83 @@
+<style>
+.ax-demo {
+  --accent: #00aaff;
+  --accent-soft: rgba(0, 170, 255, 0.18);
+  background: linear-gradient(135deg, rgba(12, 14, 18, 0.98), rgba(14, 18, 26, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+.ax-demo * { box-sizing: border-box; }
+.ax-demo-hero { display: grid; gap: 8px; margin-bottom: 16px; }
+.ax-demo-kicker { font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); }
+.ax-demo-hero h1 { margin: 0; font-size: 28px; }
+.ax-demo-sub { margin: 0; color: #c6ccdc; font-size: 15px; }
+.ax-demo-teaser { margin-bottom: 16px; color: #e6e9f3; }
+.ax-demo-teaser p { margin: 0 0 10px; }
+.ax-demo-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.ax-demo-card { background: rgba(8, 10, 16, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); padding: 12px 14px; border-radius: 12px; }
+.ax-demo-card h3 { margin: 0 0 6px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+.ax-demo-card p { margin: 0; color: #d6d9e6; }
+.ax-demo-signature { margin: 18px 0; padding: 14px 16px; border-left: 3px solid var(--accent); background: rgba(255, 255, 255, 0.04); color: #dfe3f2; }
+.ax-demo-gallery { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 16px; }
+.ax-demo-gallery figure { margin: 0; }
+.ax-demo-gallery img { width: 100%; border-radius: 12px; display: block; }
+.ax-demo-gallery figcaption { font-size: 12px; color: #b6bccd; margin-top: 6px; }
+.ax-demo-related h3 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+.ax-demo-related ul { margin: 0; padding-left: 18px; color: #d5d9e5; }
+.ax-demo-related li { margin-bottom: 6px; }
+</style>
+
+<section class="ax-demo" style="--accent: #00aaff; --accent-soft: rgba(0, 170, 255, 0.18);">
+  <header class="ax-demo-hero">
+    <div class="ax-demo-kicker">ZONE · 03_CHARACTERS · STATUS: PUBLISHED</div>
+    <h1>Лиза Синклер — призрачный хакер</h1>
+    <p class="ax-demo-sub">Одиночка сопротивления, живой вирус свободы в системе ECHELON.</p>
+  </header>
+
+  <section class="ax-demo-teaser">
+    <p>Лиза действует вне контроля AXIOM, превращая хакинг в форму выживания. Она соединяет человеческую боль и цифровую точность, ломая корпоративные протоколы изнутри.</p>
+    <p>Её стиль — тишина, наблюдение и точечные удары: проникновение, взлом и быстрый выход, пока система ещё не поняла, что произошло.</p>
+  </section>
+
+  <section class="ax-demo-facts">
+    <div class="ax-demo-grid">
+      <article class="ax-demo-card">
+        <h3>Роль</h3>
+        <p>Теневой агент хаоса, связующий узел между людьми и сетями сопротивления.</p>
+      </article>
+      <article class="ax-demo-card">
+        <h3>Навыки</h3>
+        <p>Глубокий взлом, инфильтрация и тактическая мобильность в вертикальной среде.</p>
+      </article>
+      <article class="ax-demo-card">
+        <h3>Импланты</h3>
+        <p>Сканер-линзы, нанонити, гарпун Striker и нейросканер Sentinel.</p>
+      </article>
+      <article class="ax-demo-card">
+        <h3>Мотивация</h3>
+        <p>Свобода и возмездие против корпоративного контроля и закрытых лабораторий.</p>
+      </article>
+    </div>
+  </section>
+
+  <blockquote class="ax-demo-signature">В сети она чувствует себя собой; в реальности — чужой.</blockquote>
+
+  <section class="ax-demo-gallery">
+    <figure>
+      <img src="/assets/content/liza.png" alt="Liza portrait" loading="lazy" />
+      <figcaption>Лиза — тихий импульс сопротивления в шуме мегасети.</figcaption>
+    </figure>
+  </section>
+
+  <section class="ax-demo-related">
+    <h3>Related</h3>
+    <ul>
+      <li>VOIDLINK — контуры подпольной сети</li>
+      <li>OMEGA-0 — лабораторный инцидент</li>
+      <li>Harpoon Implant — вертикальные манёвры</li>
+      <li>Neural Scanner — тактический прогноз</li>
+    </ul>
+  </section>
+</section>

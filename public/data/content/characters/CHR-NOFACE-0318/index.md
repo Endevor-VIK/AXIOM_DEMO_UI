@@ -1,0 +1,83 @@
+<style>
+.ax-demo {
+  --accent: #8f7aff;
+  --accent-soft: rgba(143, 122, 255, 0.18);
+  background: linear-gradient(135deg, rgba(12, 14, 18, 0.98), rgba(16, 14, 22, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+.ax-demo * { box-sizing: border-box; }
+.ax-demo-hero { display: grid; gap: 8px; margin-bottom: 16px; }
+.ax-demo-kicker { font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); }
+.ax-demo-hero h1 { margin: 0; font-size: 28px; }
+.ax-demo-sub { margin: 0; color: #c6ccdc; font-size: 15px; }
+.ax-demo-teaser { margin-bottom: 16px; color: #e6e9f3; }
+.ax-demo-teaser p { margin: 0 0 10px; }
+.ax-demo-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.ax-demo-card { background: rgba(10, 10, 16, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); padding: 12px 14px; border-radius: 12px; }
+.ax-demo-card h3 { margin: 0 0 6px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+.ax-demo-card p { margin: 0; color: #d6d9e6; }
+.ax-demo-signature { margin: 18px 0; padding: 14px 16px; border-left: 3px solid var(--accent); background: rgba(255, 255, 255, 0.04); color: #dfe3f2; }
+.ax-demo-gallery { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 16px; }
+.ax-demo-gallery figure { margin: 0; }
+.ax-demo-gallery img { width: 100%; border-radius: 12px; display: block; }
+.ax-demo-gallery figcaption { font-size: 12px; color: #b6bccd; margin-top: 6px; }
+.ax-demo-related h3 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+.ax-demo-related ul { margin: 0; padding-left: 18px; color: #d5d9e5; }
+.ax-demo-related li { margin-bottom: 6px; }
+</style>
+
+<section class="ax-demo" style="--accent: #8f7aff; --accent-soft: rgba(143, 122, 255, 0.18);">
+  <header class="ax-demo-hero">
+    <div class="ax-demo-kicker">ZONE · 03_CHARACTERS · STATUS: PUBLISHED</div>
+    <h1>NoFace — теневой куратор</h1>
+    <p class="ax-demo-sub">Брокер данных, существующий в разрыве между людьми, корпорациями и AXIOM.</p>
+  </header>
+
+  <section class="ax-demo-teaser">
+    <p>NoFace почти не появляется физически — он присутствует в маршрутах утечек и странных совпадениях. Его сообщения — фрагменты логов и подсказки, собранные так, чтобы ты сделал вывод сам.</p>
+    <p>Он связывает White Contour с подпольем ECHELON и работает в теневой сети AXIOM_SHADOW_NET, где информация — единственная валюта.</p>
+  </section>
+
+  <section class="ax-demo-facts">
+    <div class="ax-demo-grid">
+      <article class="ax-demo-card">
+        <h3>Метод</h3>
+        <p>Никаких прямых команд — только маршруты, шум и управляемые утечки.</p>
+      </article>
+      <article class="ax-demo-card">
+        <h3>Зоны</h3>
+        <p>Глубины Undercity и слои AXIOM_SHADOW_NET с анонимными каналами.</p>
+      </article>
+      <article class="ax-demo-card">
+        <h3>Роль</h3>
+        <p>Связующее звено между White Contour, фракциями и подпольными сетями.</p>
+      </article>
+      <article class="ax-demo-card">
+        <h3>Инструменты</h3>
+        <p>Cyberlink интерфейсы и маскировка класса Specter через прокси-агентов.</p>
+      </article>
+    </div>
+  </section>
+
+  <blockquote class="ax-demo-signature">Он не говорит прямо — он меняет маршрут данных.</blockquote>
+
+  <section class="ax-demo-gallery">
+    <figure>
+      <img src="/assets/content/placeholder.png" alt="NoFace abstract entity" loading="lazy" />
+      <figcaption>Узел без лица: информация важнее носителя.</figcaption>
+    </figure>
+  </section>
+
+  <section class="ax-demo-related">
+    <h3>Related</h3>
+    <ul>
+      <li>White Contour — аномальный адресат утечек</li>
+      <li>Chrome Syndicate — временные каналы связи</li>
+      <li>Cyberlink Interface — нелегальные доступы</li>
+      <li>AXIOM_SHADOW_NET — теневая сеть</li>
+    </ul>
+  </section>
+</section>

@@ -6,7 +6,7 @@ export function safeText(value: unknown, fallback = '—'): string {
     if (!cleaned || cleaned.toLowerCase() === 'undefined' || cleaned.toLowerCase() === 'nan') {
       return fallback;
     }
-    if (/^[\W_]+$/.test(cleaned)) return fallback;
+    if (!/[\p{L}\p{N}]/u.test(cleaned)) return fallback;
     return cleaned;
   }
   try {
