@@ -439,6 +439,99 @@
     }
   },
   {
+    "id": "TEC-HARPOON-0504",
+    "slug": "harpoon-implant",
+    "title": "Harpoon Implant — якорный боевой трос",
+    "zone": "05_TECHNOLOGIES",
+    "category": "technologies",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "harpoon",
+      "implant",
+      "mobility",
+      "striker"
+    ],
+    "preview": {
+      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
+      "logline": "Тактический тросовый имплант для вертикальных рывков и штурма.",
+      "markers": [
+        "Проект Striker: городская война",
+        "Кинетический якорь и автонаведение",
+        "Риск перегрева и сбоев"
+      ],
+      "signature": [
+        "Палитра: сталь/неон",
+        "Режим: tether assault",
+        "Статус: published"
+      ],
+      "image": "/assets/content/harpoon-implant.png"
+    }
+  },
+  {
+    "id": "TEC-MAGNETIC-0505",
+    "slug": "magnetic-implant",
+    "title": "Magnetic Implant — модуль грави-сцепления",
+    "zone": "05_TECHNOLOGIES",
+    "category": "technologies",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "magnetic",
+      "implant",
+      "grav-walker",
+      "mobility"
+    ],
+    "preview": {
+      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
+      "logline": "Гравиметрический модуль, позволяющий бегать по стенам и потолку.",
+      "markers": [
+        "Проект Grav-Walker",
+        "Регулируемая сила сцепления",
+        "Риск дезориентации"
+      ],
+      "signature": [
+        "Палитра: синий/сталь",
+        "Режим: grav-control",
+        "Статус: published"
+      ],
+      "image": "/assets/content/magnetic-implant.png"
+    }
+  },
+  {
+    "id": "TEC-NEURAL-SCANNER-0506",
+    "slug": "neural-scanner",
+    "title": "Neural Scanner — тактический нейросканер",
+    "zone": "05_TECHNOLOGIES",
+    "category": "technologies",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "neural",
+      "scanner",
+      "sentinel",
+      "tactics"
+    ],
+    "preview": {
+      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
+      "logline": "Нейропроцессор анализа боя, предугадывающий атаки на доли секунды.",
+      "markers": [
+        "Проект Sentinel",
+        "Прогноз микродвижений",
+        "Риск когнитивной перегрузки"
+      ],
+      "signature": [
+        "Палитра: циан/сталь",
+        "Режим: predictive scan",
+        "Статус: published"
+      ],
+      "image": "/assets/content/neural-scanner.png"
+    }
+  },
+  {
     "id": "TEC-BLOODTECH-0507",
     "slug": "bloodtech",
     "title": "Bloodtech — симбиотический био-тех",
@@ -467,6 +560,68 @@
         "Статус: published"
       ],
       "image": "/assets/content/bloodtech.png"
+    }
+  },
+  {
+    "id": "TEC-GROM-FIST-0508",
+    "slug": "grom-fist",
+    "title": "Grom Fist — ударный имплант улиц",
+    "zone": "05_TECHNOLOGIES",
+    "category": "technologies",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "grom-fist",
+      "thunder-dogs",
+      "implant",
+      "melee"
+    ],
+    "preview": {
+      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
+      "logline": "Культовый боевой имплант Thunder Dogs для сокрушительных ударов.",
+      "markers": [
+        "Символ уличной силы",
+        "430% усиление удара",
+        "Риск перегруза суставов"
+      ],
+      "signature": [
+        "Палитра: жёлтый/чёрный",
+        "Режим: impact",
+        "Статус: published"
+      ],
+      "image": "/assets/content/grom-fist.png"
+    }
+  },
+  {
+    "id": "TEC-T-COLLAR-0509",
+    "slug": "t-collar",
+    "title": "T-Collar — защитный шейный модуль",
+    "zone": "05_TECHNOLOGIES",
+    "category": "technologies",
+    "status": "published",
+    "lang": "ru",
+    "version": "v1.0",
+    "tags": [
+      "t-collar",
+      "defense",
+      "thunder-dogs",
+      "implant"
+    ],
+    "preview": {
+      "kicker": "ZONE · 05_TECHNOLOGIES · STATUS: PUBLISHED",
+      "logline": "Броневой шейный имплант для блокировки удушения и ударов.",
+      "markers": [
+        "Защита трахеи и позвоночной дуги",
+        "Автоматическая блокировка захватов",
+        "Частичное ограничение подвижности"
+      ],
+      "signature": [
+        "Палитра: сталь/чёрный",
+        "Режим: neck-guard",
+        "Статус: published"
+      ],
+      "image": "/assets/content/t-collar.png"
     }
   }
 ]
