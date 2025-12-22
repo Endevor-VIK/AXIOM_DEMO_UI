@@ -20,7 +20,7 @@
 | [SEC-003](SEC-003_markdown-allows-javascript-protocol.md) | Markdown санитайз пропускает javascript:/data: ссылки | Reader / Content Preview | High | OPEN |
 | [BUG-005](BUG-005_perf-animations-low-end.md) | Тяжёлые анимации лагают на low-end | Global / Performance | High | OPEN |
 | [BUG-002](BUG-002_windowed-scale-break.md) | Windowed mode ломает scale/layout | Responsive / Global Scale | High | OPEN |
-| [BUG-006](BUG-006_scale-parity-windowed.md) | Несовпадение масштаба при windowed/zoom | Responsive / Scale | High | OPEN |
+| [BUG-006](BUG-006_scale-parity-windowed.md) | Несовпадение масштаба при windowed/zoom | Responsive / Scale | High | IN_PROGRESS |
 
 ## Active Bugs
 
@@ -31,7 +31,7 @@
 | [BUG-003](BUG-003_reader-overlay-menu-scroll.md) | Reader: overlay + меню привязаны к “верхней точке”, не открываются корректно на любой позиции скролла | Reader / Overlay / Menu | Critical | DONE | Скрин 5–7 |
 | [BUG-004](BUG-004_avatar-dropdown-offset.md) | Avatar dropdown: меню рендерится заметно левее/правее аватара, не прилипает к кнопке | Topbar / Overlay | Medium | OPEN | Скрин (см. BUG-004) |
 | [BUG-005](BUG-005_perf-animations-low-end.md) | Низкая плавность анимаций и лаги на слабых ноутбуках (blur, scanlines, ticker) | Global / Performance | High | OPEN | Воспроизведение на iGPU/low-power режимах |
-| [BUG-006](BUG-006_scale-parity-windowed.md) | Несоответствие форм-фактора при windowed/zoom: карточки/боксы “плывут”, scale не совпадает с full window | Responsive / Scale | High | OPEN | Скрин/наблюдения при windowed 80–90% |
+| [BUG-006](BUG-006_scale-parity-windowed.md) | Несоответствие форм-фактора при windowed/zoom: карточки/боксы “плывут”, scale не совпадает с full window | Responsive / Scale | High | IN_PROGRESS | Скрин/наблюдения при windowed 80–90% |
 | [BUG-007](BUG-007_reader-legacy-dataset.md) | Reader использует legacy-индекс, новые VFS записи не открываются | Reader / Content Hub | High | OPEN | Код + переход `/content/{id}` |
 
 ## Architecture / Security / Performance
