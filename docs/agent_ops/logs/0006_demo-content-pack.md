@@ -32,6 +32,7 @@
 
 ## Step E — Git
 - 2025-12-22T12:39:39+03:00 — Commit: `b337371` — `feat(content): add demo content pack` — Файлы: `app/routes/dashboard/content/ContentCategoryView.tsx`, `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
+- 2025-12-22T12:41:13+03:00 — Commit: `f23ee14` — `docs(content): add demo content pack logs` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`, `docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_LOG_LINK.md`, `docs/content/demo-content-pack/content_manifest.md`, `docs/content/demo-content-pack/stub_cleanup_report.md`
 
 ---
 
@@ -43,8 +44,17 @@
   - Генерация `content-index.json` и `public/content-html/*` через `scripts/build-content.ts` из `content-src/*.md`.
   - Превью-изображения: `public/assets/content/*` (используется в `ContentPreview` и `content-src`).
 
+## Финальное резюме
+- Что сделано: удалены заглушки, добавлен демо-контент (2 локации, 3 персонажа, 2 технологии, 1 фракция), обновлены VFS-манифесты/индекс и превью, контент-линки актуализированы.
+- Где: `content-src/*`, `public/data/content/*`, `public/content-html/*`, `public/assets/content/*`, `src/features/content/data/content-index.json`, `app/routes/dashboard/content/ContentCategoryView.tsx`.
+- Как проверить: открыть `/dashboard/content` и `/content/LOC-ECHELON-CORE` (и другие ID), убедиться в превью/HTML; при наличии Node — запустить `npm run build:content` и сверить выход.
+
 ## Риски / Открытые вопросы
 - Отсутствует `node`/`tsx` в окружении, автоматическая генерация `public/content-html/*` и `content-index.json` недоступна (нужна ручная синхронизация или запуск в среде с Node).
 
 ## Чеклист приёмки
-- [ ] 
+- [x] Старые заглушки удалены и не отображаются
+- [x] Демо-страницы добавлены (Echelon/Characters/Technologies/Factions)
+- [x] Дубликаты ассетов/страниц отсутствуют
+- [x] `content_manifest` и `DEMO_CONTENT_PACK_SPEC_LOG_LINK.md` актуальны
+- [ ] build/lint/test выполнены (нет `node`/`tsx` в окружении)

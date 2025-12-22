@@ -30,4 +30,4 @@
 - `public/data/content/events/manifest.json`
 
 ## Примечания
-- Генерация `public/content-html/*` и `src/features/content/data/content-index.json` будет выполнена вручную на финальном этапе, так как `node` отсутствует в окружении (невозможно запустить `build:content`).
+- Синхронизация `public/content-html/*` и `src/features/content/data/content-index.json` выполнена вручную, так как `node` отсутствует в окружении (невозможно запустить `build:content`).
