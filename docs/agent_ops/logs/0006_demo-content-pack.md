@@ -1,0 +1,50 @@
+<!-- docs/agent_ops/logs/0006_demo-content-pack.md -->
+
+# GLOBAL LOG — 0006_demo-content-pack
+
+- Старт: 2025-12-22T11:16:28+03:00
+- Агент: Codex (GPT-5)
+- Репозиторий: AXIOM_DEMO_UI
+- Ветка: feat/demo-content-pack
+- Задача: DEMO CONTENT PACK v1.0
+- SPEC: docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_v1.0.md
+- Статус: ACTIVE
+
+---
+
+## Step A — Discovery
+- 2025-12-22T11:16:28+03:00 — Действие: Старт сессии, создана ветка feat/demo-content-pack → Результат: OK
+- 2025-12-22T11:36:44+03:00 — Действие: Изучение системы контента и маршрутов, составлен Content Flow Map → Результат: OK
+
+## Step B — Implementation
+- 2025-12-22T11:46:14+03:00 — Действие: Удалены заглушки в content-src и public/data/content, очищены манифесты категорий → Результат: OK
+- 2025-12-22T12:20:58+03:00 — Действие: Добавлены демо-страницы (content-src + public/data), обновлены манифесты, индексы и превью-ассеты → Результат: OK
+
+## Step C — Documentation
+- 2025-12-22T11:19:10+03:00 — Действие: Созданы GLOBAL LOG, запись в индексе и TASK LOG LINK → Результат: OK
+- 2025-12-22T11:46:14+03:00 — Действие: Сформирован stub_cleanup_report → Результат: OK
+- 2025-12-22T12:20:58+03:00 — Действие: Сформирован content_manifest → Результат: OK
+
+## Step D — QA
+- 2025-12-22T12:25:49+03:00 — Действие: Проверка дубликатов/cover в манифестах (python3) → Результат: OK
+- 2025-12-22T12:25:49+03:00 — Действие: build:content / lint / test → Результат: SKIP (нет `node`/`tsx` в окружении)
+- 2025-12-22T12:39:39+03:00 — Действие: Поиск упоминаний заглушек (rg) → Результат: OK (совпадения только в docs и ax-design/preview)
+
+## Step E — Git
+- 2025-12-22T12:39:39+03:00 — Commit: `b337371` — `feat(content): add demo content pack` — Файлы: `app/routes/dashboard/content/ContentCategoryView.tsx`, `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
+
+---
+
+## Заметки / Решения
+- Content Flow Map:
+  - Dashboard Content: `public/data/content/manifest.json` + `public/data/content/*/manifest.json` → читается через `lib/vfs` → маршруты `/dashboard/content/*` (`app/routes/dashboard/content/*`).
+  - Reader (dashboard): `PreviewPane` рендерит `public/data/content/**` (md/html) по `file` и `renderMode`.
+  - Open Source: `/content/:id` → `src/features/content/data/content-index.json` + `public/content-html/<id>.html`.
+  - Генерация `content-index.json` и `public/content-html/*` через `scripts/build-content.ts` из `content-src/*.md`.
+  - Превью-изображения: `public/assets/content/*` (используется в `ContentPreview` и `content-src`).
+
+## Риски / Открытые вопросы
+- Отсутствует `node`/`tsx` в окружении, автоматическая генерация `public/content-html/*` и `content-index.json` недоступна (нужна ручная синхронизация или запуск в среде с Node).
+
+## Чеклист приёмки
+- [ ] 

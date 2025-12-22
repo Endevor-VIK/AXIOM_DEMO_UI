@@ -9,5 +9,6 @@
 | 0003 | 2025-12-20T19:00:46+03:00 | Рефакторинг структуры docs (iterations/releases/specs) | feature/profile-auth-v2.3.1 | нет                                          | docs/agent_ops/logs/0003_docs-structure-cleanup.md  | ACTIVE |
 | 0004 | 2025-12-20T19:21:33+03:00 | README для каталога docs (структура/навигация)   | feature/profile-auth-v2.3.1 | нет                                          | docs/agent_ops/logs/0004_docs-readme.md            | ACTIVE |
 | 0005 | 2025-12-20T20:15:29+03:00 | Баг/фикс кампания v2.3.1 (backlog docs/bugs)     | bugfix/v2.3.1-bugs-sweep    | docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md | docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md | ACTIVE |
+| 0006 | 2025-12-22T11:16:28+03:00 | DEMO CONTENT PACK v1.0                           | feat/demo-content-pack      | docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_v1.0.md | docs/agent_ops/logs/0006_demo-content-pack.md      | ACTIVE |
 
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).
