@@ -123,7 +123,7 @@ function readFavorites(): FavoriteItem[] {
 }
 
 function migrateLegacyPins(): FavoriteItem[] {
-  if (legacyChecked) return list()
+  if (legacyChecked) return readFavorites()
   legacyChecked = true
   if (typeof window === 'undefined') return []
   const current = readFavorites()
@@ -154,6 +154,7 @@ function migrateLegacyPins(): FavoriteItem[] {
 export function list(): FavoriteItem[] {
   const current = readFavorites()
   if (current.length) return current
+  if (legacyChecked) return current
   return migrateLegacyPins()
 }
 

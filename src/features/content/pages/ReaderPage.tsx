@@ -148,8 +148,9 @@ const ReaderPage: React.FC = () => {
               <span className='axr-id'>NOT FOUND</span>
             </div>
           </header>
-          <main className='axr-main'>
-            <article className='axr-body axr-body--constrained axr-body--centered'>
+          <div className='axr-scroll' id='axr-scroll'>
+            <main className='axr-main'>
+              <article className='axr-body axr-body--constrained axr-body--centered'>
               <div className='axr-state axr-state--error'>
                 Файл не найден.<br />
                 Запрошенный контент недоступен или был удалён. Вернитесь в CONTENT HUB, чтобы выбрать другой файл.
@@ -163,8 +164,9 @@ const ReaderPage: React.FC = () => {
                   Вернуться в CONTENT
                 </button>
               </div>
-            </article>
-          </main>
+              </article>
+            </main>
+          </div>
         </section>
       </>
     )
@@ -213,9 +215,10 @@ const ReaderPage: React.FC = () => {
           </div>
         </header>
 
-        <div className='axr-container'>
-          <main className='axr-main'>
-            <article className='axr-body axr-body--constrained' aria-live='polite'>
+        <div className='axr-scroll' id='axr-scroll'>
+          <div className='axr-container'>
+            <main className='axr-main'>
+              <article className='axr-body axr-body--constrained' aria-live='polite'>
               {state.loading && <div className='axr-state'>LOADING …</div>}
               {!state.loading && state.error && (
                 <div className='axr-state axr-state--error'>
@@ -234,8 +237,9 @@ const ReaderPage: React.FC = () => {
               {!state.loading && !state.error && (
                 <div dangerouslySetInnerHTML={{ __html: state.html }} />
               )}
-            </article>
-          </main>
+              </article>
+            </main>
+          </div>
         </div>
       </section>
     </>

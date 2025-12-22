@@ -1,0 +1,185 @@
+<!-- docs/iterations/ui-scale-normalization-v2.3.1/spec.md -->
+
+# AXIOM UI — Нормализация масштаба без html-zoom (v0.2)
+
+## 0) Референсы
+- BUG-006: docs/bugs/BUG-006_scale-parity-windowed.md
+- Связанный баг: docs/bugs/BUG-002_windowed-scale-break.md
+- Текущая итерация: docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md
+
+## 1) Цель
+Стабилизировать визуальный масштаб и форм-фактор UI во всех режимах (fullscreen + windowed), убрав глобальный `html zoom/transform` и переведя управление масштабом на токены и контролируемую математику.
+
+### 1.1 Итоговый эффект
+- В windowed режиме элементы становятся меньше, но не "плывут" и не ломают форму.
+- Масштаб управляется единой системой, без двойного масштабирования (токены + html zoom).
+- Брейкпоинты и раскладки переключаются предсказуемо и без артефактов.
+
+### 1.2 Базовый формат
+- Базовая дизайн-рамка: **1920x1080**.
+- UI проектируется под 1920/1080 и затем аккуратно масштабируется вниз.
+
+### 1.3 Почему нужен отдельный масштаб (0.8)
+- Исторически дизайн был плотнее и в 100% выглядел "крупным".
+- Масштаб 0.8 делал визуал таким, как задумывалось.
+- Важно сохранить этот визуальный результат, но без глобального html zoom.
+
+### 1.4 Что не делаем
+- Не переписываем весь UI сразу.
+- Не меняем функциональность фич и контента.
+- Не трогаем локальные zoom-режимы (preview/iframe) без явной необходимости.
+
+## 2) Текущее состояние (анализ)
+1) Глобальный масштаб сейчас задан через `html { zoom: 0.8 }` и fallback `transform: scale(0.8)`.
+2) Есть две системы токенов:
+   - ax-design/tokens.css (используется в app/main.tsx)
+   - styles/tokens.css (похоже, legacy; в app/main.tsx не импортируется)
+3) Масштаб дублируется:
+   - токены уже используют `--ax-scale`
+   - поверх них идёт `html zoom/transform`, что приводит к дрейфу и непредсказуемой геометрии
+4) Локальный scale/zoom присутствует в отдельных модулях:
+   - preview/iframe масштабы (styles/app.css)
+   - doc wrapper zoom (app/styles/red-protocol-overrides.css)
+
+## 3) Архитектура (перспективный путь)
+### 3.1 Термины масштаба
+- **Density scale**: визуальная плотность UI.
+- **Viewport scale**: масштаб под конкретное окно (windowed vs fullscreen).
+- **Composed scale**: итоговый масштаб для токенов (density * viewport).
+- **Virtual width/height**: ширина/высота дизайн-канвы после применения viewport scale.
+
+### 3.2 Scale Manager 2.0 (JS)
+Единая математика, без html zoom.
+
+- Базовая рамка: `baseWidth = 1920`, `baseHeight = 1080`.
+- Алгоритм:
+  - `viewportScale = clamp(0.75, min(window.innerWidth / baseWidth, window.innerHeight / baseHeight), 1.0)`
+  - `densityScale = 0.8` (настройка, фиксирует визуальную задумку)
+  - `composedScale = densityScale * viewportScale`
+- Применение:
+  - `--ax-density-scale` = densityScale
+  - `--ax-viewport-scale` = viewportScale
+  - `--ax-scale` = composedScale (используется токенами)
+  - `--ax-virtual-w` = window.innerWidth / viewportScale
+  - `--ax-virtual-h` = window.innerHeight / viewportScale
+  - `data-layout` вычисляется по virtual width, а не по реальной ширине окна
+
+### 3.3 Canvas layout (без html zoom)
+Новый слой масштабирования — **canvas-контейнер**, а не html.
+
+Предлагаемая структура:
+```
+<body>
+  <div id="root">
+    <div class="ax-viewport" data-scale-mode="managed">
+      <div class="ax-canvas" id="ax-canvas">
+        ... app UI ...
+      </div>
+    </div>
+  </div>
+  <div id="modal-root"></div>
+</body>
+```
+
+Правила:
+- `ax-viewport` центрирует canvas и может создавать letterbox при несоответствии пропорций.
+- `ax-canvas` масштабируется через `transform: scale(var(--ax-viewport-scale))`.
+- Токены масштабируются через `--ax-scale`.
+
+### 3.4 Portal стратегия (чтобы overlay не ломался)
+- `#modal-root` нужно разместить внутри `ax-canvas`, если оверлей должен масштабироваться вместе с UI.
+- Для системных элементов без масштаба можно добавить отдельный `#system-root`.
+- Все overlay/menus относятся к UI-слою и должны масштабироваться синхронно с canvas.
+
+### 3.5 Breakpoints без дрейфа
+- `data-layout="xl|lg|md|sm"` рассчитывается по **virtual width**.
+- Media queries остаются только для крайних мобильных режимов.
+- Это позволяет сохранить desktop-сетки при windowed режиме.
+
+### 3.6 Токены и источники правды
+- Единственный источник токенов: ax-design/tokens.css.
+- styles/tokens.css пометить как legacy; проверить использование и либо удалить, либо синхронизировать.
+- Ключевые размеры переводим на токены (`--space-*`, `--fs-*`, `--r-*`, `--btn-h`, `--chip-h`).
+
+### 3.7 Диагностика (для устойчивости)
+- Ввести debug-оверлей масштаба (опционально):
+  - scale values
+  - virtual width/height
+  - data-layout
+
+## 4) Зоны воздействия (приоритет)
+P0 (обязательные):
+- Topbar + ticker + status line (layout shell)
+- Dashboard home (контрольные панели, cards)
+- Content hub (фильтры, плитки, карточки)
+
+P1:
+- News page
+- Audit/Roadmap (preview контейнеры)
+- Reader page (слои, overlay)
+
+P2:
+- Profile/Settings/Favorites/Help
+
+## 5) Roadmap
+### Фаза 0 — Подготовка (1-2 дня)
+- Инвентаризация масштабов (html zoom, локальные scale, токены).
+- Контрольные размеры и baseline скриншоты (1920/1600/1440/1280 + windowed 80-90%).
+- Подготовка «эталонных» скринов (владельцы дают набор).
+
+### Фаза 1 — Инфраструктура масштаба (2-3 дня)
+- Реализация Scale Manager.
+- Введение `ax-viewport` и `ax-canvas`.
+- Введение `data-layout`.
+- Флаг `data-scale-mode=legacy` для быстрого отката.
+
+### Фаза 2 — Миграция core-layout (2-5 дней)
+- Перевести layout shell на токены и data-layout.
+- Обновить главные сетки (home/content).
+- Удалить html zoom/transform.
+
+### Фаза 3 — Миграция остальных экранов (3-6 дней)
+- News/Audit/Roadmap/Reader.
+- Устранение локальных артефактов (sticky, overlay).
+
+### Фаза 4 — QA и стабилизация (2-3 дня)
+- Регресс-скрины до/после.
+- Smoke-check ключевых маршрутов.
+- Микрофиксы по визуальным багам.
+
+## 6) Чеклист внедрения
+### Preflight
+- [ ] Подтвердить, что styles/tokens.css не используется.
+- [ ] Подготовить baseline-скриншоты (1920/1080 как эталон).
+- [ ] Зафиксировать target-окна: 1920, 1600, 1440, 1280 + windowed 80-90%.
+
+### Implementation
+- [ ] Добавить Scale Manager.
+- [ ] Ввести `ax-viewport`/`ax-canvas`.
+- [ ] Ввести data-layout и перенести 1-2 ключевые медиа-ветки.
+- [ ] Перевести ключевые размеры на токены.
+- [ ] Удалить html zoom/transform.
+
+### QA
+- [ ] Сетка в windowed сохраняет форму и позиции.
+- [ ] Header/ticker/status не смещаются и остаются читабельны.
+- [ ] Overlay/portal не смещаются при разных DPI.
+- [ ] Нет “прыжков” при ресайзе окна.
+
+### Rollback
+- [ ] Флаг `data-scale-mode=legacy` доступен для быстрого отката.
+
+## 7) Риски и меры
+- Риск: много px-значений вне токенов -> регрессы.
+  - Мера: мигрировать по слоям, фиксировать скриншоты.
+- Риск: portal/sticky слои ведут себя иначе без html zoom.
+  - Мера: привязать portal к canvas, протестировать Reader/Dropdown.
+- Риск: непредсказуемые DPI/zoom в браузере.
+  - Мера: учитывать devicePixelRatio при расчете scale (опционально).
+
+## 8) Выходные артефакты
+- Scale Manager 2.0.
+- Новый canvas-контейнер и data-layout.
+- Обновленные токены и core layout.
+- Обновленные документы BUG-006/BUG-002.
+- Лог в 0005 с прогрессом и коммитами.
