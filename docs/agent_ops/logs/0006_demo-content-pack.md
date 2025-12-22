@@ -8,7 +8,7 @@
 - Ветка: feat/demo-content-pack
 - Задача: DEMO CONTENT PACK v1.0
 - SPEC: docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_v1.0.md
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -25,6 +25,7 @@
 - 2025-12-22T14:50:55+03:00 — Действие: Исправлена санитизация текста для кириллицы в витрине (safeText) → Результат: OK
 - 2025-12-22T16:04:24+03:00 — Действие: Переставлены превью (EVA получила noface), для списка объектов выставлен placeholder, обновлены content-src/public/data/content/public/content-html/content-index → Результат: OK
 - 2025-12-22T16:04:24+03:00 — Действие: Скорректированы веса/даты для префиксной хронологии и топ-3 витрины → Результат: OK
+- 2025-12-22T16:27:17+03:00 — Действие: Добавлены новости о DEMO CONTENT PACK и правках витрины (news/manifest + items) → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T11:19:10+03:00 — Действие: Созданы GLOBAL LOG, запись в индексе и TASK LOG LINK → Результат: OK
@@ -33,6 +34,7 @@
 - 2025-12-22T14:07:25+03:00 — Действие: Обновлён content_manifest (новые объекты и ассеты) → Результат: OK
 - 2025-12-22T14:50:55+03:00 — Действие: Обновлён content_manifest (добавлены технологии) → Результат: OK
 - 2025-12-22T16:04:24+03:00 — Действие: Обновлён content_manifest (замена превью на placeholder/noface) → Результат: OK
+- 2025-12-22T16:27:17+03:00 — Действие: Закрытие задачи (статусы DONE в LOG/INDEX/LINK) → Результат: OK
 
 ## Step D — QA
 - 2025-12-22T12:25:49+03:00 — Действие: Проверка дубликатов/cover в манифестах (python3) → Результат: OK
@@ -41,6 +43,7 @@
 - 2025-12-22T14:07:25+03:00 — Действие: Проверка JSON/дубликатов/счётчиков (python3) → Результат: OK
 - 2025-12-22T14:50:55+03:00 — Действие: Повторная проверка JSON/дубликатов/счётчиков (python3) → Результат: OK
 - 2025-12-22T16:04:24+03:00 — Действие: Проверка топ-3 витрины и cover/preview (python3) → Результат: OK
+- 2025-12-22T16:27:17+03:00 — Действие: Проверка news/manifest и новых items (python3) → Результат: OK
 
 ## Step E — Git
 - 2025-12-22T12:39:39+03:00 — Commit: `b337371` — `feat(content): add demo content pack` — Файлы: `app/routes/dashboard/content/ContentCategoryView.tsx`, `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
@@ -54,6 +57,8 @@
 - 2025-12-22T14:56:41+03:00 — Commit: `99b0754` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
 - 2025-12-22T16:07:15+03:00 — Commit: `3f72392` — `feat(content): update showcase previews and ordering` — Файлы: `content-src/*`, `public/assets/content/placeholder.png`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
 - 2025-12-22T16:09:10+03:00 — Commit: `6d15bc7` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
+- 2025-12-22T16:09:10+03:00 — Commit: `933fa39` — `docs(content): update global log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`
+- 2025-12-22T16:29:56+03:00 — Commit: `516c310` — `feat(news): add demo content pack updates` — Файлы: `public/data/news/manifest.json`, `public/data/news/items/2025-12-22-demo-content-pack.md`, `public/data/news/items/2025-12-22-showcase-refresh.md`
 
 ---
 
@@ -69,9 +74,9 @@
 - Исправление safeText: сводки с кириллицей больше не заменяются на `—`.
 
 ## Финальное резюме
-- Что сделано: удалены заглушки, добавлен демо-контент (2 локации, 7 персонажей, 9 технологий, 2 фракции), обновлены VFS-манифесты/индекс и превью, исправлена витрина для кириллических summary.
+- Что сделано: удалены заглушки, добавлен демо-контент (2 локации, 7 персонажей, 9 технологий, 2 фракции), обновлены VFS-манифесты/индекс и превью, исправлена витрина для кириллических summary, добавлены новости о пакете и правках витрины.
 - Где: `content-src/*`, `public/data/content/*`, `public/content-html/*`, `public/assets/content/*`, `src/features/content/data/content-index.json`, `app/routes/dashboard/content/ContentCategoryView.tsx`.
-- Как проверить: открыть `/dashboard/content` и `/content/LOC-ECHELON-CORE` (и другие ID), убедиться в превью/HTML; при наличии Node — запустить `npm run build:content` и сверить выход.
+- Как проверить: открыть `/dashboard/content`, `/content/LOC-ECHELON-CORE`, `/dashboard/news`; при наличии Node — запустить `npm run build:content` и сверить выход.
 
 ## Риски / Открытые вопросы
 - Отсутствует `node`/`tsx` в окружении, автоматическая генерация `public/content-html/*` и `content-index.json` недоступна (нужна ручная синхронизация или запуск в среде с Node).
