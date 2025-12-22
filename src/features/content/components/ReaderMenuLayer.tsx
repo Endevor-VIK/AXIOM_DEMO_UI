@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import type { ContentPreviewData } from '../types'
@@ -26,11 +26,19 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
   onClose,
 }) => {
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null)
+  const [scrollRoot, setScrollRoot] = useState<HTMLElement | null>(null)
+  const lastTouchY = useRef<number | null>(null)
 
   useEffect(() => {
     const node = document.getElementById('modal-root') ?? document.body
     setModalRoot(node)
   }, [])
+
+  useEffect(() => {
+    if (!open) return
+    const node = document.getElementById('axr-scroll')
+    if (node) setScrollRoot(node)
+  }, [open])
 
   useLayoutEffect(() => {
     const header = document.querySelector<HTMLElement>('.axr-header')
@@ -62,6 +70,27 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
         data-overlay
         aria-hidden={!open}
         onClick={onClose}
+        onWheel={(event) => {
+          if (!scrollRoot) return
+          scrollRoot.scrollBy({ top: event.deltaY, left: event.deltaX })
+          event.preventDefault()
+        }}
+        onTouchStart={(event) => {
+          if (event.touches.length === 1) {
+            lastTouchY.current = event.touches[0].clientY
+          }
+        }}
+        onTouchMove={(event) => {
+          if (!scrollRoot || event.touches.length !== 1 || lastTouchY.current === null) return
+          const current = event.touches[0].clientY
+          const delta = lastTouchY.current - current
+          scrollRoot.scrollBy({ top: delta })
+          lastTouchY.current = current
+          event.preventDefault()
+        }}
+        onTouchEnd={() => {
+          lastTouchY.current = null
+        }}
       />
       <div className='axr-menu-shell' style={{ zIndex: MENU_Z }}>
         <nav className={`axr-menu${open ? ' axr-menu--open' : ''}`} aria-label='Файлы контента'>
