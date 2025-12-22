@@ -53,6 +53,7 @@
 - 2025-12-22T14:55:43+03:00 — Commit: `4688d69` — `feat(content): add technology showcase entries` — Файлы: `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
 - 2025-12-22T14:56:41+03:00 — Commit: `99b0754` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
 - 2025-12-22T16:07:15+03:00 — Commit: `3f72392` — `feat(content): update showcase previews and ordering` — Файлы: `content-src/*`, `public/assets/content/placeholder.png`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
+- 2025-12-22T16:09:10+03:00 — Commit: `6d15bc7` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
 
 ---
 
