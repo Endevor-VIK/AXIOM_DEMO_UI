@@ -47,6 +47,7 @@
 - 2025-12-22T14:11:55+03:00 — Commit: `5dc1770` — `docs(content): update global log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`
 - 2025-12-22T14:55:43+03:00 — Commit: `ba3db08` — `fix(ui): support cyrillic summaries` — Файлы: `components/utils.ts`
 - 2025-12-22T14:55:43+03:00 — Commit: `4688d69` — `feat(content): add technology showcase entries` — Файлы: `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
+- 2025-12-22T14:56:41+03:00 — Commit: `99b0754` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
 
 ---
 
