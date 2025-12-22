@@ -5,6 +5,7 @@
 - **Status:** IN_PROGRESS
 - **Date:** 2025-12-22
 - **Reporter:** Codex (feature/profile-auth-v2.3.1)
+- **Spec:** docs/iterations/ui-scale-normalization-v2.3.1/spec.md
 
 ## Problem
 При работе в оконном режиме (уменьшенное окно, масштаб 80–90%, внешние мониторы с отличным DPR) UI теряет форм-фактор: карточки и боксы “плывут”, отступы/границы меняют толщину, overlay и status/footer смещаются. В full window выглядит корректнее.
