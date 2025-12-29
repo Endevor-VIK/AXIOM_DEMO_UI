@@ -40,6 +40,8 @@
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
 - 2025-12-22T20:21:53+03:00: Действие: Углубил spec (v0.2): базовая рамка 1920x1080, раздельные масштабы density/viewport, canvas-архитектура, portal-стратегия, data-layout, расширенный roadmap/QA. → Результат: OK
 - 2025-12-29T14:56:13+03:00 — Действие: Создал директорию для baseline-скриншотов и README с неймингом: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/`. Обновил spec чеклист. → Результат: OK
+- 2025-12-29T20:29:30+03:00 — Действие: Добавлены baseline-скриншоты для UI масштаба в `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/`. → Результат: OK
+- 2025-12-29T20:29:30+03:00 — Действие: Добавлена новость о полном реворке вкладок Audit/Roadmap в `public/data/news/manifest.json` + `public/data/news/items/2025-12-29-audit-roadmap-rework.md`. → Результат: OK
 
 ## Step D — QA
 - 2025-12-20T20:44:20+03:00 — Действие: Ручная проверка BUG-003 в UI (локал): меню всё ещё открывается от верхней точки, фон полностью залочен (нет скролла страницы при открытом меню). Подозрение: жёсткий scroll-lock `body { position: fixed }` + меню фиксировано к top header; различие между scroll документа и вложенного HTML контента. → Результат: FAIL (требуется доработка)
@@ -56,6 +58,8 @@
 - 2025-12-22T18:21:32+03:00 — Commit: `080a699` — `fix(reader-menu): congratulations!!! BUG-003 resolved` — Files: `src/features/content/components/ReaderMenuLayer.tsx`
 - 2025-12-22T19:39:43+03:00 — Commit: `bafeb97` — `fix(favorites): avoid legacy migration recursion` — Files: `lib/identity/favoritesService.ts`
 - 2025-12-22T19:41:04+03:00 — Commit: `f24fc60` — `chore(bugs): start BUG-006 scale parity investigation` — Files: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`, `docs/bugs/00_BUG_INDEX.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T15:40:14+03:00 — Commit: `ae23c6b` — `docs(assets): add baseline UI scale screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/*.png`
+- 2025-12-29T15:41:15+03:00 — Commit: `2fe9d95` — `feat(news): announce audit/roadmap rework` — Files: `public/data/news/manifest.json`, `public/data/news/items/2025-12-29-audit-roadmap-rework.md`
 
 ---
 
