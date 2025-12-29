@@ -68,6 +68,7 @@
 - 2025-12-29T16:33:22+03:00 — Commit: `758d093` — `chore(agent-ops): log screenshot annotations` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-29T17:47:31+03:00 — Commit: `3379468` — `docs(spec): map scale touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-29T18:26:07+03:00 — Commit: `fbb55aa` — `docs(spec): map layout and portal roots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T18:39:15+03:00 — Commit: `02ba452` — `docs(spec): add phase 1 touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 
 ---
 
