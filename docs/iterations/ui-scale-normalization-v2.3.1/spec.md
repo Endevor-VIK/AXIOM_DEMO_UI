@@ -70,6 +70,13 @@ Layout shell (основные контейнеры):
 Вывод:
 - При переходе на canvas `#modal-root` должен жить внутри `ax-canvas`, иначе порталы будут иметь другой масштаб/позиционирование.
 
+### 2.3 Точки внедрения Phase 1 (что будем менять)
+- `app/main.tsx`: инициализация Scale Manager (подписка на resize, выставление CSS‑переменных).
+- `app/routes/_layout.tsx`: обёртка UI в `ax-viewport` + `ax-canvas` (новый слой масштабирования).
+- `index.html`: решение по `#modal-root` (переместить внутрь canvas через React-слой или runtime‑перенос).
+- `components/Modal.tsx`, `components/UserMenuDropdown.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`: привязка к `#modal-root` внутри canvas, fallback только для legacy.
+- `styles/app.css`: убрать `html zoom/transform`, добавить стили `ax-viewport/ax-canvas` и режимы `data-scale-mode`.
+
 ## 3) Архитектура (перспективный путь)
 ### 3.1 Термины масштаба
 - **Density scale**: визуальная плотность UI.
