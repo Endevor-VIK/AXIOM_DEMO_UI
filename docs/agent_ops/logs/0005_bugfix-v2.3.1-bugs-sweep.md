@@ -69,6 +69,7 @@
 - 2025-12-29T23:32:23+03:00 — Действие: UI‑проверка managed‑режима после фикса `transform-origin` не выполнялась (требуется ручной визуальный чек). → Результат: SKIP
 - 2025-12-30T00:11:24+03:00 — Действие: Проверка анимации news ticker после фикса не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
 - 2025-12-30T00:27:04+03:00 — Действие: Проверка News Wire после правки высоты viewport не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
+- 2025-12-30T00:30:54+03:00 — Действие: Ручная проверка News Wire после фикса — лента активна, анимация работает. → Результат: PASS
 
 ## Step E — Git
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
