@@ -35,6 +35,9 @@
 - 2025-12-22T18:48:22+03:00 — Действие: Старт BUG-006 (scale parity windowed): скорректировал глобальный зум под windowed режим — для `html` оставлен `zoom/transform` 0.8, но добавлен режим “fit” при ширине ≤1600px (расширение layout-width через `width/height`), чтобы окно масштабировалось без перестановки блоков. Файлы: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`, `docs/bugs/00_BUG_INDEX.md`. → Результат: WIP
 - 2025-12-22T19:15:45+03:00 — Действие: Пересмотр BUG-006: убрал “fit”-логику (усугубляла дрейф), ввёл адаптивный `--ax-ui-scale` (0.8 ≥1600, 0.9 до 1440, 1.0 ниже 1440) с чистым zoom/transform и без доп. компенсаций. Обновил гипотезы в карточке BUG-006. Требуется ручная проверка. Файлы: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`. → Результат: WIP
 - 2025-12-22T19:26:41+03:00 — Действие: Откат адаптивного `--ax-ui-scale` из-за регресса (0.8 scale пропал, элементы выросли). Вернул базовый `0.8` для `html` zoom/transform, обновил заметки BUG-006. Файлы: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`. → Результат: WIP
+- 2025-12-29T19:10:32+03:00 — Действие: Переименовал тикерный `.ax-viewport` в `.ax-ticker__viewport`, чтобы освободить класс для нового canvas‑слоя масштабирования. Файлы: `components/news/HeadlinesTicker.tsx`, `styles/ticker.css`. → Результат: OK
+- 2025-12-29T19:15:17+03:00 — Действие: Добавил `ScaleViewport` (ax‑viewport/ax‑canvas) и `#ax-modal-root`, перевёл порталы на новый root (с fallback). Файлы: `components/ScaleViewport.tsx`, `components/UserMenuDropdown.tsx`, `components/Modal.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`. → Результат: OK
+- 2025-12-29T19:25:50+03:00 — Действие: Добавил Scale Manager (CSS‑переменные масштаба/virtual size), подключил в `app/main.tsx`, ввёл managed‑режим в `styles/app.css`. Файлы: `lib/ui/scaleManager.ts`, `app/main.tsx`, `styles/app.css`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
@@ -46,6 +49,7 @@
 - 2025-12-29T17:04:42+03:00 — Действие: Выполнена инвентаризация масштабов (глобальный zoom, токены, локальные preview/doc zoom) и добавлена карта файлов/механизмов в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 - 2025-12-29T18:12:01+03:00 — Действие: Добавил карту layout/порталов (DOM корни, контейнеры, portal-узлы) и вывод по переносу `#modal-root` внутрь canvas в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 - 2025-12-29T18:36:35+03:00 — Действие: Зафиксировал точки внедрения Phase 1 (файлы и узлы для Scale Manager/canvas/portal) в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2025-12-29T19:27:44+03:00 — Действие: Уточнил модель scale‑переменных (density vs composed) в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 
 ## Step D — QA
 - 2025-12-20T20:44:20+03:00 — Действие: Ручная проверка BUG-003 в UI (локал): меню всё ещё открывается от верхней точки, фон полностью залочен (нет скролла страницы при открытом меню). Подозрение: жёсткий scroll-lock `body { position: fixed }` + меню фиксировано к top header; различие между scroll документа и вложенного HTML контента. → Результат: FAIL (требуется доработка)
@@ -69,6 +73,10 @@
 - 2025-12-29T17:47:31+03:00 — Commit: `3379468` — `docs(spec): map scale touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-29T18:26:07+03:00 — Commit: `fbb55aa` — `docs(spec): map layout and portal roots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-29T18:39:15+03:00 — Commit: `02ba452` — `docs(spec): add phase 1 touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T19:10:32+03:00 — Commit: `9c372f8` — `chore(ticker): rename viewport class` — Files: `components/news/HeadlinesTicker.tsx`, `styles/ticker.css`
+- 2025-12-29T19:15:17+03:00 — Commit: `daf67ea` — `feat(ui): add scale viewport root` — Files: `components/ScaleViewport.tsx`, `components/UserMenuDropdown.tsx`, `components/Modal.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`
+- 2025-12-29T19:25:50+03:00 — Commit: `de8b766` — `feat(scale): add scale manager and canvas wrapper` — Files: `lib/ui/scaleManager.ts`, `app/main.tsx`, `styles/app.css`
+- 2025-12-29T19:27:44+03:00 — Commit: `eb5feaf` — `docs(spec): clarify scale variables` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
 
 ---
 
