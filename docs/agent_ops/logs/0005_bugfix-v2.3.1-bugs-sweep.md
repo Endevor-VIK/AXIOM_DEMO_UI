@@ -17,6 +17,7 @@
 - 2025-12-20T20:15:29+03:00 — Действие: Старт сессии для подготовки SPEC и чеклистов багфиксов v2.3.1; подтвердил контекст репо и ветку-назначение. → Результат: OK
 - 2025-12-20T20:25:40+03:00 — Действие: Выбран баг `BUG-003_reader-overlay-menu-scroll` как первый кандидат; собрал точки входа: `src/features/content/pages/ReaderPage.tsx` (рендер меню/overlay + портал), `styles/content-hub-v2.css` (позиционирование .axr-menu/.axr-overlay). → Результат: OK
 - 2025-12-29T23:31:01+03:00 — Действие: Новый агент принял задачу; сверил текущий контекст 0005, незакоммиченные правки (scale manager/app.css/spec), просмотрел скриншоты 12.29 и подтвердил регресс managed‑масштаба (canvas визуально уходит влево). → Результат: OK
+- 2025-12-30T00:11:24+03:00 — Действие: Получен фидбэк: baseline‑скрины совпадают, но ошибки BUG-006 остаются; дополнительно зафиксирован регресс — news ticker “News Wire” перестал анимироваться. → Результат: OK
 
 ## Step B — Implementation
 - 2025-12-20T20:17:20+03:00 — Действие: Создал итерационный SPEC `docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md` (цели, процесс, чеклист приоритетных багов, правила коммитов/QA). → Результат: OK
@@ -43,6 +44,7 @@
 - 2025-12-29T20:16:11+03:00 — Действие: Диагностировал регресс: глобальный контейнер `ax-viewport` конфликтовал с `.ax-viewport` из `ax-design/components.css` (height 72vh + overflow hidden), из‑за чего пропал скролл, «замер» тикер и footer сместился. Исправил: переименовал слой масштабирования в `ax-scale-viewport/ax-scale-canvas` и обновил spec. Файлы: `components/ScaleViewport.tsx`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 - 2025-12-29T23:31:55+03:00 — Действие: Исправил дрейф canvas в managed‑режиме: выставил `transform-origin: top center` для `ax-scale-canvas`, чтобы масштабирование центрировалось и не уводило UI влево. Файл: `styles/app.css`. → Результат: OK
 - 2025-12-29T23:41:22+03:00 — Действие: Зафиксировал дефолтный режим масштаба как legacy (переключение через `?scale=`), чтобы избежать регрессий managed до готовности. Файлы: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2025-12-30T00:11:24+03:00 — Действие: Укрепил инициализацию ticker: добавил повторные попытки построения ленты при нулевой ширине, пересборку на resize и безопасные проверки размеров. Файл: `components/news/HeadlinesTicker.tsx`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
@@ -63,6 +65,7 @@
 - 2025-12-22T18:01:42+03:00 — Действие: Проверка текущей сборки: меню открывается из любой точки, header кликается, overlay корректен; проблема осталась — при открытом меню не скроллится основной HTML-контент под overlay. → Результат: FAIL (нужен фикс прокрутки при active menu)
 - 2025-12-22T18:21:32+03:00 — Действие: Финальная проверка (по фидбэку пользователя): меню, overlay и скролл HTML-контента работают корректно при открытом меню. BUG-003 закрыт как DONE. → Результат: PASS
 - 2025-12-29T23:32:23+03:00 — Действие: UI‑проверка managed‑режима после фикса `transform-origin` не выполнялась (требуется ручной визуальный чек). → Результат: SKIP
+- 2025-12-30T00:11:24+03:00 — Действие: Проверка анимации news ticker после фикса не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
 
 ## Step E — Git
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
@@ -90,6 +93,7 @@
 - 2025-12-29T23:34:40+03:00 — Commit: `70a48b5` — `fix(scale): center managed canvas` — Files: `styles/app.css`
 - 2025-12-29T23:41:51+03:00 — Commit: `416fdb8` — `fix(scale): default to legacy mode` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
 - 2025-12-29T23:41:51+03:00 — Commit: `a524231` — `docs(assets): add managed regression screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/12.29/*.png`
+- 2025-12-30T00:12:20+03:00 — Commit: `9c6cf99` — `fix(ticker): stabilize headlines animation` — Files: `components/news/HeadlinesTicker.tsx`
 
 ---
 
