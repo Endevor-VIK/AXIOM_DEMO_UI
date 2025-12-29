@@ -173,7 +173,10 @@ export function UserMenuDropdown({
     </div>
   )
 
-  const container = document.getElementById('modal-root') ?? document.body
+  const container =
+    document.getElementById('ax-modal-root') ??
+    document.getElementById('modal-root') ??
+    document.body
   return createPortal(menu, container)
 }
 

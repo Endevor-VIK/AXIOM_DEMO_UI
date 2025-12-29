@@ -31,7 +31,10 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
   const lastTouchY = useRef<number | null>(null)
 
   useEffect(() => {
-    const node = document.getElementById('modal-root') ?? document.body
+    const node =
+      document.getElementById('ax-modal-root') ??
+      document.getElementById('modal-root') ??
+      document.body
     setModalRoot(node)
   }, [])
 

@@ -73,7 +73,10 @@ export const Modal: React.FC<ModalProps> = ({ open, onOpenChange, title, childre
 
   if (!open) return null
 
-  const container = document.getElementById('modal-root') ?? document.body
+  const container =
+    document.getElementById('ax-modal-root') ??
+    document.getElementById('modal-root') ??
+    document.body
 
   const handleBackdropMouseDown: React.MouseEventHandler<HTMLDivElement> = (event) => {
     if (event.target === backdropRef.current) {
