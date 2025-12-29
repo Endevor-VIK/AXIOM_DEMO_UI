@@ -127,7 +127,7 @@ export function HeadlinesTicker({ items, speed, gap, height, className = '' }: P
       style={style}
     >
       <span className='ax-crest'>NEWS WIRE</span>
-      <div className='ax-viewport' ref={viewportRef}>
+      <div className='ax-ticker__viewport' ref={viewportRef}>
         <div className='ax-track' ref={trackRef} aria-live='polite' role='list' />
       </div>
     </div>
