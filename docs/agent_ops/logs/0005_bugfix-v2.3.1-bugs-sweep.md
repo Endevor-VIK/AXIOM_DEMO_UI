@@ -40,6 +40,7 @@
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
 - 2025-12-22T20:21:53+03:00: Действие: Углубил spec (v0.2): базовая рамка 1920x1080, раздельные масштабы density/viewport, canvas-архитектура, portal-стратегия, data-layout, расширенный roadmap/QA. → Результат: OK
 - 2025-12-29T14:56:13+03:00 — Действие: Создал директорию для baseline-скриншотов и README с неймингом: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/`. Обновил spec чеклист. → Результат: OK
+- 2025-12-29T16:23:33+03:00 — Действие: Описал каждый baseline-скриншот (описание/замечания/баги) и зафиксировал способ просмотра через viewer Codex в `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
 - 2025-12-29T20:29:30+03:00 — Действие: Добавлены baseline-скриншоты для UI масштаба в `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/`. → Результат: OK
 - 2025-12-29T20:29:30+03:00 — Действие: Добавлена новость о полном реворке вкладок Audit/Roadmap в `public/data/news/manifest.json` + `public/data/news/items/2025-12-29-audit-roadmap-rework.md`. → Результат: OK
 
