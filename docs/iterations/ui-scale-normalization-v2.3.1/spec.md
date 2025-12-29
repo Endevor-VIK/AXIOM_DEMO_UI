@@ -91,11 +91,11 @@ Layout shell (основные контейнеры):
 - Алгоритм:
   - `viewportScale = clamp(0.75, min(window.innerWidth / baseWidth, window.innerHeight / baseHeight), 1.0)`
   - `densityScale = 0.8` (настройка, фиксирует визуальную задумку)
-  - `composedScale = densityScale * viewportScale`
 - Применение:
   - `--ax-density-scale` = densityScale
   - `--ax-viewport-scale` = viewportScale
-  - `--ax-scale` = composedScale (используется токенами)
+  - `--ax-scale` = densityScale (используется токенами)
+  - `--ax-composed-scale` = densityScale * viewportScale (индикатор/отладка)
   - `--ax-virtual-w` = window.innerWidth / viewportScale
   - `--ax-virtual-h` = window.innerHeight / viewportScale
   - `data-layout` вычисляется по virtual width, а не по реальной ширине окна
