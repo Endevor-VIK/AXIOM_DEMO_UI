@@ -151,6 +151,7 @@ P2:
 ### Preflight
 - [ ] Подтвердить, что styles/tokens.css не используется.
 - [ ] Подготовить baseline-скриншоты (1920/1080 как эталон).
+- [ ] Сложить скриншоты в `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/`.
 - [ ] Зафиксировать target-окна: 1920, 1600, 1440, 1280 + windowed 80-90%.
 
 ### Implementation
