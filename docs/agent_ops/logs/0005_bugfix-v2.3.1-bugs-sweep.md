@@ -42,6 +42,7 @@
 - 2025-12-29T19:25:50+03:00 — Действие: Добавил Scale Manager (CSS‑переменные масштаба/virtual size), подключил в `app/main.tsx`, ввёл managed‑режим в `styles/app.css`. Файлы: `lib/ui/scaleManager.ts`, `app/main.tsx`, `styles/app.css`. → Результат: OK
 - 2025-12-29T20:16:11+03:00 — Действие: Диагностировал регресс: глобальный контейнер `ax-viewport` конфликтовал с `.ax-viewport` из `ax-design/components.css` (height 72vh + overflow hidden), из‑за чего пропал скролл, «замер» тикер и footer сместился. Исправил: переименовал слой масштабирования в `ax-scale-viewport/ax-scale-canvas` и обновил spec. Файлы: `components/ScaleViewport.tsx`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 - 2025-12-29T23:31:55+03:00 — Действие: Исправил дрейф canvas в managed‑режиме: выставил `transform-origin: top center` для `ax-scale-canvas`, чтобы масштабирование центрировалось и не уводило UI влево. Файл: `styles/app.css`. → Результат: OK
+- 2025-12-29T23:41:22+03:00 — Действие: Зафиксировал дефолтный режим масштаба как legacy (переключение через `?scale=`), чтобы избежать регрессий managed до готовности. Файлы: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
@@ -54,6 +55,7 @@
 - 2025-12-29T18:12:01+03:00 — Действие: Добавил карту layout/порталов (DOM корни, контейнеры, portal-узлы) и вывод по переносу `#modal-root` внутрь canvas в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 - 2025-12-29T18:36:35+03:00 — Действие: Зафиксировал точки внедрения Phase 1 (файлы и узлы для Scale Manager/canvas/portal) в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 - 2025-12-29T19:27:44+03:00 — Действие: Уточнил модель scale‑переменных (density vs composed) в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2025-12-29T23:41:22+03:00 — Действие: Добавил пакет скриншотов регрессии managed‑масштаба (12.29) и описания к ним. Файлы: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/12.29/*.png`. → Результат: OK
 
 ## Step D — QA
 - 2025-12-20T20:44:20+03:00 — Действие: Ручная проверка BUG-003 в UI (локал): меню всё ещё открывается от верхней точки, фон полностью залочен (нет скролла страницы при открытом меню). Подозрение: жёсткий scroll-lock `body { position: fixed }` + меню фиксировано к top header; различие между scroll документа и вложенного HTML контента. → Результат: FAIL (требуется доработка)
@@ -86,6 +88,8 @@
 - 2025-12-29T19:40:29+03:00 — Commit: `1a1124f` — `chore(agent-ops): log scale phase 1 commit` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-29T20:14:13+03:00 — Commit: `09abecf` — `fix(scale): avoid ax-viewport collision` — Files: `components/ScaleViewport.tsx`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
 - 2025-12-29T23:34:40+03:00 — Commit: `70a48b5` — `fix(scale): center managed canvas` — Files: `styles/app.css`
+- 2025-12-29T23:41:51+03:00 — Commit: `416fdb8` — `fix(scale): default to legacy mode` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
+- 2025-12-29T23:41:51+03:00 — Commit: `a524231` — `docs(assets): add managed regression screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/12.29/*.png`
 
 ---
 
