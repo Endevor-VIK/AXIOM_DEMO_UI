@@ -26,8 +26,10 @@ import PersonalizationPage from '@/app/routes/settings/personalization/page'
 import HelpPage from '@/app/routes/help/page'
 
 import AuthGate from '@/components/AuthGate'
+import ScaleViewport from '@/components/ScaleViewport'
 import TerminalBoot from '@/components/TerminalBoot'
 import { initAnalyticsBridge } from '@/lib/analytics/init'
+import { initScaleManager } from '@/lib/ui/scaleManager'
 
 const routes = [
   { path: '/', element: <TerminalBoot /> },
@@ -81,12 +83,15 @@ const router = createBrowserRouter(routes, { basename: import.meta.env.BASE_URL 
 
 function mount() {
   initAnalyticsBridge()
+  initScaleManager()
   const el = document.getElementById('root')
   const app = (
-    <RouterProvider
-      router={router}
-      future={{ v7_startTransition: true }}
-    />
+    <ScaleViewport>
+      <RouterProvider
+        router={router}
+        future={{ v7_startTransition: true }}
+      />
+    </ScaleViewport>
   )
   if (!el) {
     const fallback = document.createElement('div')
