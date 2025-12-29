@@ -53,6 +53,23 @@
 | Анимационные масштабы | `styles/login-cyber.css`, `styles/login-bg.css` | `transform: translate/scale` в анимациях | Визуальные эффекты, не участвуют в общей геометрии. |
 | Контентные HTML | `public/data/content/*`, `public/content-html/*` | `transform: scale` внутри контента (анимации) | Вне scope нормализации UI, трогать не нужно. |
 
+### 2.2 Карта layout/порталов (что масштабируется)
+DOM/корень:
+- `index.html`: `#root`, `#modal-root` (порталы), `#fx-layer` (эффекты).
+
+Layout shell (основные контейнеры):
+- `app/routes/_layout.tsx`: `.ax-page`, `.ax-header.ax-topbar`, `HeadlinesTicker`, `.ax-shell.ax-content` + `.ax-container`, `.ax-footer.ax-status`.
+- `ax-design/components.css`: `.ax-container` базируется на `--gutter` и `--container-max` (зависит от `--ax-scale`).
+- `styles/app.css`: `.ax-shell` управляет ширинами/отступами и влияет на grid-композицию.
+
+Порталы/оверлеи (должны следовать canvas масштабу):
+- `components/UserMenuDropdown.tsx` → `#modal-root` / `document.body`.
+- `components/Modal.tsx` → `#modal-root` / `document.body`.
+- `src/features/content/components/ReaderMenuLayer.tsx` → `#modal-root`.
+
+Вывод:
+- При переходе на canvas `#modal-root` должен жить внутри `ax-canvas`, иначе порталы будут иметь другой масштаб/позиционирование.
+
 ## 3) Архитектура (перспективный путь)
 ### 3.1 Термины масштаба
 - **Density scale**: визуальная плотность UI.
