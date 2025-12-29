@@ -61,6 +61,7 @@
 - 2025-12-22T19:41:04+03:00 — Commit: `f24fc60` — `chore(bugs): start BUG-006 scale parity investigation` — Files: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`, `docs/bugs/00_BUG_INDEX.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-29T15:40:14+03:00 — Commit: `ae23c6b` — `docs(assets): add baseline UI scale screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/*.png`
 - 2025-12-29T15:41:15+03:00 — Commit: `2fe9d95` — `feat(news): announce audit/roadmap rework` — Files: `public/data/news/manifest.json`, `public/data/news/items/2025-12-29-audit-roadmap-rework.md`
+- 2025-12-29T16:29:20+03:00 — Commit: `9d0d5bf` — `docs(assets): annotate baseline screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 
 ---
 
