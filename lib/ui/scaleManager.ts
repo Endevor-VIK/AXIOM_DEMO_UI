@@ -28,6 +28,22 @@ const DEFAULTS = {
   },
 } satisfies Required<ScaleConfig>
 
+const isValidMode = (value: string | null | undefined): value is 'managed' | 'legacy' =>
+  value === 'managed' || value === 'legacy'
+
+const resolveInitialMode = (): 'managed' | 'legacy' => {
+  try {
+    const params = new URLSearchParams(window.location.search)
+    const paramMode = params.get('scale')
+    if (isValidMode(paramMode)) {
+      return paramMode
+    }
+  } catch {
+    /* noop */
+  }
+  return 'legacy'
+}
+
 const clamp = (min: number, value: number, max: number) => Math.min(Math.max(value, min), max)
 
 const resolveLayout = (virtualWidth: number, breakpoints: LayoutBreakpoints): LayoutName => {
@@ -43,6 +59,8 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
   }
 
   const root = document.documentElement
+  const defaultMode = resolveInitialMode()
+  root.dataset.scaleMode = defaultMode
   const baseWidth = config.baseWidth ?? DEFAULTS.baseWidth
   const baseHeight = config.baseHeight ?? DEFAULTS.baseHeight
   const densityScale = config.densityScale ?? DEFAULTS.densityScale
@@ -51,7 +69,10 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
   const layoutBreakpoints = config.layoutBreakpoints ?? DEFAULTS.layoutBreakpoints
 
   const update = () => {
-    if (!root.dataset.scaleMode) root.dataset.scaleMode = 'managed'
+    const mode = isValidMode(root.dataset.scaleMode)
+      ? root.dataset.scaleMode
+      : defaultMode
+    if (!root.dataset.scaleMode) root.dataset.scaleMode = mode
 
     const width = window.innerWidth || baseWidth
     const height = window.innerHeight || baseHeight
@@ -66,7 +87,11 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
 
     root.style.setProperty('--ax-density-scale', densityScale.toFixed(3))
     root.style.setProperty('--ax-viewport-scale', viewportScale.toFixed(4))
-    root.style.setProperty('--ax-scale', densityScale.toFixed(4))
+    if (mode === 'managed') {
+      root.style.setProperty('--ax-scale', densityScale.toFixed(4))
+    } else {
+      root.style.removeProperty('--ax-scale')
+    }
     root.style.setProperty('--ax-composed-scale', composedScale.toFixed(4))
     root.style.setProperty('--ax-virtual-w', `${virtualWidth}px`)
     root.style.setProperty('--ax-virtual-h', `${virtualHeight}px`)

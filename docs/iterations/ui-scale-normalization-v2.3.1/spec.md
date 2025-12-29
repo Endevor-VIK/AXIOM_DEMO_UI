@@ -100,6 +100,11 @@ Layout shell (основные контейнеры):
   - `--ax-virtual-h` = window.innerHeight / viewportScale
   - `data-layout` вычисляется по virtual width, а не по реальной ширине окна
 
+Примечание по режимам:
+- По умолчанию запускаем **legacy** (без canvas‑масштаба), чтобы избежать регрессий.
+- Включение **managed**: `?scale=managed` (запоминается в localStorage).
+- Возврат в legacy: `?scale=legacy` или `localStorage.setItem('ax-scale-mode','legacy')`.
+
 ### 3.3 Canvas layout (без html zoom)
 Новый слой масштабирования — **canvas-контейнер**, а не html.
 
