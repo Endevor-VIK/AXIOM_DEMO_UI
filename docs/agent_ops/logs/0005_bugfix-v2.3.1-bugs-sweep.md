@@ -63,6 +63,8 @@
 - 2025-12-29T15:40:14+03:00 — Commit: `ae23c6b` — `docs(assets): add baseline UI scale screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/*.png`
 - 2025-12-29T15:41:15+03:00 — Commit: `2fe9d95` — `feat(news): announce audit/roadmap rework` — Files: `public/data/news/manifest.json`, `public/data/news/items/2025-12-29-audit-roadmap-rework.md`
 - 2025-12-29T16:29:20+03:00 — Commit: `9d0d5bf` — `docs(assets): annotate baseline screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T16:33:22+03:00 — Commit: `758d093` — `chore(agent-ops): log screenshot annotations` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T17:47:31+03:00 — Commit: `3379468` — `docs(spec): map scale touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 
 ---
 
