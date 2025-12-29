@@ -18,6 +18,7 @@
 - 2025-12-20T20:25:40+03:00 — Действие: Выбран баг `BUG-003_reader-overlay-menu-scroll` как первый кандидат; собрал точки входа: `src/features/content/pages/ReaderPage.tsx` (рендер меню/overlay + портал), `styles/content-hub-v2.css` (позиционирование .axr-menu/.axr-overlay). → Результат: OK
 - 2025-12-29T23:31:01+03:00 — Действие: Новый агент принял задачу; сверил текущий контекст 0005, незакоммиченные правки (scale manager/app.css/spec), просмотрел скриншоты 12.29 и подтвердил регресс managed‑масштаба (canvas визуально уходит влево). → Результат: OK
 - 2025-12-30T00:11:24+03:00 — Действие: Получен фидбэк: baseline‑скрины совпадают, но ошибки BUG-006 остаются; дополнительно зафиксирован регресс — news ticker “News Wire” перестал анимироваться. → Результат: OK
+- 2025-12-30T00:27:04+03:00 — Действие: Подтверждён повторный фидбэк: News Wire всё ещё не активен (лента не идёт после добавления новости). → Результат: OK
 
 ## Step B — Implementation
 - 2025-12-20T20:17:20+03:00 — Действие: Создал итерационный SPEC `docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md` (цели, процесс, чеклист приоритетных багов, правила коммитов/QA). → Результат: OK
@@ -45,6 +46,7 @@
 - 2025-12-29T23:31:55+03:00 — Действие: Исправил дрейф canvas в managed‑режиме: выставил `transform-origin: top center` для `ax-scale-canvas`, чтобы масштабирование центрировалось и не уводило UI влево. Файл: `styles/app.css`. → Результат: OK
 - 2025-12-29T23:41:22+03:00 — Действие: Зафиксировал дефолтный режим масштаба как legacy (переключение через `?scale=`), чтобы избежать регрессий managed до готовности. Файлы: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 - 2025-12-30T00:11:24+03:00 — Действие: Укрепил инициализацию ticker: добавил повторные попытки построения ленты при нулевой ширине, пересборку на resize и безопасные проверки размеров. Файл: `components/news/HeadlinesTicker.tsx`. → Результат: OK
+- 2025-12-30T00:27:04+03:00 — Действие: Исправил высоту viewport для News Wire, чтобы абсолютный трек не обрезался (высота 100%). Файл: `styles/ticker.css`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
@@ -66,6 +68,7 @@
 - 2025-12-22T18:21:32+03:00 — Действие: Финальная проверка (по фидбэку пользователя): меню, overlay и скролл HTML-контента работают корректно при открытом меню. BUG-003 закрыт как DONE. → Результат: PASS
 - 2025-12-29T23:32:23+03:00 — Действие: UI‑проверка managed‑режима после фикса `transform-origin` не выполнялась (требуется ручной визуальный чек). → Результат: SKIP
 - 2025-12-30T00:11:24+03:00 — Действие: Проверка анимации news ticker после фикса не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
+- 2025-12-30T00:27:04+03:00 — Действие: Проверка News Wire после правки высоты viewport не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
 
 ## Step E — Git
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
@@ -94,6 +97,7 @@
 - 2025-12-29T23:41:51+03:00 — Commit: `416fdb8` — `fix(scale): default to legacy mode` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
 - 2025-12-29T23:41:51+03:00 — Commit: `a524231` — `docs(assets): add managed regression screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/12.29/*.png`
 - 2025-12-30T00:12:20+03:00 — Commit: `9c6cf99` — `fix(ticker): stabilize headlines animation` — Files: `components/news/HeadlinesTicker.tsx`
+- 2025-12-30T00:29:20+03:00 — Commit: `d6dc5a8` — `fix(ticker): set viewport height` — Files: `styles/ticker.css`
 
 ---
 
