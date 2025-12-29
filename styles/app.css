@@ -26,7 +26,6 @@
      --ax-ui-scale: 0.8;
      --ax-density-scale: 0.8;
      --ax-viewport-scale: 1;
-     --ax-scale: var(--ax-density-scale);
      --ax-composed-scale: calc(var(--ax-density-scale) * var(--ax-viewport-scale));
      --ax-virtual-w: 1920px;
      --ax-virtual-h: 1080px;
@@ -43,6 +42,7 @@
      }
    }
    html[data-scale-mode='managed'] {
+     --ax-scale: var(--ax-density-scale);
      zoom: 1;
      transform: none;
      width: 100%;
@@ -55,6 +55,7 @@
    .ax-scale-viewport { min-height: 100dvh; width: 100%; display: flex; justify-content: center; align-items: flex-start; background: var(--ax-bg); }
    .ax-scale-canvas { width: 100%; min-height: 100dvh; transform-origin: top left; }
    html[data-scale-mode='managed'] .ax-scale-canvas {
+     transform-origin: top center;
      width: calc(100% / var(--ax-viewport-scale));
      min-height: calc(100dvh / var(--ax-viewport-scale));
      transform: scale(var(--ax-viewport-scale));
