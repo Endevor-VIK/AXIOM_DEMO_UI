@@ -78,6 +78,7 @@
 - 2025-12-29T19:25:50+03:00 — Commit: `de8b766` — `feat(scale): add scale manager and canvas wrapper` — Files: `lib/ui/scaleManager.ts`, `app/main.tsx`, `styles/app.css`
 - 2025-12-29T19:27:44+03:00 — Commit: `eb5feaf` — `docs(spec): clarify scale variables` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
 - 2025-12-29T19:37:11+03:00 — Commit: `f1840a7` — `chore(agent-ops): log scale phase 1 work` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T19:40:29+03:00 — Commit: `1a1124f` — `chore(agent-ops): log scale phase 1 commit` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 
 ---
 
