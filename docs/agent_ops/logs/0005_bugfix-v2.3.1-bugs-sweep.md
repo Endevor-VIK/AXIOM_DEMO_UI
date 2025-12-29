@@ -43,6 +43,7 @@
 - 2025-12-29T16:23:33+03:00 — Действие: Описал каждый baseline-скриншот (описание/замечания/баги) и зафиксировал способ просмотра через viewer Codex в `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
 - 2025-12-29T20:29:30+03:00 — Действие: Добавлены baseline-скриншоты для UI масштаба в `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/`. → Результат: OK
 - 2025-12-29T20:29:30+03:00 — Действие: Добавлена новость о полном реворке вкладок Audit/Roadmap в `public/data/news/manifest.json` + `public/data/news/items/2025-12-29-audit-roadmap-rework.md`. → Результат: OK
+- 2025-12-29T17:04:42+03:00 — Действие: Выполнена инвентаризация масштабов (глобальный zoom, токены, локальные preview/doc zoom) и добавлена карта файлов/механизмов в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 
 ## Step D — QA
 - 2025-12-20T20:44:20+03:00 — Действие: Ручная проверка BUG-003 в UI (локал): меню всё ещё открывается от верхней точки, фон полностью залочен (нет скролла страницы при открытом меню). Подозрение: жёсткий scroll-lock `body { position: fixed }` + меню фиксировано к top header; различие между scroll документа и вложенного HTML контента. → Результат: FAIL (требуется доработка)
