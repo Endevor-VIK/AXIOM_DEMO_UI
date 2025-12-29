@@ -68,14 +68,14 @@ Layout shell (основные контейнеры):
 - `src/features/content/components/ReaderMenuLayer.tsx` → `#modal-root`.
 
 Вывод:
-- При переходе на canvas `#modal-root` должен жить внутри `ax-canvas`, иначе порталы будут иметь другой масштаб/позиционирование.
+- При переходе на canvas `#modal-root` должен жить внутри `ax-scale-canvas`, иначе порталы будут иметь другой масштаб/позиционирование.
 
 ### 2.3 Точки внедрения Phase 1 (что будем менять)
 - `app/main.tsx`: инициализация Scale Manager (подписка на resize, выставление CSS‑переменных).
-- `app/routes/_layout.tsx`: обёртка UI в `ax-viewport` + `ax-canvas` (новый слой масштабирования).
+- `app/routes/_layout.tsx`: обёртка UI в `ax-scale-viewport` + `ax-scale-canvas` (новый слой масштабирования).
 - `index.html`: решение по `#modal-root` (переместить внутрь canvas через React-слой или runtime‑перенос).
 - `components/Modal.tsx`, `components/UserMenuDropdown.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`: привязка к `#modal-root` внутри canvas, fallback только для legacy.
-- `styles/app.css`: убрать `html zoom/transform`, добавить стили `ax-viewport/ax-canvas` и режимы `data-scale-mode`.
+- `styles/app.css`: убрать `html zoom/transform`, добавить стили `ax-scale-viewport/ax-scale-canvas` и режимы `data-scale-mode`.
 
 ## 3) Архитектура (перспективный путь)
 ### 3.1 Термины масштаба
@@ -107,8 +107,8 @@ Layout shell (основные контейнеры):
 ```
 <body>
   <div id="root">
-    <div class="ax-viewport" data-scale-mode="managed">
-      <div class="ax-canvas" id="ax-canvas">
+    <div class="ax-scale-viewport" data-scale-mode="managed">
+      <div class="ax-scale-canvas" id="ax-canvas">
         ... app UI ...
       </div>
     </div>
@@ -118,12 +118,12 @@ Layout shell (основные контейнеры):
 ```
 
 Правила:
-- `ax-viewport` центрирует canvas и может создавать letterbox при несоответствии пропорций.
-- `ax-canvas` масштабируется через `transform: scale(var(--ax-viewport-scale))`.
+- `ax-scale-viewport` центрирует canvas и может создавать letterbox при несоответствии пропорций.
+- `ax-scale-canvas` масштабируется через `transform: scale(var(--ax-viewport-scale))`.
 - Токены масштабируются через `--ax-scale`.
 
 ### 3.4 Portal стратегия (чтобы overlay не ломался)
-- `#modal-root` нужно разместить внутри `ax-canvas`, если оверлей должен масштабироваться вместе с UI.
+- `#modal-root` нужно разместить внутри `ax-scale-canvas`, если оверлей должен масштабироваться вместе с UI.
 - Для системных элементов без масштаба можно добавить отдельный `#system-root`.
 - Все overlay/menus относятся к UI-слою и должны масштабироваться синхронно с canvas.
 
@@ -165,7 +165,7 @@ P2:
 
 ### Фаза 1 — Инфраструктура масштаба (2-3 дня)
 - Реализация Scale Manager.
-- Введение `ax-viewport` и `ax-canvas`.
+- Введение `ax-scale-viewport` и `ax-scale-canvas`.
 - Введение `data-layout`.
 - Флаг `data-scale-mode=legacy` для быстрого отката.
 
@@ -192,7 +192,7 @@ P2:
 
 ### Implementation
 - [ ] Добавить Scale Manager.
-- [ ] Ввести `ax-viewport`/`ax-canvas`.
+- [ ] Ввести `ax-scale-viewport`/`ax-scale-canvas`.
 - [ ] Ввести data-layout и перенести 1-2 ключевые медиа-ветки.
 - [ ] Перевести ключевые размеры на токены.
 - [ ] Удалить html zoom/transform.
