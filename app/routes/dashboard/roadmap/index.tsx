@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ROADMAP_HTML, getHtml, isRenderableHtml, ensureTrailingSlash } from '@/app/lib/htmlMaps';
 import { ErrorBlock } from '@/components/ErrorBlock';
+import RouteHoldBanner from '@/components/RouteHoldBanner';
+import { isRoadmapDisabled } from '@/lib/featureFlags';
 import '@/app/styles/red-protocol-overrides.css';
 
 export default function RoadmapRoute() {
@@ -9,6 +11,7 @@ export default function RoadmapRoute() {
   const [err, setErr] = useState<string | null>(null);
   const [filter, setFilter] = useState('');
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const roadmapDisabled = isRoadmapDisabled;
 
   const dataBase = useMemo(
     () => ensureTrailingSlash(((import.meta as any)?.env?.VITE_DATA_BASE as string) ?? 'data/'),
@@ -17,6 +20,14 @@ export default function RoadmapRoute() {
 
   useEffect(() => {
     let alive = true;
+    if (roadmapDisabled) {
+      setHtml(null);
+      setErr(null);
+      setLoading(false);
+      return () => {
+        alive = false;
+      };
+    }
     setLoading(true);
     setErr(null);
 
@@ -55,7 +66,7 @@ export default function RoadmapRoute() {
     return () => {
       alive = false;
     };
-  }, [dataBase]);
+  }, [dataBase, roadmapDisabled]);
 
   function expandAll() {
     if (!containerRef.current) return;
@@ -92,13 +103,23 @@ export default function RoadmapRoute() {
     });
   }, [filter, html]);
 
+  if (roadmapDisabled) {
+    return (
+      <RouteHoldBanner
+        title="ROADMAP временно закрыт"
+        message="Раздел отключён для полной переработки и дизайнерских обновлений."
+        note="В ближайших релизах roadmap будет заменён новым модулем."
+      />
+    );
+  }
+
   return (
     <section className="ax-card ax-viewer ax-viewer--roadmap">
       <div className="ax-viewer__toolbar">
         <input
           aria-label="Поиск"
           className="ax-input ax-input--grow"
-            placeholder="Поиск по названию / id / zone…"
+          placeholder="Поиск по названию / id / zone…"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
