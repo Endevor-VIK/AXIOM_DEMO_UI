@@ -49,6 +49,7 @@
 - 2025-12-30T00:27:04+03:00 — Действие: Исправил высоту viewport для News Wire, чтобы абсолютный трек не обрезался (высота 100%). Файл: `styles/ticker.css`. → Результат: OK
 - 2026-01-03T20:48:08+03:00 — Действие: Подготовил шаг 0: добавил debug‑оверлей масштаба и флаг `?debug=1` для вывода текущих scale‑параметров (mode/layout/virtual/dpr), чтобы ускорить сверку с baseline. Файлы: `components/ScaleDebug.tsx`, `components/ScaleViewport.tsx`, `lib/ui/scaleManager.ts`, `styles/app.css`. → Результат: OK
 - 2026-01-03T21:00:05+03:00 — Действие: Шаг 1 — выставил плотность managed‑масштаба в 0.648 (≈ legacy 0.81 * 0.8) для совпадения с baseline. Файлы: `lib/ui/scaleManager.ts`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2026-01-03T22:44:39+03:00 — Действие: Старт следующей фазы: подготовил командный файл для `?scale=managed&debug=1`, исправил прижим футера к низу, добавил 8‑й таб (reserve) для Content, поправил позиционирование user menu, включил тестовый режим для Roadmap/Audit (плейсхолдеры + ERR в венке). Файлы: `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`, `styles/red-protocol-overrides.css`, `components/content/CategoryStats.tsx`, `components/content/category-stats.css`, `lib/contentStats.ts`, `components/icons/index.ts`, `app/routes/dashboard/content/_layout.tsx`, `components/UserMenuDropdown.tsx`, `lib/featureFlags.ts`, `app/routes/dashboard/page.tsx`, `app/routes/dashboard/audit/index.tsx`, `app/routes/dashboard/roadmap/index.tsx`, `components/RouteHoldBanner.tsx`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
@@ -63,6 +64,7 @@
 - 2025-12-29T19:27:44+03:00 — Действие: Уточнил модель scale‑переменных (density vs composed) в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 - 2025-12-29T23:41:22+03:00 — Действие: Добавил пакет скриншотов регрессии managed‑масштаба (12.29) и описания к ним. Файлы: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/12.29/*.png`. → Результат: OK
 - 2026-01-03T20:52:37+03:00 — Действие: Зафиксировал условия съемки скриншотов (Windows scale 150% vs текущие проверки 125%) для корректного сравнения. Файл: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
+- 2026-01-03T22:44:39+03:00 — Действие: Добавил директорию с командами и базовый URL для включения managed+debug. Файл: `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`. → Результат: OK
 
 ## Step D — QA
 - 2025-12-20T20:44:20+03:00 — Действие: Ручная проверка BUG-003 в UI (локал): меню всё ещё открывается от верхней точки, фон полностью залочен (нет скролла страницы при открытом меню). Подозрение: жёсткий scroll-lock `body { position: fixed }` + меню фиксировано к top header; различие между scroll документа и вложенного HTML контента. → Результат: FAIL (требуется доработка)
@@ -75,6 +77,7 @@
 - 2025-12-30T00:30:54+03:00 — Действие: Ручная проверка News Wire после фикса — лента активна, анимация работает. → Результат: PASS
 - 2026-01-03T20:48:08+03:00 — Действие: Проверка debug‑оверлея (`?debug=1`) не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
 - 2026-01-03T21:00:05+03:00 — Действие: Проверка плотности managed‑масштаба (0.648) не выполнялась (нужен визуальный чек с `?scale=managed&debug=1`). → Результат: SKIP
+- 2026-01-03T22:44:39+03:00 — Действие: Проверка футера, позиционирования user menu, reserve‑таба и плейсхолдеров Roadmap/Audit не выполнялась (нужен визуальный чек). → Результат: SKIP
 
 ## Step E — Git
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
@@ -108,6 +111,10 @@
 - 2026-01-03T20:50:19+03:00 — Commit: `65d1b7c` — `chore(agent-ops): log scale debug overlay` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-03T20:54:07+03:00 — Commit: `8f579e5` — `docs(assets): note screenshot scaling context` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`
 - 2026-01-03T21:02:24+03:00 — Commit: `62d4ebd` — `fix(scale): match managed density to legacy` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
+- 2026-01-03T23:05:33+03:00 — Commit: `1ed0b18` — `docs(scale): add debug command list` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`
+- 2026-01-03T23:07:12+03:00 — Commit: `d7274c7` — `feat(content): add reserve tab placeholder` — Files: `app/routes/dashboard/content/_layout.tsx`, `components/content/CategoryStats.tsx`, `components/content/category-stats.css`, `components/icons/index.ts`, `lib/contentStats.ts`
+- 2026-01-03T23:09:19+03:00 — Commit: `90b9d73` — `fix(layout): pin footer and align user menu` — Files: `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`
+- 2026-01-03T23:10:54+03:00 — Commit: `95f9852` — `feat(maintenance): disable audit and roadmap` — Files: `app/routes/dashboard/audit/index.tsx`, `app/routes/dashboard/page.tsx`, `app/routes/dashboard/roadmap/index.tsx`, `components/RouteHoldBanner.tsx`, `lib/featureFlags.ts`, `styles/red-protocol-overrides.css`
 
 ---
 
