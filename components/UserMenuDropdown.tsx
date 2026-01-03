@@ -84,9 +84,13 @@ const MenuIcon = ({ name }: { name: MenuIconName }) => {
 function resolveViewportScale(): number {
   if (typeof document === 'undefined') return 1
   const root = document.documentElement
-  if (root.dataset.scaleMode !== 'managed') return 1
-  const raw = getComputedStyle(root).getPropertyValue('--ax-viewport-scale')
-  const scale = Number.parseFloat(raw)
+  if (root.dataset.scaleMode === 'managed') {
+    const raw = getComputedStyle(root).getPropertyValue('--ax-viewport-scale')
+    const scale = Number.parseFloat(raw)
+    return Number.isFinite(scale) && scale > 0 ? scale : 1
+  }
+  const rect = root.getBoundingClientRect()
+  const scale = rect.width && window.innerWidth ? rect.width / window.innerWidth : 1
   return Number.isFinite(scale) && scale > 0 ? scale : 1
 }
 

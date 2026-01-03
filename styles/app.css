@@ -411,7 +411,7 @@
    .ax-dashboard__panel-note { margin: 0; color: rgba(255,233,240,0.68); font-size: var(--fs-12); letter-spacing: .08em; text-transform: uppercase; font-family: var(--font-mono); }
    
 .ax-dashboard__wreaths { display: grid; grid-template-columns: repeat(3, minmax(200px, 1fr)); gap: clamp(24px, 4vw, 48px); justify-items: center; align-items: center; padding-block: clamp(12px, 2vw, 24px); }
-   .ax-dashboard__wreath-link { position: relative; display: flex; align-items: center; justify-content: center; text-decoration: none; outline: none; border-radius: 50%; padding: 0; background: none; box-shadow: none; transition: transform var(--t-fast) var(--ease-ax2), box-shadow var(--t-std) var(--ease-ax2); }
+   .ax-dashboard__wreath-link { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; text-decoration: none; outline: none; border-radius: 50%; padding: 0; background: none; box-shadow: none; transition: transform var(--t-fast) var(--ease-ax2), box-shadow var(--t-std) var(--ease-ax2); }
    .ax-dashboard__wreath-link:focus-visible { outline: 1px solid rgba(255, 45, 85, 0.8); outline-offset: 6px; }
    .ax-dashboard__wreath { --ring-size: clamp(220px, 22vw, 260px); pointer-events: auto; }
 

@@ -12,8 +12,8 @@
 
 .ax-wreath {
   position: relative;
-  width: var(--ring-size, 260px);
-  height: var(--ring-size, 260px);
+  width: min(100%, var(--ring-size, 260px));
+  height: min(100%, var(--ring-size, 260px));
   display: grid;
   place-items: center;
   border-radius: 50%;
