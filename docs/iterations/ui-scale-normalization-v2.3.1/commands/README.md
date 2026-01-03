@@ -11,3 +11,4 @@
 ## Примеры
 - `/dashboard?scale=managed&debug=1`
 - `/dashboard/content/all?scale=managed&debug=1`
+- `http://localhost:5173/dashboard?debug=1`
