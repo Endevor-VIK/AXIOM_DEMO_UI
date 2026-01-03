@@ -90,7 +90,7 @@ Layout shell (основные контейнеры):
 - Базовая рамка: `baseWidth = 1920`, `baseHeight = 1080`.
 - Алгоритм:
   - `viewportScale = clamp(0.75, min(window.innerWidth / baseWidth, window.innerHeight / baseHeight), 1.0)`
-  - `densityScale = 0.8` (настройка, фиксирует визуальную задумку)
+  - `densityScale = 0.648` (≈ `0.81 * 0.8` legacy‑масштаб для совпадения с baseline)
 - Применение:
   - `--ax-density-scale` = densityScale
   - `--ax-viewport-scale` = viewportScale

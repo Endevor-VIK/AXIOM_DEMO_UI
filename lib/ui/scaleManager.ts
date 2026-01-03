@@ -18,7 +18,7 @@ type ScaleConfig = {
 const DEFAULTS = {
   baseWidth: 1920,
   baseHeight: 1080,
-  densityScale: 0.8,
+  densityScale: 0.648,
   minViewportScale: 0.75,
   maxViewportScale: 1,
   layoutBreakpoints: {

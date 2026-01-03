@@ -24,7 +24,7 @@
    html, body { margin: 0; padding: 0; min-height: 100dvh; background: var(--ax-bg); color: var(--ax-text); }
    :root {
      --ax-ui-scale: 0.8;
-     --ax-density-scale: 0.8;
+     --ax-density-scale: 0.648;
      --ax-viewport-scale: 1;
      --ax-composed-scale: calc(var(--ax-density-scale) * var(--ax-viewport-scale));
      --ax-virtual-w: 1920px;
