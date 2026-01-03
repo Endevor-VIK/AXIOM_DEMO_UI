@@ -48,6 +48,7 @@
 - 2025-12-30T00:11:24+03:00 — Действие: Укрепил инициализацию ticker: добавил повторные попытки построения ленты при нулевой ширине, пересборку на resize и безопасные проверки размеров. Файл: `components/news/HeadlinesTicker.tsx`. → Результат: OK
 - 2025-12-30T00:27:04+03:00 — Действие: Исправил высоту viewport для News Wire, чтобы абсолютный трек не обрезался (высота 100%). Файл: `styles/ticker.css`. → Результат: OK
 - 2026-01-03T20:48:08+03:00 — Действие: Подготовил шаг 0: добавил debug‑оверлей масштаба и флаг `?debug=1` для вывода текущих scale‑параметров (mode/layout/virtual/dpr), чтобы ускорить сверку с baseline. Файлы: `components/ScaleDebug.tsx`, `components/ScaleViewport.tsx`, `lib/ui/scaleManager.ts`, `styles/app.css`. → Результат: OK
+- 2026-01-03T21:00:05+03:00 — Действие: Шаг 1 — выставил плотность managed‑масштаба в 0.648 (≈ legacy 0.81 * 0.8) для совпадения с baseline. Файлы: `lib/ui/scaleManager.ts`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
@@ -73,6 +74,7 @@
 - 2025-12-30T00:27:04+03:00 — Действие: Проверка News Wire после правки высоты viewport не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
 - 2025-12-30T00:30:54+03:00 — Действие: Ручная проверка News Wire после фикса — лента активна, анимация работает. → Результат: PASS
 - 2026-01-03T20:48:08+03:00 — Действие: Проверка debug‑оверлея (`?debug=1`) не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
+- 2026-01-03T21:00:05+03:00 — Действие: Проверка плотности managed‑масштаба (0.648) не выполнялась (нужен визуальный чек с `?scale=managed&debug=1`). → Результат: SKIP
 
 ## Step E — Git
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
@@ -105,6 +107,7 @@
 - 2026-01-03T20:50:19+03:00 — Commit: `af07cd3` — `feat(scale): add debug overlay` — Files: `components/ScaleDebug.tsx`, `components/ScaleViewport.tsx`, `lib/ui/scaleManager.ts`, `styles/app.css`
 - 2026-01-03T20:50:19+03:00 — Commit: `65d1b7c` — `chore(agent-ops): log scale debug overlay` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-03T20:54:07+03:00 — Commit: `8f579e5` — `docs(assets): note screenshot scaling context` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`
+- 2026-01-03T21:02:24+03:00 — Commit: `62d4ebd` — `fix(scale): match managed density to legacy` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
 
 ---
 
