@@ -52,6 +52,7 @@
 - 2026-01-03T22:44:39+03:00 — Действие: Старт следующей фазы: подготовил командный файл для `?scale=managed&debug=1`, исправил прижим футера к низу, добавил 8‑й таб (reserve) для Content, поправил позиционирование user menu, включил тестовый режим для Roadmap/Audit (плейсхолдеры + ERR в венке). Файлы: `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`, `styles/red-protocol-overrides.css`, `components/content/CategoryStats.tsx`, `components/content/category-stats.css`, `lib/contentStats.ts`, `components/icons/index.ts`, `app/routes/dashboard/content/_layout.tsx`, `components/UserMenuDropdown.tsx`, `lib/featureFlags.ts`, `app/routes/dashboard/page.tsx`, `app/routes/dashboard/audit/index.tsx`, `app/routes/dashboard/roadmap/index.tsx`, `components/RouteHoldBanner.tsx`. → Результат: OK
 - 2026-01-04T00:43:10+03:00 — Действие: Переделал кнопку пользователя под референс (аватар + имя/роль, раскрытие сверху вниз), обновил стили меню (иконки, компактные пункты), убрал переключатель языка из topbar, убрал min-height у контента для корректного футера. Файлы: `app/routes/_layout.tsx`, `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`. → Результат: OK
 - 2026-01-04T00:43:10+03:00 — Действие: Удалил неиспользуемые HTML‑пакеты Audit/Roadmap из public‑data (разделы отключены). Файлы: `public/data/audits/17.13.AUDIT_AXIOM_DEMO_UI.10.10.25.html`, `public/data/audits/2025-09-06__audit-demo.html`, `public/data/roadmap/index.html`. → Результат: OK
+- 2026-01-04T01:13:44+03:00 — Действие: Уточнил позиционирование user menu с учетом legacy‑zoom, добавил компенсацию высоты страницы в legacy и ограничил размер венков внутри карточек. Файлы: `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`, `styles/app.css`, `styles/counter-wreath.css`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
@@ -78,6 +79,7 @@
 - 2025-12-30T00:27:04+03:00 — Действие: Проверка News Wire после правки высоты viewport не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
 - 2025-12-30T00:30:54+03:00 — Действие: Ручная проверка News Wire после фикса — лента активна, анимация работает. → Результат: PASS
 - 2026-01-03T20:48:08+03:00 — Действие: Проверка debug‑оверлея (`?debug=1`) не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
+- 2026-01-04T01:13:44+03:00 — Действие: Проверка футера/меню/венков на разных разрешениях не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
 - 2026-01-03T21:00:05+03:00 — Действие: Проверка плотности managed‑масштаба (0.648) не выполнялась (нужен визуальный чек с `?scale=managed&debug=1`). → Результат: SKIP
 - 2026-01-03T22:44:39+03:00 — Действие: Проверка футера, позиционирования user menu, reserve‑таба и плейсхолдеров Roadmap/Audit не выполнялась (нужен визуальный чек). → Результат: SKIP
 
@@ -119,6 +121,7 @@
 - 2026-01-03T23:10:54+03:00 — Commit: `95f9852` — `feat(maintenance): disable audit and roadmap` — Files: `app/routes/dashboard/audit/index.tsx`, `app/routes/dashboard/page.tsx`, `app/routes/dashboard/roadmap/index.tsx`, `components/RouteHoldBanner.tsx`, `lib/featureFlags.ts`, `styles/red-protocol-overrides.css`
 - 2026-01-04T00:42:04+03:00 — Commit: `7c80577` — `chore(data): remove disabled audit and roadmap html` — Files: `public/data/audits/17.13.AUDIT_AXIOM_DEMO_UI.10.10.25.html`, `public/data/audits/2025-09-06__audit-demo.html`, `public/data/roadmap/index.html`
 - 2026-01-04T00:42:46+03:00 — Commit: `ad96650` — `fix(ui): refine user menu trigger and footer` — Files: `app/routes/_layout.tsx`, `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`
+- 2026-01-04T01:13:44+03:00 — Commit: `c96f8ae` — `fix(ui): stabilize footer, menu, and wreaths` — Files: `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`, `styles/app.css`, `styles/counter-wreath.css`
 
 ---
 
