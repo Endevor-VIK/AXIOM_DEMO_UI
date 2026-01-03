@@ -101,6 +101,8 @@
 - 2025-12-29T23:41:51+03:00 — Commit: `a524231` — `docs(assets): add managed regression screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/12.29/*.png`
 - 2025-12-30T00:12:20+03:00 — Commit: `9c6cf99` — `fix(ticker): stabilize headlines animation` — Files: `components/news/HeadlinesTicker.tsx`
 - 2025-12-30T00:29:20+03:00 — Commit: `d6dc5a8` — `fix(ticker): set viewport height` — Files: `styles/ticker.css`
+- 2026-01-03T20:50:19+03:00 — Commit: `af07cd3` — `feat(scale): add debug overlay` — Files: `components/ScaleDebug.tsx`, `components/ScaleViewport.tsx`, `lib/ui/scaleManager.ts`, `styles/app.css`
+- 2026-01-03T20:50:19+03:00 — Commit: `65d1b7c` — `chore(agent-ops): log scale debug overlay` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 
 ---
 
