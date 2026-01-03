@@ -44,7 +44,20 @@
 
 /* FX layer stays behind everything, non-interactive */
 #fx-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-.ax-page   { position: relative; z-index: 1; }
+.ax-page {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+.ax-page > .ax-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.ax-page > .ax-footer {
+  margin-top: auto;
+}
 
 /* Viewer/Preview sizing and scrolling */
 .ax-preview { position: relative; }

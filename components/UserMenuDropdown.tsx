@@ -21,18 +21,39 @@ export interface UserMenuDropdownProps {
 
 type Coords = { top: number; left: number }
 
+function resolveViewportScale(): number {
+  if (typeof document === 'undefined') return 1
+  const root = document.documentElement
+  if (root.dataset.scaleMode !== 'managed') return 1
+  const raw = getComputedStyle(root).getPropertyValue('--ax-viewport-scale')
+  const scale = Number.parseFloat(raw)
+  return Number.isFinite(scale) && scale > 0 ? scale : 1
+}
+
 function computeCoords(anchor: HTMLElement, panel: HTMLElement | null): Coords {
+  const viewportScale = resolveViewportScale()
   const rect = anchor.getBoundingClientRect()
   const panelWidth = panel?.offsetWidth || 280
   const panelHeight = panel?.offsetHeight || 0
   const margin = 12
-  const preferredLeft = rect.left + rect.width / 2 - panelWidth / 2
-  const maxLeft = window.innerWidth - panelWidth - margin
+  const viewportWidth = window.innerWidth / viewportScale
+  const viewportHeight = window.innerHeight / viewportScale
+  const anchorLeft = rect.left / viewportScale
+  const anchorRight = rect.right / viewportScale
+  const anchorTop = rect.top / viewportScale
+  const anchorBottom = rect.bottom / viewportScale
+
+  const preferredLeft = anchorRight - panelWidth
+  const maxLeft = viewportWidth - panelWidth - margin
   const minLeft = margin
   const left = Math.min(Math.max(preferredLeft, minLeft), maxLeft)
-  const preferredTop = rect.bottom + 10
-  const maxTop = window.innerHeight - panelHeight - margin
-  const top = Math.min(preferredTop, maxTop)
+
+  const preferredTop = anchorBottom + 8
+  const maxTop = viewportHeight - panelHeight - margin
+  let top = preferredTop
+  if (top > maxTop) {
+    top = Math.max(margin, anchorTop - panelHeight - 8)
+  }
   return { top, left }
 }
 
