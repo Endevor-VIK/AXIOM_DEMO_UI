@@ -125,6 +125,8 @@
 - 2026-01-04T00:42:04+03:00 — Commit: `7c80577` — `chore(data): remove disabled audit and roadmap html` — Files: `public/data/audits/17.13.AUDIT_AXIOM_DEMO_UI.10.10.25.html`, `public/data/audits/2025-09-06__audit-demo.html`, `public/data/roadmap/index.html`
 - 2026-01-04T00:42:46+03:00 — Commit: `ad96650` — `fix(ui): refine user menu trigger and footer` — Files: `app/routes/_layout.tsx`, `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`
 - 2026-01-04T01:13:44+03:00 — Commit: `c96f8ae` — `fix(ui): stabilize footer, menu, and wreaths` — Files: `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`, `styles/app.css`, `styles/counter-wreath.css`
+- 2026-01-04T01:43:16+03:00 — Commit: `6c56188` — `docs(assets): add 01.04 bug screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/2026-01-04_1675x1011_home-broken-div.ax-user-menu.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/2026-01-04_1675x1011_home-broken-div.ax-wreath.ax-dashboard__wreath.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`
+- 2026-01-04T01:44:45+03:00 — Commit: `67c7fd8` — `chore(agent-ops): log 01.04 bug review` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 
 ---
 
