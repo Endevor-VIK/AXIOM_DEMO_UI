@@ -14,6 +14,7 @@ export const categoryIcons = {
   factions: FactionsIcon,
   events: EventsIcon,
   lore: LoreIcon,
+  reserve: AllIcon,
 }
 
 export type CategoryIconKey = keyof typeof categoryIcons

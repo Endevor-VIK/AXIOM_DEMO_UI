@@ -4,7 +4,7 @@ import type { CategoryStat } from '@/lib/contentStats'
 import { categoryIcons } from '@/components/icons'
 import './category-stats.css'
 
-export type CategoryItem = CategoryStat & { active?: boolean }
+export type CategoryItem = CategoryStat & { active?: boolean; disabled?: boolean }
 
 type Props = {
   items: CategoryItem[]
@@ -21,11 +21,14 @@ export default function CategoryStats({ items }: Props) {
   const activeIndex = items.findIndex((item) => item.active)
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([])
 
-  tabRefs.current = items.map((_, index) => tabRefs.current[index] ?? null)
+  tabRefs.current = items.map((item, index) =>
+    item.disabled ? null : tabRefs.current[index] ?? null,
+  )
 
   const handleActivate = useCallback(
-    (href: string) => {
-      navigate(href, { replace: false })
+    (item: CategoryItem) => {
+      if (item.disabled) return
+      navigate(item.href, { replace: false })
     },
     [navigate],
   )
@@ -37,27 +40,40 @@ export default function CategoryStats({ items }: Props) {
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLAnchorElement>, index: number) => {
       if (!items.length) return
+      if (items[index]?.disabled) return
+      const findNextEnabled = (start: number, direction: 1 | -1) => {
+        for (let step = 1; step <= items.length; step += 1) {
+          const idx = (start + step * direction + items.length) % items.length
+          if (!items[idx]?.disabled) return idx
+        }
+        return -1
+      }
       let nextIndex = -1
       switch (event.key) {
         case ' ':
         case 'Spacebar':
         case 'Enter':
           event.preventDefault()
-          handleActivate(items[index]!.href)
+          handleActivate(items[index]!)
           return
         case 'ArrowRight':
         case 'ArrowDown':
-          nextIndex = (index + 1) % items.length
+          nextIndex = findNextEnabled(index, 1)
           break
         case 'ArrowLeft':
         case 'ArrowUp':
-          nextIndex = (index - 1 + items.length) % items.length
+          nextIndex = findNextEnabled(index, -1)
           break
         case 'Home':
-          nextIndex = 0
+          nextIndex = items.findIndex((item) => !item.disabled)
           break
         case 'End':
-          nextIndex = items.length - 1
+          for (let i = items.length - 1; i >= 0; i -= 1) {
+            if (!items[i]?.disabled) {
+              nextIndex = i
+              break
+            }
+          }
           break
         default:
           return
@@ -91,6 +107,7 @@ export default function CategoryStats({ items }: Props) {
           const title = item.title.toUpperCase()
           const Icon = categoryIcons[item.key]
           const isActive = Boolean(item.active)
+          const isDisabled = Boolean(item.disabled)
           return (
             <li
               key={item.key}
@@ -98,33 +115,58 @@ export default function CategoryStats({ items }: Props) {
               data-index={index}
               data-active={isActive || undefined}
               data-next-active={activeIndex === index + 1 ? 'true' : undefined}
+              data-disabled={isDisabled ? 'true' : undefined}
             >
-              <Link
-                ref={(node) => {
-                  tabRefs.current[index] = node
-                }}
-                to={item.href}
-                role='tab'
-                tabIndex={isActive ? 0 : -1}
-                aria-selected={isActive}
-                className='ax-Cell__link'
-                data-active={isActive ? 'true' : undefined}
-                aria-label={`${title} (${raw} ${raw === 1 ? 'item' : 'items'})`}
-                onKeyDown={(event) => handleKeyDown(event, index)}
-              >
-                <span className='ax-Cell__icon' aria-hidden='true'>
-                  <Icon />
-                </span>
-                <span className='ax-Cell__title' data-text={title}>
-                  {title}
-                </span>
+              {isDisabled ? (
                 <span
-                  className='ax-Cell__count'
-                  aria-label={`${raw} ${raw === 1 ? 'item' : 'items'}`}
+                  className='ax-Cell__link'
+                  role='tab'
+                  tabIndex={-1}
+                  aria-disabled='true'
+                  aria-label={`${title} (${raw} ${raw === 1 ? 'item' : 'items'})`}
+                  data-disabled='true'
                 >
-                  {display}
+                  <span className='ax-Cell__icon' aria-hidden='true'>
+                    <Icon />
+                  </span>
+                  <span className='ax-Cell__title' data-text={title}>
+                    {title}
+                  </span>
+                  <span
+                    className='ax-Cell__count'
+                    aria-label={`${raw} ${raw === 1 ? 'item' : 'items'}`}
+                  >
+                    {display}
+                  </span>
                 </span>
-              </Link>
+              ) : (
+                <Link
+                  ref={(node) => {
+                    tabRefs.current[index] = node
+                  }}
+                  to={item.href}
+                  role='tab'
+                  tabIndex={isActive ? 0 : -1}
+                  aria-selected={isActive}
+                  className='ax-Cell__link'
+                  data-active={isActive ? 'true' : undefined}
+                  aria-label={`${title} (${raw} ${raw === 1 ? 'item' : 'items'})`}
+                  onKeyDown={(event) => handleKeyDown(event, index)}
+                >
+                  <span className='ax-Cell__icon' aria-hidden='true'>
+                    <Icon />
+                  </span>
+                  <span className='ax-Cell__title' data-text={title}>
+                    {title}
+                  </span>
+                  <span
+                    className='ax-Cell__count'
+                    aria-label={`${raw} ${raw === 1 ? 'item' : 'items'}`}
+                  >
+                    {display}
+                  </span>
+                </Link>
+              )}
             </li>
           )
         })}

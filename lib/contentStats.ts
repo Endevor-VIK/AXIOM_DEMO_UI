@@ -1,4 +1,4 @@
-﻿export type ContentCategoryKey =
+export type ContentCategoryKey =
   | 'all'
   | 'locations'
   | 'characters'
@@ -6,6 +6,7 @@
   | 'factions'
   | 'events'
   | 'lore'
+  | 'reserve'
 
 export type CategoryStat = {
   key: ContentCategoryKey
@@ -34,6 +35,7 @@ export function getCategoryStats(overrides?: CategoryCountMap): CategoryStat[] {
     { key: 'factions', title: 'FACTIONS', href: '/dashboard/content/factions' },
     { key: 'events', title: 'EVENTS', href: '/dashboard/content/events' },
     { key: 'lore', title: 'LORE', href: '/dashboard/content/lore' },
+    { key: 'reserve', title: 'RESERVE', href: '/dashboard/content/reserve' },
   ]
 
   return categories.map((c) => ({
