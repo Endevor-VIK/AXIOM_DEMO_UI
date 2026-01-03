@@ -44,6 +44,18 @@ const resolveInitialMode = (): 'managed' | 'legacy' => {
   return 'legacy'
 }
 
+const resolveDebugFlag = (): boolean => {
+  try {
+    const params = new URLSearchParams(window.location.search)
+    if (!params.has('debug')) return false
+    const raw = (params.get('debug') || '').toLowerCase()
+    return raw === '' || raw === '1' || raw === 'true' || raw === 'on'
+  } catch {
+    /* noop */
+  }
+  return false
+}
+
 const clamp = (min: number, value: number, max: number) => Math.min(Math.max(value, min), max)
 
 const resolveLayout = (virtualWidth: number, breakpoints: LayoutBreakpoints): LayoutName => {
@@ -61,6 +73,11 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
   const root = document.documentElement
   const defaultMode = resolveInitialMode()
   root.dataset.scaleMode = defaultMode
+  if (resolveDebugFlag()) {
+    root.dataset.scaleDebug = '1'
+  } else {
+    delete root.dataset.scaleDebug
+  }
   const baseWidth = config.baseWidth ?? DEFAULTS.baseWidth
   const baseHeight = config.baseHeight ?? DEFAULTS.baseHeight
   const densityScale = config.densityScale ?? DEFAULTS.densityScale
