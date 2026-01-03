@@ -61,6 +61,7 @@
 - 2025-12-29T18:36:35+03:00 — Действие: Зафиксировал точки внедрения Phase 1 (файлы и узлы для Scale Manager/canvas/portal) в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 - 2025-12-29T19:27:44+03:00 — Действие: Уточнил модель scale‑переменных (density vs composed) в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
 - 2025-12-29T23:41:22+03:00 — Действие: Добавил пакет скриншотов регрессии managed‑масштаба (12.29) и описания к ним. Файлы: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/12.29/*.png`. → Результат: OK
+- 2026-01-03T20:52:37+03:00 — Действие: Зафиксировал условия съемки скриншотов (Windows scale 150% vs текущие проверки 125%) для корректного сравнения. Файл: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
 
 ## Step D — QA
 - 2025-12-20T20:44:20+03:00 — Действие: Ручная проверка BUG-003 в UI (локал): меню всё ещё открывается от верхней точки, фон полностью залочен (нет скролла страницы при открытом меню). Подозрение: жёсткий scroll-lock `body { position: fixed }` + меню фиксировано к top header; различие между scroll документа и вложенного HTML контента. → Результат: FAIL (требуется доработка)
@@ -103,6 +104,7 @@
 - 2025-12-30T00:29:20+03:00 — Commit: `d6dc5a8` — `fix(ticker): set viewport height` — Files: `styles/ticker.css`
 - 2026-01-03T20:50:19+03:00 — Commit: `af07cd3` — `feat(scale): add debug overlay` — Files: `components/ScaleDebug.tsx`, `components/ScaleViewport.tsx`, `lib/ui/scaleManager.ts`, `styles/app.css`
 - 2026-01-03T20:50:19+03:00 — Commit: `65d1b7c` — `chore(agent-ops): log scale debug overlay` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-03T20:54:07+03:00 — Commit: `8f579e5` — `docs(assets): note screenshot scaling context` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`
 
 ---
 
