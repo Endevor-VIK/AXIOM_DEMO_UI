@@ -152,6 +152,8 @@
 - 2026-01-04T15:14:33+03:00 — Commit: `5367a23` — `chore(agent-ops): log wreath sizing update` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-04T15:47:10+03:00 — Commit: `6a79f8d` — `fix(ui): sync wreath canvas sizing` — Files: `components/counters/wreath.ts`
 - 2026-01-04T15:49:58+03:00 — Commit: `fbe4e63` — `chore(agent-ops): log wreath canvas sizing fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T16:48:39+03:00 — Commit: `b4eac15` — `fix(ui): prevent status wreath overflow` — Files: `styles/app.css`
+- 2026-01-04T16:48:39+03:00 — Commit: `093895a` — `chore(agent-ops): log status panel fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 
 ---
 
