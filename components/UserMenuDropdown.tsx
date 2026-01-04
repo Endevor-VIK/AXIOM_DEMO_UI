@@ -84,20 +84,24 @@ const MenuIcon = ({ name }: { name: MenuIconName }) => {
 function resolveViewportScale(): number {
   if (typeof document === 'undefined') return 1
   const root = document.documentElement
+  const style = getComputedStyle(root)
   if (root.dataset.scaleMode === 'managed') {
-    const raw = getComputedStyle(root).getPropertyValue('--ax-viewport-scale')
+    const raw = style.getPropertyValue('--ax-viewport-scale')
     const scale = Number.parseFloat(raw)
     return Number.isFinite(scale) && scale > 0 ? scale : 1
   }
-  const rect = root.getBoundingClientRect()
-  const scale = rect.width && window.innerWidth ? rect.width / window.innerWidth : 1
-  return Number.isFinite(scale) && scale > 0 ? scale : 1
+  if (style.transform && style.transform !== 'none') {
+    const raw = style.getPropertyValue('--ax-ui-scale')
+    const scale = Number.parseFloat(raw)
+    return Number.isFinite(scale) && scale > 0 ? scale : 1
+  }
+  return 1
 }
 
 function computeCoords(anchor: HTMLElement, panel: HTMLElement | null): Coords {
   const viewportScale = resolveViewportScale()
   const rect = anchor.getBoundingClientRect()
-  const panelWidth = panel?.offsetWidth || 280
+  const panelWidth = panel?.getBoundingClientRect().width || 280
   const margin = 12
   const viewportWidth = window.innerWidth / viewportScale
   const anchorRight = rect.right / viewportScale
@@ -132,6 +136,8 @@ export function UserMenuDropdown({
 }: UserMenuDropdownProps) {
   const panelRef = useRef<HTMLDivElement | null>(null)
   const [coords, setCoords] = useState<Coords | null>(null)
+  const anchoredContainer = anchorEl?.closest('.ax-topbar__actions') as HTMLElement | null
+  const isAnchored = Boolean(anchoredContainer)
 
   const header = useMemo(() => {
     const displayName = user?.displayName || 'CREATOR'
@@ -141,16 +147,16 @@ export function UserMenuDropdown({
   }, [user])
 
   const updatePosition = useCallback(() => {
-    if (!anchorEl || !open) return
+    if (!anchorEl || !open || isAnchored) return
     const next = computeCoords(anchorEl, panelRef.current)
     setCoords((prev) => {
       if (prev && prev.top === next.top && prev.left === next.left) return prev
       return next
     })
-  }, [anchorEl, open])
+  }, [anchorEl, open, isAnchored])
 
   useLayoutEffect(() => {
-    if (!open) return
+    if (!open || isAnchored) return
     updatePosition()
     const rafId = requestAnimationFrame(updatePosition)
     const handler = () => updatePosition()
@@ -161,7 +167,7 @@ export function UserMenuDropdown({
       window.removeEventListener('resize', handler, true)
       window.removeEventListener('scroll', handler, true)
     }
-  }, [open, updatePosition])
+  }, [open, updatePosition, isAnchored])
 
   useEffect(() => {
     if (!open) return
@@ -195,7 +201,8 @@ export function UserMenuDropdown({
     onClose()
   }
 
-  if (!open || !coords) return null
+  if (!open) return null
+  if (!isAnchored && !coords) return null
 
   const menu = (
     <div
@@ -203,7 +210,8 @@ export function UserMenuDropdown({
       className='ax-user-menu'
       role='menu'
       aria-label='User menu'
-      style={{ top: coords.top, left: coords.left }}
+      data-position={isAnchored ? 'anchored' : 'fixed'}
+      style={isAnchored ? undefined : { top: coords!.top, left: coords!.left }}
     >
       <div className='ax-user-menu__head'>
         <div className='ax-user-menu__avatar' aria-hidden='true'>
@@ -275,6 +283,7 @@ export function UserMenuDropdown({
   )
 
   const container =
+    anchoredContainer ??
     document.getElementById('ax-modal-root') ??
     document.getElementById('modal-root') ??
     document.body

@@ -481,7 +481,11 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
 
   function resize() {
     const rect = root.getBoundingClientRect()
-    const newSize = Math.round(rect.width || opts.ringSize || 260)
+    const measured =
+      rect.width && rect.height
+        ? Math.min(rect.width, rect.height)
+        : rect.width || rect.height || opts.ringSize || 260
+    const newSize = Math.round(measured)
     if (newSize === size) return
     size = newSize
     canvas.width = Math.round(size * DPR)

@@ -1189,6 +1189,12 @@ button.ax-chip {
   color: var(--ax-color-text);
   backdrop-filter: blur(8px);
 }
+.ax-user-menu[data-position='anchored'] {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: auto;
+}
 .ax-user-menu__head {
   display: flex;
   gap: 10px;
