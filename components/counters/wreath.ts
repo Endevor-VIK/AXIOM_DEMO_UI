@@ -61,7 +61,7 @@ const defaultConfig: Config = {
   innerRadiusK: 0.71,
   minTileK: 0.028,
   maxTileK: 0.052,
-  bandGapK: 0.012,
+  bandGapK: 0.006,
   outerRedWidthK: 0.0062,
   innerRedWidthK: 0.0048,
   shadowBlur: 5,
