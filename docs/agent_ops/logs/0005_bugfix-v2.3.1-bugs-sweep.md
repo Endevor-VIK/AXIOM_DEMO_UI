@@ -70,6 +70,7 @@
 - 2026-01-03T20:52:37+03:00 — Действие: Зафиксировал условия съемки скриншотов (Windows scale 150% vs текущие проверки 125%) для корректного сравнения. Файл: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
 - 2026-01-03T22:44:39+03:00 — Действие: Добавил директорию с командами и базовый URL для включения managed+debug. Файл: `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`. → Результат: OK
 - 2026-01-04T01:41:07+03:00 — Действие: Добавлены скриншоты 01.04 и описания багов (menu/wreath overflow) в README скринов. Файлы: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/*.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
+- 2026-01-04T14:41:40+03:00 — Действие: Создан системный `AGENTS.md` с общими правилами адаптации и процесса работы (общение, логирование, QA, коммиты, карта проекта). Файл: `AGENTS.md`. → Результат: OK
 
 ## Step D — QA
 - 2025-12-20T20:44:20+03:00 — Действие: Ручная проверка BUG-003 в UI (локал): меню всё ещё открывается от верхней точки, фон полностью залочен (нет скролла страницы при открытом меню). Подозрение: жёсткий scroll-lock `body { position: fixed }` + меню фиксировано к top header; различие между scroll документа и вложенного HTML контента. → Результат: FAIL (требуется доработка)
@@ -127,6 +128,7 @@
 - 2026-01-04T01:13:44+03:00 — Commit: `c96f8ae` — `fix(ui): stabilize footer, menu, and wreaths` — Files: `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`, `styles/app.css`, `styles/counter-wreath.css`
 - 2026-01-04T01:43:16+03:00 — Commit: `6c56188` — `docs(assets): add 01.04 bug screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/2026-01-04_1675x1011_home-broken-div.ax-user-menu.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/2026-01-04_1675x1011_home-broken-div.ax-wreath.ax-dashboard__wreath.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`
 - 2026-01-04T01:44:45+03:00 — Commit: `67c7fd8` — `chore(agent-ops): log 01.04 bug review` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T14:41:40+03:00 — Commit: `6866d20` — `docs(agents): add general onboarding guide` — Files: `AGENTS.md`
 
 ---
 
