@@ -80,6 +80,7 @@
 - 2026-01-04T18:01:29+03:00 — Действие: Усилил keyframes halo (opacity + scale), чтобы пульсация была видимой на всех масштабах. Файл: `styles/counter-wreath.css`. → Результат: OK
 - 2026-01-04T18:14:53+03:00 — Действие: Усилил амплитуду пульсации halo (scale/opacity/box-shadow), чтобы эффект был заметным. Файл: `styles/counter-wreath.css`. → Результат: OK
 - 2026-01-04T18:30:04+03:00 — Действие: Отключил постоянную пульсацию halo; оставил анимацию только на hover. Файл: `styles/counter-wreath.css`. → Результат: OK
+- 2026-01-04T19:22:30+03:00 — Действие: Исправил ошибки typecheck (CategoryStats: корректный вызов handleActivate; CounterWreath: условная передача ringSize; ReaderMenuLayer: безопасный доступ к touch). Файлы: `components/content/CategoryStats.tsx`, `components/counters/CounterWreath.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
@@ -127,8 +128,10 @@
 - 2026-01-04T17:49:24+03:00 — Действие: По фидбэку CREATOR — баг панели status закрыт. → Результат: PASS
 - 2026-01-03T21:00:05+03:00 — Действие: Проверка плотности managed‑масштаба (0.648) не выполнялась (нужен визуальный чек с `?scale=managed&debug=1`). → Результат: SKIP
 - 2026-01-03T22:44:39+03:00 — Действие: Проверка футера, позиционирования user menu, reserve‑таба и плейсхолдеров Roadmap/Audit не выполнялась (нужен визуальный чек). → Результат: SKIP
+- 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-04T19:22:30+03:00 — Commit: `f007200` — `fix(types): resolve typecheck errors` — Files: `components/content/CategoryStats.tsx`, `components/counters/CounterWreath.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-20T21:25:30+03:00 — Commit: `a04d710` — `chore(reader-menu): refactor layer component and fix ts error (BUG-003 wip)` — Files: `src/features/content/components/ReaderMenuLayer.tsx`, `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-20T21:40:58+03:00 — Commit: `2e1abe9` — `chore(reader-menu): update props for ts strict mode (BUG-003 still open)` — Files: `src/features/content/pages/ReaderPage.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
