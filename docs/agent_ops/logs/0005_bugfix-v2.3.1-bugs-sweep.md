@@ -21,6 +21,7 @@
 - 2025-12-30T00:27:04+03:00 — Действие: Подтверждён повторный фидбэк: News Wire всё ещё не активен (лента не идёт после добавления новости). → Результат: OK
 - 2026-01-04T01:41:07+03:00 — Действие: Получены новые скриншоты 01.04 (разные разрешения) с актуальными багами; подтверждено: футер исправлен, меню и венки всё ещё сломаны. → Результат: OK
 - 2026-01-04T14:51:06+03:00 — Действие: Перепроверил лог 0005, материалы спека масштаба и новые скриншоты 01.04 (menu/wreath), сверил текущие гипотезы по смещению меню и переполнению венков. → Результат: OK
+- 2026-01-04T15:45:55+03:00 — Действие: Получен фидбэк CREATOR: меню ок, венок всё ещё с внешним кругом; devtools показывает различие размеров контейнера и canvas. → Результат: OK
 
 ## Step B — Implementation
 - 2025-12-20T20:17:20+03:00 — Действие: Создал итерационный SPEC `docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md` (цели, процесс, чеклист приоритетных багов, правила коммитов/QA). → Результат: OK
@@ -58,6 +59,7 @@
 - 2026-01-04T14:51:06+03:00 — Действие: Перевёл user menu на anchored‑позиционирование относительно topbar (без scale-математики) и закрепил квадратные контейнеры венков (aspect-ratio, ring-size, resize по min-измерению). Файлы: `components/UserMenuDropdown.tsx`, `styles/app.css`, `styles/red-protocol-overrides.css`, `styles/counter-wreath.css`, `components/counters/wreath.ts`. → Результат: OK
 - 2026-01-04T15:13:15+03:00 — Действие: Убрал фиксированный размер венков в dashboard и сделал `size` опциональным в `CounterWreath` (чтобы ring-size управлялся CSS). Файлы: `app/routes/dashboard/page.tsx`, `components/counters/CounterWreath.tsx`. → Результат: OK
 - 2026-01-04T15:25:36+03:00 — Действие: Сократил зазор между кольцами венка (уменьшил `bandGapK`). Файл: `components/counters/wreath.ts`. → Результат: OK
+- 2026-01-04T15:45:55+03:00 — Действие: Привязал размер canvas венка к layout‑боксу (offset/client) вместо `getBoundingClientRect`, чтобы не было рассинхрона под legacy zoom. Файл: `components/counters/wreath.ts`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
@@ -93,6 +95,7 @@
 - 2026-01-04T15:13:15+03:00 — Действие: Ручная проверка корректности размеров венков после снятия `size` не выполнялась. → Результат: SKIP
 - 2026-01-04T15:25:36+03:00 — Действие: По фидбэку CREATOR меню исправлено. → Результат: PASS
 - 2026-01-04T15:25:36+03:00 — Действие: Проверка зазора внешнего кольца венка после правки не выполнялась (нужен скрин). → Результат: SKIP
+- 2026-01-04T15:45:55+03:00 — Действие: Проверка совпадения размеров canvas/контейнера венка после правки не выполнялась (нужен скрин). → Результат: SKIP
 - 2026-01-03T21:00:05+03:00 — Действие: Проверка плотности managed‑масштаба (0.648) не выполнялась (нужен визуальный чек с `?scale=managed&debug=1`). → Результат: SKIP
 - 2026-01-03T22:44:39+03:00 — Действие: Проверка футера, позиционирования user menu, reserve‑таба и плейсхолдеров Roadmap/Audit не выполнялась (нужен визуальный чек). → Результат: SKIP
 
@@ -140,6 +143,10 @@
 - 2026-01-04T14:54:47+03:00 — Commit: `58e2e58` — `fix(ui): anchor user menu and square wreaths` — Files: `components/UserMenuDropdown.tsx`, `components/counters/wreath.ts`, `styles/app.css`, `styles/counter-wreath.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-04T15:14:33+03:00 — Commit: `ef2df0f` — `fix(ui): make wreath sizing responsive` — Files: `app/routes/dashboard/page.tsx`, `components/counters/CounterWreath.tsx`
 - 2026-01-04T14:41:40+03:00 — Commit: `6866d20` — `docs(agents): add general onboarding guide` — Files: `AGENTS.md`
+- 2026-01-04T15:25:36+03:00 — Commit: `93d215a` — `fix(ui): reduce wreath ring gap` — Files: `components/counters/wreath.ts`
+- 2026-01-04T15:25:36+03:00 — Commit: `a159fa5` — `chore(agent-ops): log menu pass and wreath gap tweak` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T15:14:33+03:00 — Commit: `5367a23` — `chore(agent-ops): log wreath sizing update` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T15:47:10+03:00 — Commit: `6a79f8d` — `fix(ui): sync wreath canvas sizing` — Files: `components/counters/wreath.ts`
 
 ---
 
