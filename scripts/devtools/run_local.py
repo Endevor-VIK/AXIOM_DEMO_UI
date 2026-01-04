@@ -9,6 +9,7 @@ Usage:
   PORT                 Порт dev-сервера (по умолчанию 5173)
   HOST                 Хост для проб (по умолчанию 127.0.0.1)
   DEV_HOST             Хост для Vite (авто 0.0.0.0 в WSL)
+  HMR_HOST             Хост для Vite HMR (по умолчанию HOST)
   SKIP_WSL_PORTPROXY   Выключить auto netsh portproxy в WSL
 
 Примечания:
@@ -106,6 +107,8 @@ def main() -> int:
     url = f"http://{host}:{port}/"
 
     env = os.environ.copy()
+    if host != '0.0.0.0':
+        env.setdefault('HMR_HOST', host)
 
     # In WSL, explicitly mirror to Windows localhost if possible
     if is_wsl() and not env.get('SKIP_WSL_PORTPROXY'):

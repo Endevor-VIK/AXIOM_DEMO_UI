@@ -9,8 +9,11 @@ const isCI =
   process.env.GITHUB_PAGES === 'true' ||
   process.env.GITHUB_ACTIONS === 'true' ||
   process.env.CI === 'true'
-const DEV_HOST = process.env.DEV_HOST || ''  // set to "192.168.0.11" for LAN
+const DEV_HOST = (process.env.DEV_HOST || '').trim()  // set to "192.168.0.11" for LAN
+const HMR_HOST = (process.env.HMR_HOST || '').trim()
 const PORT = Number(process.env.PORT || 5173)
+const resolvedHmrHost =
+  HMR_HOST || (DEV_HOST && DEV_HOST !== '0.0.0.0' ? DEV_HOST : '')
 
 export default defineConfig({
   plugins: [react()],
@@ -34,7 +37,7 @@ export default defineConfig({
       protocol: 'ws',
       port: PORT,
       clientPort: PORT,
-      ...(DEV_HOST ? { host: DEV_HOST } : {}), // no `host: undefined`
+      ...(resolvedHmrHost ? { host: resolvedHmrHost } : {}), // avoid 0.0.0.0 for HMR
     },
   },
 })
