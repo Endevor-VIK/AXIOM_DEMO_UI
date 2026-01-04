@@ -107,7 +107,6 @@ export default function DashboardPage() {
                 <CounterWreath
                   value={counter.value}
                   label={counter.label}
-                  size={260}
                   className='ax-dashboard__wreath'
                   ariaHidden
                 />
