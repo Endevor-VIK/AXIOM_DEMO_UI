@@ -162,6 +162,11 @@
 - 2026-01-04T16:48:39+03:00 — Commit: `093895a` — `chore(agent-ops): log status panel fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-04T17:30:25+03:00 — Commit: `f4a924b` — `fix(ui): scale wreath halo to element size` — Files: `styles/counter-wreath.css`
 - 2026-01-04T17:30:25+03:00 — Commit: `663a728` — `chore(agent-ops): log wreath halo fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `2d3c314` — `chore(agent-ops): log wreath canvas sizing commit` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `1704f6c` — `chore(agent-ops): log status panel commits` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `57eb880` — `chore(agent-ops): log wreath halo commits` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `6eeb1e0` — `fix(ui): restore wreath pulse animation` — Files: `styles/counter-wreath.css`
+- 2026-01-04T17:45:16+03:00 — Commit: `a03d577` — `chore(agent-ops): log wreath pulse fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 
 ---
 
