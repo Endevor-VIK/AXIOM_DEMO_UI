@@ -56,6 +56,7 @@
 - 2026-01-04T00:43:10+03:00 — Действие: Удалил неиспользуемые HTML‑пакеты Audit/Roadmap из public‑data (разделы отключены). Файлы: `public/data/audits/17.13.AUDIT_AXIOM_DEMO_UI.10.10.25.html`, `public/data/audits/2025-09-06__audit-demo.html`, `public/data/roadmap/index.html`. → Результат: OK
 - 2026-01-04T01:13:44+03:00 — Действие: Уточнил позиционирование user menu с учетом legacy‑zoom, добавил компенсацию высоты страницы в legacy и ограничил размер венков внутри карточек. Файлы: `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`, `styles/app.css`, `styles/counter-wreath.css`. → Результат: OK
 - 2026-01-04T14:51:06+03:00 — Действие: Перевёл user menu на anchored‑позиционирование относительно topbar (без scale-математики) и закрепил квадратные контейнеры венков (aspect-ratio, ring-size, resize по min-измерению). Файлы: `components/UserMenuDropdown.tsx`, `styles/app.css`, `styles/red-protocol-overrides.css`, `styles/counter-wreath.css`, `components/counters/wreath.ts`. → Результат: OK
+- 2026-01-04T15:13:15+03:00 — Действие: Убрал фиксированный размер венков в dashboard и сделал `size` опциональным в `CounterWreath` (чтобы ring-size управлялся CSS). Файлы: `app/routes/dashboard/page.tsx`, `components/counters/CounterWreath.tsx`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
@@ -88,6 +89,7 @@
 - 2026-01-04T01:13:44+03:00 — Действие: Проверка футера/меню/венков на разных разрешениях не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
 - 2026-01-04T01:41:07+03:00 — Действие: По фидбэку (01.04) — футер исправлен, меню и венки не исправлены; требуется доработка по позиционированию меню и размеру венков. → Результат: FAIL
 - 2026-01-04T14:51:06+03:00 — Действие: Ручная проверка menu/wreath после фикса не выполнялась (нужен новый скрин с `?debug=1`). → Результат: SKIP
+- 2026-01-04T15:13:15+03:00 — Действие: Ручная проверка корректности размеров венков после снятия `size` не выполнялась. → Результат: SKIP
 - 2026-01-03T21:00:05+03:00 — Действие: Проверка плотности managed‑масштаба (0.648) не выполнялась (нужен визуальный чек с `?scale=managed&debug=1`). → Результат: SKIP
 - 2026-01-03T22:44:39+03:00 — Действие: Проверка футера, позиционирования user menu, reserve‑таба и плейсхолдеров Roadmap/Audit не выполнялась (нужен визуальный чек). → Результат: SKIP
 
@@ -133,6 +135,7 @@
 - 2026-01-04T01:43:16+03:00 — Commit: `6c56188` — `docs(assets): add 01.04 bug screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/2026-01-04_1675x1011_home-broken-div.ax-user-menu.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/2026-01-04_1675x1011_home-broken-div.ax-wreath.ax-dashboard__wreath.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`
 - 2026-01-04T01:44:45+03:00 — Commit: `67c7fd8` — `chore(agent-ops): log 01.04 bug review` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-04T14:54:47+03:00 — Commit: `58e2e58` — `fix(ui): anchor user menu and square wreaths` — Files: `components/UserMenuDropdown.tsx`, `components/counters/wreath.ts`, `styles/app.css`, `styles/counter-wreath.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T15:14:33+03:00 — Commit: `ef2df0f` — `fix(ui): make wreath sizing responsive` — Files: `app/routes/dashboard/page.tsx`, `components/counters/CounterWreath.tsx`
 - 2026-01-04T14:41:40+03:00 — Commit: `6866d20` — `docs(agents): add general onboarding guide` — Files: `AGENTS.md`
 
 ---
