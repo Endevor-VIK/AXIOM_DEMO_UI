@@ -26,6 +26,15 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dashboard/news', label: 'NEWS' },
 ]
 
+function resolveInitials(name: string): string {
+  const parts = name.split(/\s+/).filter(Boolean)
+  if (!parts.length) return 'AX'
+  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase()
+  const first = parts[0]?.charAt(0) ?? 'A'
+  const last = parts[parts.length - 1]?.charAt(0) ?? first
+  return `${first}${last}`.toUpperCase()
+}
+
 export default function Layout() {
   const location = useLocation()
   const route = location.pathname || '/'
@@ -40,10 +49,6 @@ export default function Layout() {
   }, [route])
 
   const modeLabel = 'RED PROTOCOL'
-  const [language, setLanguage] = useState<'RU' | 'EN'>('RU')
-  const toggleLanguage = useCallback(() => {
-    setLanguage((prev) => (prev === 'RU' ? 'EN' : 'RU'))
-  }, [])
   const [menuOpen, setMenuOpen] = useState(false)
 
   const statusMeta = useMemo(
@@ -57,6 +62,9 @@ export default function Layout() {
 
   const tickerItems = useNewsManifest()
   const session = useSession()
+  const userName = session.user?.displayName || 'CREATOR'
+  const userRole = (session.user?.role || 'USER').toUpperCase()
+  const userInitials = resolveInitials(userName)
 
   const handleLogout = useCallback(() => {
     logout()
@@ -101,23 +109,23 @@ export default function Layout() {
             </nav>
             <div className='ax-topbar__actions'>
               <button
-                type='button'
-                className='ax-btn ghost ax-lang-toggle'
-                onClick={toggleLanguage}
-                aria-label='Toggle interface language'
-              >
-                {language}
-              </button>
-              <button
                 ref={avatarRef}
                 type='button'
-                className='ax-avatar'
-                aria-label='User avatar'
+                className='ax-user-trigger'
+                aria-label='Open user menu'
                 aria-haspopup='menu'
                 aria-expanded={menuOpen}
+                data-open={menuOpen ? 'true' : undefined}
                 onClick={() => setMenuOpen((prev) => !prev)}
               >
-                AX
+                <span className='ax-user-trigger__avatar' aria-hidden='true'>
+                  {userInitials}
+                </span>
+                <span className='ax-user-trigger__meta'>
+                  <span className='ax-user-trigger__name'>{userName}</span>
+                  <span className='ax-user-trigger__role'>{userRole}</span>
+                </span>
+                <span className='ax-user-trigger__caret' aria-hidden='true' />
               </button>
             </div>
           </div>

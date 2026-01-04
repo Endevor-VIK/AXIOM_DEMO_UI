@@ -61,7 +61,7 @@ const defaultConfig: Config = {
   innerRadiusK: 0.71,
   minTileK: 0.028,
   maxTileK: 0.052,
-  bandGapK: 0.012,
+  bandGapK: 0.006,
   outerRedWidthK: 0.0062,
   innerRedWidthK: 0.0048,
   shadowBlur: 5,
@@ -480,8 +480,13 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   }
 
   function resize() {
-    const rect = root.getBoundingClientRect()
-    const newSize = Math.round(rect.width || opts.ringSize || 260)
+    const measuredWidth = root.offsetWidth || root.clientWidth
+    const measuredHeight = root.offsetHeight || root.clientHeight
+    const measured =
+      measuredWidth && measuredHeight
+        ? Math.min(measuredWidth, measuredHeight)
+        : measuredWidth || measuredHeight || opts.ringSize || 260
+    const newSize = Math.round(measured)
     if (newSize === size) return
     size = newSize
     canvas.width = Math.round(size * DPR)

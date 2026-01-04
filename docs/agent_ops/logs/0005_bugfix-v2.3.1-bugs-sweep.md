@@ -8,13 +8,34 @@
 - Ветка: bugfix/v2.3.1-bugs-sweep (планируемая)
 - Задача: Итерация баг/фикс кампания v2.3.1 (backlog из `docs/bugs`)
 - SPEC: docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md
+- screenshots: docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots
 - Статус: ACTIVE
 
 ---
 
+## Оглавление — 2026-01-04
+- Закрыты баги вкладки `/dashboard`: меню пользователя, венки, панель status (масштаб/переполнение).
+- Пульсация 3-го круга венка возвращена и ограничена только hover‑состоянием.
+- Зафиксировано: вкладка `/dashboard` требует дизайн/функционал/контент доработку и заполнение fullscreen.
+- Следующий этап: BUG‑scale для `/dashboard/content/` (сильные регрессы при смене размера окна, ожидается много правок).
+
 ## Step A — Discovery
 - 2025-12-20T20:15:29+03:00 — Действие: Старт сессии для подготовки SPEC и чеклистов багфиксов v2.3.1; подтвердил контекст репо и ветку-назначение. → Результат: OK
 - 2025-12-20T20:25:40+03:00 — Действие: Выбран баг `BUG-003_reader-overlay-menu-scroll` как первый кандидат; собрал точки входа: `src/features/content/pages/ReaderPage.tsx` (рендер меню/overlay + портал), `styles/content-hub-v2.css` (позиционирование .axr-menu/.axr-overlay). → Результат: OK
+- 2025-12-29T23:31:01+03:00 — Действие: Новый агент принял задачу; сверил текущий контекст 0005, незакоммиченные правки (scale manager/app.css/spec), просмотрел скриншоты 12.29 и подтвердил регресс managed‑масштаба (canvas визуально уходит влево). → Результат: OK
+- 2025-12-30T00:11:24+03:00 — Действие: Получен фидбэк: baseline‑скрины совпадают, но ошибки BUG-006 остаются; дополнительно зафиксирован регресс — news ticker “News Wire” перестал анимироваться. → Результат: OK
+- 2025-12-30T00:27:04+03:00 — Действие: Подтверждён повторный фидбэк: News Wire всё ещё не активен (лента не идёт после добавления новости). → Результат: OK
+- 2026-01-04T01:41:07+03:00 — Действие: Получены новые скриншоты 01.04 (разные разрешения) с актуальными багами; подтверждено: футер исправлен, меню и венки всё ещё сломаны. → Результат: OK
+- 2026-01-04T14:51:06+03:00 — Действие: Перепроверил лог 0005, материалы спека масштаба и новые скриншоты 01.04 (menu/wreath), сверил текущие гипотезы по смещению меню и переполнению венков. → Результат: OK
+- 2026-01-04T15:45:55+03:00 — Действие: Получен фидбэк CREATOR: меню ок, венок всё ещё с внешним кругом; devtools показывает различие размеров контейнера и canvas. → Результат: OK
+- 2026-01-04T16:45:31+03:00 — Действие: Получен фидбэк CREATOR: венок исправлен, остаётся баг панели status (контент выходит за границы при определённом масштабе). → Результат: OK
+- 2026-01-04T17:27:52+03:00 — Действие: Получен фидбэк CREATOR: новый баг — 3-й круг венка неверно/пропадает на средних/малых масштабах, fullscreen ок. → Результат: OK
+- 2026-01-04T17:42:06+03:00 — Действие: Получен фидбэк CREATOR: 3-й круг отображается корректно, но пропала пульсация. → Результат: OK
+- 2026-01-04T18:01:29+03:00 — Действие: Получен фидбэк CREATOR: пульсации нет, круг статичен. → Результат: OK
+- 2026-01-04T18:14:53+03:00 — Действие: Получен фидбэк CREATOR: пульсации всё ещё нет, круг статичен. → Результат: OK
+- 2026-01-04T18:30:04+03:00 — Действие: Получен фидбэк CREATOR: пульсация есть, но нужна только по hover. → Результат: OK
+- 2026-01-04T18:30:04+03:00 — Действие: Получен фидбэк CREATOR: баги вкладки `/dashboard` закрыты; требуется дизайн/функционал/контент доработка на fullscreen. → Результат: OK
+- 2026-01-04T18:30:04+03:00 — Действие: Зафиксирован следующий этап — масштаб/адаптация `/dashboard/content/` (сильные регрессы при ресайзе окна). → Результат: OK
 
 ## Step B — Implementation
 - 2025-12-20T20:17:20+03:00 — Действие: Создал итерационный SPEC `docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md` (цели, процесс, чеклист приоритетных багов, правила коммитов/QA). → Результат: OK
@@ -35,16 +56,77 @@
 - 2025-12-22T18:48:22+03:00 — Действие: Старт BUG-006 (scale parity windowed): скорректировал глобальный зум под windowed режим — для `html` оставлен `zoom/transform` 0.8, но добавлен режим “fit” при ширине ≤1600px (расширение layout-width через `width/height`), чтобы окно масштабировалось без перестановки блоков. Файлы: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`, `docs/bugs/00_BUG_INDEX.md`. → Результат: WIP
 - 2025-12-22T19:15:45+03:00 — Действие: Пересмотр BUG-006: убрал “fit”-логику (усугубляла дрейф), ввёл адаптивный `--ax-ui-scale` (0.8 ≥1600, 0.9 до 1440, 1.0 ниже 1440) с чистым zoom/transform и без доп. компенсаций. Обновил гипотезы в карточке BUG-006. Требуется ручная проверка. Файлы: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`. → Результат: WIP
 - 2025-12-22T19:26:41+03:00 — Действие: Откат адаптивного `--ax-ui-scale` из-за регресса (0.8 scale пропал, элементы выросли). Вернул базовый `0.8` для `html` zoom/transform, обновил заметки BUG-006. Файлы: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`. → Результат: WIP
+- 2025-12-29T19:10:32+03:00 — Действие: Переименовал тикерный `.ax-viewport` в `.ax-ticker__viewport`, чтобы освободить класс для нового canvas‑слоя масштабирования. Файлы: `components/news/HeadlinesTicker.tsx`, `styles/ticker.css`. → Результат: OK
+- 2025-12-29T19:15:17+03:00 — Действие: Добавил `ScaleViewport` (ax‑viewport/ax‑canvas) и `#ax-modal-root`, перевёл порталы на новый root (с fallback). Файлы: `components/ScaleViewport.tsx`, `components/UserMenuDropdown.tsx`, `components/Modal.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`. → Результат: OK
+- 2025-12-29T19:25:50+03:00 — Действие: Добавил Scale Manager (CSS‑переменные масштаба/virtual size), подключил в `app/main.tsx`, ввёл managed‑режим в `styles/app.css`. Файлы: `lib/ui/scaleManager.ts`, `app/main.tsx`, `styles/app.css`. → Результат: OK
+- 2025-12-29T20:16:11+03:00 — Действие: Диагностировал регресс: глобальный контейнер `ax-viewport` конфликтовал с `.ax-viewport` из `ax-design/components.css` (height 72vh + overflow hidden), из‑за чего пропал скролл, «замер» тикер и footer сместился. Исправил: переименовал слой масштабирования в `ax-scale-viewport/ax-scale-canvas` и обновил spec. Файлы: `components/ScaleViewport.tsx`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2025-12-29T23:31:55+03:00 — Действие: Исправил дрейф canvas в managed‑режиме: выставил `transform-origin: top center` для `ax-scale-canvas`, чтобы масштабирование центрировалось и не уводило UI влево. Файл: `styles/app.css`. → Результат: OK
+- 2025-12-29T23:41:22+03:00 — Действие: Зафиксировал дефолтный режим масштаба как legacy (переключение через `?scale=`), чтобы избежать регрессий managed до готовности. Файлы: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2025-12-30T00:11:24+03:00 — Действие: Укрепил инициализацию ticker: добавил повторные попытки построения ленты при нулевой ширине, пересборку на resize и безопасные проверки размеров. Файл: `components/news/HeadlinesTicker.tsx`. → Результат: OK
+- 2025-12-30T00:27:04+03:00 — Действие: Исправил высоту viewport для News Wire, чтобы абсолютный трек не обрезался (высота 100%). Файл: `styles/ticker.css`. → Результат: OK
+- 2026-01-03T20:48:08+03:00 — Действие: Подготовил шаг 0: добавил debug‑оверлей масштаба и флаг `?debug=1` для вывода текущих scale‑параметров (mode/layout/virtual/dpr), чтобы ускорить сверку с baseline. Файлы: `components/ScaleDebug.tsx`, `components/ScaleViewport.tsx`, `lib/ui/scaleManager.ts`, `styles/app.css`. → Результат: OK
+- 2026-01-03T21:00:05+03:00 — Действие: Шаг 1 — выставил плотность managed‑масштаба в 0.648 (≈ legacy 0.81 * 0.8) для совпадения с baseline. Файлы: `lib/ui/scaleManager.ts`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2026-01-03T22:44:39+03:00 — Действие: Старт следующей фазы: подготовил командный файл для `?scale=managed&debug=1`, исправил прижим футера к низу, добавил 8‑й таб (reserve) для Content, поправил позиционирование user menu, включил тестовый режим для Roadmap/Audit (плейсхолдеры + ERR в венке). Файлы: `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`, `styles/red-protocol-overrides.css`, `components/content/CategoryStats.tsx`, `components/content/category-stats.css`, `lib/contentStats.ts`, `components/icons/index.ts`, `app/routes/dashboard/content/_layout.tsx`, `components/UserMenuDropdown.tsx`, `lib/featureFlags.ts`, `app/routes/dashboard/page.tsx`, `app/routes/dashboard/audit/index.tsx`, `app/routes/dashboard/roadmap/index.tsx`, `components/RouteHoldBanner.tsx`. → Результат: OK
+- 2026-01-04T00:43:10+03:00 — Действие: Переделал кнопку пользователя под референс (аватар + имя/роль, раскрытие сверху вниз), обновил стили меню (иконки, компактные пункты), убрал переключатель языка из topbar, убрал min-height у контента для корректного футера. Файлы: `app/routes/_layout.tsx`, `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`. → Результат: OK
+- 2026-01-04T00:43:10+03:00 — Действие: Удалил неиспользуемые HTML‑пакеты Audit/Roadmap из public‑data (разделы отключены). Файлы: `public/data/audits/17.13.AUDIT_AXIOM_DEMO_UI.10.10.25.html`, `public/data/audits/2025-09-06__audit-demo.html`, `public/data/roadmap/index.html`. → Результат: OK
+- 2026-01-04T01:13:44+03:00 — Действие: Уточнил позиционирование user menu с учетом legacy‑zoom, добавил компенсацию высоты страницы в legacy и ограничил размер венков внутри карточек. Файлы: `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`, `styles/app.css`, `styles/counter-wreath.css`. → Результат: OK
+- 2026-01-04T14:51:06+03:00 — Действие: Перевёл user menu на anchored‑позиционирование относительно topbar (без scale-математики) и закрепил квадратные контейнеры венков (aspect-ratio, ring-size, resize по min-измерению). Файлы: `components/UserMenuDropdown.tsx`, `styles/app.css`, `styles/red-protocol-overrides.css`, `styles/counter-wreath.css`, `components/counters/wreath.ts`. → Результат: OK
+- 2026-01-04T15:13:15+03:00 — Действие: Убрал фиксированный размер венков в dashboard и сделал `size` опциональным в `CounterWreath` (чтобы ring-size управлялся CSS). Файлы: `app/routes/dashboard/page.tsx`, `components/counters/CounterWreath.tsx`. → Результат: OK
+- 2026-01-04T15:25:36+03:00 — Действие: Сократил зазор между кольцами венка (уменьшил `bandGapK`). Файл: `components/counters/wreath.ts`. → Результат: OK
+- 2026-01-04T15:45:55+03:00 — Действие: Привязал размер canvas венка к layout‑боксу (offset/client) вместо `getBoundingClientRect`, чтобы не было рассинхрона под legacy zoom. Файл: `components/counters/wreath.ts`. → Результат: OK
+- 2026-01-04T16:45:31+03:00 — Действие: Убрал жёсткий min‑size у грида венков, чтобы блок не выходил за границы панели при узком layout. Файл: `styles/app.css`. → Результат: OK
+- 2026-01-04T17:27:52+03:00 — Действие: Привязал halo‑кольцо к фактическому размеру венка (100%), чтобы на узких масштабах не было рассинхрона `--ring-size` и пропажи анимации. Файл: `styles/counter-wreath.css`. → Результат: OK
+- 2026-01-04T17:42:06+03:00 — Действие: Включил постоянную пульсацию halo для dashboard‑венков (с усилением на hover). Файл: `styles/counter-wreath.css`. → Результат: OK
+- 2026-01-04T18:01:29+03:00 — Действие: Усилил keyframes halo (opacity + scale), чтобы пульсация была видимой на всех масштабах. Файл: `styles/counter-wreath.css`. → Результат: OK
+- 2026-01-04T18:14:53+03:00 — Действие: Усилил амплитуду пульсации halo (scale/opacity/box-shadow), чтобы эффект был заметным. Файл: `styles/counter-wreath.css`. → Результат: OK
+- 2026-01-04T18:30:04+03:00 — Действие: Отключил постоянную пульсацию halo; оставил анимацию только на hover. Файл: `styles/counter-wreath.css`. → Результат: OK
 
 ## Step C — Documentation
 - 2025-12-22T19:58:18+03:00 — Действие: Создал архитектурный spec по отказу от html-zoom и нормализации масштаба: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. Добавил ссылку в BUG-006. → Результат: OK
 - 2025-12-22T20:21:53+03:00: Действие: Углубил spec (v0.2): базовая рамка 1920x1080, раздельные масштабы density/viewport, canvas-архитектура, portal-стратегия, data-layout, расширенный roadmap/QA. → Результат: OK
+- 2025-12-29T14:56:13+03:00 — Действие: Создал директорию для baseline-скриншотов и README с неймингом: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/`. Обновил spec чеклист. → Результат: OK
+- 2025-12-29T16:23:33+03:00 — Действие: Описал каждый baseline-скриншот (описание/замечания/баги) и зафиксировал способ просмотра через viewer Codex в `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
+- 2025-12-29T20:29:30+03:00 — Действие: Добавлены baseline-скриншоты для UI масштаба в `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/`. → Результат: OK
+- 2025-12-29T20:29:30+03:00 — Действие: Добавлена новость о полном реворке вкладок Audit/Roadmap в `public/data/news/manifest.json` + `public/data/news/items/2025-12-29-audit-roadmap-rework.md`. → Результат: OK
+- 2025-12-29T17:04:42+03:00 — Действие: Выполнена инвентаризация масштабов (глобальный zoom, токены, локальные preview/doc zoom) и добавлена карта файлов/механизмов в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2025-12-29T18:12:01+03:00 — Действие: Добавил карту layout/порталов (DOM корни, контейнеры, portal-узлы) и вывод по переносу `#modal-root` внутрь canvas в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2025-12-29T18:36:35+03:00 — Действие: Зафиксировал точки внедрения Phase 1 (файлы и узлы для Scale Manager/canvas/portal) в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2025-12-29T19:27:44+03:00 — Действие: Уточнил модель scale‑переменных (density vs composed) в `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`. → Результат: OK
+- 2025-12-29T23:41:22+03:00 — Действие: Добавил пакет скриншотов регрессии managed‑масштаба (12.29) и описания к ним. Файлы: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/12.29/*.png`. → Результат: OK
+- 2026-01-03T20:52:37+03:00 — Действие: Зафиксировал условия съемки скриншотов (Windows scale 150% vs текущие проверки 125%) для корректного сравнения. Файл: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
+- 2026-01-03T22:44:39+03:00 — Действие: Добавил директорию с командами и базовый URL для включения managed+debug. Файл: `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`. → Результат: OK
+- 2026-01-04T01:41:07+03:00 — Действие: Добавлены скриншоты 01.04 и описания багов (menu/wreath overflow) в README скринов. Файлы: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/*.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
+- 2026-01-04T14:41:40+03:00 — Действие: Создан системный `AGENTS.md` с общими правилами адаптации и процесса работы (общение, логирование, QA, коммиты, карта проекта). Файл: `AGENTS.md`. → Результат: OK
+- 2026-01-04T14:54:05+03:00 — Действие: Расширен `AGENTS.md` для долгосрочных автономных сессий и детальной архитектуры проекта. Файл: `AGENTS.md`. → Результат: OK
 
 ## Step D — QA
 - 2025-12-20T20:44:20+03:00 — Действие: Ручная проверка BUG-003 в UI (локал): меню всё ещё открывается от верхней точки, фон полностью залочен (нет скролла страницы при открытом меню). Подозрение: жёсткий scroll-lock `body { position: fixed }` + меню фиксировано к top header; различие между scroll документа и вложенного HTML контента. → Результат: FAIL (требуется доработка)
 - 2025-12-20T20:55:00+03:00 — Действие: Вторая проверка после снятия scroll-lock: скролл доступен, но меню остаётся привязано к верхней части и перекрывает header; overlay не отделён от шапки. → Результат: FAIL
 - 2025-12-22T18:01:42+03:00 — Действие: Проверка текущей сборки: меню открывается из любой точки, header кликается, overlay корректен; проблема осталась — при открытом меню не скроллится основной HTML-контент под overlay. → Результат: FAIL (нужен фикс прокрутки при active menu)
 - 2025-12-22T18:21:32+03:00 — Действие: Финальная проверка (по фидбэку пользователя): меню, overlay и скролл HTML-контента работают корректно при открытом меню. BUG-003 закрыт как DONE. → Результат: PASS
+- 2025-12-29T23:32:23+03:00 — Действие: UI‑проверка managed‑режима после фикса `transform-origin` не выполнялась (требуется ручной визуальный чек). → Результат: SKIP
+- 2025-12-30T00:11:24+03:00 — Действие: Проверка анимации news ticker после фикса не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
+- 2025-12-30T00:27:04+03:00 — Действие: Проверка News Wire после правки высоты viewport не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
+- 2025-12-30T00:30:54+03:00 — Действие: Ручная проверка News Wire после фикса — лента активна, анимация работает. → Результат: PASS
+- 2026-01-03T20:48:08+03:00 — Действие: Проверка debug‑оверлея (`?debug=1`) не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
+- 2026-01-04T01:13:44+03:00 — Действие: Проверка футера/меню/венков на разных разрешениях не выполнялась (нужен ручной визуальный чек). → Результат: SKIP
+- 2026-01-04T01:41:07+03:00 — Действие: По фидбэку (01.04) — футер исправлен, меню и венки не исправлены; требуется доработка по позиционированию меню и размеру венков. → Результат: FAIL
+- 2026-01-04T14:51:06+03:00 — Действие: Ручная проверка menu/wreath после фикса не выполнялась (нужен новый скрин с `?debug=1`). → Результат: SKIP
+- 2026-01-04T15:13:15+03:00 — Действие: Ручная проверка корректности размеров венков после снятия `size` не выполнялась. → Результат: SKIP
+- 2026-01-04T15:25:36+03:00 — Действие: По фидбэку CREATOR меню исправлено. → Результат: PASS
+- 2026-01-04T15:25:36+03:00 — Действие: Проверка зазора внешнего кольца венка после правки не выполнялась (нужен скрин). → Результат: SKIP
+- 2026-01-04T15:45:55+03:00 — Действие: Проверка совпадения размеров canvas/контейнера венка после правки не выполнялась (нужен скрин). → Результат: SKIP
+- 2026-01-04T16:45:31+03:00 — Действие: По фидбэку CREATOR — венок исправлен. → Результат: PASS
+- 2026-01-04T16:45:31+03:00 — Действие: Проверка панели status после правки грида венков не выполнялась (нужен скрин). → Результат: SKIP
+- 2026-01-04T17:27:52+03:00 — Действие: Проверка 3-го круга венка на средних/малых масштабах после правки halo не выполнялась (нужен скрин). → Результат: SKIP
+- 2026-01-04T17:42:06+03:00 — Действие: Проверка пульсации 3-го круга после включения постоянной анимации не выполнялась (нужен скрин). → Результат: SKIP
+- 2026-01-04T18:01:29+03:00 — Действие: Проверка усиленной пульсации 3-го круга после правки keyframes не выполнялась (нужен скрин). → Результат: SKIP
+- 2026-01-04T18:14:53+03:00 — Действие: Проверка пульсации после усиления амплитуды не выполнялась (нужен скрин). → Результат: SKIP
+- 2026-01-04T18:30:04+03:00 — Действие: По фидбэку CREATOR — пульсация 3-го круга работает и активна только на hover. → Результат: PASS
+- 2026-01-04T18:30:04+03:00 — Действие: По фидбэку CREATOR — баги вкладки `/dashboard` закрыты. → Результат: PASS
+- 2026-01-04T17:49:24+03:00 — Действие: По фидбэку CREATOR — баг панели status закрыт. → Результат: PASS
+- 2026-01-03T21:00:05+03:00 — Действие: Проверка плотности managed‑масштаба (0.648) не выполнялась (нужен визуальный чек с `?scale=managed&debug=1`). → Результат: SKIP
+- 2026-01-03T22:44:39+03:00 — Действие: Проверка футера, позиционирования user menu, reserve‑таба и плейсхолдеров Roadmap/Audit не выполнялась (нужен визуальный чек). → Результат: SKIP
 
 ## Step E — Git
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
@@ -55,6 +137,59 @@
 - 2025-12-22T18:21:32+03:00 — Commit: `080a699` — `fix(reader-menu): congratulations!!! BUG-003 resolved` — Files: `src/features/content/components/ReaderMenuLayer.tsx`
 - 2025-12-22T19:39:43+03:00 — Commit: `bafeb97` — `fix(favorites): avoid legacy migration recursion` — Files: `lib/identity/favoritesService.ts`
 - 2025-12-22T19:41:04+03:00 — Commit: `f24fc60` — `chore(bugs): start BUG-006 scale parity investigation` — Files: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`, `docs/bugs/00_BUG_INDEX.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T15:40:14+03:00 — Commit: `ae23c6b` — `docs(assets): add baseline UI scale screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/*.png`
+- 2025-12-29T15:41:15+03:00 — Commit: `2fe9d95` — `feat(news): announce audit/roadmap rework` — Files: `public/data/news/manifest.json`, `public/data/news/items/2025-12-29-audit-roadmap-rework.md`
+- 2025-12-29T16:29:20+03:00 — Commit: `9d0d5bf` — `docs(assets): annotate baseline screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T16:33:22+03:00 — Commit: `758d093` — `chore(agent-ops): log screenshot annotations` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T17:47:31+03:00 — Commit: `3379468` — `docs(spec): map scale touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T18:26:07+03:00 — Commit: `fbb55aa` — `docs(spec): map layout and portal roots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T18:39:15+03:00 — Commit: `02ba452` — `docs(spec): add phase 1 touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T19:10:32+03:00 — Commit: `9c372f8` — `chore(ticker): rename viewport class` — Files: `components/news/HeadlinesTicker.tsx`, `styles/ticker.css`
+- 2025-12-29T19:15:17+03:00 — Commit: `daf67ea` — `feat(ui): add scale viewport root` — Files: `components/ScaleViewport.tsx`, `components/UserMenuDropdown.tsx`, `components/Modal.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`
+- 2025-12-29T19:25:50+03:00 — Commit: `de8b766` — `feat(scale): add scale manager and canvas wrapper` — Files: `lib/ui/scaleManager.ts`, `app/main.tsx`, `styles/app.css`
+- 2025-12-29T19:27:44+03:00 — Commit: `eb5feaf` — `docs(spec): clarify scale variables` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
+- 2025-12-29T19:37:11+03:00 — Commit: `f1840a7` — `chore(agent-ops): log scale phase 1 work` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T19:40:29+03:00 — Commit: `1a1124f` — `chore(agent-ops): log scale phase 1 commit` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T20:14:13+03:00 — Commit: `09abecf` — `fix(scale): avoid ax-viewport collision` — Files: `components/ScaleViewport.tsx`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
+- 2025-12-29T23:34:40+03:00 — Commit: `70a48b5` — `fix(scale): center managed canvas` — Files: `styles/app.css`
+- 2025-12-29T23:41:51+03:00 — Commit: `416fdb8` — `fix(scale): default to legacy mode` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
+- 2025-12-29T23:41:51+03:00 — Commit: `a524231` — `docs(assets): add managed regression screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/12.29/*.png`
+- 2025-12-30T00:12:20+03:00 — Commit: `9c6cf99` — `fix(ticker): stabilize headlines animation` — Files: `components/news/HeadlinesTicker.tsx`
+- 2025-12-30T00:29:20+03:00 — Commit: `d6dc5a8` — `fix(ticker): set viewport height` — Files: `styles/ticker.css`
+- 2026-01-03T20:50:19+03:00 — Commit: `af07cd3` — `feat(scale): add debug overlay` — Files: `components/ScaleDebug.tsx`, `components/ScaleViewport.tsx`, `lib/ui/scaleManager.ts`, `styles/app.css`
+- 2026-01-03T20:50:19+03:00 — Commit: `65d1b7c` — `chore(agent-ops): log scale debug overlay` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-03T20:54:07+03:00 — Commit: `8f579e5` — `docs(assets): note screenshot scaling context` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`
+- 2026-01-03T21:02:24+03:00 — Commit: `62d4ebd` — `fix(scale): match managed density to legacy` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
+- 2026-01-03T23:05:33+03:00 — Commit: `1ed0b18` — `docs(scale): add debug command list` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`
+- 2026-01-03T23:07:12+03:00 — Commit: `d7274c7` — `feat(content): add reserve tab placeholder` — Files: `app/routes/dashboard/content/_layout.tsx`, `components/content/CategoryStats.tsx`, `components/content/category-stats.css`, `components/icons/index.ts`, `lib/contentStats.ts`
+- 2026-01-03T23:09:19+03:00 — Commit: `90b9d73` — `fix(layout): pin footer and align user menu` — Files: `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`
+- 2026-01-03T23:10:54+03:00 — Commit: `95f9852` — `feat(maintenance): disable audit and roadmap` — Files: `app/routes/dashboard/audit/index.tsx`, `app/routes/dashboard/page.tsx`, `app/routes/dashboard/roadmap/index.tsx`, `components/RouteHoldBanner.tsx`, `lib/featureFlags.ts`, `styles/red-protocol-overrides.css`
+- 2026-01-04T00:42:04+03:00 — Commit: `7c80577` — `chore(data): remove disabled audit and roadmap html` — Files: `public/data/audits/17.13.AUDIT_AXIOM_DEMO_UI.10.10.25.html`, `public/data/audits/2025-09-06__audit-demo.html`, `public/data/roadmap/index.html`
+- 2026-01-04T00:42:46+03:00 — Commit: `ad96650` — `fix(ui): refine user menu trigger and footer` — Files: `app/routes/_layout.tsx`, `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`
+- 2026-01-04T01:13:44+03:00 — Commit: `c96f8ae` — `fix(ui): stabilize footer, menu, and wreaths` — Files: `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`, `styles/app.css`, `styles/counter-wreath.css`
+- 2026-01-04T01:43:16+03:00 — Commit: `6c56188` — `docs(assets): add 01.04 bug screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/2026-01-04_1675x1011_home-broken-div.ax-user-menu.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/2026-01-04_1675x1011_home-broken-div.ax-wreath.ax-dashboard__wreath.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`
+- 2026-01-04T01:44:45+03:00 — Commit: `67c7fd8` — `chore(agent-ops): log 01.04 bug review` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T14:54:47+03:00 — Commit: `58e2e58` — `fix(ui): anchor user menu and square wreaths` — Files: `components/UserMenuDropdown.tsx`, `components/counters/wreath.ts`, `styles/app.css`, `styles/counter-wreath.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T15:14:33+03:00 — Commit: `ef2df0f` — `fix(ui): make wreath sizing responsive` — Files: `app/routes/dashboard/page.tsx`, `components/counters/CounterWreath.tsx`
+- 2026-01-04T14:41:40+03:00 — Commit: `6866d20` — `docs(agents): add general onboarding guide` — Files: `AGENTS.md`
+- 2026-01-04T15:25:36+03:00 — Commit: `93d215a` — `fix(ui): reduce wreath ring gap` — Files: `components/counters/wreath.ts`
+- 2026-01-04T15:25:36+03:00 — Commit: `a159fa5` — `chore(agent-ops): log menu pass and wreath gap tweak` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T15:14:33+03:00 — Commit: `5367a23` — `chore(agent-ops): log wreath sizing update` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T15:47:10+03:00 — Commit: `6a79f8d` — `fix(ui): sync wreath canvas sizing` — Files: `components/counters/wreath.ts`
+- 2026-01-04T15:49:58+03:00 — Commit: `fbe4e63` — `chore(agent-ops): log wreath canvas sizing fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T16:48:39+03:00 — Commit: `b4eac15` — `fix(ui): prevent status wreath overflow` — Files: `styles/app.css`
+- 2026-01-04T16:48:39+03:00 — Commit: `093895a` — `chore(agent-ops): log status panel fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:30:25+03:00 — Commit: `f4a924b` — `fix(ui): scale wreath halo to element size` — Files: `styles/counter-wreath.css`
+- 2026-01-04T17:30:25+03:00 — Commit: `663a728` — `chore(agent-ops): log wreath halo fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `2d3c314` — `chore(agent-ops): log wreath canvas sizing commit` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `1704f6c` — `chore(agent-ops): log status panel commits` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `57eb880` — `chore(agent-ops): log wreath halo commits` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `6eeb1e0` — `fix(ui): restore wreath pulse animation` — Files: `styles/counter-wreath.css`
+- 2026-01-04T17:45:16+03:00 — Commit: `a03d577` — `chore(agent-ops): log wreath pulse fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:49:24+03:00 — Commit: `6d756d3` — `chore(agent-ops): log recent wreath commits` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:49:24+03:00 — Commit: `ad4efff` — `chore(agent-ops): log status panel pass` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T18:17:07+03:00 — Commit: `444d149` — `fix(ui): intensify wreath pulse` — Files: `styles/counter-wreath.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T18:30:19+03:00 — Commit: `d32eb01` — `fix(ui): limit wreath halo pulse to hover` — Files: `styles/counter-wreath.css`
 
 ---
 

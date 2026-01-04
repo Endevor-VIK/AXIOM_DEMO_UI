@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import { AUDIT_HTML, getHtml, isRenderableHtml, ensureTrailingSlash } from '@/app/lib/htmlMaps';
 import RouteWreath from '@/components/counters/RouteWreath';
 import { ErrorBlock } from '@/components/ErrorBlock';
+import RouteHoldBanner from '@/components/RouteHoldBanner';
+import { isAuditDisabled } from '@/lib/featureFlags';
 import { vfs } from '@/lib/vfs';
 import '@/app/styles/red-protocol-overrides.css';
 
@@ -30,6 +32,7 @@ export default function AuditRoute() {
     () => ensureTrailingSlash(((import.meta as any)?.env?.VITE_DATA_BASE as string) ?? 'data/'),
     []
   );
+  const auditDisabled = isAuditDisabled;
 
   const [items, setItems] = useState<string[]>([]);
   const [current, setCurrent] = useState<string>('2025-09-06__audit-demo.html');
@@ -73,6 +76,12 @@ export default function AuditRoute() {
   // Загружаем список доступных аудитов
   useEffect(() => {
     let alive = true;
+    if (auditDisabled) {
+      setItems([]);
+      return () => {
+        alive = false;
+      };
+    }
     (async () => {
       try {
         const list = await vfs.readAuditsManifest().catch(() => null);
@@ -90,11 +99,19 @@ export default function AuditRoute() {
     return () => {
       alive = false;
     };
-  }, [current]);
+  }, [current, auditDisabled]);
 
   // Подгружаем HTML: сначала из бандла, затем фолбэк в public/data
   useEffect(() => {
     let alive = true;
+    if (auditDisabled) {
+      setHtml(null);
+      setErr(null);
+      setLoading(false);
+      return () => {
+        alive = false;
+      };
+    }
     setLoading(true);
     setErr(null);
 
@@ -134,15 +151,36 @@ export default function AuditRoute() {
     return () => {
       alive = false;
     };
-  }, [current, dataBase]);
+  }, [current, dataBase, auditDisabled]);
 
-  const totalAudits = items.length > 0 ? items.length : current ? 1 : 0;
+  const totalAudits = auditDisabled ? 0 : items.length > 0 ? items.length : current ? 1 : 0;
   const currentLabel = labelFromName(current);
-  const wreathDescription = totalAudits > 0
-    ? `Loaded ${totalAudits} audit dossier${totalAudits === 1 ? '' : 's'}. Active view: ${currentLabel}.`
-    : 'No audit dossiers detected in the manifest.';
+  const wreathDescription = auditDisabled
+    ? 'Audit временно закрыт. Раздел в тестовом режиме и будет полностью переработан.'
+    : totalAudits > 0
+      ? `Loaded ${totalAudits} audit dossier${totalAudits === 1 ? '' : 's'}. Active view: ${currentLabel}.`
+      : 'No audit dossiers detected in the manifest.';
 
   const externalHref = dataBase + 'audits/' + current;
+
+  if (auditDisabled) {
+    return (
+      <>
+        <RouteWreath
+          label="AUDIT"
+          value="ERR"
+          title="Audit Dossiers"
+          description={wreathDescription}
+          ariaLabel={`AUDIT module unavailable`}
+        />
+        <RouteHoldBanner
+          title="AUDIT временно закрыт"
+          message="Раздел отключён для полной переработки. Доступ к старым материалам временно приостановлен."
+          note="Мы готовим новую версию Audit с обновленной структурой и визуальной системой."
+        />
+      </>
+    );
+  }
 
   return (
     <>

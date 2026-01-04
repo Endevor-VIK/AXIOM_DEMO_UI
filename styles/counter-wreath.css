@@ -12,8 +12,8 @@
 
 .ax-wreath {
   position: relative;
-  width: var(--ring-size, 260px);
-  height: var(--ring-size, 260px);
+  width: min(100%, var(--ring-size, 260px));
+  aspect-ratio: 1;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -64,8 +64,8 @@
   position:absolute;
   top:50%;
   left:50%;
-  width:calc(var(--ring-size, 260px) * var(--halo-scale, 0.96));
-  height:calc(var(--ring-size, 260px) * var(--halo-scale, 0.96));
+  width:calc(100% * var(--halo-scale, 0.96));
+  height:calc(100% * var(--halo-scale, 0.96));
   transform:translate(-50%,-50%);
   border-radius:50%;
   pointer-events:none;
@@ -74,7 +74,11 @@
     0 0 5px 1px rgba(255,45,85,0.4),
     0 0 12px 4px rgba(255,45,85,0.2);
   transition: opacity .28s ease, box-shadow .28s ease;
-  will-change: box-shadow, opacity;
+  will-change: box-shadow, opacity, transform;
+}
+
+.ax-dashboard__wreath::after{
+  opacity: 0.35;
 }
 
 .ax-dashboard__wreath-link:hover .ax-wreath::after,
@@ -85,14 +89,18 @@
 
 @keyframes axWreathHalo{
   0%{
+    transform: translate(-50%,-50%) scale(0.95);
+    opacity: 0.25;
     box-shadow:
-      0 0 6px 1px rgba(255,45,85,0.34),
-      0 0 10px 3px rgba(255,45,85,0.14);
+      0 0 8px 2px rgba(255,45,85,0.28),
+      0 0 18px 6px rgba(255,45,85,0.18);
   }
   100%{
+    transform: translate(-50%,-50%) scale(1.08);
+    opacity: 0.95;
     box-shadow:
-      0 0 12px 2px rgba(255,45,85,0.52),
-      0 0 18px 6px rgba(255,45,85,0.26);
+      0 0 18px 5px rgba(255,45,85,0.7),
+      0 0 32px 12px rgba(255,45,85,0.4);
   }
 }
 

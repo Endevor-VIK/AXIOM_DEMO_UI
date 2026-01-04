@@ -57,7 +57,7 @@
   100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}
 }
 
-.ax-viewport { position:relative; flex:1; overflow:hidden; }
+.ax-ticker__viewport { position:relative; flex:1; height:100%; overflow:hidden; }
 .ax-track {
   position:absolute; left:0; top:50%; translate:0 -50%;
   display:flex; align-items:center; gap:var(--ax-gap);
@@ -97,7 +97,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ax-track { position:relative; translate:0; animation:none!important; }
-  .ax-viewport { overflow:auto; }
+  .ax-ticker__viewport { overflow:auto; }
   .ax-item[data-level="priority"] .ax-title { animation:none; }
   .ax-crest::before { animation:none; }
 }

@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { vfs, type NewsItem } from '@/lib/vfs'
 import CounterWreath from '@/components/counters/CounterWreath'
+import { isAuditDisabled, isRoadmapDisabled } from '@/lib/featureFlags'
 
 interface Counts {
   audits: number
@@ -25,7 +26,8 @@ function resolveKindVariant(kind?: string): 'info' | 'good' | 'warn' {
   return NEWS_VARIANT_MAP[key] || 'info'
 }
 
-function resolveCountVariant(count: number): 'online' | 'warn' {
+function resolveCountVariant(count: number | string): 'online' | 'warn' {
+  if (typeof count !== 'number') return 'warn'
   return count > 0 ? 'online' : 'warn'
 }
 
@@ -40,12 +42,17 @@ export default function DashboardPage() {
     ;(async () => {
       try {
         setBusy(true)
+        const auditDisabled = isAuditDisabled || isRoadmapDisabled
         const [aud, cont, news] = await Promise.allSettled([
-          vfs.readAuditsManifest(),
+          auditDisabled ? Promise.resolve([]) : vfs.readAuditsManifest(),
           vfs.readContentManifest(),
           vfs.readNewsManifest(),
         ])
-        const audits = aud.status === 'fulfilled' && Array.isArray(aud.value) ? aud.value.length : 0
+        const audits = auditDisabled
+          ? 0
+          : aud.status === 'fulfilled' && Array.isArray(aud.value)
+            ? aud.value.length
+            : 0
         const content = cont.status === 'fulfilled' && Array.isArray(cont.value) ? cont.value.length : 0
         const newsArr = news.status === 'fulfilled' && Array.isArray(news.value) ? (news.value as NewsItem[]) : []
         if (!alive) return
@@ -65,8 +72,10 @@ export default function DashboardPage() {
   }, [])
 
   const statusCounters = useMemo(() => {
+    const auditDisabled = isAuditDisabled || isRoadmapDisabled
+    const auditValue = auditDisabled ? 'ERR' : counts.audits
     return [
-      { label: 'AUDIT', value: counts.audits, to: '/dashboard/audit' },
+      { label: 'AUDIT', value: auditValue, to: '/dashboard/audit' },
       { label: 'CONTENT', value: counts.content, to: '/dashboard/content' },
       { label: 'NEWS', value: counts.news, to: '/dashboard/news' },
     ]
@@ -98,7 +107,6 @@ export default function DashboardPage() {
                 <CounterWreath
                   value={counter.value}
                   label={counter.label}
-                  size={260}
                   className='ax-dashboard__wreath'
                   ariaHidden
                 />

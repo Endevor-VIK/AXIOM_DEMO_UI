@@ -1,5 +1,21 @@
 [
   {
+    "id": "NEWS-2025-12-29-AUDIT-ROADMAP-REWORK",
+    "date": "2025-12-29",
+    "title": "AUDIT/ROADMAP: готовится полный реворк",
+    "kind": "update",
+    "tags": [
+      "audit",
+      "roadmap",
+      "ui",
+      "rework",
+      "planning"
+    ],
+    "summary": "Стартует полноценный пересмотр вкладок Audit и Roadmap: структура, UX и визуальная система будут обновлены.",
+    "link": "/dashboard/news",
+    "file": "items/2025-12-29-audit-roadmap-rework.md"
+  },
+  {
     "id": "NEWS-2025-12-22-DEMO-CONTENT-PACK",
     "date": "2025-12-22",
     "title": "DEMO CONTENT PACK: витрина контента расширена",

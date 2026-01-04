@@ -161,6 +161,7 @@ const ContentLayout: React.FC = () => {
       factions: 0,
       events: 0,
       lore: (aggregate?.lore?.roots?.length ?? 0) > 0 ? 1 : 0,
+      reserve: 0,
     }
     for (const it of aggregate?.items ?? []) {
       base.all += 1
@@ -189,11 +190,16 @@ const ContentLayout: React.FC = () => {
   const activeTab = useMemo(() => parseActiveCategory(location.pathname), [location.pathname])
 
   const categoryStats = useMemo(() => {
-    return getCategoryStats(categoryCounts).map((item) => ({
-      ...item,
-      active: item.key === activeTab,
-    }))
-  }, [categoryCounts, activeTab])
+    return getCategoryStats(categoryCounts).map((item) => {
+      const isReserve = item.key === 'reserve'
+      return {
+        ...item,
+        active: item.key === activeTab,
+        disabled: isReserve,
+        href: isReserve ? location.pathname : item.href,
+      }
+    })
+  }, [categoryCounts, activeTab, location.pathname])
 
   const availableTags = useMemo(() => {
     if (!aggregate) return []
