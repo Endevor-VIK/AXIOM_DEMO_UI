@@ -78,8 +78,7 @@
 }
 
 .ax-dashboard__wreath::after{
-  opacity: 0.55;
-  animation: axWreathHalo 2.6s ease-in-out infinite alternate;
+  opacity: 0.35;
 }
 
 .ax-dashboard__wreath-link:hover .ax-wreath::after,
