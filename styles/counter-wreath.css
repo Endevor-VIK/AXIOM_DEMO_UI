@@ -77,6 +77,11 @@
   will-change: box-shadow, opacity;
 }
 
+.ax-dashboard__wreath::after{
+  opacity: 0.35;
+  animation: axWreathHalo 3.2s ease-in-out infinite alternate;
+}
+
 .ax-dashboard__wreath-link:hover .ax-wreath::after,
 .ax-dashboard__wreath-link:focus-visible .ax-wreath::after{
   opacity:1;
