@@ -100,7 +100,9 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
         return
       }
       if (event.touches.length === 1) {
-        lastTouchY.current = event.touches[0].clientY
+        const touch = event.touches.item(0)
+        if (!touch) return
+        lastTouchY.current = touch.clientY
       }
     }
 
@@ -108,7 +110,9 @@ export const ReaderMenuLayer: React.FC<ReaderMenuLayerProps> = ({
       if (isMenuTarget(event.target)) return
       const scrollRoot = resolveScrollRoot()
       if (!scrollRoot || event.touches.length !== 1 || lastTouchY.current === null) return
-      const current = event.touches[0].clientY
+      const touch = event.touches.item(0)
+      if (!touch) return
+      const current = touch.clientY
       const delta = lastTouchY.current - current
       scrollRoot.scrollBy({ top: delta })
       lastTouchY.current = current

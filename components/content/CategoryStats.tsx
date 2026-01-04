@@ -81,7 +81,7 @@ export default function CategoryStats({ items }: Props) {
       event.preventDefault()
       if (nextIndex >= 0) {
         focusTab(nextIndex)
-        handleActivate(items[nextIndex]!.href)
+        handleActivate(items[nextIndex]!)
       }
     },
     [focusTab, handleActivate, items],

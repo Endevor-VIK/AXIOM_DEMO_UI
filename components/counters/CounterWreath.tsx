@@ -25,7 +25,8 @@ export default function CounterWreath({
 
   useEffect(() => {
     if (!containerRef.current) return
-    apiRef.current = mountWreath(containerRef.current, { value, label, ringSize: resolvedSize })
+    const options = resolvedSize ? { value, label, ringSize: resolvedSize } : { value, label }
+    apiRef.current = mountWreath(containerRef.current, options)
     return () => {
       apiRef.current?.destroy()
       apiRef.current = null
