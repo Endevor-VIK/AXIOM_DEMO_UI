@@ -480,11 +480,12 @@ export function mountWreath(root: HTMLElement, opts: Options): WreathApi {
   }
 
   function resize() {
-    const rect = root.getBoundingClientRect()
+    const measuredWidth = root.offsetWidth || root.clientWidth
+    const measuredHeight = root.offsetHeight || root.clientHeight
     const measured =
-      rect.width && rect.height
-        ? Math.min(rect.width, rect.height)
-        : rect.width || rect.height || opts.ringSize || 260
+      measuredWidth && measuredHeight
+        ? Math.min(measuredWidth, measuredHeight)
+        : measuredWidth || measuredHeight || opts.ringSize || 260
     const newSize = Math.round(measured)
     if (newSize === size) return
     size = newSize
