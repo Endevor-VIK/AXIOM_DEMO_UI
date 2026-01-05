@@ -136,6 +136,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-05T15:06:59+03:00 — Commit: `4e249b5` — `fix(content): align preview data and density` — Files: `app/routes/dashboard/content/ContentCategoryView.tsx`, `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-05T14:40:29+03:00 — Commit: `02afc92` — `docs(assets): add 01.05 content hub screenshots` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.05/*.png`
 - 2026-01-04T19:22:30+03:00 — Commit: `f007200` — `fix(types): resolve typecheck errors` — Files: `components/content/CategoryStats.tsx`, `components/counters/CounterWreath.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
