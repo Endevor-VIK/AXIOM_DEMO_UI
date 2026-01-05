@@ -41,7 +41,7 @@ const resolveInitialMode = (): 'managed' | 'legacy' => {
   } catch {
     /* noop */
   }
-  return 'legacy'
+  return 'managed'
 }
 
 const resolveDebugFlag = (): boolean => {
