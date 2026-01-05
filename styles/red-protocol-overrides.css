@@ -55,6 +55,9 @@
 html[data-scale-mode='legacy'] .ax-page {
   min-height: calc(100dvh / var(--ax-ui-scale));
 }
+html[data-scale-mode='managed'] .ax-page {
+  min-height: calc(100dvh / var(--ax-viewport-scale, 1));
+}
 .ax-page > .ax-shell {
   flex: 1 1 auto;
   min-height: 0;

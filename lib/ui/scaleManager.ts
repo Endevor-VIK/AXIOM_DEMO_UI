@@ -93,13 +93,16 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
 
     const width = window.innerWidth || baseWidth
     const height = window.innerHeight || baseHeight
+    const dpr = window.devicePixelRatio || 1
+    const scaledWidth = width * dpr
+    const scaledHeight = height * dpr
     const viewportScale = clamp(
       minViewportScale,
-      Math.min(width / baseWidth, height / baseHeight),
+      Math.min(scaledWidth / baseWidth, scaledHeight / baseHeight),
       maxViewportScale,
     )
-    const virtualWidth = Math.round(width / viewportScale)
-    const virtualHeight = Math.round(height / viewportScale)
+    const virtualWidth = Math.round(scaledWidth / viewportScale)
+    const virtualHeight = Math.round(scaledHeight / viewportScale)
     const composedScale = densityScale * viewportScale
 
     root.style.setProperty('--ax-density-scale', densityScale.toFixed(3))
