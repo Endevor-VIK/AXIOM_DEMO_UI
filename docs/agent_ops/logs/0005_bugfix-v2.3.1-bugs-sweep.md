@@ -39,6 +39,8 @@
 - 2026-01-05T12:42:17+03:00 — Действие: Принял продолжение по `/dashboard/content`; перечитал `AGENTS.md`, лог 0005 и spec масштаба; просмотрел baseline/bug скрины content_01/02/03, отметил регрессы сеток (CategoryStats, фильтры, split list/preview) при windowed/resize; запросил у CREATOR параметры проверки. → Результат: OK
 
 ## Step B — Implementation
+- 2026-01-05T18:06:54+03:00 — Действие: В managed‑режиме компенсировал высоту страницы по `--ax-viewport-scale`, чтобы нижний status‑footer не «уезжал» при скролле windowed. Файл: `styles/red-protocol-overrides.css`. → Результат: OK
+- 2026-01-05T17:55:51+03:00 — Действие: Учёл `devicePixelRatio` в расчёте managed‑viewport (масштаб от физического разрешения), чтобы при Windows 125% UI не «сжимался». Файл: `lib/ui/scaleManager.ts`. → Результат: OK
 - 2026-01-05T17:08:12+03:00 — Действие: Перевёл дефолт масштаба на managed (legacy теперь через `?scale=legacy`), расширил команды и пути зависимости для масштабирования/overlay. Файлы: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`. → Результат: OK
 - 2026-01-05T16:33:17+03:00 — Действие: Добавил динамическую компенсацию legacy‑масштаба через `--ax-viewport-scale`, чтобы windowed не «сжимал» контент; базовый `--ax-ui-scale` вынесен в `--ax-ui-scale-base`. Файл: `styles/app.css`. → Результат: OK
 - 2026-01-05T15:57:09+03:00 — Действие: Расширил превью до ширины панели (убрал max-width), увеличил высоту медиа, подтянул типографику хедера; добавил декоративные линии под заголовками “Ключевые маркеры/Сигнатура”, усилил цвет текста списков, убрал LANG из meta‑строки. Файлы: `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`. → Результат: OK
@@ -108,6 +110,8 @@
 - 2026-01-04T14:54:05+03:00 — Действие: Расширен `AGENTS.md` для долгосрочных автономных сессий и детальной архитектуры проекта. Файл: `AGENTS.md`. → Результат: OK
 
 ## Step D — QA
+- 2026-01-05T18:06:54+03:00 — Действие: Проверка status‑footer в windowed после компенсации высоты не выполнялась (нужен скрин с `?debug=1`). → Результат: SKIP
+- 2026-01-05T17:55:51+03:00 — Действие: Проверка managed‑масштаба после учета DPR не выполнялась (нужны FS‑скрины всех вкладок с `?debug=1`). → Результат: SKIP
 - 2026-01-05T17:08:12+03:00 — Действие: Проверка дефолтного managed и legacy‑переключения не выполнялась (нужны скрины с `?debug=1` и `?scale=legacy&debug=1`). → Результат: SKIP
 - 2026-01-05T16:33:17+03:00 — Действие: Проверка windowed/FS после правки legacy‑масштаба не выполнялась (нужны новые скрины с `?debug=1`). → Результат: SKIP
 - 2026-01-05T14:59:03+03:00 — Действие: Ручная проверка `/dashboard/content` после обновления превью не выполнена (нужны свежие скрины с `?debug=1`). → Результат: SKIP
@@ -141,6 +145,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-05T18:19:01+03:00 — Commit: `b9da860` — `fix(scale): align managed viewport height` — Files: `lib/ui/scaleManager.ts`, `styles/red-protocol-overrides.css`
 - 2026-01-05T17:12:53+03:00 — Commit: `e7eb2cb` — `fix(scale): default to managed and expand commands` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`
 - 2026-01-05T16:39:02+03:00 — Commit: `6978bc5` — `fix(scale): soften legacy windowed shrink` — Files: `styles/app.css`
 - 2026-01-05T16:00:49+03:00 — Commit: `797ac92` — `fix(content): expand preview layout and accents` — Files: `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`
