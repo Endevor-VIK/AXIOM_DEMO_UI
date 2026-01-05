@@ -39,6 +39,7 @@
 - 2026-01-05T12:42:17+03:00 — Действие: Принял продолжение по `/dashboard/content`; перечитал `AGENTS.md`, лог 0005 и spec масштаба; просмотрел baseline/bug скрины content_01/02/03, отметил регрессы сеток (CategoryStats, фильтры, split list/preview) при windowed/resize; запросил у CREATOR параметры проверки. → Результат: OK
 
 ## Step B — Implementation
+- 2026-01-05T15:57:09+03:00 — Действие: Расширил превью до ширины панели (убрал max-width), увеличил высоту медиа, подтянул типографику хедера; добавил декоративные линии под заголовками “Ключевые маркеры/Сигнатура”, усилил цвет текста списков, убрал LANG из meta‑строки. Файлы: `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`. → Результат: OK
 - 2026-01-05T14:59:03+03:00 — Действие: Обновил превью контент‑хаба: маппинг статуса/класса из manifest (meta.fileStatus + subCategory), добавил ZONE в мета‑строку; снизил плотность/паддинги/шрифты в `ax-content-preview` под токены. Файлы: `app/routes/dashboard/content/ContentCategoryView.tsx`, `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`. → Результат: OK
 - 2026-01-05T14:31:50+03:00 — Действие: Уточнил анализ скринов 01.05 (добавлен ref_section и перечень баг‑элементов по каждому размеру) в `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
 - 2026-01-05T13:37:12+03:00 — Действие: Проанализировал скриншоты 01.05 по `/dashboard/content` и добавил наблюдения в README скринов. Файл: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
@@ -136,6 +137,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-05T16:00:49+03:00 — Commit: `797ac92` — `fix(content): expand preview layout and accents` — Files: `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`
 - 2026-01-05T15:06:59+03:00 — Commit: `4e249b5` — `fix(content): align preview data and density` — Files: `app/routes/dashboard/content/ContentCategoryView.tsx`, `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-05T14:40:29+03:00 — Commit: `02afc92` — `docs(assets): add 01.05 content hub screenshots` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.05/*.png`
 - 2026-01-04T19:22:30+03:00 — Commit: `f007200` — `fix(types): resolve typecheck errors` — Files: `components/content/CategoryStats.tsx`, `components/counters/CounterWreath.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`
