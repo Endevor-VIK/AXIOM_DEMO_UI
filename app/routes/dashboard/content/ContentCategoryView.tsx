@@ -92,8 +92,19 @@ function pickImage(item: ContentItem): string {
 
 function mapToPreview(entry: ContentItem | null): ContentPreviewData | null {
   if (!entry) return null
-  const version = entry.version || (entry.meta as any)?.fileVersion || 'v1.0'
-  const zone = (entry.meta as any)?.zone || entry.category.toUpperCase()
+  const meta = (entry.meta as Record<string, unknown>) || {}
+  const rawVersion = entry.version || (meta.fileVersion as string | undefined) || 'v1.0'
+  const rawZone = (meta.zone as string | undefined) || entry.category
+  const rawStatus = (meta.fileStatus as string | undefined) || entry.status
+  const rawClass = entry.subCategory || entry.category
+  const normalizeLabel = (value: string, fallback: string) => {
+    const base = value?.trim?.() ? value : fallback
+    return String(base).replace(/[_-]+/g, ' ').toUpperCase()
+  }
+  const version = rawVersion
+  const zone = normalizeLabel(rawZone, entry.category.toUpperCase())
+  const statusLabel = normalizeLabel(rawStatus, entry.status)
+  const classLabel = normalizeLabel(rawClass, entry.category)
   const summary = entry.summary || ''
   const markers =
     (entry.tags && entry.tags.length
@@ -115,13 +126,13 @@ function mapToPreview(entry: ContentItem | null): ContentPreviewData | null {
     version,
     tags: entry.tags || [],
     preview: {
-      kicker: `${zone} · STATUS: ${entry.status.toUpperCase()}`,
+      kicker: `STATUS: ${statusLabel} · CLASS: ${classLabel}`,
       logline: summary || entry.title,
       markers: markers.length ? markers : ['Content preview'],
       signature: [
         `Author: ${entry.author || 'AXIOM'}`,
         `Version: ${version}`,
-        `Lang: ${(entry.lang || 'ru').toUpperCase()}`,
+        `Status: ${statusLabel}`,
       ],
       image: pickImage(entry),
     },

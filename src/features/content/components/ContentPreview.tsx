@@ -49,14 +49,14 @@ const ContentPreview: React.FC<ContentPreviewProps> = ({ entry, onOpenSource, on
         <aside className='axcp-copy' aria-describedby='axcp-core-preview'>
           <header className='axcp-head'>
             <div className='axcp-kicker'>{preview.kicker}</div>
-            <h2 id='axcp-core-preview' className='axcp-title'>
-              {entry.title}
-            </h2>
-            <div className='axcp-meta'>
-              ID: <b>[{entry.id}]</b> · VERSION: <b>{entry.version}</b> · LANG:{' '}
-              <b>{entry.lang.toUpperCase()}</b>
-            </div>
-          </header>
+          <h2 id='axcp-core-preview' className='axcp-title'>
+            {entry.title}
+          </h2>
+          <div className='axcp-meta'>
+            ZONE: <b>{entry.zone}</b> · ID: <b>[{entry.id}]</b> · VERSION:{' '}
+            <b>{entry.version}</b> · LANG: <b>{entry.lang.toUpperCase()}</b>
+          </div>
+        </header>
 
           <p className='axcp-lead'>{preview.logline}</p>
 
