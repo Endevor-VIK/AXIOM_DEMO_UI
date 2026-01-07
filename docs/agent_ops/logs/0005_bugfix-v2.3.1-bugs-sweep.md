@@ -153,6 +153,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-07T18:39:52+03:00 — Commit: `858e845` — `fix(scale): stabilize full-height in managed` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-07T17:24:12+03:00 — Commit: `fc58db0` — `fix(scale): gate managed viewport shrink` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-05T18:19:01+03:00 — Commit: `b9da860` — `fix(scale): align managed viewport height` — Files: `lib/ui/scaleManager.ts`, `styles/red-protocol-overrides.css`
 - 2026-01-05T17:12:53+03:00 — Commit: `e7eb2cb` — `fix(scale): default to managed and expand commands` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`
