@@ -93,16 +93,15 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
 
     const width = window.innerWidth || baseWidth
     const height = window.innerHeight || baseHeight
-    const dpr = window.devicePixelRatio || 1
-    const scaledWidth = width * dpr
-    const scaledHeight = height * dpr
-    const viewportScale = clamp(
-      minViewportScale,
-      Math.min(scaledWidth / baseWidth, scaledHeight / baseHeight),
-      maxViewportScale,
-    )
-    const virtualWidth = Math.round(scaledWidth / viewportScale)
-    const virtualHeight = Math.round(scaledHeight / viewportScale)
+    const cssScale = Math.min(width / baseWidth, height / baseHeight)
+    const shrinkThresholdW = baseWidth * 0.7
+    const shrinkThresholdH = baseHeight * 0.7
+    const allowShrink = width < shrinkThresholdW || height < shrinkThresholdH
+    const viewportScale = allowShrink
+      ? clamp(minViewportScale, cssScale, maxViewportScale)
+      : 1
+    const virtualWidth = Math.round(width / viewportScale)
+    const virtualHeight = Math.round(height / viewportScale)
     const composedScale = densityScale * viewportScale
 
     root.style.setProperty('--ax-density-scale', densityScale.toFixed(3))

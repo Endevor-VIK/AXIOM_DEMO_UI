@@ -18,7 +18,8 @@
 ## Условия съемки (важно для сравнения)
 Системные скриншоты зафиксированы при других настройках масштаба, поэтому при сравнении учитывать разницу:
 - Базовые скриншоты: Windows scale **150%**, browser zoom **100%**, global zoom **80%**.
-- Текущие проверки/фиксы: Windows scale **125%**, browser zoom **100%**.
+- Текущие проверки/фиксы (с 2026-01-07): Windows scale **100%**, browser zoom **100%**.
+- Предыдущие проверки (до 2026-01-07): Windows scale **125%**, browser zoom **100%**.
 
 ## Просмотренные скриншоты
 Просмотрены локально через внутренний viewer Codex (tool: view_image, open local image, без сети).
@@ -145,7 +146,7 @@
 
 ## Просмотренные скриншоты (01.05)
 Источник: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.05`.
-Условия: Windows scale **125%**, browser zoom **100%** (по CREATOR).
+Условия: Windows scale **125%**, browser zoom **100%** (по CREATOR, до перехода на 100%/100%).
 Режим: legacy, `?debug=1` (Scale Debug виден на части скринов).
 
 ### 2026-01-05_1920x1080_content-00-done-fs.png
