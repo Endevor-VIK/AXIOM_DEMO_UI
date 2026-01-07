@@ -96,7 +96,7 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
     const cssScale = Math.min(width / baseWidth, height / baseHeight)
     const shrinkThresholdW = baseWidth * 0.7
     const shrinkThresholdH = baseHeight * 0.7
-    const allowShrink = width < shrinkThresholdW || height < shrinkThresholdH
+    const allowShrink = width < shrinkThresholdW && height < shrinkThresholdH
     const viewportScale = allowShrink
       ? clamp(minViewportScale, cssScale, maxViewportScale)
       : 1
