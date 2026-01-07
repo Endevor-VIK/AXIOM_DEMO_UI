@@ -187,6 +187,9 @@
       1) Layout Shell
       ============================ */
    .ax-shell { display: flex; flex-direction: column; min-height: 100dvh; background: var(--ax-bg); }
+   html[data-scale-mode='managed'] .ax-shell {
+     min-height: calc(100dvh / var(--ax-viewport-scale, 1));
+   }
    .ax-shell { --gutter: clamp(10px, 1.4vw, 18px); --section-vspace: clamp(10px, 2.2vw, 24px);
   width: min(calc(100% - 2 * var(--gutter)), var(--container-max));
   margin-inline: auto; padding: var(--section-vspace) var(--gutter);
@@ -373,6 +376,9 @@
      overflow: hidden;
      overscroll-behavior: none;
      isolation: isolate;
+   }
+   html[data-scale-mode='managed'] .ax-login{
+     min-height: calc(100dvh / var(--ax-viewport-scale, 1));
    }
    @supports (overflow: clip){
      .ax-login{ overflow: clip; }
