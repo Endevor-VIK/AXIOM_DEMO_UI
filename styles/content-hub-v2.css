@@ -214,7 +214,11 @@
   overflow: hidden;
   border-radius: var(--r-xl);
   background: var(--ax-ink);
-  min-height: clamp(280px, 42vh, 520px);
+  min-height: clamp(
+    calc(280px * var(--ax-scale)),
+    calc(42vh * var(--ax-scale)),
+    calc(520px * var(--ax-scale))
+  );
   aspect-ratio: 3 / 4;
   box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.7),
@@ -277,7 +281,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   padding: var(--space-4) var(--space-5);
   color: var(--ax-text);
   background: linear-gradient(to top, rgba(8, 8, 12, 0.9), rgba(8, 8, 12, 0));
@@ -295,11 +299,14 @@
   font-size: var(--fs-10);
   color: var(--ax-muted);
   border-left: 1px solid rgba(255, 255, 255, 0.18);
-  padding-left: 10px;
+  padding-left: var(--space-2);
 }
 
 .axcp-copy {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
   border-radius: var(--r-xl);
   padding: var(--space-5) var(--space-5) var(--space-4);
   background:
@@ -403,8 +410,8 @@
 
 .axcp-block h3 {
   position: relative;
-  margin: 0 0 10px;
-  padding-bottom: 6px;
+  margin: 0 0 var(--space-2);
+  padding-bottom: var(--space-1);
   font-size: var(--fs-12);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -424,7 +431,7 @@
 
 .axcp-list {
   list-style: square;
-  padding-left: 18px;
+  padding-left: calc(18px * var(--ax-scale));
   margin: 0;
   color: #cfd4e9;
   line-height: 1.4;
@@ -432,10 +439,11 @@
 }
 
 .axcp-foot {
-  margin-top: 14px;
+  margin-top: auto;
+  padding-top: var(--space-3);
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-2);
   align-items: center;
   justify-content: space-between;
 }
@@ -443,7 +451,7 @@
 .axcp-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .axcp-chip {
@@ -459,14 +467,14 @@
 
 .axcp-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
 .axcp-btn {
   position: relative;
   border: 1px solid rgba(255, 36, 56, 0.32);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   padding: var(--space-2) var(--space-3);
   font-size: var(--fs-12);
   letter-spacing: 0.06em;
