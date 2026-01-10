@@ -190,6 +190,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-10T20:19:35+03:00 — Commit: `87f495b` — `fix(scale): refine preview sizing and resize gpu` — Files: `styles/app.css`, `styles/content-hub-v2.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-10T19:46:32+03:00 — Commit: `e4fc455` — `fix(scale): scope resize animation pause` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-10T19:18:57+03:00 — Commit: `b93e587` — `fix(content): cap preview width on xl` — Files: `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-10T19:22:27+03:00 — Commit: `08c3679` — `fix(scale): pause animations during resize` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
