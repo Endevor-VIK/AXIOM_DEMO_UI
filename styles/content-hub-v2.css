@@ -181,7 +181,7 @@
   --ax-red-soft: #f76a7b;
   --ax-border: #181b25;
   --ax-glow: rgba(255, 36, 56, 0.32);
-  --axcp-text-scale: var(--ax-preview-text-scale, 1);
+  --axcp-text-scale: var(--ax-preview-text-scale, 1.25);
   background:
     radial-gradient(1200px 650px at 80% 110%, #18080f 0%, transparent 55%),
     var(--ax-bg);
@@ -366,7 +366,7 @@
 
 .axcp-kicker {
   color: #cfd4e9;
-  font-size: calc(var(--fs-10) * var(--axcp-text-scale));
+  font-size: calc(var(--fs-12) * var(--axcp-text-scale));
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -375,7 +375,7 @@
 .axcp-title {
   margin: 0;
   font-family: var(--font-display, inherit);
-  font-size: calc(var(--fs-24) * var(--axcp-text-scale));
+  font-size: calc(var(--fs-32) * var(--axcp-text-scale));
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #ffe8ec;
@@ -394,7 +394,7 @@
   margin: 0 0 var(--space-3);
   color: #e6e9f7;
   line-height: 1.6;
-  font-size: calc(var(--fs-14) * var(--axcp-text-scale));
+  font-size: calc(var(--fs-16) * var(--axcp-text-scale));
 }
 
 .axcp-grid {
@@ -436,7 +436,15 @@
   margin: 0;
   color: #cfd4e9;
   line-height: 1.5;
-  font-size: calc(var(--fs-12) * var(--axcp-text-scale));
+  font-size: calc(var(--fs-14) * var(--axcp-text-scale));
+}
+
+.axcp-list li {
+  margin-bottom: var(--space-2);
+}
+
+.axcp-list li:last-child {
+  margin-bottom: 0;
 }
 
 .axcp-foot {

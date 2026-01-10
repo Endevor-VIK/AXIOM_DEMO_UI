@@ -6,6 +6,7 @@ type ScaleDebugState = {
   density: string
   viewport: string
   composed: string
+  previewText: string
   virtualW: string
   virtualH: string
   width: number
@@ -21,6 +22,7 @@ const readScaleState = (): ScaleDebugState => {
       density: 'n/a',
       viewport: 'n/a',
       composed: 'n/a',
+      previewText: 'n/a',
       virtualW: 'n/a',
       virtualH: 'n/a',
       width: 0,
@@ -39,6 +41,7 @@ const readScaleState = (): ScaleDebugState => {
     density: value('--ax-density-scale'),
     viewport: value('--ax-viewport-scale'),
     composed: value('--ax-composed-scale'),
+    previewText: value('--ax-preview-text-scale'),
     virtualW: value('--ax-virtual-w'),
     virtualH: value('--ax-virtual-h'),
     width: window.innerWidth || 0,
@@ -90,6 +93,10 @@ export default function ScaleDebug() {
       <div className='ax-scale-debug__row'>
         <span className='ax-scale-debug__label'>composed</span>
         <span className='ax-scale-debug__value'>{state.composed}</span>
+      </div>
+      <div className='ax-scale-debug__row'>
+        <span className='ax-scale-debug__label'>preview</span>
+        <span className='ax-scale-debug__value'>{state.previewText}</span>
       </div>
       <div className='ax-scale-debug__row'>
         <span className='ax-scale-debug__label'>virtual</span>
