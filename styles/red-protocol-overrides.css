@@ -624,6 +624,15 @@ body.ax-no-scroll {
   gap: clamp(16px, 3vw, 28px);
 }
 
+html[data-layout='xl'] .ax-content-split {
+  grid-template-columns: minmax(320px, 420px) minmax(0, 980px);
+  justify-content: center;
+}
+
+html[data-layout='xl'] .ax-panel-right {
+  justify-self: start;
+}
+
 @media (max-width: 1280px) {
   .ax-content-split {
     grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
