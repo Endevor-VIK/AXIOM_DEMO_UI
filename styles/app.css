@@ -66,6 +66,9 @@
      transform-origin: top center;
      width: calc(100% / var(--ax-viewport-scale));
      min-height: calc(100dvh / var(--ax-viewport-scale));
+     transform: scale(var(--ax-viewport-scale));
+   }
+   html[data-scale-mode='managed'][data-resize-state='1'] .ax-scale-canvas {
      transform: scale(var(--ax-viewport-scale)) translateZ(0);
      backface-visibility: hidden;
      will-change: transform;
