@@ -181,7 +181,7 @@
   --ax-red-soft: #f76a7b;
   --ax-border: #181b25;
   --ax-glow: rgba(255, 36, 56, 0.32);
-  --axcp-text-scale: var(--ax-preview-text-scale, 1.25);
+  --axcp-text-scale: var(--ax-preview-text-scale, 1.4);
   background:
     radial-gradient(1200px 650px at 80% 110%, #18080f 0%, transparent 55%),
     var(--ax-bg);
@@ -448,8 +448,7 @@
 }
 
 .axcp-foot {
-  margin-top: auto;
-  padding-top: var(--space-3);
+  margin-top: var(--space-4);
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
