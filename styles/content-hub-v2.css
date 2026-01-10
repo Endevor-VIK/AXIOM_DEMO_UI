@@ -181,12 +181,13 @@
   --ax-red-soft: #f76a7b;
   --ax-border: #181b25;
   --ax-glow: rgba(255, 36, 56, 0.32);
+  --axcp-text-scale: var(--ax-preview-text-scale, 1);
   background:
     radial-gradient(1200px 650px at 80% 110%, #18080f 0%, transparent 55%),
     var(--ax-bg);
   color: var(--ax-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "JetBrains Mono", monospace;
-  font-size: var(--fs-14);
+  font-size: calc(var(--fs-14) * var(--axcp-text-scale));
   padding: var(--space-5);
   border-radius: var(--r-xl);
   border: 1px solid var(--ax-border);
@@ -292,11 +293,11 @@
 
 .axcp-name {
   font-weight: 700;
-  font-size: var(--fs-12);
+  font-size: calc(var(--fs-12) * var(--axcp-text-scale));
 }
 
 .axcp-tag {
-  font-size: var(--fs-10);
+  font-size: calc(var(--fs-10) * var(--axcp-text-scale));
   color: var(--ax-muted);
   border-left: 1px solid rgba(255, 255, 255, 0.18);
   padding-left: var(--space-2);
@@ -355,7 +356,7 @@
 }
 
 .axcp-overline {
-  font-size: var(--fs-12);
+  font-size: calc(var(--fs-12) * var(--axcp-text-scale));
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -365,7 +366,7 @@
 
 .axcp-kicker {
   color: #cfd4e9;
-  font-size: var(--fs-10);
+  font-size: calc(var(--fs-10) * var(--axcp-text-scale));
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -374,7 +375,7 @@
 .axcp-title {
   margin: 0;
   font-family: var(--font-display, inherit);
-  font-size: var(--fs-24);
+  font-size: calc(var(--fs-24) * var(--axcp-text-scale));
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #ffe8ec;
@@ -384,7 +385,7 @@
 
 .axcp-meta {
   color: var(--ax-muted);
-  font-size: var(--fs-10);
+  font-size: calc(var(--fs-10) * var(--axcp-text-scale));
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -393,7 +394,7 @@
   margin: 0 0 var(--space-3);
   color: #e6e9f7;
   line-height: 1.5;
-  font-size: var(--fs-14);
+  font-size: calc(var(--fs-14) * var(--axcp-text-scale));
 }
 
 .axcp-grid {
@@ -412,7 +413,7 @@
   position: relative;
   margin: 0 0 var(--space-2);
   padding-bottom: var(--space-1);
-  font-size: var(--fs-12);
+  font-size: calc(var(--fs-12) * var(--axcp-text-scale));
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #ff9aa6;
@@ -435,7 +436,7 @@
   margin: 0;
   color: #cfd4e9;
   line-height: 1.4;
-  font-size: var(--fs-12);
+  font-size: calc(var(--fs-12) * var(--axcp-text-scale));
 }
 
 .axcp-foot {
@@ -461,7 +462,7 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
   padding: var(--space-1) var(--space-2);
-  font-size: var(--fs-10);
+  font-size: calc(var(--fs-10) * var(--axcp-text-scale));
   color: var(--ax-text);
 }
 
@@ -476,7 +477,7 @@
   border: 1px solid rgba(255, 36, 56, 0.32);
   border-radius: var(--r-md);
   padding: var(--space-2) var(--space-3);
-  font-size: var(--fs-12);
+  font-size: calc(var(--fs-12) * var(--axcp-text-scale));
   letter-spacing: 0.06em;
   cursor: pointer;
   overflow: hidden;

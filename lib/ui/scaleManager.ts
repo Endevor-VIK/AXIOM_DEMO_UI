@@ -103,6 +103,10 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
     const virtualWidth = Math.round(width / viewportScale)
     const virtualHeight = Math.round(height / viewportScale)
     const composedScale = densityScale * viewportScale
+    const previewTextScale =
+      mode === 'managed'
+        ? clamp(1, 1.04 + (1 - viewportScale) * 0.5, 1.18)
+        : 1
 
     root.style.setProperty('--ax-density-scale', densityScale.toFixed(3))
     root.style.setProperty('--ax-viewport-scale', viewportScale.toFixed(4))
@@ -112,6 +116,7 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
       root.style.removeProperty('--ax-scale')
     }
     root.style.setProperty('--ax-composed-scale', composedScale.toFixed(4))
+    root.style.setProperty('--ax-preview-text-scale', previewTextScale.toFixed(3))
     root.style.setProperty('--ax-virtual-w', `${virtualWidth}px`)
     root.style.setProperty('--ax-virtual-h', `${virtualHeight}px`)
     root.dataset.layout = resolveLayout(virtualWidth, layoutBreakpoints)
