@@ -94,11 +94,16 @@
    .ax-scale-debug__label { opacity: 0.6; }
    .ax-scale-debug__value { opacity: 0.95; text-transform: none; letter-spacing: 0.02em; }
    
-   html[data-resize-state='1'] *,
-   html[data-resize-state='1'] *::before,
-   html[data-resize-state='1'] *::after {
+   html[data-resize-state='1'] .ax-track,
+   html[data-resize-state='1'] .ax-ticker-track,
+   html[data-resize-state='1'] .ax-item[data-level='priority'] .ax-title,
+   html[data-resize-state='1'] .ax-crest::before,
+   html[data-resize-state='1'] .ax-tabs .ax-tab.is-active::before,
+   html[data-resize-state='1'] .ax-tabs .ax-tab.is-active::after,
+   html[data-resize-state='1'] .ax-ticker--pulse::after,
+   html[data-resize-state='1'] .ax-wreath::after,
+   html[data-resize-state='1'] .axcp-layer--scan {
      animation-play-state: paused !important;
-     transition: none !important;
    }
    
    a { color: inherit; text-decoration: none; }
