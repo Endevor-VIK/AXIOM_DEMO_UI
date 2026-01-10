@@ -105,7 +105,7 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
     const composedScale = densityScale * viewportScale
     const previewTextScale =
       mode === 'managed'
-        ? clamp(1, 1.04 + (1 - viewportScale) * 0.5, 1.18)
+        ? clamp(1.05, 1.25 + (1 - viewportScale) * 0.6, 1.45)
         : 1
 
     root.style.setProperty('--ax-density-scale', densityScale.toFixed(3))

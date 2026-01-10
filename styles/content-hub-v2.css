@@ -393,7 +393,7 @@
 .axcp-lead {
   margin: 0 0 var(--space-3);
   color: #e6e9f7;
-  line-height: 1.5;
+  line-height: 1.6;
   font-size: calc(var(--fs-14) * var(--axcp-text-scale));
 }
 
@@ -435,7 +435,7 @@
   padding-left: calc(18px * var(--ax-scale));
   margin: 0;
   color: #cfd4e9;
-  line-height: 1.4;
+  line-height: 1.5;
   font-size: calc(var(--fs-12) * var(--axcp-text-scale));
 }
 
