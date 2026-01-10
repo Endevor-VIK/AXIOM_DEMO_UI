@@ -129,7 +129,16 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
   }
 
   let frame = 0
+  let resizeTimer = 0
+  const markResizing = () => {
+    root.dataset.resizeState = '1'
+    window.clearTimeout(resizeTimer)
+    resizeTimer = window.setTimeout(() => {
+      delete root.dataset.resizeState
+    }, 180)
+  }
   const schedule = () => {
+    markResizing()
     cancelAnimationFrame(frame)
     frame = requestAnimationFrame(update)
   }
@@ -140,6 +149,7 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
 
   return () => {
     cancelAnimationFrame(frame)
+    window.clearTimeout(resizeTimer)
     window.removeEventListener('resize', schedule)
     window.removeEventListener('orientationchange', schedule)
   }
