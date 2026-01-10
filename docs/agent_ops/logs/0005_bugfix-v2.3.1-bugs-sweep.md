@@ -175,6 +175,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-10T18:58:51+03:00 — Commit: `0e1f5c1` — `fix(scale): stabilize canvas repaint on resize` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-10T18:48:08+03:00 — Commit: `a9d7cc9` — `fix(content): scale preview text by layout` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-10T18:24:46+03:00 — Commit: `c0ee5d9` — `fix(content): amplify preview type scale` — Files: `styles/content-hub-v2.css`, `components/ScaleDebug.tsx`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-10T17:52:34+03:00 — Commit: `d1ba59a` — `fix(content): boost preview text density` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
