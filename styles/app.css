@@ -250,6 +250,7 @@
    
    /* Force nav tabs to toxic crimson (override base component colors) */
    .ax-tabs .ax-tab{
+     font-size: var(--fs-16);
      color: #ff2034;
      border-color: transparent;
      background: transparent;
