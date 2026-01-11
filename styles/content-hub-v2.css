@@ -214,6 +214,10 @@ html[data-layout='xl'] .axcp-media {
   aspect-ratio: 4 / 5;
 }
 
+html[data-layout='xl'] .axcp-wrap {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+}
+
 .axcp-media {
   position: relative;
   overflow: hidden;
