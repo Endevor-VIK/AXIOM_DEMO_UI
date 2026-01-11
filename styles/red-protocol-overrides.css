@@ -626,10 +626,13 @@ body.ax-no-scroll {
 
 html[data-layout='xl'] .ax-content-split {
   width: 100%;
-  max-width: 1320px;
-  margin: 0 auto;
-  grid-template-columns: minmax(320px, 380px) minmax(0, 900px);
-  justify-content: center;
+  max-width: none;
+  margin: 0;
+  grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+}
+
+html[data-layout='xl'] .ax-content-column.list {
+  max-width: 380px;
 }
 
 html[data-layout='xl'] .ax-panel-right {
