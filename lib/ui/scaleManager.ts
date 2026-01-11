@@ -107,7 +107,7 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
     const previewTextScale =
       mode === 'managed'
         ? virtualWidth >= layoutBreakpoints.xl
-          ? 1.6
+          ? 1.7
           : virtualWidth >= layoutBreakpoints.lg
             ? 1.52
             : virtualWidth >= layoutBreakpoints.md
