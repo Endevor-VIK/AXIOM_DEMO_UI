@@ -8,7 +8,7 @@
 - Ветка: feature/profile-auth-v2.3.1
 - Задача: Внедрение AgentOps лог-системы (тест на TUNNEL_DEV SPEC)
 - SPEC: docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC.md
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
