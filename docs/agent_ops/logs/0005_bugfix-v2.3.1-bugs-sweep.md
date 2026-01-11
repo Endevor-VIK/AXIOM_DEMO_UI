@@ -21,6 +21,7 @@
 
 ## Step A — Discovery
 - 2026-01-11T19:38:25+03:00 — Действие: Фидбэк CREATOR: скролл вниз → изменение ширины → скролл вверх — мерцания нет, но появляется «пелена» на объекте (скрин). → Результат: OK
+- 2026-01-11T19:35:58+03:00 — Действие: Фидбэк CREATOR: на FS превью и список файлов «сужаются», нужно выровнять их по линии таблицы категорий и слегка увеличить превью без роста плиток списка; заметно разногласие заполнения карточки. → Результат: OK
 - 2026-01-11T19:34:56+03:00 — Действие: Фидбэк CREATOR: увеличение читаемости табов topbar принято, задача закрыта. → Результат: OK
 - 2026-01-11T19:22:51+03:00 — Действие: Запрос CREATOR: увеличить читаемость текста навигации (HOME/ROADMAP/AUDIT/CONTENT/NEWS) на главной панели при Windows 100%/browser 100% (managed, `?debug=1`). → Результат: OK
 - 2026-01-11T19:11:45+03:00 — Действие: Фидбэк CREATOR: стало сильно хуже; требуется откатить scroll‑state и эффекты, тесты идут параллельно. → Результат: OK
@@ -207,6 +208,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-11T19:46:11+03:00 — Commit: `771f96b` — `fix(ui): isolate route wreath backdrop` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T19:34:56+03:00 — Commit: `98c6bbd` — `chore(agent-ops): close topbar nav readability` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T19:22:51+03:00 — Commit: `e66c109` — `fix(ui): enlarge topbar nav labels` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T19:11:45+03:00 — Commit: `bbdb432` — `chore(agent-ops): log rollback of scroll state` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
