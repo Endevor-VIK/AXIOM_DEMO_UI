@@ -20,6 +20,7 @@
 - Следующий этап: BUG‑scale для `/dashboard/content/` (сильные регрессы при смене размера окна, ожидается много правок).
 
 ## Step A — Discovery
+- 2026-01-11T18:42:23+03:00 — Действие: Фидбэк CREATOR: мерцание остаётся при изменении масштаба; элементы пропадают после скролла и возвращаются после перезагрузки или повторного смены масштаба. → Результат: OK
 - 2026-01-10T19:59:14+03:00 — Действие: Фидбэк CREATOR: при скролле внизу есть мерцание, при возврате наверх пропадают элементы на `/dashboard/content/all` (скрин с `?debug=1`). → Результат: OK
 - 2026-01-10T19:52:20+03:00 — Действие: Фидбэк CREATOR: нужно приблизить fullscreen превью к windowed (1444x960 ок). → Результат: OK
 - 2026-01-10T19:45:13+03:00 — Действие: Фидбэк CREATOR: после ресайза и скролла вверх на `/dashboard/content/all` пропали элементы (видно на скрине). → Результат: OK
@@ -52,6 +53,7 @@
 - 2026-01-05T12:42:17+03:00 — Действие: Принял продолжение по `/dashboard/content`; перечитал `AGENTS.md`, лог 0005 и spec масштаба; просмотрел baseline/bug скрины content_01/02/03, отметил регрессы сеток (CategoryStats, фильтры, split list/preview) при windowed/resize; запросил у CREATOR параметры проверки. → Результат: OK
 
 ## Step B — Implementation
+- 2026-01-11T18:42:23+03:00 — Действие: Отключил transform‑scale на canvas при `viewportScale=1` (через `data-viewport-scale`), чтобы убрать лишний compositing‑слой и снизить пропажу элементов. Файлы: `lib/ui/scaleManager.ts`, `styles/app.css`. → Результат: OK
 - 2026-01-10T19:59:14+03:00 — Действие: Перенёс GPU‑форс (translateZ/backface/will-change) на scale‑canvas только на период resize, чтобы снизить риск пропажи контента после скролла. Файл: `styles/app.css`. → Результат: OK
 - 2026-01-10T19:52:20+03:00 — Действие: Для fullscreen (layout=xl) сузил контент‑сетку и уменьшил высоту обложки, чтобы превью совпадало с windowed. Файлы: `styles/red-protocol-overrides.css`, `styles/content-hub-v2.css`. → Результат: OK
 - 2026-01-10T19:45:13+03:00 — Действие: Ограничил паузу анимаций на resize только для тяжёлых эффектов (ticker/active tabs/wreath/scanline), убрал глобальную паузу на все элементы, чтобы избежать исчезающих блоков. Файл: `styles/app.css`. → Результат: OK
@@ -139,6 +141,7 @@
 - 2026-01-04T14:54:05+03:00 — Действие: Расширен `AGENTS.md` для долгосрочных автономных сессий и детальной архитектуры проекта. Файл: `AGENTS.md`. → Результат: OK
 
 ## Step D — QA
+- 2026-01-11T18:42:23+03:00 — Действие: Проверка исчезающих элементов после отключения scale‑transform при viewportScale=1 не выполнена; нужен визуальный чек на `/dashboard/content/all`. → Результат: SKIP
 - 2026-01-10T19:59:14+03:00 — Действие: Проверка пропажи элементов после переноса GPU‑форса на resize не выполнена; нужен визуальный чек на `/dashboard/content/all`. → Результат: SKIP
 - 2026-01-10T19:52:20+03:00 — Действие: Проверка fullscreen после сужения сетки и уменьшения высоты обложки не выполнялась (нужны скрины с `?debug=1`). → Результат: SKIP
 - 2026-01-10T19:45:13+03:00 — Действие: Проверка исчезающих элементов после ограничения resize‑паузы не выполнена; нужен визуальный чек на `/dashboard/content/all`. → Результат: SKIP
@@ -190,6 +193,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-11T18:42:23+03:00 — Commit: `c811007` — `fix(scale): skip canvas transform at 1x` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`
 - 2026-01-10T20:19:35+03:00 — Commit: `87f495b` — `fix(scale): refine preview sizing and resize gpu` — Files: `styles/app.css`, `styles/content-hub-v2.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-10T19:46:32+03:00 — Commit: `e4fc455` — `fix(scale): scope resize animation pause` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-10T19:18:57+03:00 — Commit: `b93e587` — `fix(content): cap preview width on xl` — Files: `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
