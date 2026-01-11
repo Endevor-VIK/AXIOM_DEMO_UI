@@ -670,6 +670,9 @@
     0 18px 48px rgba(255,0,30,.08);
   backdrop-filter: saturate(1.06);
 }
+.ax-card.ax-route-wreath{
+  backdrop-filter: none;
+}
 
 /* Разделитель под «кругами» CONTROL STATUS */
 .ax-hr-blade{
