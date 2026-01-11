@@ -199,6 +199,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-11T19:11:45+03:00 — Commit: `bbdb432` — `chore(agent-ops): log rollback of scroll state` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T18:42:23+03:00 — Commit: `c811007` — `fix(scale): skip canvas transform at 1x` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`
 - 2026-01-10T20:19:35+03:00 — Commit: `87f495b` — `fix(scale): refine preview sizing and resize gpu` — Files: `styles/app.css`, `styles/content-hub-v2.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-10T19:46:32+03:00 — Commit: `e4fc455` — `fix(scale): scope resize animation pause` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
