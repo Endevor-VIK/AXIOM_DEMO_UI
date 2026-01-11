@@ -502,6 +502,8 @@
   padding: clamp(18px, 3vw, 30px);
   margin-bottom: clamp(20px, 4vw, 36px);
   border-radius: var(--r-xl, 24px);
+  isolation: isolate;
+  backdrop-filter: none;
   background: linear-gradient(180deg, rgba(22, 14, 16, 0.86), rgba(10, 7, 9, 0.92));
   border: 1px solid rgba(255, 45, 85, 0.18);
   box-shadow:
