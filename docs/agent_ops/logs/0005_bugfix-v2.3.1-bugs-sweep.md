@@ -60,6 +60,7 @@
 
 ## Step B — Implementation
 - 2026-01-11T19:38:25+03:00 — Действие: Отключил `backdrop-filter` и добавил `isolation` для блока `ax-route-wreath`, чтобы снизить эффект «пелены» после ресайза/скролла. Файл: `styles/app.css`. → Результат: OK
+- 2026-01-11T19:35:58+03:00 — Действие: На layout=xl убрал ограничение ширины/центровку у `.ax-content-split`, чтобы превью растягивалось до краёв контейнера и совпадало с линией таблицы категорий; список оставил прежней ширины. Файл: `styles/red-protocol-overrides.css`. → Результат: OK
 - 2026-01-11T19:22:51+03:00 — Действие: Увеличил размер шрифта навигационных табов topbar для лучшей читаемости (HOME/ROADMAP/AUDIT/CONTENT/NEWS). Файл: `styles/app.css`. → Результат: OK
 - 2026-01-11T19:11:45+03:00 — Действие: Откатил scroll‑state и временное отключение эффектов при скролле/resize из‑за регресса (убрал scroll‑listeners и CSS‑гашение backdrop/filter). Файлы: `lib/ui/scaleManager.ts`, `styles/app.css`. → Результат: OK
 - 2026-01-11T18:58:12+03:00 — Действие: Добавил `data-scroll-state` и временно отключаю тяжёлые эффекты (backdrop/filter/scanline) во время скролла/resize, чтобы снизить мерцание и «тёмную пелену». Файлы: `lib/ui/scaleManager.ts`, `styles/app.css`. → Результат: OK
@@ -152,6 +153,7 @@
 
 ## Step D — QA
 - 2026-01-11T19:38:25+03:00 — Действие: Проверка «пелены» после отключения backdrop-filter на `ax-route-wreath` не выполнена (CREATOR тестирует). → Результат: SKIP
+- 2026-01-11T19:35:58+03:00 — Действие: Проверка выравнивания превью и списка по линии таблицы категорий на FS не выполнена; нужны скрины с `?debug=1`. → Результат: SKIP
 - 2026-01-11T19:34:56+03:00 — Действие: Визуальная проверка читаемости табов topbar по фидбэку CREATOR. → Результат: PASS
 - 2026-01-11T19:22:51+03:00 — Действие: Проверка читаемости навигации topbar после увеличения шрифта не выполнена; нужен визуальный чек на `/dashboard` с `?scale=managed&debug=1`. → Результат: SKIP
 - 2026-01-11T19:11:45+03:00 — Действие: Проверка после отката scroll‑state не выполнена (CREATOR тестирует). → Результат: SKIP
@@ -208,6 +210,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-11T19:58:26+03:00 — Commit: `9459bfc` — `fix(content): stretch fs preview panel` — Files: `styles/red-protocol-overrides.css`
 - 2026-01-11T19:46:11+03:00 — Commit: `771f96b` — `fix(ui): isolate route wreath backdrop` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T19:34:56+03:00 — Commit: `98c6bbd` — `chore(agent-ops): close topbar nav readability` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T19:22:51+03:00 — Commit: `e66c109` — `fix(ui): enlarge topbar nav labels` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
