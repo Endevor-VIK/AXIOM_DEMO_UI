@@ -204,6 +204,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-11T19:34:56+03:00 — Commit: `98c6bbd` — `chore(agent-ops): close topbar nav readability` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T19:22:51+03:00 — Commit: `e66c109` — `fix(ui): enlarge topbar nav labels` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T19:11:45+03:00 — Commit: `bbdb432` — `chore(agent-ops): log rollback of scroll state` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T18:42:23+03:00 — Commit: `c811007` — `fix(scale): skip canvas transform at 1x` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`
