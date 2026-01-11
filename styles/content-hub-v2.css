@@ -218,6 +218,19 @@ html[data-layout='xl'] .axcp-wrap {
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
 }
 
+html[data-layout='xl'] .axcp-grid {
+  grid-template-columns: 1fr;
+}
+
+html[data-layout='xl'] .axcp-foot {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+html[data-layout='xl'] .axcp-actions {
+  width: 100%;
+}
+
 .axcp-media {
   position: relative;
   overflow: hidden;
