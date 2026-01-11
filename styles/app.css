@@ -62,16 +62,21 @@
 
    .ax-scale-viewport { min-height: 100dvh; width: 100%; display: flex; justify-content: center; align-items: flex-start; background: var(--ax-bg); }
    .ax-scale-canvas { width: 100%; min-height: 100dvh; transform-origin: top left; background: var(--ax-bg); }
-   html[data-scale-mode='managed'] .ax-scale-canvas {
+   html[data-scale-mode='managed'][data-viewport-scale='scaled'] .ax-scale-canvas {
      transform-origin: top center;
      width: calc(100% / var(--ax-viewport-scale));
      min-height: calc(100dvh / var(--ax-viewport-scale));
      transform: scale(var(--ax-viewport-scale));
    }
-   html[data-scale-mode='managed'][data-resize-state='1'] .ax-scale-canvas {
+   html[data-scale-mode='managed'][data-viewport-scale='scaled'][data-resize-state='1'] .ax-scale-canvas {
      transform: scale(var(--ax-viewport-scale)) translateZ(0);
      backface-visibility: hidden;
      will-change: transform;
+   }
+   html[data-scale-mode='managed'][data-viewport-scale='1'] .ax-scale-canvas {
+     transform: none;
+     width: 100%;
+     min-height: 100dvh;
    }
    .ax-scale-debug {
      position: fixed;

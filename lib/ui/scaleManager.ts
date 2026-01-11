@@ -100,6 +100,7 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
     const viewportScale = allowShrink
       ? clamp(minViewportScale, cssScale, maxViewportScale)
       : 1
+    const viewportScaleTag = Math.abs(viewportScale - 1) < 0.0005 ? '1' : 'scaled'
     const virtualWidth = Math.round(width / viewportScale)
     const virtualHeight = Math.round(height / viewportScale)
     const composedScale = densityScale * viewportScale
@@ -116,6 +117,7 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
 
     root.style.setProperty('--ax-density-scale', densityScale.toFixed(3))
     root.style.setProperty('--ax-viewport-scale', viewportScale.toFixed(4))
+    root.dataset.viewportScale = viewportScaleTag
     if (mode === 'managed') {
       root.style.setProperty('--ax-scale', densityScale.toFixed(4))
     } else {
