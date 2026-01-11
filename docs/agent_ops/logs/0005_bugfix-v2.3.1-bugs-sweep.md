@@ -212,6 +212,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-11T20:11:09+03:00 — Commit: `82e08f4` — `fix(ui): lock route wreath backdrop override` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T19:58:26+03:00 — Commit: `9459bfc` — `fix(content): stretch fs preview panel` — Files: `styles/red-protocol-overrides.css`
 - 2026-01-11T19:46:11+03:00 — Commit: `771f96b` — `fix(ui): isolate route wreath backdrop` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T19:34:56+03:00 — Commit: `98c6bbd` — `chore(agent-ops): close topbar nav readability` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
