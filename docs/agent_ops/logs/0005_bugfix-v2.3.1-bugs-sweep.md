@@ -20,6 +20,29 @@
 - Следующий этап: BUG‑scale для `/dashboard/content/` (сильные регрессы при смене размера окна, ожидается много правок).
 
 ## Step A — Discovery
+- 2026-01-11T22:06:00+03:00 — Действие: Фидбэк CREATOR: превью всё ещё пустое на FS; нужно добиться заполнения текстом как на малом разрешении. → Результат: OK
+- 2026-01-11T21:14:35+03:00 — Действие: Фидбэк CREATOR: прислан FS‑скрин, нужно дальше уплотнить заполнение превью. → Результат: OK
+- 2026-01-11T20:31:28+03:00 — Действие: Фидбэк CREATOR: выбрать самый эффективный вариант заполнения превью на FS; на 1513x960 карточка корректна. → Результат: OK
+- 2026-01-11T19:38:25+03:00 — Действие: Фидбэк CREATOR: скролл вниз → изменение ширины → скролл вверх — мерцания нет, но появляется «пелена» на объекте (скрин). → Результат: OK
+- 2026-01-11T19:35:58+03:00 — Действие: Фидбэк CREATOR: на FS превью и список файлов «сужаются», нужно выровнять их по линии таблицы категорий и слегка увеличить превью без роста плиток списка; заметно разногласие заполнения карточки. → Результат: OK
+- 2026-01-11T19:34:56+03:00 — Действие: Фидбэк CREATOR: увеличение читаемости табов topbar принято, задача закрыта. → Результат: OK
+- 2026-01-11T19:22:51+03:00 — Действие: Запрос CREATOR: увеличить читаемость текста навигации (HOME/ROADMAP/AUDIT/CONTENT/NEWS) на главной панели при Windows 100%/browser 100% (managed, `?debug=1`). → Результат: OK
+- 2026-01-11T19:11:45+03:00 — Действие: Фидбэк CREATOR: стало сильно хуже; требуется откатить scroll‑state и эффекты, тесты идут параллельно. → Результат: OK
+- 2026-01-11T18:58:12+03:00 — Действие: Фидбэк CREATOR: после смены масштаба и скролла вверх объект закрыт «тёмной пеленой»; мерцание было при скролле вниз/вверх, после перезагрузки исчезло. → Результат: OK
+- 2026-01-11T18:42:23+03:00 — Действие: Фидбэк CREATOR: мерцание остаётся при изменении масштаба; элементы пропадают после скролла и возвращаются после перезагрузки или повторного смены масштаба. → Результат: OK
+- 2026-01-10T19:59:14+03:00 — Действие: Фидбэк CREATOR: при скролле внизу есть мерцание, при возврате наверх пропадают элементы на `/dashboard/content/all` (скрин с `?debug=1`). → Результат: OK
+- 2026-01-10T19:52:20+03:00 — Действие: Фидбэк CREATOR: нужно приблизить fullscreen превью к windowed (1444x960 ок). → Результат: OK
+- 2026-01-10T19:45:13+03:00 — Действие: Фидбэк CREATOR: после ресайза и скролла вверх на `/dashboard/content/all` пропали элементы (видно на скрине). → Результат: OK
+- 2026-01-10T19:19:03+03:00 — Действие: Фидбэк CREATOR: мерцание осталось, чаще на страницах с анимациями/сложным дизайном (home content), в штатном режиме почти не проявляется. → Результат: OK
+- 2026-01-10T19:08:58+03:00 — Действие: Фидбэк CREATOR: на fullscreen/больших масштабах превью слишком пустое; на 1444x960 карточка корректна. → Результат: OK
+- 2026-01-10T18:55:26+03:00 — Действие: Фидбэк CREATOR: сайт моргает белым/мигает при ресайзе окна; требуется найти причину и устранить. → Результат: OK
+- 2026-01-10T18:43:27+03:00 — Действие: CREATOR передал скрины разных масштабов; задача — подогнать превью под референс на разных размерах окна. → Результат: OK
+- 2026-01-10T18:22:51+03:00 — Действие: Фидбэк CREATOR: визуальных изменений не видно; возможно трансформация мешает применению правок в превью. → Результат: OK
+- 2026-01-10T17:49:19+03:00 — Действие: Фидбэк CREATOR: превью всё ещё не совпадает с референсом (Windows scale 100%, browser 100%). → Результат: OK
+- 2026-01-10T16:43:47+03:00 — Действие: Фидбэк CREATOR: в превью‑карточке много пустого места; нужен адаптивный масштаб шрифта под fullscreen/windowed и разные масштабы окна. → Результат: OK
+- 2026-01-10T15:50:31+03:00 — Действие: Получен фидбэк CREATOR: улучшить превью в `/dashboard/content` по референсу и текущим скринам (managed, `?debug=1`), обеспечить корректное отображение карточки на fullscreen и других разрешениях. → Результат: OK
+- 2026-01-07T19:10:45+03:00 — Действие: Фидбэк CREATOR: windowed‑режим всё ещё «обрезает» UI (managed, `?debug=1`), проблема воспроизводится по сайту. → Результат: OK
+- 2026-01-07T18:37:10+03:00 — Действие: Получены скрины windowed vs fullscreen (managed, `?debug=1`); подтверждено, что проблема «обрезанного» окна проявляется на всём сайте. Гипотеза: блоки с `100dvh` внутри canvas визуально уменьшаются при `viewportScale < 1`. → Результат: OK
 - 2025-12-20T20:15:29+03:00 — Действие: Старт сессии для подготовки SPEC и чеклистов багфиксов v2.3.1; подтвердил контекст репо и ветку-назначение. → Результат: OK
 - 2025-12-20T20:25:40+03:00 — Действие: Выбран баг `BUG-003_reader-overlay-menu-scroll` как первый кандидат; собрал точки входа: `src/features/content/pages/ReaderPage.tsx` (рендер меню/overlay + портал), `styles/content-hub-v2.css` (позиционирование .axr-menu/.axr-overlay). → Результат: OK
 - 2025-12-29T23:31:01+03:00 — Действие: Новый агент принял задачу; сверил текущий контекст 0005, незакоммиченные правки (scale manager/app.css/spec), просмотрел скриншоты 12.29 и подтвердил регресс managed‑масштаба (canvas визуально уходит влево). → Результат: OK
@@ -36,8 +59,43 @@
 - 2026-01-04T18:30:04+03:00 — Действие: Получен фидбэк CREATOR: пульсация есть, но нужна только по hover. → Результат: OK
 - 2026-01-04T18:30:04+03:00 — Действие: Получен фидбэк CREATOR: баги вкладки `/dashboard` закрыты; требуется дизайн/функционал/контент доработка на fullscreen. → Результат: OK
 - 2026-01-04T18:30:04+03:00 — Действие: Зафиксирован следующий этап — масштаб/адаптация `/dashboard/content/` (сильные регрессы при ресайзе окна). → Результат: OK
+- 2026-01-05T12:42:17+03:00 — Действие: Принял продолжение по `/dashboard/content`; перечитал `AGENTS.md`, лог 0005 и spec масштаба; просмотрел baseline/bug скрины content_01/02/03, отметил регрессы сеток (CategoryStats, фильтры, split list/preview) при windowed/resize; запросил у CREATOR параметры проверки. → Результат: OK
 
 ## Step B — Implementation
+- 2026-01-11T22:06:00+03:00 — Действие: Для layout=xl сделал стек колонок в превью: markers/signature в один столбец и footer в колонку, чтобы текст заполнял карточку как на малом разрешении. Файл: `styles/content-hub-v2.css`. → Результат: OK
+- 2026-01-11T21:14:35+03:00 — Действие: Увеличил масштаб текста превью на layout=xl, чтобы плотнее заполнить карточку на FS. Файл: `lib/ui/scaleManager.ts`. → Результат: OK
+- 2026-01-11T20:31:28+03:00 — Действие: Для layout=xl сузил правую колонку превью (1.05fr/0.95fr), чтобы добавить переносы и заполнить карточку без увеличения списка. Файл: `styles/content-hub-v2.css`. → Результат: OK
+- 2026-01-11T20:04:56+03:00 — Действие: Усилил оверрайд для `ax-route-wreath`, чтобы `backdrop-filter` не перезаписывался правилом `.ax-card`. Файл: `styles/app.css`. → Результат: OK
+- 2026-01-11T19:38:25+03:00 — Действие: Отключил `backdrop-filter` и добавил `isolation` для блока `ax-route-wreath`, чтобы снизить эффект «пелены» после ресайза/скролла. Файл: `styles/app.css`. → Результат: OK
+- 2026-01-11T19:35:58+03:00 — Действие: На layout=xl убрал ограничение ширины/центровку у `.ax-content-split`, чтобы превью растягивалось до краёв контейнера и совпадало с линией таблицы категорий; список оставил прежней ширины. Файл: `styles/red-protocol-overrides.css`. → Результат: OK
+- 2026-01-11T19:22:51+03:00 — Действие: Увеличил размер шрифта навигационных табов topbar для лучшей читаемости (HOME/ROADMAP/AUDIT/CONTENT/NEWS). Файл: `styles/app.css`. → Результат: OK
+- 2026-01-11T19:11:45+03:00 — Действие: Откатил scroll‑state и временное отключение эффектов при скролле/resize из‑за регресса (убрал scroll‑listeners и CSS‑гашение backdrop/filter). Файлы: `lib/ui/scaleManager.ts`, `styles/app.css`. → Результат: OK
+- 2026-01-11T18:58:12+03:00 — Действие: Добавил `data-scroll-state` и временно отключаю тяжёлые эффекты (backdrop/filter/scanline) во время скролла/resize, чтобы снизить мерцание и «тёмную пелену». Файлы: `lib/ui/scaleManager.ts`, `styles/app.css`. → Результат: OK
+- 2026-01-11T18:42:23+03:00 — Действие: Отключил transform‑scale на canvas при `viewportScale=1` (через `data-viewport-scale`), чтобы убрать лишний compositing‑слой и снизить пропажу элементов. Файлы: `lib/ui/scaleManager.ts`, `styles/app.css`. → Результат: OK
+- 2026-01-10T19:59:14+03:00 — Действие: Перенёс GPU‑форс (translateZ/backface/will-change) на scale‑canvas только на период resize, чтобы снизить риск пропажи контента после скролла. Файл: `styles/app.css`. → Результат: OK
+- 2026-01-10T19:52:20+03:00 — Действие: Для fullscreen (layout=xl) сузил контент‑сетку и уменьшил высоту обложки, чтобы превью совпадало с windowed. Файлы: `styles/red-protocol-overrides.css`, `styles/content-hub-v2.css`. → Результат: OK
+- 2026-01-10T19:45:13+03:00 — Действие: Ограничил паузу анимаций на resize только для тяжёлых эффектов (ticker/active tabs/wreath/scanline), убрал глобальную паузу на все элементы, чтобы избежать исчезающих блоков. Файл: `styles/app.css`. → Результат: OK
+- 2026-01-10T19:19:03+03:00 — Действие: Добавил флаг `data-resize-state` и паузу анимаций/transition во время resize, чтобы снизить мерцание на тяжёлых экранах. Файлы: `lib/ui/scaleManager.ts`, `styles/app.css`. → Результат: OK
+- 2026-01-10T19:08:58+03:00 — Действие: Ограничил ширину preview‑колонки на layout=xl и центрировал сетку, чтобы снизить высоту карточки и пустоты на fullscreen. Файл: `styles/red-protocol-overrides.css`. → Результат: OK
+- 2026-01-10T18:56:40+03:00 — Действие: Добавил фон и GPU-стабилизацию canvas в managed (background на ax-scale-canvas, translateZ(0), backface-visibility, will-change), чтобы снизить мерцание при ресайзе. Файл: `styles/app.css`. → Результат: OK
+- 2026-01-10T18:43:27+03:00 — Действие: Привязал масштаб типографики превью к layout‑брейкпоинтам (xl/lg/md/sm) и убрал авто‑расталкивание футера, чтобы уменьшить пустоты на разных ширинах. Файлы: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`. → Результат: OK
+- 2026-01-10T18:22:51+03:00 — Действие: Усилил типографику и плотность списка в превью, добавил fallback‑scale в CSS; расширил Scale Debug значением `--ax-preview-text-scale` для верификации. Файлы: `styles/content-hub-v2.css`, `components/ScaleDebug.tsx`. → Результат: OK
+- 2026-01-10T17:49:19+03:00 — Действие: Усилил масштаб типографики превью в managed‑режиме и увеличил межстрочные интервалы для lead/списков, чтобы плотнее заполнить карточку под референс. Файлы: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`. → Результат: OK
+- 2026-01-10T16:43:47+03:00 — Действие: Добавил системную переменную `--ax-preview-text-scale` (managed‑режим) и применил к типографике превью‑карточки, чтобы масштаб текста адаптировался под окно. Файлы: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`. → Результат: OK
+- 2026-01-10T15:50:31+03:00 — Действие: Улучшил адаптивность превью‑карточки: масштабировал min-height медиа по `--ax-scale`, перевёл фиксированные отступы/зазоры на токены, сделал правую колонку flex и закрепил футер снизу для более ровного заполнения высоты. Файл: `styles/content-hub-v2.css`. → Результат: OK
+- 2026-01-07T19:10:45+03:00 — Действие: Ослабил условие shrink для managed: масштабирование включается только если и ширина, и высота окна <70% базы (убираем лишний shrink в «высоких» окнах). Файл: `lib/ui/scaleManager.ts`. → Результат: OK
+- 2026-01-07T18:37:10+03:00 — Действие: Компенсировал высоту full‑height контейнеров в managed‑режиме: `ax-shell` и `ax-login` теперь используют `calc(100dvh / --ax-viewport-scale)`. Файл: `styles/app.css`. → Результат: OK
+- 2026-01-07T17:19:22+03:00 — Действие: Пересчитал managed viewport‑scale: масштабирование включается только при окнах <70% от базы, иначе `viewportScale=1` (расчёт по CSS‑viewport, без DPR). Файл: `lib/ui/scaleManager.ts`. → Результат: OK
+- 2026-01-07T17:19:22+03:00 — Действие: Обновил условия съёмки (перешли на Windows scale 100%/browser zoom 100%, прежние параметры помечены отдельно). Файл: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
+- 2026-01-05T18:38:54+03:00 — Действие: Для managed масштаба ввёл гибридный расчет: DPR используется только когда окно соответствует базовому 1920x1080, иначе масштаб считается по CSS‑viewport; это должно уменьшить «крупные» элементы в with‑chrome. Файл: `lib/ui/scaleManager.ts`. → Результат: OK
+- 2026-01-05T18:06:54+03:00 — Действие: В managed‑режиме компенсировал высоту страницы по `--ax-viewport-scale`, чтобы нижний status‑footer не «уезжал» при скролле windowed. Файл: `styles/red-protocol-overrides.css`. → Результат: OK
+- 2026-01-05T17:55:51+03:00 — Действие: Учёл `devicePixelRatio` в расчёте managed‑viewport (масштаб от физического разрешения), чтобы при Windows 125% UI не «сжимался». Файл: `lib/ui/scaleManager.ts`. → Результат: OK
+- 2026-01-05T17:08:12+03:00 — Действие: Перевёл дефолт масштаба на managed (legacy теперь через `?scale=legacy`), расширил команды и пути зависимости для масштабирования/overlay. Файлы: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`. → Результат: OK
+- 2026-01-05T16:33:17+03:00 — Действие: Добавил динамическую компенсацию legacy‑масштаба через `--ax-viewport-scale`, чтобы windowed не «сжимал» контент; базовый `--ax-ui-scale` вынесен в `--ax-ui-scale-base`. Файл: `styles/app.css`. → Результат: OK
+- 2026-01-05T15:57:09+03:00 — Действие: Расширил превью до ширины панели (убрал max-width), увеличил высоту медиа, подтянул типографику хедера; добавил декоративные линии под заголовками “Ключевые маркеры/Сигнатура”, усилил цвет текста списков, убрал LANG из meta‑строки. Файлы: `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`. → Результат: OK
+- 2026-01-05T14:59:03+03:00 — Действие: Обновил превью контент‑хаба: маппинг статуса/класса из manifest (meta.fileStatus + subCategory), добавил ZONE в мета‑строку; снизил плотность/паддинги/шрифты в `ax-content-preview` под токены. Файлы: `app/routes/dashboard/content/ContentCategoryView.tsx`, `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`. → Результат: OK
+- 2026-01-05T14:31:50+03:00 — Действие: Уточнил анализ скринов 01.05 (добавлен ref_section и перечень баг‑элементов по каждому размеру) в `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
+- 2026-01-05T13:37:12+03:00 — Действие: Проанализировал скриншоты 01.05 по `/dashboard/content` и добавил наблюдения в README скринов. Файл: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`. → Результат: OK
 - 2025-12-20T20:17:20+03:00 — Действие: Создал итерационный SPEC `docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md` (цели, процесс, чеклист приоритетных багов, правила коммитов/QA). → Результат: OK
 - 2025-12-20T20:28:40+03:00 — Действие: Обновил BUG-003 статус на IN_PROGRESS и собрал привязанные файлы для фикса (Reader: `src/features/content/pages/ReaderPage.tsx`; стили меню/overlay: `styles/content-hub-v2.css`; баг-карточка `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`). Сформировал дорожную карту: fixed overlay/menu через портал, scroll-lock на body (fixed + top=-scrollY), z-index и safe-top, QA в разных позициях скролла. → Результат: OK
 - 2025-12-20T20:34:30+03:00 — Действие: Реализовал фикс BUG-003: перевёл overlay/menu на `position: fixed` с `100dvh`, добавил оболочку `.axr-menu-shell` (fixed, pointer-events:none), повысил z-index; добавил scroll-lock в ReaderPage (body fixed с восстановлением scrollY). Файлы: `styles/content-hub-v2.css`, `src/features/content/pages/ReaderPage.tsx`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md`. → Результат: OK
@@ -101,6 +159,38 @@
 - 2026-01-04T14:54:05+03:00 — Действие: Расширен `AGENTS.md` для долгосрочных автономных сессий и детальной архитектуры проекта. Файл: `AGENTS.md`. → Результат: OK
 
 ## Step D — QA
+- 2026-01-11T22:06:00+03:00 — Действие: Проверка заполнения превью на FS после перестроения блоков не выполнена; нужны скрины с `?debug=1`. → Результат: SKIP
+- 2026-01-11T21:14:35+03:00 — Действие: Проверка заполнения превью на FS после увеличения xl‑масштаба текста не выполнена; нужен скрин с `?debug=1`. → Результат: SKIP
+- 2026-01-11T20:31:28+03:00 — Действие: Проверка заполнения превью на FS после изменения колонок не выполнена; нужны скрины с `?debug=1`. → Результат: SKIP
+- 2026-01-11T20:04:56+03:00 — Действие: Проверка «пелены» после усиления оверрайда `backdrop-filter` не выполнена; нужен визуальный чек на `/dashboard/content/all` с `?scale=managed&debug=1`. → Результат: SKIP
+- 2026-01-11T19:38:25+03:00 — Действие: Проверка «пелены» после отключения backdrop-filter на `ax-route-wreath` не выполнена (CREATOR тестирует). → Результат: SKIP
+- 2026-01-11T19:35:58+03:00 — Действие: Проверка выравнивания превью и списка по линии таблицы категорий на FS не выполнена; нужны скрины с `?debug=1`. → Результат: SKIP
+- 2026-01-11T19:34:56+03:00 — Действие: Визуальная проверка читаемости табов topbar по фидбэку CREATOR. → Результат: PASS
+- 2026-01-11T19:22:51+03:00 — Действие: Проверка читаемости навигации topbar после увеличения шрифта не выполнена; нужен визуальный чек на `/dashboard` с `?scale=managed&debug=1`. → Результат: SKIP
+- 2026-01-11T19:11:45+03:00 — Действие: Проверка после отката scroll‑state не выполнена (CREATOR тестирует). → Результат: SKIP
+- 2026-01-11T18:58:12+03:00 — Действие: Проверка мерцания/«пелены» после введения scroll‑state не выполнена; нужен визуальный чек на `/dashboard/content/all`. → Результат: SKIP
+- 2026-01-11T18:42:23+03:00 — Действие: Проверка исчезающих элементов после отключения scale‑transform при viewportScale=1 не выполнена; нужен визуальный чек на `/dashboard/content/all`. → Результат: SKIP
+- 2026-01-10T19:59:14+03:00 — Действие: Проверка пропажи элементов после переноса GPU‑форса на resize не выполнена; нужен визуальный чек на `/dashboard/content/all`. → Результат: SKIP
+- 2026-01-10T19:52:20+03:00 — Действие: Проверка fullscreen после сужения сетки и уменьшения высоты обложки не выполнялась (нужны скрины с `?debug=1`). → Результат: SKIP
+- 2026-01-10T19:45:13+03:00 — Действие: Проверка исчезающих элементов после ограничения resize‑паузы не выполнена; нужен визуальный чек на `/dashboard/content/all`. → Результат: SKIP
+- 2026-01-10T19:19:03+03:00 — Действие: Проверка мерцания после паузы анимаций на resize не выполнена; нужен визуальный чек managed/legacy на `/dashboard/content/*` с `?debug=1`. → Результат: SKIP
+- 2026-01-10T19:08:58+03:00 — Действие: Проверка fullscreen после ограничения ширины preview‑колонки не выполнялась (нужны новые скрины с `?debug=1`). → Результат: SKIP
+- 2026-01-10T18:58:19+03:00 — Действие: Ручная проверка мерцания при ресайзе не выполнена; нужен визуальный чек managed/legacy с `?debug=1`. → Результат: SKIP
+- 2026-01-10T18:43:27+03:00 — Действие: Проверка превью на разных масштабах после привязки к layout не выполнялась (нужны новые скрины с `?debug=1`). → Результат: SKIP
+- 2026-01-10T18:22:51+03:00 — Действие: Проверка превью и debug‑значений после усиления типографики не выполнялась (нужны скрины с `?debug=1`). → Результат: SKIP
+- 2026-01-10T17:49:19+03:00 — Действие: Проверка превью на fullscreen/windowed после корректировки масштаба не выполнялась (нужны скрины с `?debug=1`). → Результат: SKIP
+- 2026-01-10T16:43:47+03:00 — Действие: Проверка превью на fullscreen/windowed после масштабирования типографики не выполнялась (нужны скрины с `?debug=1`). → Результат: SKIP
+- 2026-01-10T15:50:31+03:00 — Действие: Проверка превью на fullscreen/windowed после правок не выполнялась (нужны скрины с `?debug=1`). → Результат: SKIP
+- 2026-01-07T19:17:50+03:00 — Действие: По фидбэку CREATOR — windowed vs fullscreen в managed совпадают, «обрезание» устранено. → Результат: PASS
+- 2026-01-07T19:10:45+03:00 — Действие: Проверка windowed/FS после смягчения shrink‑условия не выполнялась (нужен повторный скрин с `?debug=1`). → Результат: SKIP
+- 2026-01-07T18:37:10+03:00 — Действие: Проверка windowed/FS после компенсации высоты в managed не выполнялась (нужны скрины с `?debug=1`). → Результат: SKIP
+- 2026-01-07T17:19:22+03:00 — Действие: Проверка порогового viewport‑scale (>=70% базы без масштабирования) не выполнялась (нужны скрины with‑chrome и windowed с `?debug=1`). → Результат: SKIP
+- 2026-01-05T18:38:54+03:00 — Действие: Проверка with‑chrome/FS после гибридного расчёта viewport‑scale не выполнялась (нужны скрины с `?debug=1`). → Результат: SKIP
+- 2026-01-05T18:06:54+03:00 — Действие: Проверка status‑footer в windowed после компенсации высоты не выполнялась (нужен скрин с `?debug=1`). → Результат: SKIP
+- 2026-01-05T17:55:51+03:00 — Действие: Проверка managed‑масштаба после учета DPR не выполнялась (нужны FS‑скрины всех вкладок с `?debug=1`). → Результат: SKIP
+- 2026-01-05T17:08:12+03:00 — Действие: Проверка дефолтного managed и legacy‑переключения не выполнялась (нужны скрины с `?debug=1` и `?scale=legacy&debug=1`). → Результат: SKIP
+- 2026-01-05T16:33:17+03:00 — Действие: Проверка windowed/FS после правки legacy‑масштаба не выполнялась (нужны новые скрины с `?debug=1`). → Результат: SKIP
+- 2026-01-05T14:59:03+03:00 — Действие: Ручная проверка `/dashboard/content` после обновления превью не выполнена (нужны свежие скрины с `?debug=1`). → Результат: SKIP
 - 2025-12-20T20:44:20+03:00 — Действие: Ручная проверка BUG-003 в UI (локал): меню всё ещё открывается от верхней точки, фон полностью залочен (нет скролла страницы при открытом меню). Подозрение: жёсткий scroll-lock `body { position: fixed }` + меню фиксировано к top header; различие между scroll документа и вложенного HTML контента. → Результат: FAIL (требуется доработка)
 - 2025-12-20T20:55:00+03:00 — Действие: Вторая проверка после снятия scroll-lock: скролл доступен, но меню остаётся привязано к верхней части и перекрывает header; overlay не отделён от шапки. → Результат: FAIL
 - 2025-12-22T18:01:42+03:00 — Действие: Проверка текущей сборки: меню открывается из любой точки, header кликается, overlay корректен; проблема осталась — при открытом меню не скроллится основной HTML-контент под overlay. → Результат: FAIL (нужен фикс прокрутки при active menu)
@@ -131,6 +221,35 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-11T22:16:15+03:00 — Commit: `9d54545` — `fix(content): stack xl preview sections` — Files: `styles/content-hub-v2.css`
+- 2026-01-11T21:26:14+03:00 — Commit: `c2880a9` — `fix(content): boost xl preview text scale` — Files: `lib/ui/scaleManager.ts`
+- 2026-01-11T20:45:32+03:00 — Commit: `f7cecf3` — `fix(content): rebalance xl preview columns` — Files: `styles/content-hub-v2.css`
+- 2026-01-11T20:11:09+03:00 — Commit: `82e08f4` — `fix(ui): lock route wreath backdrop override` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-11T19:58:26+03:00 — Commit: `9459bfc` — `fix(content): stretch fs preview panel` — Files: `styles/red-protocol-overrides.css`
+- 2026-01-11T19:46:11+03:00 — Commit: `771f96b` — `fix(ui): isolate route wreath backdrop` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-11T19:34:56+03:00 — Commit: `98c6bbd` — `chore(agent-ops): close topbar nav readability` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-11T19:22:51+03:00 — Commit: `e66c109` — `fix(ui): enlarge topbar nav labels` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-11T19:11:45+03:00 — Commit: `bbdb432` — `chore(agent-ops): log rollback of scroll state` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-11T18:42:23+03:00 — Commit: `c811007` — `fix(scale): skip canvas transform at 1x` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`
+- 2026-01-10T20:19:35+03:00 — Commit: `87f495b` — `fix(scale): refine preview sizing and resize gpu` — Files: `styles/app.css`, `styles/content-hub-v2.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T19:46:32+03:00 — Commit: `e4fc455` — `fix(scale): scope resize animation pause` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T19:18:57+03:00 — Commit: `b93e587` — `fix(content): cap preview width on xl` — Files: `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T19:22:27+03:00 — Commit: `08c3679` — `fix(scale): pause animations during resize` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T18:58:51+03:00 — Commit: `0e1f5c1` — `fix(scale): stabilize canvas repaint on resize` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T18:48:08+03:00 — Commit: `a9d7cc9` — `fix(content): scale preview text by layout` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T18:24:46+03:00 — Commit: `c0ee5d9` — `fix(content): amplify preview type scale` — Files: `styles/content-hub-v2.css`, `components/ScaleDebug.tsx`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T17:52:34+03:00 — Commit: `d1ba59a` — `fix(content): boost preview text density` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T16:45:12+03:00 — Commit: `ac9ce52` — `fix(content): adapt preview typography scale` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T15:52:30+03:00 — Commit: `a6a5cad` — `fix(content): balance preview card layout` — Files: `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-07T19:12:04+03:00 — Commit: `8df3ca6` — `fix(scale): relax managed shrink gating` — Files: `lib/ui/scaleManager.ts`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-07T18:39:52+03:00 — Commit: `858e845` — `fix(scale): stabilize full-height in managed` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-07T17:24:12+03:00 — Commit: `fc58db0` — `fix(scale): gate managed viewport shrink` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-05T18:19:01+03:00 — Commit: `b9da860` — `fix(scale): align managed viewport height` — Files: `lib/ui/scaleManager.ts`, `styles/red-protocol-overrides.css`
+- 2026-01-05T17:12:53+03:00 — Commit: `e7eb2cb` — `fix(scale): default to managed and expand commands` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`
+- 2026-01-05T16:39:02+03:00 — Commit: `6978bc5` — `fix(scale): soften legacy windowed shrink` — Files: `styles/app.css`
+- 2026-01-05T16:00:49+03:00 — Commit: `797ac92` — `fix(content): expand preview layout and accents` — Files: `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`
+- 2026-01-05T15:06:59+03:00 — Commit: `4e249b5` — `fix(content): align preview data and density` — Files: `app/routes/dashboard/content/ContentCategoryView.tsx`, `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-05T14:40:29+03:00 — Commit: `02afc92` — `docs(assets): add 01.05 content hub screenshots` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.05/*.png`
 - 2026-01-04T19:22:30+03:00 — Commit: `f007200` — `fix(types): resolve typecheck errors` — Files: `components/content/CategoryStats.tsx`, `components/counters/CounterWreath.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`
 - 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-20T21:25:30+03:00 — Commit: `a04d710` — `chore(reader-menu): refactor layer component and fix ts error (BUG-003 wip)` — Files: `src/features/content/components/ReaderMenuLayer.tsx`, `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`

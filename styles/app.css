@@ -23,12 +23,20 @@
 
    html, body { margin: 0; padding: 0; min-height: 100dvh; background: var(--ax-bg); color: var(--ax-text); }
    :root {
-     --ax-ui-scale: 0.8;
+     --ax-ui-scale-base: 0.8;
+     --ax-ui-scale: var(--ax-ui-scale-base);
      --ax-density-scale: 0.648;
      --ax-viewport-scale: 1;
      --ax-composed-scale: calc(var(--ax-density-scale) * var(--ax-viewport-scale));
      --ax-virtual-w: 1920px;
      --ax-virtual-h: 1080px;
+   }
+   html[data-scale-mode='legacy'] {
+     --ax-ui-scale: clamp(
+       var(--ax-ui-scale-base),
+       calc(var(--ax-ui-scale-base) / var(--ax-viewport-scale, 1)),
+       1
+     );
    }
    @supports (zoom: 1) {
      html[data-scale-mode='legacy'] { zoom: var(--ax-ui-scale); }
@@ -53,12 +61,22 @@
    #root { min-height: 100dvh; display: contents; }
 
    .ax-scale-viewport { min-height: 100dvh; width: 100%; display: flex; justify-content: center; align-items: flex-start; background: var(--ax-bg); }
-   .ax-scale-canvas { width: 100%; min-height: 100dvh; transform-origin: top left; }
-   html[data-scale-mode='managed'] .ax-scale-canvas {
+   .ax-scale-canvas { width: 100%; min-height: 100dvh; transform-origin: top left; background: var(--ax-bg); }
+   html[data-scale-mode='managed'][data-viewport-scale='scaled'] .ax-scale-canvas {
      transform-origin: top center;
      width: calc(100% / var(--ax-viewport-scale));
      min-height: calc(100dvh / var(--ax-viewport-scale));
      transform: scale(var(--ax-viewport-scale));
+   }
+   html[data-scale-mode='managed'][data-viewport-scale='scaled'][data-resize-state='1'] .ax-scale-canvas {
+     transform: scale(var(--ax-viewport-scale)) translateZ(0);
+     backface-visibility: hidden;
+     will-change: transform;
+   }
+   html[data-scale-mode='managed'][data-viewport-scale='1'] .ax-scale-canvas {
+     transform: none;
+     width: 100%;
+     min-height: 100dvh;
    }
    .ax-scale-debug {
      position: fixed;
@@ -83,6 +101,18 @@
    .ax-scale-debug__row { display: flex; justify-content: space-between; gap: 10px; }
    .ax-scale-debug__label { opacity: 0.6; }
    .ax-scale-debug__value { opacity: 0.95; text-transform: none; letter-spacing: 0.02em; }
+   
+   html[data-resize-state='1'] .ax-track,
+   html[data-resize-state='1'] .ax-ticker-track,
+   html[data-resize-state='1'] .ax-item[data-level='priority'] .ax-title,
+   html[data-resize-state='1'] .ax-crest::before,
+   html[data-resize-state='1'] .ax-tabs .ax-tab.is-active::before,
+   html[data-resize-state='1'] .ax-tabs .ax-tab.is-active::after,
+   html[data-resize-state='1'] .ax-ticker--pulse::after,
+   html[data-resize-state='1'] .ax-wreath::after,
+   html[data-resize-state='1'] .axcp-layer--scan {
+     animation-play-state: paused !important;
+   }
    
    a { color: inherit; text-decoration: none; }
    a:hover { text-decoration: none; }
@@ -179,6 +209,9 @@
       1) Layout Shell
       ============================ */
    .ax-shell { display: flex; flex-direction: column; min-height: 100dvh; background: var(--ax-bg); }
+   html[data-scale-mode='managed'] .ax-shell {
+     min-height: calc(100dvh / var(--ax-viewport-scale, 1));
+   }
    .ax-shell { --gutter: clamp(10px, 1.4vw, 18px); --section-vspace: clamp(10px, 2.2vw, 24px);
   width: min(calc(100% - 2 * var(--gutter)), var(--container-max));
   margin-inline: auto; padding: var(--section-vspace) var(--gutter);
@@ -217,6 +250,7 @@
    
    /* Force nav tabs to toxic crimson (override base component colors) */
    .ax-tabs .ax-tab{
+     font-size: var(--fs-16);
      color: #ff2034;
      border-color: transparent;
      background: transparent;
@@ -366,6 +400,9 @@
      overscroll-behavior: none;
      isolation: isolate;
    }
+   html[data-scale-mode='managed'] .ax-login{
+     min-height: calc(100dvh / var(--ax-viewport-scale, 1));
+   }
    @supports (overflow: clip){
      .ax-login{ overflow: clip; }
    }
@@ -465,6 +502,8 @@
   padding: clamp(18px, 3vw, 30px);
   margin-bottom: clamp(20px, 4vw, 36px);
   border-radius: var(--r-xl, 24px);
+  isolation: isolate;
+  backdrop-filter: none;
   background: linear-gradient(180deg, rgba(22, 14, 16, 0.86), rgba(10, 7, 9, 0.92));
   border: 1px solid rgba(255, 45, 85, 0.18);
   box-shadow:
@@ -630,6 +669,9 @@
     0 0 0 1px rgba(255,32,52,.14) inset,
     0 18px 48px rgba(255,0,30,.08);
   backdrop-filter: saturate(1.06);
+}
+.ax-card.ax-route-wreath{
+  backdrop-filter: none;
 }
 
 /* Разделитель под «кругами» CONTROL STATUS */

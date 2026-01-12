@@ -55,6 +55,9 @@
 html[data-scale-mode='legacy'] .ax-page {
   min-height: calc(100dvh / var(--ax-ui-scale));
 }
+html[data-scale-mode='managed'] .ax-page {
+  min-height: calc(100dvh / var(--ax-viewport-scale, 1));
+}
 .ax-page > .ax-shell {
   flex: 1 1 auto;
   min-height: 0;
@@ -619,6 +622,21 @@ body.ax-no-scroll {
   display: grid;
   grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
   gap: clamp(16px, 3vw, 28px);
+}
+
+html[data-layout='xl'] .ax-content-split {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+}
+
+html[data-layout='xl'] .ax-content-column.list {
+  max-width: 380px;
+}
+
+html[data-layout='xl'] .ax-panel-right {
+  justify-self: start;
 }
 
 @media (max-width: 1280px) {

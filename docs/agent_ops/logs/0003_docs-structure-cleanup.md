@@ -8,7 +8,7 @@
 - Ветка: feature/profile-auth-v2.3.1
 - Задача: Рефакторинг структуры docs (iterations/releases/specs) без изменения кода
 - SPEC: нет (операционная задача по структуре)
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 

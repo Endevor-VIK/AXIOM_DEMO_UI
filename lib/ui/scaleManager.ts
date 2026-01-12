@@ -41,7 +41,7 @@ const resolveInitialMode = (): 'managed' | 'legacy' => {
   } catch {
     /* noop */
   }
-  return 'legacy'
+  return 'managed'
 }
 
 const resolveDebugFlag = (): boolean => {
@@ -93,30 +93,54 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
 
     const width = window.innerWidth || baseWidth
     const height = window.innerHeight || baseHeight
-    const viewportScale = clamp(
-      minViewportScale,
-      Math.min(width / baseWidth, height / baseHeight),
-      maxViewportScale,
-    )
+    const cssScale = Math.min(width / baseWidth, height / baseHeight)
+    const shrinkThresholdW = baseWidth * 0.7
+    const shrinkThresholdH = baseHeight * 0.7
+    const allowShrink = width < shrinkThresholdW && height < shrinkThresholdH
+    const viewportScale = allowShrink
+      ? clamp(minViewportScale, cssScale, maxViewportScale)
+      : 1
+    const viewportScaleTag = Math.abs(viewportScale - 1) < 0.0005 ? '1' : 'scaled'
     const virtualWidth = Math.round(width / viewportScale)
     const virtualHeight = Math.round(height / viewportScale)
     const composedScale = densityScale * viewportScale
+    const previewTextScale =
+      mode === 'managed'
+        ? virtualWidth >= layoutBreakpoints.xl
+          ? 1.7
+          : virtualWidth >= layoutBreakpoints.lg
+            ? 1.52
+            : virtualWidth >= layoutBreakpoints.md
+              ? 1.42
+              : 1.34
+        : 1
 
     root.style.setProperty('--ax-density-scale', densityScale.toFixed(3))
     root.style.setProperty('--ax-viewport-scale', viewportScale.toFixed(4))
+    root.dataset.viewportScale = viewportScaleTag
     if (mode === 'managed') {
       root.style.setProperty('--ax-scale', densityScale.toFixed(4))
     } else {
       root.style.removeProperty('--ax-scale')
     }
     root.style.setProperty('--ax-composed-scale', composedScale.toFixed(4))
+    root.style.setProperty('--ax-preview-text-scale', previewTextScale.toFixed(3))
     root.style.setProperty('--ax-virtual-w', `${virtualWidth}px`)
     root.style.setProperty('--ax-virtual-h', `${virtualHeight}px`)
     root.dataset.layout = resolveLayout(virtualWidth, layoutBreakpoints)
   }
 
   let frame = 0
+  let resizeTimer = 0
+  const markResizing = () => {
+    root.dataset.resizeState = '1'
+    window.clearTimeout(resizeTimer)
+    resizeTimer = window.setTimeout(() => {
+      delete root.dataset.resizeState
+    }, 180)
+  }
   const schedule = () => {
+    markResizing()
     cancelAnimationFrame(frame)
     frame = requestAnimationFrame(update)
   }
@@ -127,6 +151,7 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
 
   return () => {
     cancelAnimationFrame(frame)
+    window.clearTimeout(resizeTimer)
     window.removeEventListener('resize', schedule)
     window.removeEventListener('orientationchange', schedule)
   }
