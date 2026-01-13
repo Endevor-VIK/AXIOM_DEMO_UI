@@ -223,6 +223,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-13T15:25:24+03:00 — Commit: `9293790` — `fix(content): cap content hub width on xl` — Files: `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T22:16:15+03:00 — Commit: `9d54545` — `fix(content): stack xl preview sections` — Files: `styles/content-hub-v2.css`
 - 2026-01-11T21:26:14+03:00 — Commit: `c2880a9` — `fix(content): boost xl preview text scale` — Files: `lib/ui/scaleManager.ts`
 - 2026-01-11T20:45:32+03:00 — Commit: `f7cecf3` — `fix(content): rebalance xl preview columns` — Files: `styles/content-hub-v2.css`
