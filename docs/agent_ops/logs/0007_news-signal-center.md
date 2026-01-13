@@ -25,7 +25,7 @@
 - 2026-01-13T16:14:05+03:00 — Действие: QA не выполнялся (документация/лог) → Результат: SKIP
 
 ## Step E — Git
-- 2026-01-13T16:14:05+03:00 — Commit: `<hash>` — `<message>` — Файлы: `...`
+- 2026-01-13T17:06:45+03:00 — Commit: `817cc05` — `docs(iterations): adapt 0011 news signal center spec` — Файлы: `docs/agent_ops/logs/0007_news-signal-center.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`, `docs/iterations/0011_news-signal-center/SPEC.md`, `docs/iterations/0011_news-signal-center/SPEC_LOG_LINK.md`
 
 ---
 
@@ -36,5 +36,5 @@
 - Требуются уточнения по UX (точные размеры, поведение featured/minor, приоритет сортировки) перед реализацией.
 
 ## Чеклист приёмки
-- [ ] LOG создан, индекс обновлён, SPEC_LOG_LINK создан
-- [ ] SPEC улучшен и готов к постановке build agent
+- [x] LOG создан, индекс обновлён, SPEC_LOG_LINK создан
+- [x] SPEC улучшен и готов к постановке build agent
