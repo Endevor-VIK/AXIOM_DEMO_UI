@@ -618,6 +618,10 @@ body.ax-no-scroll {
 }
 
 /* --- AXIOM ContentHub v2.1 adjustments --- */
+html[data-scale-mode='managed'][data-layout='xl'] .ax-container.ax-content-hub {
+  max-width: calc(1701px - 2 * var(--gutter));
+}
+
 .ax-content-split {
   display: grid;
   grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
