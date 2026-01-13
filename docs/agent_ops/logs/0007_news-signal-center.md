@@ -20,12 +20,14 @@
 
 ## Step C — Documentation
 - 2026-01-13T16:14:05+03:00 — Действие: Уточнил SPEC (guardrails, размеры, правила вариантов, rails) → Результат: OK
+- 2026-01-13T17:40:27+03:00 — Действие: Расширил SPEC по рефу, добавил детальные rails и включил изображение → Результат: OK
 
 ## Step D — QA
 - 2026-01-13T16:14:05+03:00 — Действие: QA не выполнялся (документация/лог) → Результат: SKIP
 
 ## Step E — Git
 - 2026-01-13T17:06:45+03:00 — Commit: `817cc05` — `docs(iterations): adapt 0011 news signal center spec` — Файлы: `docs/agent_ops/logs/0007_news-signal-center.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`, `docs/iterations/0011_news-signal-center/SPEC.md`, `docs/iterations/0011_news-signal-center/SPEC_LOG_LINK.md`
+- 2026-01-13T17:40:27+03:00 — Commit: `d06275a` — `docs(iterations): expand 0011 news signal center rails` — Файлы: `docs/iterations/0011_news-signal-center/SPEC.md`, `docs/iterations/0011_news-signal-center/REF_NEWS_SIGNAL_CENTER_v0.1.png`
 
 ---
 
