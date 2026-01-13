@@ -618,8 +618,8 @@ body.ax-no-scroll {
 }
 
 /* --- AXIOM ContentHub v2.1 adjustments --- */
-html[data-scale-mode='managed'][data-layout='xl'] .ax-container.ax-content-hub {
-  max-width: calc(1701px - 2 * var(--gutter));
+html[data-scale-mode='managed'] .ax-container.ax-content-hub {
+  max-width: calc(1457px - 2 * var(--gutter));
 }
 
 .ax-content-split {
@@ -628,18 +628,18 @@ html[data-scale-mode='managed'][data-layout='xl'] .ax-container.ax-content-hub {
   gap: clamp(16px, 3vw, 28px);
 }
 
-html[data-layout='xl'] .ax-content-split {
+html[data-scale-mode='legacy'][data-layout='xl'] .ax-content-split {
   width: 100%;
   max-width: none;
   margin: 0;
   grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
 }
 
-html[data-layout='xl'] .ax-content-column.list {
+html[data-scale-mode='legacy'][data-layout='xl'] .ax-content-column.list {
   max-width: 380px;
 }
 
-html[data-layout='xl'] .ax-panel-right {
+html[data-scale-mode='legacy'][data-layout='xl'] .ax-panel-right {
   justify-self: start;
 }
 
@@ -679,6 +679,11 @@ html[data-layout='xl'] .ax-panel-right {
   border: 0;
   background: transparent;
   box-shadow: none;
+}
+
+html[data-scale-mode='managed'] .ax-preview-panel--v2 {
+  width: 100%;
+  max-width: 1008px;
 }
 
 .ax-content-card__meta {
