@@ -233,6 +233,7 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
+- 2026-01-13T17:45:02+03:00 — Commit: `b2b9f9c` — `fix(content): smooth preview scaling` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-13T16:41:20+03:00 — Commit: `2b3ee07` — `fix(content): align preview to 1457 baseline` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-13T15:33:10+03:00 — Commit: `d9a1bc2` — `chore(agent-ops): log content hub width` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-13T15:30:41+03:00 — Commit: `9293790` — `fix(content): cap content hub width on xl` — Files: `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
