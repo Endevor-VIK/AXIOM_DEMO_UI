@@ -57,6 +57,12 @@ const resolveDebugFlag = (): boolean => {
 }
 
 const clamp = (min: number, value: number, max: number) => Math.min(Math.max(value, min), max)
+const lerp = (from: number, to: number, t: number) => from + (to - from) * t
+const scaleByWidth = (width: number, minW: number, maxW: number, min: number, max: number) => {
+  if (maxW <= minW) return min
+  const t = clamp(0, (width - minW) / (maxW - minW), 1)
+  return lerp(min, max, t)
+}
 
 const resolveLayout = (virtualWidth: number, breakpoints: LayoutBreakpoints): LayoutName => {
   if (virtualWidth >= breakpoints.xl) return 'xl'
@@ -104,14 +110,30 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
     const virtualWidth = Math.round(width / viewportScale)
     const virtualHeight = Math.round(height / viewportScale)
     const composedScale = densityScale * viewportScale
+    const previewBaselineW = 1457
+    const previewMaxW = baseWidth
     const previewTextScale =
       mode === 'managed'
-        ? virtualWidth >= layoutBreakpoints.lg
-          ? 1.52
-          : virtualWidth >= layoutBreakpoints.md
-            ? 1.42
-            : 1.34
+        ? virtualWidth <= layoutBreakpoints.md
+          ? 1.34
+          : virtualWidth <= layoutBreakpoints.lg
+            ? scaleByWidth(virtualWidth, layoutBreakpoints.md, layoutBreakpoints.lg, 1.34, 1.42)
+            : virtualWidth <= previewBaselineW
+              ? scaleByWidth(virtualWidth, layoutBreakpoints.lg, previewBaselineW, 1.42, 1.52)
+              : scaleByWidth(virtualWidth, previewBaselineW, previewMaxW, 1.52, 1.6)
         : 1
+    const previewLayoutMax =
+      mode === 'managed'
+        ? scaleByWidth(virtualWidth, previewBaselineW, previewMaxW, 1457, 1701)
+        : 0
+    const previewPanelMax =
+      mode === 'managed'
+        ? scaleByWidth(virtualWidth, previewBaselineW, previewMaxW, 1008, 1140)
+        : 0
+    const previewMediaMax =
+      mode === 'managed'
+        ? scaleByWidth(virtualWidth, previewBaselineW, previewMaxW, 504, 560)
+        : 0
 
     root.style.setProperty('--ax-density-scale', densityScale.toFixed(3))
     root.style.setProperty('--ax-viewport-scale', viewportScale.toFixed(4))
@@ -123,6 +145,15 @@ export const initScaleManager = (config: ScaleConfig = {}) => {
     }
     root.style.setProperty('--ax-composed-scale', composedScale.toFixed(4))
     root.style.setProperty('--ax-preview-text-scale', previewTextScale.toFixed(3))
+    if (mode === 'managed') {
+      root.style.setProperty('--ax-preview-layout-max', `${Math.round(previewLayoutMax)}px`)
+      root.style.setProperty('--ax-preview-panel-max', `${Math.round(previewPanelMax)}px`)
+      root.style.setProperty('--ax-preview-media-max', `${Math.round(previewMediaMax)}px`)
+    } else {
+      root.style.removeProperty('--ax-preview-layout-max')
+      root.style.removeProperty('--ax-preview-panel-max')
+      root.style.removeProperty('--ax-preview-media-max')
+    }
     root.style.setProperty('--ax-virtual-w', `${virtualWidth}px`)
     root.style.setProperty('--ax-virtual-h', `${virtualHeight}px`)
     root.dataset.layout = resolveLayout(virtualWidth, layoutBreakpoints)

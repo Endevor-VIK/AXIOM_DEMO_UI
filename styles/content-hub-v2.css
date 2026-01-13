@@ -204,6 +204,12 @@
   align-items: stretch;
 }
 
+@media (min-width: 981px) {
+  html[data-scale-mode='managed'] .axcp-wrap {
+    grid-template-columns: minmax(0, var(--ax-preview-media-max, 504px)) minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 980px) {
   .axcp-wrap {
     grid-template-columns: 1fr;

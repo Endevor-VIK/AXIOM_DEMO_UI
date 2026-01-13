@@ -619,7 +619,7 @@ body.ax-no-scroll {
 
 /* --- AXIOM ContentHub v2.1 adjustments --- */
 html[data-scale-mode='managed'] .ax-container.ax-content-hub {
-  max-width: calc(1457px - 2 * var(--gutter));
+  max-width: calc(var(--ax-preview-layout-max, 1457px) - 2 * var(--gutter));
 }
 
 .ax-content-split {
@@ -683,7 +683,7 @@ html[data-scale-mode='legacy'][data-layout='xl'] .ax-panel-right {
 
 html[data-scale-mode='managed'] .ax-preview-panel--v2 {
   width: 100%;
-  max-width: 1008px;
+  max-width: var(--ax-preview-panel-max, 1008px);
 }
 
 .ax-content-card__meta {
