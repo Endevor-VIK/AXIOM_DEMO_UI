@@ -20,6 +20,7 @@
 - Следующий этап: BUG‑scale для `/dashboard/content/` (сильные регрессы при смене размера окна, ожидается много правок).
 
 ## Step A — Discovery
+- 2026-01-13T15:25:24+03:00 — Действие: Запрос CREATOR: на fullscreen превью должно выглядеть как на 1701x991 (managed, `?debug=1`). → Результат: OK
 - 2026-01-11T22:06:00+03:00 — Действие: Фидбэк CREATOR: превью всё ещё пустое на FS; нужно добиться заполнения текстом как на малом разрешении. → Результат: OK
 - 2026-01-11T21:14:35+03:00 — Действие: Фидбэк CREATOR: прислан FS‑скрин, нужно дальше уплотнить заполнение превью. → Результат: OK
 - 2026-01-11T20:31:28+03:00 — Действие: Фидбэк CREATOR: выбрать самый эффективный вариант заполнения превью на FS; на 1513x960 карточка корректна. → Результат: OK
@@ -223,7 +224,8 @@
 - 2026-01-04T19:22:30+03:00 — Действие: Локальный typecheck не выполнен: `npm run typecheck`/`./node_modules/.bin/tsc --noEmit` не стартует в WSL (нет `node`). → Результат: SKIP
 
 ## Step E — Git
-- 2026-01-13T15:25:24+03:00 — Commit: `9293790` — `fix(content): cap content hub width on xl` — Files: `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-13T15:33:10+03:00 — Commit: `d9a1bc2` — `chore(agent-ops): log content hub width` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-13T15:30:41+03:00 — Commit: `9293790` — `fix(content): cap content hub width on xl` — Files: `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T22:16:15+03:00 — Commit: `9d54545` — `fix(content): stack xl preview sections` — Files: `styles/content-hub-v2.css`
 - 2026-01-11T21:26:14+03:00 — Commit: `c2880a9` — `fix(content): boost xl preview text scale` — Files: `lib/ui/scaleManager.ts`
 - 2026-01-11T20:45:32+03:00 — Commit: `f7cecf3` — `fix(content): rebalance xl preview columns` — Files: `styles/content-hub-v2.css`
