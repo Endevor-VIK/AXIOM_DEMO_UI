@@ -63,6 +63,33 @@ def ensure_export_snapshot(root: str) -> None:
         sys.stderr.write(f"[dev] Failed to create export symlink: {exc}\n")
 
 
+def validate_export_snapshot(root: str) -> bool:
+    axs = axs_root(root)
+    export_root = os.path.join(axs, 'runtime', 'exports', 'canon')
+    manifest = os.path.join(export_root, 'manifest.json')
+    index = os.path.join(export_root, 'content-index.json')
+    content_html = os.path.join(export_root, 'content-html')
+
+    missing = []
+    if not os.path.exists(manifest):
+        missing.append('manifest.json')
+    if not os.path.exists(index):
+        missing.append('content-index.json')
+    if not os.path.isdir(content_html):
+        missing.append('content-html/')
+
+    if missing:
+        sys.stderr.write(
+            "[dev] Export snapshot incomplete: missing " + ", ".join(missing) + "\n"
+        )
+        sys.stderr.write(
+            "[dev] Run ./ops/export/export_canon.sh or ./ops/dev/site_dev.sh from AXS root.\n"
+        )
+        return False
+
+    return True
+
+
 def is_wsl() -> bool:
     """Detect WSL2 environment."""
     try:
@@ -149,6 +176,8 @@ def main() -> int:
         env.setdefault('HMR_HOST', host)
 
     ensure_export_snapshot(root)
+    if not validate_export_snapshot(root):
+        return 2
 
     # In WSL, explicitly mirror to Windows localhost if possible
     if is_wsl() and not env.get('SKIP_WSL_PORTPROXY'):
