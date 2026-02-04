@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import type { ContentPreviewData } from '../types'
-import contentIndex from '../data/content-index.json'
-import { withBasePath } from '../utils'
+import { useContentIndex } from '../data/useContentIndex'
+import { withExportPath } from '../exportRoot'
 import { ReaderMenuLayer } from '../components/ReaderMenuLayer'
 
 import '@/styles/content-hub-v2.css'
@@ -14,9 +14,7 @@ interface LoadState {
   error: string | null
 }
 
-const entries = contentIndex as ContentPreviewData[]
-
-function resolveEntry(rawId: string | undefined): ContentPreviewData | null {
+function resolveEntry(rawId: string | undefined, entries: ContentPreviewData[]): ContentPreviewData | null {
   if (!rawId) return null
   const normalized = rawId.trim()
   if (!normalized) return null
@@ -60,13 +58,22 @@ const ReaderPage: React.FC = () => {
   const { id: rawId } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const entry = useMemo(() => resolveEntry(rawId), [rawId])
+  const { entries, loading, error } = useContentIndex()
+  const entry = useMemo(() => resolveEntry(rawId, entries), [rawId, entries])
   const activeId = entry?.id ?? null
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [state, setState] = useState<LoadState>({ html: '', loading: true, error: null })
   const [fetchKey, setFetchKey] = useState(0)
+
+  if (loading) {
+    return <p className='axcp-empty'>Загрузка контента...</p>
+  }
+
+  if (error) {
+    return <p className='axcp-empty'>{error}</p>
+  }
 
   // Redirect to canonical id if resolved from legacy
   useEffect(() => {
@@ -85,7 +92,7 @@ const ReaderPage: React.FC = () => {
     const controller = new AbortController()
     setState({ html: '', loading: true, error: null })
 
-    const target = withBasePath(`/content-html/${encodeURIComponent(entry.id)}.html`)
+    const target = withExportPath(`/content-html/${encodeURIComponent(entry.id)}.html`)
     fetch(target, { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)

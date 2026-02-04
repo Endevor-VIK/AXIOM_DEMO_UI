@@ -19,3 +19,4 @@ scripts/netlog/
 temp
 Caddyfile
 scripts/devtools/data/
+public/app/content

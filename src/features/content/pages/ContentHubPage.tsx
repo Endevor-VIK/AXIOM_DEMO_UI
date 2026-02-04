@@ -3,14 +3,12 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import ContentPreview from '../components/ContentPreview'
 import ContentSidebar from '../components/ContentSidebar'
-import type { ContentPreviewData } from '../types'
-import contentIndex from '../data/content-index.json'
+import { useContentIndex } from '../data/useContentIndex'
 
 import '@/styles/content-hub-v2.css'
 
-const entries = contentIndex as ContentPreviewData[]
-
 const ContentHubPage: React.FC = () => {
+  const { entries, loading, error } = useContentIndex()
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
 
@@ -21,9 +19,9 @@ const ContentHubPage: React.FC = () => {
       return requestedId
     }
     return entries[0]?.id ?? null
-  }, [requestedId])
+  }, [requestedId, entries])
 
-  const [selectedId, setSelectedId] = useState<string | null>(initialSelectedId)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
 
   useEffect(() => {
     setSelectedId(initialSelectedId)
@@ -31,7 +29,7 @@ const ContentHubPage: React.FC = () => {
 
   const selectedEntry = useMemo(
     () => entries.find((entry) => entry.id === selectedId) ?? null,
-    [selectedId]
+    [selectedId, entries]
   )
 
   const handleSelect = (id: string) => {
@@ -43,6 +41,14 @@ const ContentHubPage: React.FC = () => {
 
   const handleOpenSource = (id: string) => {
     navigate(`/content/${encodeURIComponent(id)}`)
+  }
+
+  if (loading) {
+    return <p className='axcp-empty'>Загрузка контента...</p>
+  }
+
+  if (error) {
+    return <p className='axcp-empty'>{error}</p>
   }
 
   if (!entries.length) {

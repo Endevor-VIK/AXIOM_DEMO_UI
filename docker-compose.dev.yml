@@ -1,0 +1,14 @@
+services:
+  web:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - ../../runtime/exports/canon:/app/content:ro
+    ports:
+      - "5173:5173"
+    environment:
+      AXS_EXPORT_ROOT: /app/content
+      DEV_HOST: 0.0.0.0
+      PORT: 5173
+    command: bash -lc "npm install && npm run dev"

@@ -12,12 +12,16 @@ const isCI =
 const DEV_HOST = (process.env.DEV_HOST || '').trim()  // set to "192.168.0.11" for LAN
 const HMR_HOST = (process.env.HMR_HOST || '').trim()
 const PORT = Number(process.env.PORT || 5173)
+const EXPORT_ROOT = (process.env.AXS_EXPORT_ROOT || '').trim() || '/app/content'
 const resolvedHmrHost =
   HMR_HOST || (DEV_HOST && DEV_HOST !== '0.0.0.0' ? DEV_HOST : '')
 
 export default defineConfig({
   plugins: [react()],
   base: envBase || (isCI ? repoBase : '/'),
+  define: {
+    'import.meta.env.AXS_EXPORT_ROOT': JSON.stringify(EXPORT_ROOT),
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./', import.meta.url)),

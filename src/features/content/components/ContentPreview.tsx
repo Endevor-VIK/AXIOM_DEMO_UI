@@ -1,7 +1,7 @@
 import React from 'react'
 
 import type { ContentPreviewData } from '../types'
-import { withBasePath } from '../utils'
+import { withExportPath } from '../exportRoot'
 
 export interface ContentPreviewProps {
   entry: ContentPreviewData | null
@@ -33,7 +33,7 @@ const ContentPreview: React.FC<ContentPreviewProps> = ({ entry, onOpenSource, on
       <div className='axcp-wrap' data-axcp-split>
         <figure className='axcp-media' data-tilt>
           <img
-            src={withBasePath(preview.image)}
+            src={withExportPath(preview.image)}
             alt={entry.title}
             loading='lazy'
             className='axcp-img'
