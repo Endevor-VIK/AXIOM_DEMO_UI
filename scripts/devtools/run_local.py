@@ -31,6 +31,38 @@ def repo_root() -> str:
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 
+def axs_root(root: str) -> str:
+    return os.path.abspath(os.path.join(root, '..', '..'))
+
+
+def ensure_export_snapshot(root: str) -> None:
+    """Best-effort export snapshot + symlink for /app/content."""
+    axs = axs_root(root)
+    export_script = os.path.join(axs, 'ops', 'export', 'export_canon.sh')
+    export_root = os.path.join(axs, 'runtime', 'exports', 'canon')
+    public_app = os.path.join(root, 'public', 'app')
+    symlink_path = os.path.join(public_app, 'content')
+
+    if os.path.exists(export_script):
+        subprocess.run([export_script], check=False)
+
+    os.makedirs(public_app, exist_ok=True)
+
+    if os.path.exists(symlink_path) and not os.path.islink(symlink_path):
+        sys.stderr.write(
+            f"[dev] {symlink_path} exists and is not a symlink. "
+            "Remove or rename it to use export snapshot.\n"
+        )
+        return
+
+    try:
+        if os.path.islink(symlink_path):
+            os.unlink(symlink_path)
+        os.symlink(export_root, symlink_path)
+    except Exception as exc:
+        sys.stderr.write(f"[dev] Failed to create export symlink: {exc}\n")
+
+
 def is_wsl() -> bool:
     """Detect WSL2 environment."""
     try:
@@ -112,8 +144,11 @@ def main() -> int:
     url = f"http://{host}:{port}/"
 
     env = os.environ.copy()
+    env.setdefault('AXS_EXPORT_ROOT', '/app/content')
     if host != '0.0.0.0':
         env.setdefault('HMR_HOST', host)
+
+    ensure_export_snapshot(root)
 
     # In WSL, explicitly mirror to Windows localhost if possible
     if is_wsl() and not env.get('SKIP_WSL_PORTPROXY'):

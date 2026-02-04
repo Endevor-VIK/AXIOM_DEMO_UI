@@ -27,7 +27,14 @@ async function loadContentIndex(): Promise<ContentPreviewData[]> {
     throw new Error(`Не найден ${INDEX_FILE} (${indexUrl}). Проверь export_canon.sh`)
   }
 
-  const data = (await indexRes.json()) as ContentPreviewData[]
+  const raw = await indexRes.text()
+  if (raw.trim().startsWith('<')) {
+    throw new Error(
+      `Получен HTML вместо ${INDEX_FILE}. Проверь экспорт и symlink /app/content (site_dev.sh или run_local.py).`
+    )
+  }
+
+  const data = JSON.parse(raw) as ContentPreviewData[]
   return Array.isArray(data) ? data : []
 }
 
