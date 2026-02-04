@@ -27,6 +27,10 @@ import urllib.request
 import subprocess
 
 
+def repo_root() -> str:
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+
 def is_wsl() -> bool:
     """Detect WSL2 environment."""
     try:
@@ -102,6 +106,7 @@ def wait_for_http(url: str, attempts: int = 40) -> bool:
 
 
 def main() -> int:
+    root = repo_root()
     port = int(os.environ.get('PORT') or 5173)
     host = os.environ.get('HOST') or '127.0.0.1'
     url = f"http://{host}:{port}/"
@@ -128,6 +133,7 @@ def main() -> int:
         text=True,
         bufsize=1,
         env=env,
+        cwd=root,
     )
 
     print(f"Dev server starting (PID {proc.pid}). Waiting for {url} ...", flush=True)
