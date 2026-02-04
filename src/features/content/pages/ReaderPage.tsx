@@ -67,14 +67,6 @@ const ReaderPage: React.FC = () => {
   const [state, setState] = useState<LoadState>({ html: '', loading: true, error: null })
   const [fetchKey, setFetchKey] = useState(0)
 
-  if (loading) {
-    return <p className='axcp-empty'>Загрузка контента...</p>
-  }
-
-  if (error) {
-    return <p className='axcp-empty'>{error}</p>
-  }
-
   // Redirect to canonical id if resolved from legacy
   useEffect(() => {
     if (entry && rawId && entry.id !== rawId) {
@@ -131,6 +123,14 @@ const ReaderPage: React.FC = () => {
 
   const handleBack = () => {
     navigate(`/dashboard/content?id=${encodeURIComponent(entry?.id ?? '')}`, { replace: true })
+  }
+
+  if (loading) {
+    return <p className='axcp-empty'>Загрузка контента...</p>
+  }
+
+  if (error) {
+    return <p className='axcp-empty'>{error}</p>
   }
 
   if (!entry) {
