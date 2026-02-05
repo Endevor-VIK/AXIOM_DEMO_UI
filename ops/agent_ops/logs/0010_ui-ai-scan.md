@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0010_UI_AI_SCAN_MD
   title: "GLOBAL LOG — 0010_ui-ai-scan"
-  status: ACTIVE
+  status: DONE
   mode: Log
   goal: "Add quick AI UI scan tooling and docs"
   scope: "AXIOM WEB CORE UI"
@@ -20,7 +20,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: Внедрить быстрый UI scan (Playwright) + документация
 - SPEC: —
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -38,7 +38,7 @@ AXS_HEADER_META:
 - 2026-02-05T19:27:27+03:00 — Действие: N/A → Результат: SKIP (script added, run on demand)
 
 ## Step E — Git
-- 2026-02-05T19:27:27+03:00 — Commit: — — PENDING
+- 2026-02-05T19:27:27+03:00 — Commit: 5a8c281 — feat(ui): add ai ui scan command
 
 ---
 
@@ -49,5 +49,5 @@ AXS_HEADER_META:
 - Скрипт ожидает запущенный локальный сервер.
 
 ## Чеклист приёмки
-- [ ] Скрипт `npm run ui:scan` доступен
-- [ ] README обновлён
+- [x] Скрипт `npm run ui:scan` доступен
+- [x] README обновлён

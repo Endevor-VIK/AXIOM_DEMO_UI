@@ -27,6 +27,6 @@ AXS_HEADER_META:
 | 0007 | 2026-02-05T15:47:30+03:00 | Ребейз docs/ops/agent/integrations под формат AXS | main                        | —                                          | ops/agent_ops/logs/0007_docs-ops-rebase.md      | DONE |
 | 0008 | 2026-02-05T16:40:28+03:00 | Фикс/стабилизация UI тестов и пинов              | main                        | —                                          | ops/agent_ops/logs/0008_ui-stabilization.md      | DONE |
 | 0009 | 2026-02-05T18:57:34+03:00 | Unit tests + README про Lighthouse CHROME_PATH  | main                        | —                                          | ops/agent_ops/logs/0009_ui-qa-readme.md          | DONE |
-| 0010 | 2026-02-05T19:27:27+03:00 | AI UI scan (Playwright screenshots)             | main                        | —                                          | ops/agent_ops/logs/0010_ui-ai-scan.md            | ACTIVE |
+| 0010 | 2026-02-05T19:27:27+03:00 | AI UI scan (Playwright screenshots)             | main                        | —                                          | ops/agent_ops/logs/0010_ui-ai-scan.md            | DONE |
 
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).
