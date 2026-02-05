@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_SEC_003_MARKDOWN_ALLOWS_JAVASCRIPT_PROTOCOL_MD
+  title: "docs/bugs/SEC-003_markdown-allows-javascript-protocol.md"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 id: SEC-003
 title: Санитайз Markdown разрешает неизвестные протоколы (javascript:, data:)
 status: OPEN

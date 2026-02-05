@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_GUIDES_GETTING_STARTED_MD
+  title: "docs/guides/getting-started.md"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 AXIOM_DEMO_UI: Запуск и деплой
 
 Этот файл дополняет README и описывает практические шаги для локального запуска, сборки и публикации на GitHub Pages.

@@ -1,4 +1,18 @@
-<!-- docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md -->
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0005_BUGFIX_V2_3_1_BUGS_SWEEP_MD
+  title: "GLOBAL LOG — 0005_bugfix-v2.3.1-bugs-sweep"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
+<!-- ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md -->
 
 # GLOBAL LOG — 0005_bugfix-v2.3.1-bugs-sweep
 
@@ -224,54 +238,54 @@
 - 2026-01-11T22:16:15+03:00 — Commit: `9d54545` — `fix(content): stack xl preview sections` — Files: `styles/content-hub-v2.css`
 - 2026-01-11T21:26:14+03:00 — Commit: `c2880a9` — `fix(content): boost xl preview text scale` — Files: `lib/ui/scaleManager.ts`
 - 2026-01-11T20:45:32+03:00 — Commit: `f7cecf3` — `fix(content): rebalance xl preview columns` — Files: `styles/content-hub-v2.css`
-- 2026-01-11T20:11:09+03:00 — Commit: `82e08f4` — `fix(ui): lock route wreath backdrop override` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-11T20:11:09+03:00 — Commit: `82e08f4` — `fix(ui): lock route wreath backdrop override` — Files: `styles/app.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T19:58:26+03:00 — Commit: `9459bfc` — `fix(content): stretch fs preview panel` — Files: `styles/red-protocol-overrides.css`
-- 2026-01-11T19:46:11+03:00 — Commit: `771f96b` — `fix(ui): isolate route wreath backdrop` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-11T19:34:56+03:00 — Commit: `98c6bbd` — `chore(agent-ops): close topbar nav readability` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-11T19:22:51+03:00 — Commit: `e66c109` — `fix(ui): enlarge topbar nav labels` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-11T19:11:45+03:00 — Commit: `bbdb432` — `chore(agent-ops): log rollback of scroll state` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-11T19:46:11+03:00 — Commit: `771f96b` — `fix(ui): isolate route wreath backdrop` — Files: `styles/app.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-11T19:34:56+03:00 — Commit: `98c6bbd` — `chore(agent-ops): close topbar nav readability` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-11T19:22:51+03:00 — Commit: `e66c109` — `fix(ui): enlarge topbar nav labels` — Files: `styles/app.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-11T19:11:45+03:00 — Commit: `bbdb432` — `chore(agent-ops): log rollback of scroll state` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-11T18:42:23+03:00 — Commit: `c811007` — `fix(scale): skip canvas transform at 1x` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`
-- 2026-01-10T20:19:35+03:00 — Commit: `87f495b` — `fix(scale): refine preview sizing and resize gpu` — Files: `styles/app.css`, `styles/content-hub-v2.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-10T19:46:32+03:00 — Commit: `e4fc455` — `fix(scale): scope resize animation pause` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-10T19:18:57+03:00 — Commit: `b93e587` — `fix(content): cap preview width on xl` — Files: `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-10T19:22:27+03:00 — Commit: `08c3679` — `fix(scale): pause animations during resize` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-10T18:58:51+03:00 — Commit: `0e1f5c1` — `fix(scale): stabilize canvas repaint on resize` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-10T18:48:08+03:00 — Commit: `a9d7cc9` — `fix(content): scale preview text by layout` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-10T18:24:46+03:00 — Commit: `c0ee5d9` — `fix(content): amplify preview type scale` — Files: `styles/content-hub-v2.css`, `components/ScaleDebug.tsx`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-10T17:52:34+03:00 — Commit: `d1ba59a` — `fix(content): boost preview text density` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-10T16:45:12+03:00 — Commit: `ac9ce52` — `fix(content): adapt preview typography scale` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-10T15:52:30+03:00 — Commit: `a6a5cad` — `fix(content): balance preview card layout` — Files: `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-07T19:12:04+03:00 — Commit: `8df3ca6` — `fix(scale): relax managed shrink gating` — Files: `lib/ui/scaleManager.ts`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-07T18:39:52+03:00 — Commit: `858e845` — `fix(scale): stabilize full-height in managed` — Files: `styles/app.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-07T17:24:12+03:00 — Commit: `fc58db0` — `fix(scale): gate managed viewport shrink` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T20:19:35+03:00 — Commit: `87f495b` — `fix(scale): refine preview sizing and resize gpu` — Files: `styles/app.css`, `styles/content-hub-v2.css`, `styles/red-protocol-overrides.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T19:46:32+03:00 — Commit: `e4fc455` — `fix(scale): scope resize animation pause` — Files: `styles/app.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T19:18:57+03:00 — Commit: `b93e587` — `fix(content): cap preview width on xl` — Files: `styles/red-protocol-overrides.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T19:22:27+03:00 — Commit: `08c3679` — `fix(scale): pause animations during resize` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T18:58:51+03:00 — Commit: `0e1f5c1` — `fix(scale): stabilize canvas repaint on resize` — Files: `styles/app.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T18:48:08+03:00 — Commit: `a9d7cc9` — `fix(content): scale preview text by layout` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T18:24:46+03:00 — Commit: `c0ee5d9` — `fix(content): amplify preview type scale` — Files: `styles/content-hub-v2.css`, `components/ScaleDebug.tsx`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T17:52:34+03:00 — Commit: `d1ba59a` — `fix(content): boost preview text density` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T16:45:12+03:00 — Commit: `ac9ce52` — `fix(content): adapt preview typography scale` — Files: `lib/ui/scaleManager.ts`, `styles/content-hub-v2.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-10T15:52:30+03:00 — Commit: `a6a5cad` — `fix(content): balance preview card layout` — Files: `styles/content-hub-v2.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-07T19:12:04+03:00 — Commit: `8df3ca6` — `fix(scale): relax managed shrink gating` — Files: `lib/ui/scaleManager.ts`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-07T18:39:52+03:00 — Commit: `858e845` — `fix(scale): stabilize full-height in managed` — Files: `styles/app.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-07T17:24:12+03:00 — Commit: `fc58db0` — `fix(scale): gate managed viewport shrink` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-05T18:19:01+03:00 — Commit: `b9da860` — `fix(scale): align managed viewport height` — Files: `lib/ui/scaleManager.ts`, `styles/red-protocol-overrides.css`
 - 2026-01-05T17:12:53+03:00 — Commit: `e7eb2cb` — `fix(scale): default to managed and expand commands` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`
 - 2026-01-05T16:39:02+03:00 — Commit: `6978bc5` — `fix(scale): soften legacy windowed shrink` — Files: `styles/app.css`
 - 2026-01-05T16:00:49+03:00 — Commit: `797ac92` — `fix(content): expand preview layout and accents` — Files: `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`
-- 2026-01-05T15:06:59+03:00 — Commit: `4e249b5` — `fix(content): align preview data and density` — Files: `app/routes/dashboard/content/ContentCategoryView.tsx`, `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-05T14:40:29+03:00 — Commit: `02afc92` — `docs(assets): add 01.05 content hub screenshots` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.05/*.png`
+- 2026-01-05T15:06:59+03:00 — Commit: `4e249b5` — `fix(content): align preview data and density` — Files: `app/routes/dashboard/content/ContentCategoryView.tsx`, `src/features/content/components/ContentPreview.tsx`, `styles/content-hub-v2.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-05T14:40:29+03:00 — Commit: `02afc92` — `docs(assets): add 01.05 content hub screenshots` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.05/*.png`
 - 2026-01-04T19:22:30+03:00 — Commit: `f007200` — `fix(types): resolve typecheck errors` — Files: `components/content/CategoryStats.tsx`, `components/counters/CounterWreath.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`
-- 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2025-12-20T21:25:30+03:00 — Commit: `a04d710` — `chore(reader-menu): refactor layer component and fix ts error (BUG-003 wip)` — Files: `src/features/content/components/ReaderMenuLayer.tsx`, `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2025-12-20T21:40:58+03:00 — Commit: `2e1abe9` — `chore(reader-menu): update props for ts strict mode (BUG-003 still open)` — Files: `src/features/content/pages/ReaderPage.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2025-12-22T17:09:58+03:00 — Commit: `7790519` — `chore(reader-menu): add scroll container and refine layer bounds (BUG-003 wip)` — Files: `src/features/content/pages/ReaderPage.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2025-12-22T18:02:35+03:00 — Commit: `1e4bd1f` — `chore(reader-menu): stabilize header sizing and layer bounds` — Files: `src/features/content/components/ReaderMenuLayer.tsx`, `styles/content-hub-v2.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md` (BUG-003 остаётся OPEN)
+- 2025-12-20T20:39:16+03:00 — Commit: `73924d8` — `fix(reader-menu): fix overlay positioning and lock scroll` — Files: `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `docs/bugs/BUG-003_reader-overlay-menu-scroll.md`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-20T21:25:30+03:00 — Commit: `a04d710` — `chore(reader-menu): refactor layer component and fix ts error (BUG-003 wip)` — Files: `src/features/content/components/ReaderMenuLayer.tsx`, `src/features/content/pages/ReaderPage.tsx`, `styles/content-hub-v2.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-20T21:40:58+03:00 — Commit: `2e1abe9` — `chore(reader-menu): update props for ts strict mode (BUG-003 still open)` — Files: `src/features/content/pages/ReaderPage.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-22T17:09:58+03:00 — Commit: `7790519` — `chore(reader-menu): add scroll container and refine layer bounds (BUG-003 wip)` — Files: `src/features/content/pages/ReaderPage.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`, `styles/content-hub-v2.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-22T18:02:35+03:00 — Commit: `1e4bd1f` — `chore(reader-menu): stabilize header sizing and layer bounds` — Files: `src/features/content/components/ReaderMenuLayer.tsx`, `styles/content-hub-v2.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md` (BUG-003 остаётся OPEN)
 - 2025-12-22T18:21:32+03:00 — Commit: `080a699` — `fix(reader-menu): congratulations!!! BUG-003 resolved` — Files: `src/features/content/components/ReaderMenuLayer.tsx`
 - 2025-12-22T19:39:43+03:00 — Commit: `bafeb97` — `fix(favorites): avoid legacy migration recursion` — Files: `lib/identity/favoritesService.ts`
-- 2025-12-22T19:41:04+03:00 — Commit: `f24fc60` — `chore(bugs): start BUG-006 scale parity investigation` — Files: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`, `docs/bugs/00_BUG_INDEX.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-22T19:41:04+03:00 — Commit: `f24fc60` — `chore(bugs): start BUG-006 scale parity investigation` — Files: `styles/app.css`, `docs/bugs/BUG-006_scale-parity-windowed.md`, `docs/bugs/00_BUG_INDEX.md`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-29T15:40:14+03:00 — Commit: `ae23c6b` — `docs(assets): add baseline UI scale screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/*.png`
 - 2025-12-29T15:41:15+03:00 — Commit: `2fe9d95` — `feat(news): announce audit/roadmap rework` — Files: `public/data/news/manifest.json`, `public/data/news/items/2025-12-29-audit-roadmap-rework.md`
-- 2025-12-29T16:29:20+03:00 — Commit: `9d0d5bf` — `docs(assets): annotate baseline screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2025-12-29T16:33:22+03:00 — Commit: `758d093` — `chore(agent-ops): log screenshot annotations` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2025-12-29T17:47:31+03:00 — Commit: `3379468` — `docs(spec): map scale touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2025-12-29T18:26:07+03:00 — Commit: `fbb55aa` — `docs(spec): map layout and portal roots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2025-12-29T18:39:15+03:00 — Commit: `02ba452` — `docs(spec): add phase 1 touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T16:29:20+03:00 — Commit: `9d0d5bf` — `docs(assets): annotate baseline screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T16:33:22+03:00 — Commit: `758d093` — `chore(agent-ops): log screenshot annotations` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T17:47:31+03:00 — Commit: `3379468` — `docs(spec): map scale touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T18:26:07+03:00 — Commit: `fbb55aa` — `docs(spec): map layout and portal roots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T18:39:15+03:00 — Commit: `02ba452` — `docs(spec): add phase 1 touchpoints` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-29T19:10:32+03:00 — Commit: `9c372f8` — `chore(ticker): rename viewport class` — Files: `components/news/HeadlinesTicker.tsx`, `styles/ticker.css`
 - 2025-12-29T19:15:17+03:00 — Commit: `daf67ea` — `feat(ui): add scale viewport root` — Files: `components/ScaleViewport.tsx`, `components/UserMenuDropdown.tsx`, `components/Modal.tsx`, `src/features/content/components/ReaderMenuLayer.tsx`
 - 2025-12-29T19:25:50+03:00 — Commit: `de8b766` — `feat(scale): add scale manager and canvas wrapper` — Files: `lib/ui/scaleManager.ts`, `app/main.tsx`, `styles/app.css`
 - 2025-12-29T19:27:44+03:00 — Commit: `eb5feaf` — `docs(spec): clarify scale variables` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
-- 2025-12-29T19:37:11+03:00 — Commit: `f1840a7` — `chore(agent-ops): log scale phase 1 work` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2025-12-29T19:40:29+03:00 — Commit: `1a1124f` — `chore(agent-ops): log scale phase 1 commit` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T19:37:11+03:00 — Commit: `f1840a7` — `chore(agent-ops): log scale phase 1 work` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2025-12-29T19:40:29+03:00 — Commit: `1a1124f` — `chore(agent-ops): log scale phase 1 commit` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2025-12-29T20:14:13+03:00 — Commit: `09abecf` — `fix(scale): avoid ax-viewport collision` — Files: `components/ScaleViewport.tsx`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
 - 2025-12-29T23:34:40+03:00 — Commit: `70a48b5` — `fix(scale): center managed canvas` — Files: `styles/app.css`
 - 2025-12-29T23:41:51+03:00 — Commit: `416fdb8` — `fix(scale): default to legacy mode` — Files: `lib/ui/scaleManager.ts`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
@@ -279,7 +293,7 @@
 - 2025-12-30T00:12:20+03:00 — Commit: `9c6cf99` — `fix(ticker): stabilize headlines animation` — Files: `components/news/HeadlinesTicker.tsx`
 - 2025-12-30T00:29:20+03:00 — Commit: `d6dc5a8` — `fix(ticker): set viewport height` — Files: `styles/ticker.css`
 - 2026-01-03T20:50:19+03:00 — Commit: `af07cd3` — `feat(scale): add debug overlay` — Files: `components/ScaleDebug.tsx`, `components/ScaleViewport.tsx`, `lib/ui/scaleManager.ts`, `styles/app.css`
-- 2026-01-03T20:50:19+03:00 — Commit: `65d1b7c` — `chore(agent-ops): log scale debug overlay` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-03T20:50:19+03:00 — Commit: `65d1b7c` — `chore(agent-ops): log scale debug overlay` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-03T20:54:07+03:00 — Commit: `8f579e5` — `docs(assets): note screenshot scaling context` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`
 - 2026-01-03T21:02:24+03:00 — Commit: `62d4ebd` — `fix(scale): match managed density to legacy` — Files: `lib/ui/scaleManager.ts`, `styles/app.css`, `docs/iterations/ui-scale-normalization-v2.3.1/spec.md`
 - 2026-01-03T23:05:33+03:00 — Commit: `1ed0b18` — `docs(scale): add debug command list` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md`
@@ -290,27 +304,27 @@
 - 2026-01-04T00:42:46+03:00 — Commit: `ad96650` — `fix(ui): refine user menu trigger and footer` — Files: `app/routes/_layout.tsx`, `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`
 - 2026-01-04T01:13:44+03:00 — Commit: `c96f8ae` — `fix(ui): stabilize footer, menu, and wreaths` — Files: `components/UserMenuDropdown.tsx`, `styles/red-protocol-overrides.css`, `styles/app.css`, `styles/counter-wreath.css`
 - 2026-01-04T01:43:16+03:00 — Commit: `6c56188` — `docs(assets): add 01.04 bug screenshots` — Files: `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/2026-01-04_1675x1011_home-broken-div.ax-user-menu.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/01.04/2026-01-04_1675x1011_home-broken-div.ax-wreath.ax-dashboard__wreath.png`, `docs/iterations/ui-scale-normalization-v2.3.1/assets/screenshots/README.md`
-- 2026-01-04T01:44:45+03:00 — Commit: `67c7fd8` — `chore(agent-ops): log 01.04 bug review` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-04T14:54:47+03:00 — Commit: `58e2e58` — `fix(ui): anchor user menu and square wreaths` — Files: `components/UserMenuDropdown.tsx`, `components/counters/wreath.ts`, `styles/app.css`, `styles/counter-wreath.css`, `styles/red-protocol-overrides.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T01:44:45+03:00 — Commit: `67c7fd8` — `chore(agent-ops): log 01.04 bug review` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T14:54:47+03:00 — Commit: `58e2e58` — `fix(ui): anchor user menu and square wreaths` — Files: `components/UserMenuDropdown.tsx`, `components/counters/wreath.ts`, `styles/app.css`, `styles/counter-wreath.css`, `styles/red-protocol-overrides.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-04T15:14:33+03:00 — Commit: `ef2df0f` — `fix(ui): make wreath sizing responsive` — Files: `app/routes/dashboard/page.tsx`, `components/counters/CounterWreath.tsx`
 - 2026-01-04T14:41:40+03:00 — Commit: `6866d20` — `docs(agents): add general onboarding guide` — Files: `AGENTS.md`
 - 2026-01-04T15:25:36+03:00 — Commit: `93d215a` — `fix(ui): reduce wreath ring gap` — Files: `components/counters/wreath.ts`
-- 2026-01-04T15:25:36+03:00 — Commit: `a159fa5` — `chore(agent-ops): log menu pass and wreath gap tweak` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-04T15:14:33+03:00 — Commit: `5367a23` — `chore(agent-ops): log wreath sizing update` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T15:25:36+03:00 — Commit: `a159fa5` — `chore(agent-ops): log menu pass and wreath gap tweak` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T15:14:33+03:00 — Commit: `5367a23` — `chore(agent-ops): log wreath sizing update` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-04T15:47:10+03:00 — Commit: `6a79f8d` — `fix(ui): sync wreath canvas sizing` — Files: `components/counters/wreath.ts`
-- 2026-01-04T15:49:58+03:00 — Commit: `fbe4e63` — `chore(agent-ops): log wreath canvas sizing fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T15:49:58+03:00 — Commit: `fbe4e63` — `chore(agent-ops): log wreath canvas sizing fix` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-04T16:48:39+03:00 — Commit: `b4eac15` — `fix(ui): prevent status wreath overflow` — Files: `styles/app.css`
-- 2026-01-04T16:48:39+03:00 — Commit: `093895a` — `chore(agent-ops): log status panel fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T16:48:39+03:00 — Commit: `093895a` — `chore(agent-ops): log status panel fix` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-04T17:30:25+03:00 — Commit: `f4a924b` — `fix(ui): scale wreath halo to element size` — Files: `styles/counter-wreath.css`
-- 2026-01-04T17:30:25+03:00 — Commit: `663a728` — `chore(agent-ops): log wreath halo fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-04T17:45:16+03:00 — Commit: `2d3c314` — `chore(agent-ops): log wreath canvas sizing commit` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-04T17:45:16+03:00 — Commit: `1704f6c` — `chore(agent-ops): log status panel commits` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-04T17:45:16+03:00 — Commit: `57eb880` — `chore(agent-ops): log wreath halo commits` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:30:25+03:00 — Commit: `663a728` — `chore(agent-ops): log wreath halo fix` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `2d3c314` — `chore(agent-ops): log wreath canvas sizing commit` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `1704f6c` — `chore(agent-ops): log status panel commits` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `57eb880` — `chore(agent-ops): log wreath halo commits` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-04T17:45:16+03:00 — Commit: `6eeb1e0` — `fix(ui): restore wreath pulse animation` — Files: `styles/counter-wreath.css`
-- 2026-01-04T17:45:16+03:00 — Commit: `a03d577` — `chore(agent-ops): log wreath pulse fix` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-04T17:49:24+03:00 — Commit: `6d756d3` — `chore(agent-ops): log recent wreath commits` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-04T17:49:24+03:00 — Commit: `ad4efff` — `chore(agent-ops): log status panel pass` — Files: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
-- 2026-01-04T18:17:07+03:00 — Commit: `444d149` — `fix(ui): intensify wreath pulse` — Files: `styles/counter-wreath.css`, `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:45:16+03:00 — Commit: `a03d577` — `chore(agent-ops): log wreath pulse fix` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:49:24+03:00 — Commit: `6d756d3` — `chore(agent-ops): log recent wreath commits` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T17:49:24+03:00 — Commit: `ad4efff` — `chore(agent-ops): log status panel pass` — Files: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
+- 2026-01-04T18:17:07+03:00 — Commit: `444d149` — `fix(ui): intensify wreath pulse` — Files: `styles/counter-wreath.css`, `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`
 - 2026-01-04T18:30:19+03:00 — Commit: `d32eb01` — `fix(ui): limit wreath halo pulse to hover` — Files: `styles/counter-wreath.css`
 
 ---

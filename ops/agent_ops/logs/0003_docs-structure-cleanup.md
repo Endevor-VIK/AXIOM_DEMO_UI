@@ -1,4 +1,18 @@
-<!-- docs/agent_ops/logs/0003_docs-structure-cleanup.md -->
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0003_DOCS_STRUCTURE_CLEANUP_MD
+  title: "GLOBAL LOG — 0003_docs-structure-cleanup"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
+<!-- ops/agent_ops/logs/0003_docs-structure-cleanup.md -->
 
 # GLOBAL LOG — 0003_docs-structure-cleanup
 
@@ -27,9 +41,9 @@
 - 
 
 ## Step E — Git
-- 2025-12-20T19:11:00+03:00 — Commit: `fef5f34` — `chore(agent-ops): add docs cleanup session log 0003` — Files: `docs/agent_ops/logs/0003_docs-structure-cleanup.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`
+- 2025-12-20T19:11:00+03:00 — Commit: `fef5f34` — `chore(agent-ops): add docs cleanup session log 0003` — Files: `ops/agent_ops/logs/0003_docs-structure-cleanup.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 - 2025-12-20T19:15:11+03:00 — Commit: `8d11fbe` — `docs: reorganize docs structure and paths` — Files: перемещения/обновления для iterations/releases/integrations/specs/guides/plans (см. git show)
-- 2025-12-20T19:16:30+03:00 — Commit: `cd5b89f` — `chore(agent-ops): update log 0003 with commits` — Files: `docs/agent_ops/logs/0003_docs-structure-cleanup.md`
+- 2025-12-20T19:16:30+03:00 — Commit: `cd5b89f` — `chore(agent-ops): update log 0003 with commits` — Files: `ops/agent_ops/logs/0003_docs-structure-cleanup.md`
 - 2025-12-20T19:18:04+03:00 — Commit: `c7349bc` — `chore: drop legacy doc paths after reorg` — Files: удалённые старые пути после переноса (legacy locations)
 
 ---

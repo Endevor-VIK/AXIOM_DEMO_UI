@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_CONTENT_HUB_V2_AXIOM_CONTENT_HUB_V2_SPEC_MD
+  title: "AXIOM_DEMO_UI · CONTENT HUB v2 + READER v1.0"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!--docs/content_hub_v2/AXIOM_CONTENT_HUB_v2_SPEC.md-->
 # AXIOM_DEMO_UI · CONTENT HUB v2 + READER v1.0  
 Техническое задание (Часть 1 — план работ)

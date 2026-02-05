@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_ITERATIONS_CONTENT_V2_1_FIX_CONTENT_V2_1_FIX_PROMPT_TZ_MD
+  title: "AXIOM — ТЗ-ЦИКЛ ДЛЯ АГЕНТА `content-v2.1-fix`"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # AXIOM — ТЗ-ЦИКЛ ДЛЯ АГЕНТА `content-v2.1-fix`
 
 > Этот файл — **операционный сценарий (SOP)** для ежедневной работы агента по итерации `content-v2.1-fix`.

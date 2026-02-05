@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_IDENTITY_PROFILE_AUTH_PROFILE_AUTH_SOT_V2_3_1_MD
+  title: "AXIOM_DEMO_UI — PROFILE & AUTH v2.3.1 — SOURCE OF TRUTH"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!--docs/identity_profile_auth/PROFILE_AUTH_SOT_v2.3.1.md-->
 <!-- AXIOM SOURCE OF TRUTH -->
 # AXIOM_DEMO_UI — PROFILE & AUTH v2.3.1 — SOURCE OF TRUTH

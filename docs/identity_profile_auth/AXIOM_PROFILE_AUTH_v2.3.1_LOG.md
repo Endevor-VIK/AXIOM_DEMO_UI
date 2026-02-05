@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_IDENTITY_PROFILE_AUTH_AXIOM_PROFILE_AUTH_V2_3_1_LOG_MD
+  title: "AXIOM PROFILE & AUTH v2.3.1 — LOG"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!--docs/identity_profile_auth/AXIOM_PROFILE_AUTH_v2.3.1_LOG.md-->
 <!--docs/identity_profile_auth/AXIOM_PROFILE_AUTH_v2.3.1_LOG.md-->
 <!-- AXIOM_AGENT_LOG_START -->

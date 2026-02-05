@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_SEC_001_PREVIEW_SANDBOX_SAME_ORIGIN_MD
+  title: "docs/bugs/SEC-001_preview-sandbox-same-origin.md"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 id: SEC-001
 title: Sandbox preview запускает скрипты с правами same-origin (XSS)
 status: OPEN

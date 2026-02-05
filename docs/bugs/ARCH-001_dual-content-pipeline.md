@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_ARCH_001_DUAL_CONTENT_PIPELINE_MD
+  title: "docs/bugs/ARCH-001_dual-content-pipeline.md"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 id: ARCH-001
 title: Две несогласованные пайплайны контента (legacy vs VFS) ломают UX
 status: OPEN

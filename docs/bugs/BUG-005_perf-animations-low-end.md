@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_BUG_005_PERF_ANIMATIONS_LOW_END_MD
+  title: "BUG-005 — Лаги анимаций и тяжёлые эффекты на слабых ноутбуках"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # BUG-005 — Лаги анимаций и тяжёлые эффекты на слабых ноутбуках
 
 - **Area:** Global / Performance

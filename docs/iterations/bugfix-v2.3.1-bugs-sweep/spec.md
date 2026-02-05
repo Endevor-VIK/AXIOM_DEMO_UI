@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_ITERATIONS_BUGFIX_V2_3_1_BUGS_SWEEP_SPEC_MD
+  title: "AXIOM — Bugfix Sweep `v2.3.1-bugs-sweep`"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!-- docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md -->
 
 # AXIOM — Bugfix Sweep `v2.3.1-bugs-sweep`
@@ -21,7 +35,7 @@
 
 ## 3) Структура артефактов
 - Итерация: `docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md` (этот документ).
-- Лог сессии: `docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`.
+- Лог сессии: `ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md`.
 - Источник задач: `docs/bugs/00_BUG_INDEX.md` + карточки BUG/SEC/PERF/ARCH.
 - Ветка: `bugfix/v2.3.1-bugs-sweep`.
 

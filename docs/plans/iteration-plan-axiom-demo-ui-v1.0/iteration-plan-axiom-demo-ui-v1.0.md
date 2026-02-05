@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_PLANS_ITERATION_PLAN_AXIOM_DEMO_UI_V1_0_ITERATION_PLAN_AXIOM_DEMO_UI_V1_0_MD
+  title: "ITERATION PLAN — AXIOM DEMO UI (RED PROTOCOL)"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # ITERATION PLAN — AXIOM DEMO UI (RED PROTOCOL)
 
 > **Status:** draft v1.0

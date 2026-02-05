@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.AGENTS_MD
+  title: "AGENTS — системная инструкция для работы в AXIOM WEB CORE (ui)"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!-- AGENTS.md -->
 
 # AGENTS — системная инструкция для работы в AXIOM WEB CORE (ui)
@@ -7,6 +21,15 @@
 
 > В чате всегда писать на RU.  
 > Обращение к пользователю: **CREATOR**.
+
+---
+
+## 0) Golden Rules
+1) Ops-first: любая работа фиксируется в `ops/agent_ops/...`.
+2) Не делать разрушительных действий без запроса CREATOR.
+3) Коммитить только свои изменения.
+4) Каждый `.md` должен иметь шапку `AXS_HEADER_META`.
+5) Для изменений в submodule — коммиты только внутри submodule.
 
 ---
 
@@ -28,8 +51,8 @@
 ## 2) Карта проекта (где что лежит)
 
 ### Управление задачами и логами
-- Общие правила: `docs/agent_ops/README.md`
-- Логи задач: `docs/agent_ops/logs/`  
+- Общие правила: `ops/agent_ops/README.md`
+- Логи задач: `ops/agent_ops/logs/`  
   Найди актуальный лог по последнему времени и статусу.
 
 ### Итерации и спеки
@@ -100,7 +123,7 @@
 ## 4) Процесс работы
 
 ### 4.1 Принять задачу
-1) Прочитать актуальный лог в `docs/agent_ops/logs/`.
+1) Прочитать актуальный лог в `ops/agent_ops/logs/`.
 2) Найти связанный spec в `docs/iterations/`.
 3) Уточнить цель и критерий готовности у CREATOR.
 4) Зафиксировать вводные в логе (Step A).

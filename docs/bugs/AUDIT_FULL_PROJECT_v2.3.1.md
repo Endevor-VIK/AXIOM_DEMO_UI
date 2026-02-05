@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_AUDIT_FULL_PROJECT_V2_3_1_MD
+  title: "AXIOM_DEMO_UI — Полный аудит (v2.3.1)"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # AXIOM_DEMO_UI — Полный аудит (v2.3.1)
 
 ## 1) Overview

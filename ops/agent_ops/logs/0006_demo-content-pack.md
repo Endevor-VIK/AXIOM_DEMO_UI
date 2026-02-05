@@ -1,4 +1,18 @@
-<!-- docs/agent_ops/logs/0006_demo-content-pack.md -->
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0006_DEMO_CONTENT_PACK_MD
+  title: "GLOBAL LOG — 0006_demo-content-pack"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
+<!-- ops/agent_ops/logs/0006_demo-content-pack.md -->
 
 # GLOBAL LOG — 0006_demo-content-pack
 
@@ -47,19 +61,19 @@
 
 ## Step E — Git
 - 2025-12-22T12:39:39+03:00 — Commit: `b337371` — `feat(content): add demo content pack` — Файлы: `app/routes/dashboard/content/ContentCategoryView.tsx`, `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
-- 2025-12-22T12:41:13+03:00 — Commit: `f23ee14` — `docs(content): add demo content pack logs` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`, `docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_LOG_LINK.md`, `docs/content/demo-content-pack/content_manifest.md`, `docs/content/demo-content-pack/stub_cleanup_report.md`
-- 2025-12-22T12:43:41+03:00 — Commit: `204eea0` — `docs(content): finalize demo content pack log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/stub_cleanup_report.md`
+- 2025-12-22T12:41:13+03:00 — Commit: `f23ee14` — `docs(content): add demo content pack logs` — Файлы: `ops/agent_ops/logs/0006_demo-content-pack.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_LOG_LINK.md`, `docs/content/demo-content-pack/content_manifest.md`, `docs/content/demo-content-pack/stub_cleanup_report.md`
+- 2025-12-22T12:43:41+03:00 — Commit: `204eea0` — `docs(content): finalize demo content pack log` — Файлы: `ops/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/stub_cleanup_report.md`
 - 2025-12-22T14:10:08+03:00 — Commit: `5a89eec` — `feat(content): expand demo content pack` — Файлы: `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
-- 2025-12-22T14:11:32+03:00 — Commit: `7ff7d77` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
-- 2025-12-22T14:11:55+03:00 — Commit: `5dc1770` — `docs(content): update global log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`
+- 2025-12-22T14:11:32+03:00 — Commit: `7ff7d77` — `docs(content): update manifest and log` — Файлы: `ops/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
+- 2025-12-22T14:11:55+03:00 — Commit: `5dc1770` — `docs(content): update global log` — Файлы: `ops/agent_ops/logs/0006_demo-content-pack.md`
 - 2025-12-22T14:55:43+03:00 — Commit: `ba3db08` — `fix(ui): support cyrillic summaries` — Файлы: `components/utils.ts`
 - 2025-12-22T14:55:43+03:00 — Commit: `4688d69` — `feat(content): add technology showcase entries` — Файлы: `content-src/*`, `public/assets/content/*`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
-- 2025-12-22T14:56:41+03:00 — Commit: `99b0754` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
+- 2025-12-22T14:56:41+03:00 — Commit: `99b0754` — `docs(content): update manifest and log` — Файлы: `ops/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
 - 2025-12-22T16:07:15+03:00 — Commit: `3f72392` — `feat(content): update showcase previews and ordering` — Файлы: `content-src/*`, `public/assets/content/placeholder.png`, `public/content-html/*`, `public/data/content/*`, `src/features/content/data/content-index.json`
-- 2025-12-22T16:09:10+03:00 — Commit: `6d15bc7` — `docs(content): update manifest and log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
-- 2025-12-22T16:09:10+03:00 — Commit: `933fa39` — `docs(content): update global log` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`
+- 2025-12-22T16:09:10+03:00 — Commit: `6d15bc7` — `docs(content): update manifest and log` — Файлы: `ops/agent_ops/logs/0006_demo-content-pack.md`, `docs/content/demo-content-pack/content_manifest.md`
+- 2025-12-22T16:09:10+03:00 — Commit: `933fa39` — `docs(content): update global log` — Файлы: `ops/agent_ops/logs/0006_demo-content-pack.md`
 - 2025-12-22T16:29:56+03:00 — Commit: `516c310` — `feat(news): add demo content pack updates` — Файлы: `public/data/news/manifest.json`, `public/data/news/items/2025-12-22-demo-content-pack.md`, `public/data/news/items/2025-12-22-showcase-refresh.md`
-- 2025-12-22T16:32:18+03:00 — Commit: `ddad843` — `docs(content): close demo content pack logs` — Файлы: `docs/agent_ops/logs/0006_demo-content-pack.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`, `docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_LOG_LINK.md`
+- 2025-12-22T16:32:18+03:00 — Commit: `ddad843` — `docs(content): close demo content pack logs` — Файлы: `ops/agent_ops/logs/0006_demo-content-pack.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_LOG_LINK.md`
 
 ---
 

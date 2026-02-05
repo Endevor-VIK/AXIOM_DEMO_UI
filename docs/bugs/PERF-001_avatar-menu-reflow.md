@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_PERF_001_AVATAR_MENU_REFLOW_MD
+  title: "docs/bugs/PERF-001_avatar-menu-reflow.md"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 id: PERF-001
 title: Avatar dropdown пересчитывается на каждом scroll/resize без троттлинга
 status: OPEN

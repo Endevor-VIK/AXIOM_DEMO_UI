@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_CONTENT_DEMO_CONTENT_PACK_PROMPT_STARET_MD
+  title: "РОЛЬ"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!--docs/content/demo-content-pack/Prompt_staret.md-->
 <!-- STARTER: docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_v1.0.md -->
 
@@ -22,19 +36,19 @@ docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_v1.0.md
 
 # ЛОГИРОВАНИЕ (СТРОГО ПО README — ОБЯЗАТЕЛЬНО)
 Ты обязан выполнить “ритуал старта” и вести логи строго по:
-docs/agent_ops/README.md
+ops/agent_ops/README.md
 
 ## Ритуал старта новой сессии (обязательно)
 1) Определи task_title, SPEC-путь и ветку.
-2) Найди следующий NNNN в docs/agent_ops/logs/ (макс + 1, формат ^\d{4}_).
+2) Найди следующий NNNN в ops/agent_ops/logs/ (макс + 1, формат ^\d{4}_).
 3) Создай GLOBAL LOG из шаблона:
-   - шаблон: docs/agent_ops/templates/LOG_TEMPLATE.md
-   - итог: docs/agent_ops/logs/NNNN_demo-content-pack.md
+   - шаблон: ops/agent_ops/templates/LOG_TEMPLATE.md
+   - итог: ops/agent_ops/logs/NNNN_demo-content-pack.md
    Заполни шапку (ISO-время старта, агент/модель, репо, ветка, задача, SPEC, статус=ACTIVE).
 4) Обнови индекс:
-   docs/agent_ops/logs/00_LOG_INDEX.md
+   ops/agent_ops/logs/00_LOG_INDEX.md
 5) Создай/обнови TASK LOG LINK рядом со SPEC по шаблону:
-   - шаблон: docs/agent_ops/templates/TASK_LOG_LINK_TEMPLATE.md
+   - шаблон: ops/agent_ops/templates/TASK_LOG_LINK_TEMPLATE.md
    - итоговый файл рядом со SPEC:
      docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_LOG_LINK.md
    В LINK должны быть рабочие относительные ссылки на SPEC и GLOBAL LOG, плюс LOG ID, ветка, статус.

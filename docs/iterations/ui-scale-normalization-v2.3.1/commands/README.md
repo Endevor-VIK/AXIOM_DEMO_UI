@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_ITERATIONS_UI_SCALE_NORMALIZATION_V2_3_1_COMMANDS_README_MD
+  title: "Команды (URL) для проверки масштаба"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!-- docs/iterations/ui-scale-normalization-v2.3.1/commands/README.md -->
 
 # Команды (URL) для проверки масштаба

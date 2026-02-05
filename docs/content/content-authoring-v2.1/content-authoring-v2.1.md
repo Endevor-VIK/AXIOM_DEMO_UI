@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_CONTENT_CONTENT_AUTHORING_V2_1_CONTENT_AUTHORING_V2_1_MD
+  title: "Content v2.1 Authoring Guide"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # Content v2.1 Authoring Guide
 
 This guide explains how to create and maintain content items for the AXIOM Content Hub after the v2.1 refactor. It complements the SOP in `docs/iterations/content-v2.1-fix/content-v2.1-fix.md` and focuses on three areas:

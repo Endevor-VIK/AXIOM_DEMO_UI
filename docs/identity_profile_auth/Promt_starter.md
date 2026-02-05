@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_IDENTITY_PROFILE_AUTH_PROMT_STARTER_MD
+  title: "PROMPT_STARTER — AXIOM PROFILE & AUTH v2.3.1 (Agent Entry)"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!--docs/identity_profile_auth/Promt_starter.md-->
 <!-- STARTER: docs/identity_profile_auth/AXIOM_PROFILE_AUTH_v2.3.1_SPEC.md-->
 

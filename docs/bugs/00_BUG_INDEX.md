@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_00_BUG_INDEX_MD
+  title: "docs/bugs/00_BUG_INDEX.md"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # docs/bugs/00_BUG_INDEX.md
 
 # AXIOM_DEMO_UI — BUG INDEX

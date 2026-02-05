@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_BUG_001_FOOTER_SCALE_GAP_MD
+  title: "docs/bugs/BUG-001_footer-scale-gap.md"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # docs/bugs/BUG-001_footer-scale-gap.md
 
 ---

@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_DEVTOOLS_TUNNEL_DEV_IMPLEMENTATION_SPEC_MD
+  title: "AXIOM_DEMO_UI — run_tunnel_dev.py (WSL Protected Tunnel Runner) — SPEC v0.2.3.1"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!--docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC.md-->
 
 # AXIOM_DEMO_UI — run_tunnel_dev.py (WSL Protected Tunnel Runner) — SPEC v0.2.3.1
@@ -43,7 +57,7 @@
   - типовые ошибки (QUIC/UDP, 8080 занят, нет caddy/cloudflared)
 
 ### 3.3 Лог выполнения работ агентом
-- ✅ `docs/agent_ops/logs/0002_tunnel-dev-implementation.md`
+- ✅ `ops/agent_ops/logs/0002_tunnel-dev-implementation.md`
   - что создано/изменено/проверено
   - команды теста
   - какие проблемы обнаружены
@@ -271,7 +285,7 @@ cloudflared tunnel \
 
 ## 11) Формат implementation log (обязательный)
 
-`docs/agent_ops/logs/0002_tunnel-dev-implementation.md` должен включать:
+`ops/agent_ops/logs/0002_tunnel-dev-implementation.md` должен включать:
 
 * что сделано по шагам A/B/C/D
 * какие файлы созданы/изменены

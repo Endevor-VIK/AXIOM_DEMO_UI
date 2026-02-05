@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_BUG_006_SCALE_PARITY_WINDOWED_MD
+  title: "BUG-006 — Непоследовательный scale/форм-фактор в оконном режиме"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # BUG-006 — Непоследовательный scale/форм-фактор в оконном режиме
 
 - **Area:** Responsive / Scale

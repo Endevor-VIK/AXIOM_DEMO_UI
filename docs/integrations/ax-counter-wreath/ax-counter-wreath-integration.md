@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_INTEGRATIONS_AX_COUNTER_WREATH_AX_COUNTER_WREATH_INTEGRATION_MD
+  title: "docs/integrations/ax-counter-wreath/ax-counter-wreath-integration.md"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 ﻿# AXIOM :: Counter Wreath — интеграция, правки, оптимизация
 
 **Дата:** 2025-10-24 (Europe/Berlin)  

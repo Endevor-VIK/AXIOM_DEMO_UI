@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_INTEGRATIONS_AX_OPENAI_API_V0_1_AX_OPENAI_API_INTEGRATION_V0_1_MD
+  title: "AX_OPENAI_API_INTEGRATION_v0.1"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # AX_OPENAI_API_INTEGRATION_v0.1
 
 > Полная документация по интеграции OpenAI API (GPT‑5 / GPT‑5‑mini) в AXIOM PANEL: сервер FastAPI со стримингом (SSE) + фронтенд‑клиент на TypeScript.

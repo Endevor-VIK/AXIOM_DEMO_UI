@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_SPECS_BINARY_BACKGROUND_BINARY_BACKGROUND_SPEC_MD
+  title: "AXIOM — Binary Background Layer (Spec v1.1)"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # AXIOM — Binary Background Layer (Spec v1.1)
 
 **Цель.** Добавить «2‑й слой» — почти прозрачный бинарный поток под верхним чёрным слоем и над фоном карточки, без влияния на интерактив. Слой применяется к статус‑карточкам (RouteWreath) на вкладках **AUDIT / CONTENT / NEWS**. Анимация медленная, бесшовная, GPU‑дружелюбная, с авто‑регенерацией при изменении данных.

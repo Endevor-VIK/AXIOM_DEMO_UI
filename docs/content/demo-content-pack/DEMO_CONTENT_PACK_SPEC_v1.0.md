@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_CONTENT_DEMO_CONTENT_PACK_DEMO_CONTENT_PACK_SPEC_V1_0_MD
+  title: "SPEC — DEMO CONTENT PACK v1.0 (AXIOM_DEMO_UI)"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!-- docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_v1.0.md -->
 
 # SPEC — DEMO CONTENT PACK v1.0 (AXIOM_DEMO_UI)

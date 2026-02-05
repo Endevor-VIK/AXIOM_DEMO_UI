@@ -1,4 +1,18 @@
-<!-- docs/agent_ops/logs/0002_tunnel-dev-implementation.md -->
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0002_TUNNEL_DEV_IMPLEMENTATION_MD
+  title: "GLOBAL LOG — 0002_tunnel-dev-implementation"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
+<!-- ops/agent_ops/logs/0002_tunnel-dev-implementation.md -->
 
 # GLOBAL LOG — 0002_tunnel-dev-implementation
 
@@ -82,7 +96,7 @@ Note: run_local.py падает в текущем WSL1 окружении, дл�
 - 2025-12-19T20:17:30+03:00 — Commit `chore(devtools): update helper docs and references` (задокументировал новые пути/файлы; добавил .gitignore scripts/devtools/data/).
 
 ## Notes / Decisions
-- Лог перенесён в картотеку AgentOps (`docs/agent_ops/logs/0002_tunnel-dev-implementation.md`) как каноническая запись для SPEC TUNNEL_DEV_IMPLEMENTATION_SPEC.
+- Лог перенесён в картотеку AgentOps (`ops/agent_ops/logs/0002_tunnel-dev-implementation.md`) как каноническая запись для SPEC TUNNEL_DEV_IMPLEMENTATION_SPEC.
 
 ## Risks / Open Points
 - QA заблокирован WSL1: Vite не стартует, поэтому недоступна проверка cloudflared+caddy. Требуется WSL2/другой хост для повторного QA и закрытия чеклиста.

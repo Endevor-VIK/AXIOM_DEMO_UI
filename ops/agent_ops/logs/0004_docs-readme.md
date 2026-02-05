@@ -1,4 +1,18 @@
-<!-- docs/agent_ops/logs/0004_docs-readme.md -->
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0004_DOCS_README_MD
+  title: "GLOBAL LOG — 0004_docs-readme"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
+<!-- ops/agent_ops/logs/0004_docs-readme.md -->
 
 # GLOBAL LOG — 0004_docs-readme
 
@@ -25,7 +39,7 @@
 - 
 
 ## Step E — Git
-- 2025-12-20T19:23:22+03:00 — Commit: `ab21e89` — `docs: add docs directory overview README` — Files: `docs/README.md`, `docs/agent_ops/logs/0004_docs-readme.md`, `docs/agent_ops/logs/00_LOG_INDEX.md`
+- 2025-12-20T19:23:22+03:00 — Commit: `ab21e89` — `docs: add docs directory overview README` — Files: `docs/README.md`, `ops/agent_ops/logs/0004_docs-readme.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 
 ---
 

@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_REPORT_2025_12_19_GLOBAL_MD
+  title: "AXIOM_DEMO_UI — Global Bug/Optimization Report (2025-12-19)"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # AXIOM_DEMO_UI — Global Bug/Optimization Report (2025-12-19)
 
 ## Scope

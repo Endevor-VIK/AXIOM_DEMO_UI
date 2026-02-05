@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_DEVTOOLS_TUNNEL_DEV_README_MD
+  title: "TUNNEL_DEV_README — защищённый Quick Tunnel для Vite"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # TUNNEL_DEV_README — защищённый Quick Tunnel для Vite
 
 Вспомогательный раннер: поднимает Caddy с BasicAuth и Cloudflare Quick Tunnel поверх уже запущенного Vite dev сервера.

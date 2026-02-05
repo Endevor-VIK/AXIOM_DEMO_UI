@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_RELEASES_CONTENT_V2_1_FIX_RELEASE_CHECKLIST_MD
+  title: "Release Checklist — `content-v2.1-fix`"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 # Release Checklist — `content-v2.1-fix`
 
 ## 1. Overview

@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_ITERATIONS_CONTENT_V2_1_FIX_CONTENT_V2_1_FIX_MD
+  title: "AXIOM Codex Agent — Развернутое техническое задание на итерацию `content-v2.1-fix`"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 ﻿<!--
 PATCH: docs/iterations/content-v2.1-fix/content-v2.1-fix.md
 -->

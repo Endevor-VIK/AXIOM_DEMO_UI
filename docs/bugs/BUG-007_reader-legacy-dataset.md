@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_BUGS_BUG_007_READER_LEGACY_DATASET_MD
+  title: "docs/bugs/BUG-007_reader-legacy-dataset.md"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 id: BUG-007
 title: Reader использует legacy-индекс и не открывает новые VFS записи
 status: OPEN

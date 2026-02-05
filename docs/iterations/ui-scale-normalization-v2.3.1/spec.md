@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_ITERATIONS_UI_SCALE_NORMALIZATION_V2_3_1_SPEC_MD
+  title: "AXIOM UI — Нормализация масштаба без html-zoom (v0.2)"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!-- docs/iterations/ui-scale-normalization-v2.3.1/spec.md -->
 
 # AXIOM UI — Нормализация масштаба без html-zoom (v0.2)
@@ -5,7 +19,7 @@
 ## 0) Референсы
 - BUG-006: docs/bugs/BUG-006_scale-parity-windowed.md
 - Связанный баг: docs/bugs/BUG-002_windowed-scale-break.md
-- Текущая итерация: docs/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md
+- Текущая итерация: ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md
 
 ## 1) Цель
 Стабилизировать визуальный масштаб и форм-фактор UI во всех режимах (fullscreen + windowed), убрав глобальный `html zoom/transform` и переведя управление масштабом на токены и контролируемую математику.

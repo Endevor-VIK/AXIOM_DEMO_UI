@@ -1,4 +1,18 @@
-<!-- docs/agent_ops/templates/LOG_TEMPLATE.md -->
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.OPS_AGENT_OPS_TEMPLATES_LOG_TEMPLATE_MD
+  title: "GLOBAL LOG — {NNNN}_{task_slug}"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
+<!-- ops/agent_ops/templates/LOG_TEMPLATE.md -->
 
 # GLOBAL LOG — {NNNN}_{task_slug}
 

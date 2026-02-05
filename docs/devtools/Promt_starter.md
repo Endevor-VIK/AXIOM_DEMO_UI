@@ -1,3 +1,17 @@
+<!--
+AXS_HEADER_META:
+  id: AXS.AXUI.DOCS_DEVTOOLS_PROMT_STARTER_MD
+  title: "PROMPT_STARTER — AXIOM TUNNEL DEV (Protected Quick Tunnel) v0.2.3.1 (Agent Entry)"
+  status: ACTIVE
+  mode: Doc
+  goal: "Document"
+  scope: "AXIOM WEB CORE UI"
+  lang: ru
+  last_updated: 2026-02-05
+  editable_by_agents: true
+  change_policy: "Update via AgentOps log"
+-->
+
 <!--docs/devtools/Promt_starter.md-->
 <!-- STARTER: docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC.md -->
 
@@ -18,7 +32,7 @@
    - `docs/devtools/TUNNEL_DEV_IMPLEMENTATION_SPEC.md`
 
 2) **Implementation LOG (вести в процессе выполнения):**  
-   - `docs/agent_ops/logs/0002_tunnel-dev-implementation.md`
+   - `ops/agent_ops/logs/0002_tunnel-dev-implementation.md`
 
 3) **README (создать/обновить по итогам):**  
    - `docs/devtools/TUNNEL_DEV_README.md`
@@ -60,7 +74,7 @@
    - `cloudflared --version`
    - `caddy version`
 
-✅ Результаты (OK/FAIL + команды) занести в `docs/agent_ops/logs/0002_tunnel-dev-implementation.md` (блок A).
+✅ Результаты (OK/FAIL + команды) занести в `ops/agent_ops/logs/0002_tunnel-dev-implementation.md` (блок A).
 
 ---
 
@@ -134,7 +148,7 @@
 - `docs/devtools/TUNNEL_DEV_README.md`
 
 3) Лог реализации:
-- `docs/agent_ops/logs/0002_tunnel-dev-implementation.md`
+- `ops/agent_ops/logs/0002_tunnel-dev-implementation.md`
 
 4) В конце — краткое резюме:
 - что готово
