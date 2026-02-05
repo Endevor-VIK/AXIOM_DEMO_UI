@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import axe from 'axe-core'
 
-import { bootstrapSession, stubContentApi } from './utils'
+import { bootstrapSession, ensureSessionStorage, stubContentApi } from './utils'
 
 test.describe('Accessibility', () => {
   test('content dashboard has no axe violations', async ({ page }, testInfo) => {
@@ -11,7 +11,9 @@ test.describe('Accessibility', () => {
     await bootstrapSession(page)
     await page.addInitScript({ content: axe.source })
 
-    await page.goto('/dashboard/content/all', { waitUntil: 'domcontentloaded' })
+    await page.goto('/login', { waitUntil: 'commit' })
+    await ensureSessionStorage(page, { pins: [] })
+    await page.goto('/dashboard/content/all', { waitUntil: 'commit' })
 
     await page.waitForFunction(
       () => document.querySelectorAll('.ax-content-list [role="listitem"]').length > 0,

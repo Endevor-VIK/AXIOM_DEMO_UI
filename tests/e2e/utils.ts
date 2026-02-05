@@ -29,7 +29,9 @@ export async function stubContentApi(page: Page): Promise<void> {
   })
 }
 
-export async function bootstrapSession(page: Page, options?: { pins?: string[] }): Promise<void> {
+type SessionPayload = { auth: string; pins: string }
+
+export function buildSessionPayload(options?: { pins?: string[] }): SessionPayload {
   const favorites = (options?.pins ?? []).map((id) => ({
     key: `content:${id}`,
     id,
@@ -39,10 +41,7 @@ export async function bootstrapSession(page: Page, options?: { pins?: string[] }
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }))
-  await page.addInitScript(({ auth, pins }) => {
-    window.localStorage.setItem('ax_session_v1', auth)
-    window.localStorage.setItem('ax_favorites_v1', pins)
-  }, {
+  return {
     auth: JSON.stringify({
       isAuthenticated: true,
       user: {
@@ -54,5 +53,25 @@ export async function bootstrapSession(page: Page, options?: { pins?: string[] }
       },
     }),
     pins: JSON.stringify(favorites),
-  })
+  }
+}
+
+export async function bootstrapSession(page: Page, options?: { pins?: string[] }): Promise<void> {
+  const payload = buildSessionPayload(options)
+  await page.addInitScript(({ auth, pins }) => {
+    if (!window.localStorage.getItem('ax_session_v1')) {
+      window.localStorage.setItem('ax_session_v1', auth)
+    }
+    if (!window.localStorage.getItem('ax_favorites_v1')) {
+      window.localStorage.setItem('ax_favorites_v1', pins)
+    }
+  }, payload)
+}
+
+export async function ensureSessionStorage(page: Page, options?: { pins?: string[] }): Promise<void> {
+  const payload = buildSessionPayload(options)
+  await page.evaluate(({ auth, pins }) => {
+    window.localStorage.setItem('ax_session_v1', auth)
+    window.localStorage.setItem('ax_favorites_v1', pins)
+  }, payload)
 }

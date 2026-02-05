@@ -233,7 +233,7 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
       if (!isDesktop) {
         const nextSearch = next.toString()
         const suffix = nextSearch ? `?${nextSearch}` : ''
-        const target = `/content/${item.id}${suffix}`
+        const target = `/dashboard/content/read/${item.id}${suffix}`
         navigate(target, {
           state: { from: `${location.pathname}${suffix}` },
         })
@@ -250,7 +250,7 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
       next.set('item', targetItem.id)
       const suffix = next.toString()
       const query = suffix ? `?${suffix}` : ''
-      navigate(`/content/${targetItem.id}${query}`, {
+      navigate(`/dashboard/content/read/${targetItem.id}${query}`, {
         state: { from: `${location.pathname}${query}` },
       })
     },

@@ -18,7 +18,7 @@ import {
   type ContentStatus,
   vfs,
 } from '@/lib/vfs'
-import { buildContentFavorite, makeFavoriteKey } from '@/lib/identity/favoritesService'
+import { buildContentFavorite } from '@/lib/identity/favoritesService'
 import { useFavorites } from '@/lib/identity/useFavorites'
 
 import {
@@ -78,7 +78,7 @@ const ContentLayout: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
   const location = useLocation()
-  const { favorites, addFavorite, removeFavorite, isPinned: isFavoritePinned } = useFavorites()
+  const { favorites, addFavorite, removeFavorite } = useFavorites()
   const aggregateItems = aggregate?.items ?? []
 
   const dataBase = useMemo(
@@ -233,15 +233,20 @@ const ContentLayout: React.FC = () => {
         : 'No content entries synced yet.'
 
   const pinnedContentIds = useMemo(
-    () => favorites.filter((entry) => entry.type === 'content').map((entry) => entry.id),
+    () =>
+      favorites
+        .filter((entry) => entry.route?.startsWith('/dashboard/content/'))
+        .map((entry) => entry.id),
     [favorites],
   )
 
   const togglePin = useCallback(
     (id: string) => {
-      const key = makeFavoriteKey('content', id)
-      if (isFavoritePinned(key)) {
-        removeFavorite(key)
+      const existing = favorites.find(
+        (entry) => entry.id === id && entry.route?.startsWith('/dashboard/content/'),
+      )
+      if (existing) {
+        removeFavorite(existing.key)
         return
       }
       const content = aggregateItems.find((item) => item.id === id) ?? null
@@ -254,12 +259,10 @@ const ContentLayout: React.FC = () => {
       })
       addFavorite(favorite)
     },
-    [addFavorite, aggregateItems, isFavoritePinned, removeFavorite],
+    [addFavorite, aggregateItems, favorites, removeFavorite],
   )
 
-  const isPinned = useCallback((id: string) => isFavoritePinned(makeFavoriteKey('content', id)), [
-    isFavoritePinned,
-  ])
+  const isPinned = useCallback((id: string) => pinnedContentIds.includes(id), [pinnedContentIds])
 
   const contextValue = useMemo<ContentHubContextValue>(
     () => ({
