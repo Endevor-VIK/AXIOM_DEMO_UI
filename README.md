@@ -116,6 +116,21 @@ CI/локально: если `npm run test:lighthouse` падает с `No Chro
 
 ---
 
+## AI UI Scan (быстрый визуальный обзор)
+
+Команда:
+- `npm run ui:scan`
+
+По умолчанию скрипт ожидает, что UI уже запущен локально на `http://127.0.0.1:4173`.
+Результаты сохраняются в `ops/artifacts/ui_scan/<timestamp>/` и включают скриншоты + `report.json`.
+
+Настройки через env:
+- `UI_SCAN_BASE` — базовый URL (по умолчанию `http://127.0.0.1:4173`)
+- `UI_SCAN_ROUTES` — список маршрутов через запятую
+- `UI_SCAN_OUT` — каталог для результатов
+
+---
+
 ## Documentation
 
 - [Content v2.1 authoring guide](docs/content-authoring-v2.1.md)
