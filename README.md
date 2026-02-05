@@ -105,6 +105,17 @@ AXS_HEADER_META:
 
 ---
 
+## Tests
+
+Команды:
+- `npm run test:run`
+- `npm run test:e2e`
+- `npm run test:lighthouse` (нужен Chrome; для Playwright chromium задавай `CHROME_PATH=/home/axiom/.cache/ms-playwright/chromium-1194/chrome-linux/chrome`)
+
+CI/локально: если `npm run test:lighthouse` падает с `No Chrome installations found`, укажи `CHROME_PATH` вручную.
+
+---
+
 ## Documentation
 
 - [Content v2.1 authoring guide](docs/content-authoring-v2.1.md)
