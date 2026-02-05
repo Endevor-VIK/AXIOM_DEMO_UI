@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0009_UI_QA_README_MD
   title: "GLOBAL LOG — 0009_ui-qa-readme"
-  status: ACTIVE
+  status: DONE
   mode: Log
   goal: "Unit tests + README note about Lighthouse CHROME_PATH"
   scope: "AXIOM WEB CORE UI"
@@ -20,7 +20,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: Прогон unit-тестов + README про CHROME_PATH для Lighthouse
 - SPEC: —
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -37,7 +37,7 @@ AXS_HEADER_META:
 - 2026-02-05T18:57:34+03:00 — Действие: `npm run test:run` → Результат: PASS (6 files, 23 tests).
 
 ## Step E — Git
-- 2026-02-05T18:57:34+03:00 — Commit: — — PENDING
+- 2026-02-05T18:57:34+03:00 — Commit: 903b6e3 — docs(readme): add test/lighthouse notes
 
 ---
 
@@ -48,5 +48,5 @@ AXS_HEADER_META:
 - —
 
 ## Чеклист приёмки
-- [ ] Unit tests прошли
-- [ ] README обновлён
+- [x] Unit tests прошли
+- [x] README обновлён
