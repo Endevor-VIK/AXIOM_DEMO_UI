@@ -24,6 +24,6 @@ AXS_HEADER_META:
 | 0004 | 2025-12-20T19:21:33+03:00 | README для каталога docs (структура/навигация)   | feature/profile-auth-v2.3.1 | нет                                          | ops/agent_ops/logs/0004_docs-readme.md            | DONE |
 | 0005 | 2025-12-20T20:15:29+03:00 | Баг/фикс кампания v2.3.1 (backlog docs/bugs)     | bugfix/v2.3.1-bugs-sweep    | docs/iterations/bugfix-v2.3.1-bugs-sweep/spec.md | ops/agent_ops/logs/0005_bugfix-v2.3.1-bugs-sweep.md | ACTIVE |
 | 0006 | 2025-12-22T11:16:28+03:00 | DEMO CONTENT PACK v1.0                           | feat/demo-content-pack      | docs/content/demo-content-pack/DEMO_CONTENT_PACK_SPEC_v1.0.md | ops/agent_ops/logs/0006_demo-content-pack.md      | DONE |
-| 0007 | 2026-02-05T15:47:30+03:00 | Ребейз docs/ops/agent/integrations под формат AXS | main                        | —                                          | ops/agent_ops/logs/0007_docs-ops-rebase.md      | ACTIVE |
+| 0007 | 2026-02-05T15:47:30+03:00 | Ребейз docs/ops/agent/integrations под формат AXS | main                        | —                                          | ops/agent_ops/logs/0007_docs-ops-rebase.md      | DONE |
 
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).

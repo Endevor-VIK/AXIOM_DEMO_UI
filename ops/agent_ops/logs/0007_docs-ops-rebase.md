@@ -20,7 +20,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: Ребейз документации/ops/agent/integrations под формат AXS
 - SPEC: —
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -39,7 +39,7 @@ AXS_HEADER_META:
 - 2026-02-05T15:47:30+03:00 — Действие: Быстрый чек ссылок/путей и наличие AXS_HEADER_META в основных документах. → Результат: OK
 
 ## Step E — Git
-- 2026-02-05T15:47:30+03:00 — Commit: — — PENDING
+- 2026-02-05T15:47:30+03:00 — Commit: `e53baf1` — `docs(ops): rebase docs and agentops to AXS format` — Файлы: `AGENTS.md`, `README.md`, `docs/**`, `ops/**`
 
 ---
 
