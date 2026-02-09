@@ -37,7 +37,7 @@ AXS_HEADER_META:
 - 2026-02-09T21:40:10+03:00 — Действие: Проверка через Playwright (login -> /dashboard). → Результат: OK
 
 ## Step E — Git
-- 2026-02-09T21:40:10+03:00 — Commit: `<pending>` — `fix(auth): resolve login shadowing` — Файлы: `app/routes/login/page.tsx`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `ops/agent_ops/logs/0022_login-shadow-fix.md`
+- 2026-02-09T21:40:10+03:00 — Commit: `c61ae5e` — `fix(auth): resolve login shadowing` — Файлы: `app/routes/login/page.tsx`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `ops/agent_ops/logs/0022_login-shadow-fix.md`
 
 ---
 
