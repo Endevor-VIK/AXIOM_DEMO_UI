@@ -131,6 +131,25 @@ CI/локально: если `npm run test:lighthouse` падает с `No Chro
 
 ---
 
+## AI UI Walkthrough (регистрация + ключевые скриншоты)
+
+Команда:
+- `npm run ui:walk`
+
+Что делает:
+- открывает `/login`, регистрирует тестового пользователя
+- проходит главные страницы: dashboard / roadmap / audit / news
+- делает скриншоты content‑страницы (top + scroll) и content‑read
+
+Результаты:
+- `ops/artifacts/ui_walkthrough/<timestamp>/` (скриншоты + `report.json`)
+
+Опции:
+- `UI_WALK_BASE` — базовый URL (по умолчанию `http://127.0.0.1:5173`, fallback `:4173`)
+- `UI_WALK_OUT` — каталог результатов
+
+---
+
 ## Documentation
 
 - [Content v2.1 authoring guide](docs/content-authoring-v2.1.md)
