@@ -34,5 +34,5 @@ AXS_HEADER_META:
 | 0014 | 2026-02-09T16:45:00+03:00 | Restore legacy reader behavior                  | main                        | —                                          | ops/agent_ops/logs/0014_reader-restore-legacy.md | DONE |
 | 0015 | 2026-02-09T17:05:00+03:00 | Image checks (reader/preview)                   | main                        | —                                          | ops/agent_ops/logs/0015_image-checks.md          | DONE |
 | 0016 | 2026-02-09T18:38:46+03:00 | Playwright: existing dev server mode            | main                        | —                                          | ops/agent_ops/logs/0016_playwright-existing-server.md | DONE |
-| 0016 | 2026-02-09T18:33:46+03:00 | Backend auth + roles + demo mode                | main                        | docs/specs/0016_backend-auth-roles-demo-mode.md | ops/agent_ops/logs/0016_backend-auth-roles-demo-mode.md | ACTIVE |
+| 0016 | 2026-02-09T18:33:46+03:00 | Backend auth + roles + demo mode                | main                        | docs/specs/0016_backend-auth-roles-demo-mode.md | ops/agent_ops/logs/0016_backend-auth-roles-demo-mode.md | DONE |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).

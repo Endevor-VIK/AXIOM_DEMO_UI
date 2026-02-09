@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0016_BACKEND_AUTH_ROLES_DEMO_MODE_MD
   title: "GLOBAL LOG — 0016_backend-auth-roles-demo-mode"
-  status: ACTIVE
+  status: DONE
   mode: Log
   goal: "Backend auth + roles (local) and demo auth (ghpages)"
   scope: "AXIOM WEB CORE UI"
@@ -20,7 +20,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: Backend auth + роли (local) и demo mode (ghpages)
 - SPEC: docs/specs/0016_backend-auth-roles-demo-mode.md
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -54,6 +54,6 @@ AXS_HEADER_META:
 - 
 
 ## Чеклист приёмки
-- [ ] Local backend auth работает (cookie session + SQLite)
-- [ ] Demo mode для GH Pages (localStorage auth)
-- [ ] Role gating (user/creator/test)
+- [x] Local backend auth работает (cookie session + SQLite)
+- [x] Demo mode для GH Pages (localStorage auth)
+- [x] Role gating (user/creator/test)
