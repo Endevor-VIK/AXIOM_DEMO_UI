@@ -37,7 +37,7 @@ AXS_HEADER_META:
 - 2026-02-09T21:40:10+03:00 — Действие: N/A (docs). → Результат: SKIP
 
 ## Step E — Git
-- 2026-02-09T21:40:10+03:00 — Commit: `<pending>` — `docs(readme): add admin ops guide` — Файлы: `README.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `ops/agent_ops/logs/0023_admin-ops-guide.md`
+- 2026-02-09T21:40:10+03:00 — Commit: `c8d45ac` — `docs(readme): add admin ops guide` — Файлы: `README.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `ops/agent_ops/logs/0023_admin-ops-guide.md`
 
 ---
 
