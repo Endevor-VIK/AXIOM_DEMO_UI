@@ -37,4 +37,4 @@ AXS_HEADER_META:
 - 2026-02-09T20:02:56+03:00 — Действие: N/A (docs change). → Результат: SKIP
 
 ## Step E — Git
-- 2026-02-09T20:02:56+03:00 — Commit: TBD
+- 2026-02-09T20:02:56+03:00 — Commit: 72865bc — docs(readme): add e2e auth stub notes — Файлы: `README.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `ops/agent_ops/logs/0018_readme-playwright-e2e-auth.md`
