@@ -393,6 +393,14 @@ def run(args: argparse.Namespace) -> int:
 
         if tunnel_url is None:
             error_tail = "\n".join(list(lt_buf)[-10:])
+            if not error_tail.strip():
+                raise RuntimeError(
+                    "Timed out waiting for tunnel URL from localtunnel "
+                    f"(>{max(args.timeout, 30)}s). Localtunnel did not output any lines. "
+                    "Это обычно значит, что npx не смог скачать пакет или нет доступа к host localtunnel. "
+                    "Попробуйте запустить вручную: `npx --yes localtunnel --port <proxy> --host https://loca.lt` "
+                    "или укажите `--lt-host https://localtunnel.me`."
+                )
             raise RuntimeError(
                 "Timed out waiting for tunnel URL from localtunnel "
                 f"(>{max(args.timeout, 30)}s). Last lines:\n{error_tail}"
