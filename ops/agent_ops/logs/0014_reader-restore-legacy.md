@@ -38,6 +38,7 @@ AXS_HEADER_META:
 
 ## Step E — Git
 - 2026-02-09T16:45:00+03:00 — Commit: 7e11a56 — fix(reader): restore legacy reader routing — Файлы: `app/routes/dashboard/content/ContentCategoryView.tsx`, `src/features/content/data/useContentIndex.ts`, `src/features/content/pages/ReaderPage.tsx`, `ops/agent_ops/logs/0014_reader-restore-legacy.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
+- 2026-02-09T16:45:00+03:00 — Commit: 56433a2 — docs(ops): refresh log index header — Файлы: `ops/agent_ops/logs/00_LOG_INDEX.md`
 
 ---
 
