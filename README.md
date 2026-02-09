@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-05
+  last_updated: 2026-02-09
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -113,6 +113,12 @@ AXS_HEADER_META:
 - `npm run test:lighthouse` (нужен Chrome; для Playwright chromium задавай `CHROME_PATH=/home/axiom/.cache/ms-playwright/chromium-1194/chrome-linux/chrome`)
 
 CI/локально: если `npm run test:lighthouse` падает с `No Chrome installations found`, укажи `CHROME_PATH` вручную.
+
+Playwright с уже запущенным dev‑сервером:
+- `PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts`
+- или задай `PLAYWRIGHT_BASE_URL=http://127.0.0.1:5173` вместе с `PLAYWRIGHT_USE_EXISTING_SERVER=1`
+
+По умолчанию тесты ожидают сервер на `http://127.0.0.1:4173`, если не заданы env‑переменные.
 
 ---
 

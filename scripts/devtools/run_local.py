@@ -217,6 +217,12 @@ def main() -> int:
             ready = True
             elapsed = time.time() - start
             print(f"Ready in {elapsed:.1f}s → {url}", flush=True)
+            print(
+                "[dev] Playwright (existing server): "
+                f"PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT={port} "
+                "npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts",
+                flush=True,
+            )
             # continue streaming logs
 
         # Stream any available lines without blocking too long
