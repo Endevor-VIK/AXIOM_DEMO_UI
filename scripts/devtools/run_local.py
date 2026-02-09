@@ -8,11 +8,13 @@ Usage:
 Переменные окружения:
   PORT                 Порт dev-сервера (по умолчанию 5173)
   HOST                 Хост для проб (по умолчанию 127.0.0.1)
-  DEV_MODE             ui | full | api (по умолчанию ui)
+  DEV_MODE             ui | full | api (по умолчанию full)
   DEV_HOST             Хост для Vite (авто 0.0.0.0 в WSL)
   HMR_HOST             Хост для Vite HMR (по умолчанию HOST)
   AX_API_PORT          Порт API (по умолчанию 8787)
   AX_API_HOST          Хост API (по умолчанию 127.0.0.1, в WSL 0.0.0.0)
+  AX_ALLOW_REGISTER    Регистрация (по умолчанию 1 в режиме full/api)
+  AX_SEED_TEST         Seed test-аккаунта (по умолчанию 1 в режиме full/api)
   SKIP_WSL_PORTPROXY   Выключить auto netsh portproxy в WSL
 
 Примечания:
@@ -171,7 +173,7 @@ def main() -> int:
     root = repo_root()
     port = int(os.environ.get('PORT') or 5173)
     host = os.environ.get('HOST') or '127.0.0.1'
-    mode = (os.environ.get('DEV_MODE') or 'ui').strip().lower()
+    mode = (os.environ.get('DEV_MODE') or 'full').strip().lower()
     if mode not in {'ui', 'full', 'api'}:
         sys.stderr.write(
             f"[dev] Invalid DEV_MODE={mode!r}. Expected ui | full | api.\n"
@@ -197,6 +199,8 @@ def main() -> int:
         else:
             env.setdefault('AX_API_HOST', '127.0.0.1')
         env.setdefault('AX_API_PORT', str(api_port))
+        env.setdefault('AX_ALLOW_REGISTER', '1')
+        env.setdefault('AX_SEED_TEST', '1')
 
     api_host = env.get('AX_API_HOST') or '127.0.0.1'
     api_probe_host = host if api_host == '0.0.0.0' else api_host
