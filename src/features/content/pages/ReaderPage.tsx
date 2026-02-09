@@ -145,7 +145,7 @@ const ReaderPage: React.FC = () => {
           onSelect={handleSelect}
           onClose={() => setMenuOpen(false)}
         />
-        <section className='ax-reader axr-empty'>
+        <section className='ax-reader axr-legacy axr-empty'>
           <header className='axr-header'>
             <button className='axr-back' type='button' onClick={() => navigate('/dashboard/content')}>
               <span className='axr-icon'>←</span>
@@ -191,7 +191,10 @@ const ReaderPage: React.FC = () => {
         onClose={() => setMenuOpen(false)}
       />
 
-      <section className={`ax-reader${menuOpen ? ' is-menu-open' : ''}`} aria-label='AXIOM file reader'>
+      <section
+        className={`ax-reader axr-legacy${menuOpen ? ' is-menu-open' : ''}`}
+        aria-label='AXIOM file reader'
+      >
         <header className='axr-header'>
           <button className='axr-back' type='button' onClick={handleBack}>
             <span className='axr-icon'>←</span>
