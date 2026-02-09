@@ -105,14 +105,17 @@ function readLegacySession(): Session | null {
     if (!raw) return null
     const parsed = JSON.parse(raw) as { isAuthenticated?: boolean; user?: Partial<User> }
     if (!parsed?.isAuthenticated || !parsed.user?.id) return null
+    const email = parsed.user.email
+    const lang = parsed.user.lang
+    const avatarUrl = parsed.user.avatarUrl
     const legacyUser: User = {
       id: String(parsed.user.id),
-      email: parsed.user.email,
       displayName: parsed.user.displayName || 'USER',
       handle: parsed.user.handle || '@user',
       roles: (parsed.user.roles as User['roles']) || ['user'],
-      lang: parsed.user.lang,
-      avatarUrl: parsed.user.avatarUrl,
+      ...(email !== undefined ? { email } : {}),
+      ...(lang !== undefined ? { lang } : {}),
+      ...(avatarUrl !== undefined ? { avatarUrl } : {}),
     }
     return { isAuthenticated: true, isLoading: false, user: legacyUser }
   } catch {

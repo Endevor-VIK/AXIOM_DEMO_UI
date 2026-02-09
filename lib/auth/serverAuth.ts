@@ -25,14 +25,15 @@ function notify(session: Session) {
 
 function toUser(payload: ApiUser): User {
   const email = payload.email
-  const base = email ? email.split('@')[0] : payload.displayName || 'USER'
+  const emailBase = email ? email.split('@')[0] : undefined
+  const base = emailBase || payload.displayName || 'USER'
   return {
     id: payload.id,
-    email,
     displayName: payload.displayName || base.toUpperCase(),
     handle: payload.handle || `@${base.toLowerCase()}`,
     roles: (payload.roles ?? ['user']) as User['roles'],
     lang: 'EN',
+    ...(email !== undefined ? { email } : {}),
   }
 }
 

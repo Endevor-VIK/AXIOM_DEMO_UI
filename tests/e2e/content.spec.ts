@@ -75,7 +75,10 @@ test.describe('Content hub flows', () => {
 
     const previewImage = page.locator('.axcp-media img').first()
     await expect(previewImage).toBeVisible({ timeout: 60_000 })
-    const previewLoaded = await previewImage.evaluate((img) => img.complete && img.naturalWidth > 0)
+    const previewLoaded = await previewImage.evaluate((img) => {
+      if (!(img instanceof HTMLImageElement)) return false
+      return img.complete && img.naturalWidth > 0
+    })
     expect(previewLoaded).toBe(true)
 
     await Promise.all([
