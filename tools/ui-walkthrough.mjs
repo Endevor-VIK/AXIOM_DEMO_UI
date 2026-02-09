@@ -13,6 +13,9 @@ const outputRoot = process.env.UI_WALK_OUT || 'ops/artifacts/ui_walkthrough'
 const debugEnabled = (process.env.UI_WALK_DEBUG ?? '1').toLowerCase() !== '0'
 const deviceScaleFactor = Number.parseFloat(process.env.UI_WALK_DPR || '1')
 const navTimeout = Number.parseInt(process.env.UI_WALK_TIMEOUT || '60000', 10)
+const authMode = (process.env.UI_WALK_AUTH || 'auto').toLowerCase()
+const authUserEnv = process.env.UI_WALK_USER || process.env.AX_TEST_EMAIL || ''
+const authPassEnv = process.env.UI_WALK_PASSWORD || process.env.AX_TEST_PASSWORD || ''
 const viewports = (process.env.UI_WALK_VIEWPORTS || '1920x1080')
   .split(',')
   .map((entry) => entry.trim())
@@ -79,6 +82,29 @@ async function registerUser(page) {
   return { user, pass }
 }
 
+async function ensureMode(page, mode) {
+  if (mode === 'register') {
+    const toggle = page.getByRole('button', { name: 'REQUEST ACCESS' })
+    if (await toggle.isVisible().catch(() => false)) {
+      await toggle.click()
+    }
+    return
+  }
+  const back = page.getByRole('button', { name: 'BACK TO LOGIN' })
+  if (await back.isVisible().catch(() => false)) {
+    await back.click()
+  }
+}
+
+async function loginUser(page, user, pass) {
+  await ensureMode(page, 'login')
+  await page.getByPlaceholder('USER ID').fill(user)
+  await page.getByPlaceholder('ACCESS KEY').fill(pass)
+  await page.getByRole('button', { name: 'ENTRANCE' }).click()
+  await page.waitForURL('**/dashboard', { timeout: 30_000 })
+  return { user, pass }
+}
+
 async function capture(page, outputDir, name, options = {}) {
   const fileName = `${name}.png`
   const filePath = path.join(outputDir, fileName)
@@ -108,7 +134,12 @@ async function runViewport(browser, baseUrl, viewport) {
     screenshot: await capture(page, viewportDir, 'login', { fullPage: true }),
   })
 
-  const creds = await registerUser(page)
+  let creds
+  if (authMode === 'login' || (authMode === 'auto' && authUserEnv && authPassEnv)) {
+    creds = await loginUser(page, authUserEnv, authPassEnv)
+  } else {
+    creds = await registerUser(page)
+  }
 
   const mainRoutes = [
     { name: 'dashboard', route: '/dashboard' },

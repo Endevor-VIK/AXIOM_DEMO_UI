@@ -116,9 +116,31 @@ CI/локально: если `npm run test:lighthouse` падает с `No Chro
 
 Playwright с уже запущенным dev‑сервером:
 - `PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts`
-- или задай `PLAYWRIGHT_BASE_URL=http://127.0.0.1:5173` вместе с `PLAYWRIGHT_USE_EXISTING_SERVER=1`
+- `PLAYWRIGHT_USE_EXISTING_SERVER=auto PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts` (auto‑детект сервера, иначе fallback на автозапуск)
+- или задай `PLAYWRIGHT_BASE_URL=http://127.0.0.1:5173` вместе с `PLAYWRIGHT_USE_EXISTING_SERVER=1`/`auto`
 
 По умолчанию тесты ожидают сервер на `http://127.0.0.1:4173`, если не заданы env‑переменные.
+
+---
+
+## Backend Auth (Local) + Demo Mode
+
+Режимы:
+- `VITE_AX_DEPLOY_TARGET=local` — backend auth (cookie sessions + SQLite)
+- `VITE_AX_DEPLOY_TARGET=ghpages` — demo auth (localStorage, роль `user`)
+
+Скрипты:
+- `npm run dev:api` — backend API (Fastify)
+- `npm run dev:full` — фронт + бек вместе
+- `npm run start` — backend + раздача `dist` (prod)
+
+ENV (backend):
+- `AX_API_PORT` (default `8787`)
+- `AX_ALLOW_REGISTER=1` чтобы включить регистрацию
+- `AX_SESSION_TTL_DAYS` (default `14`)
+- `AX_CREATOR_EMAIL`, `AX_CREATOR_PASSWORD` → seed creator
+- `AX_SEED_TEST=1`, `AX_TEST_EMAIL`, `AX_TEST_PASSWORD` → seed test
+- `AX_DB_PATH` (default `runtime/auth.sqlite`)
 
 ---
 
@@ -134,6 +156,7 @@ Playwright с уже запущенным dev‑сервером:
 - `UI_SCAN_BASE` — базовый URL (по умолчанию `http://127.0.0.1:4173`)
 - `UI_SCAN_ROUTES` — список маршрутов через запятую
 - `UI_SCAN_OUT` — каталог для результатов
+- `UI_SCAN_DEBUG` — добавлять `?debug=1` (по умолчанию `1`)
 
 ---
 
@@ -156,6 +179,9 @@ Playwright с уже запущенным dev‑сервером:
 - `UI_WALK_VIEWPORTS` — список размеров (например `1920x1080,1600x900,1440x900`)
 - `UI_WALK_DEBUG` — добавлять `?debug=1` (по умолчанию `1`)
 - `UI_WALK_DPR` — deviceScaleFactor (по умолчанию `1`)
+- `UI_WALK_AUTH` — `auto|login|register` (по умолчанию `auto`)
+- `UI_WALK_USER` / `UI_WALK_PASSWORD` — креды для login (fallback: `AX_TEST_EMAIL` / `AX_TEST_PASSWORD`)
+- `UI_WALK_TIMEOUT` — таймаут навигации (мс, по умолчанию `60000`)
 
 ---
 

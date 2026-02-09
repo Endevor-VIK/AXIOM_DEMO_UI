@@ -3,6 +3,7 @@ import path from 'node:path'
 import { chromium } from '@playwright/test'
 
 const baseUrl = process.env.UI_SCAN_BASE || 'http://127.0.0.1:4173'
+const debugEnabled = (process.env.UI_SCAN_DEBUG ?? '1').toLowerCase() !== '0'
 const routeList = process.env.UI_SCAN_ROUTES
   ? process.env.UI_SCAN_ROUTES.split(',').map((route) => route.trim()).filter(Boolean)
   : [
@@ -55,7 +56,10 @@ async function main() {
 
   const results = []
   for (const route of routeList) {
-    const url = new URL(route, baseUrl).toString()
+    const url = new URL(route, baseUrl)
+    if (debugEnabled) {
+      url.searchParams.set('debug', '1')
+    }
     await page.goto(url, { waitUntil: 'networkidle' })
     await page.waitForTimeout(500)
     const safeName = route.replace(/[^\w-]+/g, '_').replace(/^_+|_+$/g, '') || 'root'
