@@ -6,6 +6,8 @@ import { useContentIndex } from '../data/useContentIndex'
 import { withExportPath } from '../exportRoot'
 import { withBasePath } from '../utils'
 import { ReaderMenuLayer } from '../components/ReaderMenuLayer'
+import { vfs } from '@/lib/vfs'
+import { deriveAssetsBase, resolveAssets } from '@/lib/hybrid/resolveAssets'
 
 import '@/styles/content-hub-v2.css'
 
@@ -13,6 +15,10 @@ interface LoadState {
   html: string
   loading: boolean
   error: string | null
+}
+
+function ensureTrailingSlash(value: string): string {
+  return value.endsWith('/') ? value : value + '/'
 }
 
 function resolveEntry(rawId: string | undefined, entries: ContentPreviewData[]): ContentPreviewData | null {
@@ -55,6 +61,36 @@ function resolveEntry(rawId: string | undefined, entries: ContentPreviewData[]):
   return null
 }
 
+function ensureContentPath(file: string): string {
+  const trimmed = file.replace(/^\/+/, '')
+  return trimmed.startsWith('content/') ? trimmed : `content/${trimmed}`
+}
+
+function matchManifestItem(
+  items: Array<{
+    id: string
+    slug?: string | null
+    numericSuffix?: string | null
+    file?: string | null
+  }>,
+  entryId: string,
+) {
+  const normalized = entryId.trim().toLowerCase()
+  if (!normalized) return null
+  const direct = items.find((item) => item.id.toLowerCase() === normalized)
+  if (direct) return direct
+  const slugMatch = items.find((item) => (item.slug ?? '').toLowerCase() === normalized)
+  if (slugMatch) return slugMatch
+  const digits = normalized.replace(/[^0-9]/g, '')
+  if (digits) {
+    const suffixMatch = items.find((item) => String(item.numericSuffix ?? '').toLowerCase() === digits)
+    if (suffixMatch) return suffixMatch
+    const idDigitsMatch = items.find((item) => item.id.replace(/[^0-9]/g, '') === digits)
+    if (idDigitsMatch) return idDigitsMatch
+  }
+  return null
+}
+
 const ReaderPage: React.FC = () => {
   const { id: rawId } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -62,11 +98,20 @@ const ReaderPage: React.FC = () => {
   const { entries, loading, error } = useContentIndex()
   const entry = useMemo(() => resolveEntry(rawId, entries), [rawId, entries])
   const activeId = entry?.id ?? null
+  const dataBase = useMemo(
+    () => ensureTrailingSlash(((import.meta as any)?.env?.VITE_DATA_BASE as string) ?? 'data/'),
+    [],
+  )
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [state, setState] = useState<LoadState>({ html: '', loading: true, error: null })
+  const [assetsBase, setAssetsBase] = useState<string | null>(null)
   const [fetchKey, setFetchKey] = useState(0)
+  const resolvedHtml = useMemo(
+    () => (state.html && assetsBase ? resolveAssets(state.html, assetsBase, dataBase) : state.html),
+    [state.html, assetsBase, dataBase],
+  )
 
   // Redirect to canonical id if resolved from legacy
   useEffect(() => {
@@ -78,6 +123,31 @@ const ReaderPage: React.FC = () => {
   useEffect(() => {
     setMenuOpen(false)
   }, [rawId])
+
+  useEffect(() => {
+    let active = true
+    setAssetsBase(null)
+    if (!entry) return () => {
+      active = false
+    }
+
+    vfs
+      .readContentManifest()
+      .then((items) => {
+        if (!active) return
+        const match = matchManifestItem(items, entry.id)
+        const file = match?.file ? ensureContentPath(match.file) : null
+        const base = file ? deriveAssetsBase({ file }) ?? null : null
+        setAssetsBase(base)
+      })
+      .catch(() => {
+        if (active) setAssetsBase(null)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [entry])
 
   useEffect(() => {
     setMenuOpen(false)
@@ -259,7 +329,7 @@ const ReaderPage: React.FC = () => {
                 </div>
               )}
               {!state.loading && !state.error && (
-                <div dangerouslySetInnerHTML={{ __html: state.html }} />
+                <div dangerouslySetInnerHTML={{ __html: resolvedHtml }} />
               )}
               </article>
             </main>

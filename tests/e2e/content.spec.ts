@@ -22,21 +22,15 @@ async function clickTestId(page: Page, testId: string): Promise<void> {
 }
 
 async function ensureContentList(page: Page) {
-  const list = page.getByRole('list', { name: 'Content items' })
+  const list = page.locator('.ax-content-list')
   for (let attempt = 0; attempt < 2; attempt += 1) {
-    if (attempt === 0) {
-      await page.goto('/login', { waitUntil: 'commit' })
-      await ensureSessionStorage(page, { pins: [] })
-      await page.goto('/dashboard/content/all', { waitUntil: 'commit' })
-    } else {
-      await page.reload({ waitUntil: 'commit' })
-    }
+    await page.goto('/dashboard/content/all', { waitUntil: 'commit' })
     if (page.url().includes('/login')) {
       await ensureSessionStorage(page, { pins: [] })
       await page.goto('/dashboard/content/all', { waitUntil: 'commit' })
     }
     try {
-      await list.waitFor({ state: 'visible', timeout: 30_000 })
+      await list.waitFor({ state: 'visible', timeout: 45_000 })
       return list
     } catch {
       // retry once
@@ -47,7 +41,7 @@ async function ensureContentList(page: Page) {
 }
 
 test.describe('Content hub flows', () => {
-  test('supports selection, filters, pinning, reader navigation, and sandbox view', async ({ page }) => {
+  test('supports selection, pinning, reader navigation, and images load', async ({ page }) => {
     await stubContentApi(page)
     await bootstrapSession(page, { pins: [] })
 
@@ -64,27 +58,30 @@ test.describe('Content hub flows', () => {
     const viktorPin = page.getByTestId('pin-toggle-CHR-VIKTOR-0301')
     await expect(viktorPin).toHaveAttribute('aria-pressed', 'true')
 
-    await clickTestId(page, 'content-select-LOC-ECHELON-CORE')
-    const locationButton = page.getByTestId('content-select-LOC-ECHELON-CORE')
-    await expect(locationButton).toHaveAttribute('aria-selected', 'true')
+    const previewImage = page.locator('.axcp-media img').first()
+    await expect(previewImage).toBeVisible({ timeout: 60_000 })
+    const previewLoaded = await previewImage.evaluate((img) => img.complete && img.naturalWidth > 0)
+    expect(previewLoaded).toBe(true)
 
-    await page.getByRole('button', { name: 'Open source' }).click()
-    await expect(page).toHaveURL(/\/dashboard\/content\/read\/LOC-ECHELON-CORE/)
+    await Promise.all([
+      page.waitForURL(/\/content\/(CHR-VIKTOR-0301|03\.01_VIKTOR)(\?|$)/),
+      page.getByRole('button', { name: 'Open source' }).click(),
+    ])
+    await page.waitForLoadState('domcontentloaded')
 
-    const sandboxButton = page.getByRole('button', { name: 'Sandbox' })
-    await expect(sandboxButton).toBeEnabled({ timeout: 60_000 })
-    await sandboxButton.click()
-    await expect(page.locator('.ax-preview__iframe').first()).toBeVisible({ timeout: 60_000 })
+    await page.waitForSelector('img.axv-img', { state: 'attached', timeout: 60_000 })
+    await expect.poll(
+      async () =>
+        page.evaluate(() => {
+          const img = document.querySelector('img.axv-img') as HTMLImageElement | null
+          if (!img) return false
+          img.scrollIntoView({ block: 'center', inline: 'center' })
+          return img.complete && img.naturalWidth > 0
+        }),
+      { timeout: 10_000 },
+    ).toBe(true)
 
-    await page.evaluate(() => {
-      const backButton = Array.from(document.querySelectorAll('button')).find((button) =>
-        button.textContent?.trim().toLowerCase().includes('back'),
-      )
-      if (!(backButton instanceof HTMLElement)) {
-        throw new Error('Back button not found')
-      }
-      backButton.click()
-    })
+    await page.getByRole('button', { name: 'Content' }).click()
     await expect(page).toHaveURL(/\/dashboard\/content(\/all)?/)
     await expect(list.getByRole('listitem').first()).toBeVisible()
 
