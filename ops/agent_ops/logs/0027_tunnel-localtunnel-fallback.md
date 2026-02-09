@@ -40,6 +40,7 @@ AXS_HEADER_META:
 - 2026-02-09T23:32:54+03:00 — Действие: `python3 -m py_compile` для `run_tunnel_dev.py`, `run_tunnel_dev_auto.py`. → Результат: OK
 - 2026-02-09T23:32:54+03:00 — Действие: Запуск `run_tunnel_dev.py` (localtunnel) → URL получен `*.loca.lt`, локальный proxy=401. → Результат: OK
 - 2026-02-09T23:32:54+03:00 — Действие: Внешний probe URL дал `503 Tunnel Unavailable` (localtunnel не держит подключение). → Результат: PARTIAL
+- 2026-02-10T01:29:20+03:00 — Действие: Прогон `run_tunnel_dev_auto.py` (порт 8086) → URL `https://cool-lights-visit.loca.lt` получен, interstitial localtunnel показал ошибку `endpoint IP is not correct` из-за несовпадения tunnel password. → Результат: PARTIAL
 
 ## Step E — Git
 - 2026-02-09T23:32:54+03:00 — Commit: `4d2aa73` — `fix(devtools): switch tunnel to localtunnel` — Файлы: `scripts/devtools/run_tunnel_dev.py`, `scripts/devtools/run_tunnel_dev_auto.py`, `docs/devtools/TUNNEL_DEV_README.md`
@@ -56,6 +57,7 @@ AXS_HEADER_META:
 
 ## Риски / Открытые вопросы
 - Внешний доступ зависит от доступности сервиса localtunnel; в WSL наблюдается `503 Tunnel Unavailable` при обращении к URL.
+- Tunnel password может не совпадать с ручным `curl https://loca.lt/mytunnelpassword` (разные egress IP/прокси). Использовать пароль, напечатанный скриптом.
 
 ## Чеклист приёмки
 - [x] Localtunnel URL выдаётся
