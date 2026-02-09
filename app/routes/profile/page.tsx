@@ -5,6 +5,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { safeText } from '@/components/utils'
+import { resolvePrimaryRole } from '@/lib/identity/roles'
 import { useSession } from '@/lib/identity/useSession'
 
 function initials(name: string): string {
@@ -21,7 +22,7 @@ export default function ProfilePage() {
   const user = session.user
   const displayName = safeText(user?.displayName ?? 'DEMO OPERATIVE')
   const handle = safeText(user?.handle ?? '@demo_user')
-  const role = (user?.role ?? 'guest').toUpperCase()
+  const role = resolvePrimaryRole(user?.roles).toUpperCase()
   const lang = user?.lang ?? 'EN'
 
   return (

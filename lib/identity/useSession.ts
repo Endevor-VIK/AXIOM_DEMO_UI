@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
 
-import { getSession, subscribeSession } from './authService'
+import { getSession, refreshSession, subscribeSession } from './authService'
 import type { Session } from './types'
 
 export function useSession(): Session {
   const [session, setSession] = useState<Session>(() => getSession())
 
   useEffect(() => {
-    return subscribeSession((next) => setSession(next))
+    const unsub = subscribeSession((next) => setSession(next))
+    refreshSession().catch(() => undefined)
+    return () => unsub()
   }, [])
 
   return session

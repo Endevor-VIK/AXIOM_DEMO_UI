@@ -10,6 +10,7 @@ import { useNewsManifest } from '../../lib/useNewsManifest'
 import StatusLine from '@/components/StatusLine'
 import UserMenuDropdown from '@/components/UserMenuDropdown'
 import { logout } from '@/lib/identity/authService'
+import { resolvePrimaryRole } from '@/lib/identity/roles'
 import { useSession } from '@/lib/identity/useSession'
 
 type NavItem = {
@@ -63,11 +64,11 @@ export default function Layout() {
   const tickerItems = useNewsManifest()
   const session = useSession()
   const userName = session.user?.displayName || 'CREATOR'
-  const userRole = (session.user?.role || 'USER').toUpperCase()
+  const userRole = resolvePrimaryRole(session.user?.roles).toUpperCase()
   const userInitials = resolveInitials(userName)
 
-  const handleLogout = useCallback(() => {
-    logout()
+  const handleLogout = useCallback(async () => {
+    await logout()
     navigate('/', { replace: true })
   }, [navigate])
 

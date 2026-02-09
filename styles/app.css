@@ -117,7 +117,18 @@
    a { color: inherit; text-decoration: none; }
    a:hover { text-decoration: none; }
    
-   :focus-visible { outline: 2px solid color-mix(in srgb, var(--ax-focus) 80%, transparent); outline-offset: 2px; border-radius: var(--r-lg); }
+  :focus-visible { outline: 2px solid color-mix(in srgb, var(--ax-focus) 80%, transparent); outline-offset: 2px; border-radius: var(--r-lg); }
+
+  .ax-loading {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ax-color-subtle);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-size: 12px;
+  }
    
    .hidden { display: none !important; }
    .visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; }

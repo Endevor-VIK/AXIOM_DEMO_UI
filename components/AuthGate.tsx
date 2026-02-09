@@ -11,6 +11,10 @@ export default function AuthGate({ children }: PropsWithChildren) {
   const session = useSession()
   const loc = useLocation()
 
+  if (session.isLoading) {
+    return <div className='ax-page ax-loading'>AUTH CHECK…</div>
+  }
+
   if (!session.isAuthenticated) {
     return <Navigate to='/login' replace state={{ from: loc.pathname }} />
   }

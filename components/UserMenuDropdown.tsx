@@ -9,6 +9,7 @@ import React, {
 import { createPortal } from 'react-dom'
 
 import type { User } from '@/lib/identity/types'
+import { resolvePrimaryRole } from '@/lib/identity/roles'
 
 export interface UserMenuDropdownProps {
   anchorEl: HTMLElement | null
@@ -142,7 +143,7 @@ export function UserMenuDropdown({
   const header = useMemo(() => {
     const displayName = user?.displayName || 'CREATOR'
     const handle = user?.handle || '@endeavor_prime'
-    const role = (user?.role || 'user').toUpperCase()
+    const role = resolvePrimaryRole(user?.roles).toUpperCase()
     return { displayName, handle, role }
   }, [user])
 

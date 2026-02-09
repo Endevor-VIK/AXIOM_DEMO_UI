@@ -1,16 +1,18 @@
-export type UserRole = 'guest' | 'user' | 'admin'
+export type UserRole = 'user' | 'creator' | 'test'
 
 export type User = {
   id: string
+  email?: string
   displayName: string
   handle: string
   avatarUrl?: string
-  role: UserRole
+  roles: UserRole[]
   lang?: 'RU' | 'EN'
 }
 
 export type Session = {
   isAuthenticated: boolean
+  isLoading?: boolean
   user?: User | null
 }
 

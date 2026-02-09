@@ -4,11 +4,8 @@
 import React, {
   useCallback, useEffect, useId, useMemo, useRef, useState,
 } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  hashPassword, verifyPassword, loadUsers, saveUser, type AuthUser,
-} from "@/lib/auth";
-import { loginDemo } from "@/lib/identity/authService";
+import { useLocation, useNavigate } from "react-router-dom";
+import { login, register } from "@/lib/identity/authService";
 
 import "@/styles/login-bg.css";
 import "@/styles/login-cyber.css";
@@ -179,6 +176,7 @@ function CyberDeckOverlay({ root }: { root: React.RefObject<HTMLElement> }) {
 
 export default function LoginPage() {
   const nav = useNavigate();
+  const location = useLocation();
   const rootRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -215,25 +213,22 @@ export default function LoginPage() {
     try {
       if (!user || !key) throw new Error("Fill both fields");
       if (mode === "register") {
-        const exists = (await loadUsers()).find((u) => u.login === user);
-        if (exists) throw new Error("User already exists");
-        const hashed = await hashPassword(key);
-        const newUser: AuthUser = { login: user, password: hashed, createdAt: new Date().toISOString() };
-        await saveUser(newUser);
+        await register({ email: user, password: key, displayName: user.toUpperCase() });
       } else {
-        const users = await loadUsers(); const found = users.find((u) => u.login === user);
-        if (!found) throw new Error("Invalid credentials");
-        const ok = await verifyPassword(key, found.password);
-        if (!ok) throw new Error("Invalid credentials");
+        await login({ email: user, password: key });
       }
-      loginDemo({
-        id: `user-${user.toLowerCase()}`,
-        displayName: user.toUpperCase(),
-        handle: `@${user.toLowerCase()}`,
-        role: "user",
-      });
-      nav("/dashboard", { replace: true });
-    } catch (error: any) { setErr(error?.message || "Unable to authenticate"); } finally { setBusy(false); }
+      const fallback = "/dashboard";
+      const target = (location.state as { from?: string } | null)?.from || fallback;
+      nav(target, { replace: true });
+    } catch (error: any) {
+      const msg = String(error?.message || "Unable to authenticate");
+      if (msg === "registration_disabled") setErr("Registration disabled");
+      else if (msg === "user_exists") setErr("User already exists");
+      else if (msg === "invalid_credentials") setErr("Invalid credentials");
+      else if (msg === "missing_credentials") setErr("Fill both fields");
+      else if (msg === "rate_limited") setErr("Too many attempts. Try again later.");
+      else setErr(msg);
+    } finally { setBusy(false); }
   }, [busy, login, password, mode, nav]);
 
   const cardClasses = ["ax-card", "low", "ax-login-card"];
