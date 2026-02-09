@@ -40,7 +40,8 @@ AXS_HEADER_META:
 - 2026-02-09T23:32:54+03:00 — Действие: Внешний probe URL дал `503 Tunnel Unavailable` (localtunnel не держит подключение). → Результат: PARTIAL
 
 ## Step E — Git
-- 2026-02-09T23:32:54+03:00 — Commit: `<hash>` — `<message>` — Файлы: `scripts/devtools/run_tunnel_dev.py`, `scripts/devtools/run_tunnel_dev_auto.py`, `docs/devtools/TUNNEL_DEV_README.md`, `ops/agent_ops/logs/0027_tunnel-localtunnel-fallback.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
+- 2026-02-09T23:32:54+03:00 — Commit: `4d2aa73` — `fix(devtools): switch tunnel to localtunnel` — Файлы: `scripts/devtools/run_tunnel_dev.py`, `scripts/devtools/run_tunnel_dev_auto.py`, `docs/devtools/TUNNEL_DEV_README.md`
+- 2026-02-09T23:32:54+03:00 — Commit: `65b2261` — `docs(ops): log localtunnel switch` — Файлы: `ops/agent_ops/logs/0027_tunnel-localtunnel-fallback.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 
 ---
 
