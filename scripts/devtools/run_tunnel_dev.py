@@ -139,6 +139,9 @@ def build_temp_caddyfile(auth_user: str, bcrypt: str, upstream_url: str, proxy_p
     parsed = urllib.parse.urlparse(upstream_url)
     upstream_hostport = parsed.netloc or upstream_url.replace("http://", "").replace("https://", "")
     content = (
+        "{\n"
+        "  admin off\n"
+        "}\n\n"
         f":{proxy_port} {{\n"
         f"  basicauth /* {{\n"
         f"    {auth_user} {bcrypt}\n"
