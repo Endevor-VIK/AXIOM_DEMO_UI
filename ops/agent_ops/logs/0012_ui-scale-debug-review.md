@@ -40,6 +40,7 @@ AXS_HEADER_META:
 
 ## Step E — Git
 - 2026-02-09T16:02:26+03:00 — Commit: e3a341d — fix(ui): stabilize preview card scale
+- 2026-02-09T16:02:26+03:00 — Commit: f77bcac — docs(ops): close ui scale debug log
 
 ---
 
