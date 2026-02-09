@@ -31,6 +31,7 @@ AXS_HEADER_META:
 - 2026-02-09T23:32:54+03:00 — Действие: Переписать `run_tunnel_dev.py` и `run_tunnel_dev_auto.py` под localtunnel (Caddy BasicAuth + npx localtunnel). → Результат: OK
 - 2026-02-09T23:32:54+03:00 — Действие: Обновить `docs/devtools/TUNNEL_DEV_README.md` под localtunnel. → Результат: OK
 - 2026-02-10T00:55:24+03:00 — Действие: Улучшить сообщение таймаута localtunnel (явная подсказка про npx/host). → Результат: OK
+- 2026-02-10T00:55:24+03:00 — Действие: Добавить вывод tunnel password (curl https://loca.lt/mytunnelpassword) сразу после URL. → Результат: OK
 
 ## Step C — Documentation
 - 2026-02-09T23:32:54+03:00 — Действие: Обновление README туннеля (WSL fallback). → Результат: OK
@@ -45,6 +46,8 @@ AXS_HEADER_META:
 - 2026-02-09T23:32:54+03:00 — Commit: `65b2261` — `docs(ops): log localtunnel switch` — Файлы: `ops/agent_ops/logs/0027_tunnel-localtunnel-fallback.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 - 2026-02-10T00:55:24+03:00 — Commit: `30f1244` — `fix(devtools): explain localtunnel timeout` — Файлы: `scripts/devtools/run_tunnel_dev.py`
 - 2026-02-10T00:55:24+03:00 — Commit: `04e9440` — `docs(ops): update localtunnel log` — Файлы: `ops/agent_ops/logs/0027_tunnel-localtunnel-fallback.md`
+- 2026-02-10T00:55:24+03:00 — Commit: `d543d64` — `feat(devtools): print localtunnel password` — Файлы: `scripts/devtools/run_tunnel_dev.py`
+- 2026-02-10T00:55:24+03:00 — Commit: `TBD` — `docs(ops): update localtunnel password log` — Файлы: `ops/agent_ops/logs/0027_tunnel-localtunnel-fallback.md`
 
 ---
 
