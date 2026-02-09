@@ -40,7 +40,7 @@ AXS_HEADER_META:
 - 2026-02-09T19:51:24+03:00 — Действие: `PLAYWRIGHT_USE_EXISTING_SERVER=auto PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts` → Результат: PASS (auto‑fallback, если сервер не поднят)
 
 ## Step E — Git
-- 2026-02-09T19:51:24+03:00 — Commit: TBD
+- 2026-02-09T19:51:24+03:00 — Commit: 63ebc06 — test(e2e): stub auth for local dev server — Файлы: `scripts/devtools/run_local.py`, `tests/e2e/utils.ts`, `tests/e2e/content.spec.ts`, `tests/e2e/accessibility.spec.ts`, `tests/e2e/storageState.json`, `ops/agent_ops/logs/0017_playwright-auth-stub-autodetect.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 
 ---
 
