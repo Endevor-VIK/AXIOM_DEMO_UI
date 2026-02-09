@@ -28,6 +28,6 @@ AXS_HEADER_META:
 | 0008 | 2026-02-05T16:40:28+03:00 | Фикс/стабилизация UI тестов и пинов              | main                        | —                                          | ops/agent_ops/logs/0008_ui-stabilization.md      | DONE |
 | 0009 | 2026-02-05T18:57:34+03:00 | Unit tests + README про Lighthouse CHROME_PATH  | main                        | —                                          | ops/agent_ops/logs/0009_ui-qa-readme.md          | DONE |
 | 0010 | 2026-02-05T19:27:27+03:00 | AI UI scan (Playwright screenshots)             | main                        | —                                          | ops/agent_ops/logs/0010_ui-ai-scan.md            | DONE |
-| 0011 | 2026-02-09T15:27:32+03:00 | UI walkthrough (registration + screenshots)     | main                        | —                                          | ops/agent_ops/logs/0011_ui-walkthrough-screenshots.md | ACTIVE |
+| 0011 | 2026-02-09T15:27:32+03:00 | UI walkthrough (registration + screenshots)     | main                        | —                                          | ops/agent_ops/logs/0011_ui-walkthrough-screenshots.md | DONE |
 
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).

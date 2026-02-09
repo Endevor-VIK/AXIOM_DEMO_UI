@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0011_UI_WALKTHROUGH_SCREENSHOTS_MD
   title: "GLOBAL LOG — 0011_ui-walkthrough-screenshots"
-  status: ACTIVE
+  status: DONE
   mode: Log
   goal: "Add UI walkthrough script + capture main page screenshots"
   scope: "AXIOM WEB CORE UI"
@@ -20,7 +20,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: UI walkthrough (registration + main page screenshots)
 - SPEC: —
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -38,7 +38,7 @@ AXS_HEADER_META:
 - 2026-02-09T15:27:32+03:00 — Действие: `npm run ui:walk` → Результат: PASS (report: `ops/artifacts/ui_walkthrough/2026-02-09T12-27-59-231Z/report.json`).
 
 ## Step E — Git
-- 2026-02-09T15:27:32+03:00 — Commit: — — PENDING
+- 2026-02-09T15:27:32+03:00 — Commit: 5800040 — feat(ui): add ui walkthrough screenshots
 
 ---
 
