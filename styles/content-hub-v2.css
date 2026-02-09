@@ -181,7 +181,7 @@
   --ax-red-soft: #f76a7b;
   --ax-border: #181b25;
   --ax-glow: rgba(255, 36, 56, 0.32);
-  --axcp-text-scale: var(--ax-preview-text-scale, 1.4);
+  --axcp-text-scale: clamp(1, calc(var(--ax-preview-text-scale, 1.4) * 0.72), 1.25);
   background:
     radial-gradient(1200px 650px at 80% 110%, #18080f 0%, transparent 55%),
     var(--ax-bg);
@@ -189,6 +189,8 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "JetBrains Mono", monospace;
   font-size: calc(var(--fs-14) * var(--axcp-text-scale));
   padding: var(--space-5);
+  width: min(100%, 1040px);
+  margin: 0;
   border-radius: var(--r-xl);
   border: 1px solid var(--ax-border);
   box-shadow: 0 0 32px var(--ax-glow);
@@ -200,8 +202,8 @@
   margin: 0;
   display: grid;
   gap: var(--space-5);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: stretch;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: start;
 }
 
 @media (max-width: 980px) {
@@ -241,6 +243,7 @@ html[data-layout='xl'] .axcp-actions {
     calc(42vh * var(--ax-scale)),
     calc(520px * var(--ax-scale))
   );
+  max-height: min(70vh, 520px);
   aspect-ratio: 3 / 4;
   box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.7),

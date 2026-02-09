@@ -10,15 +10,51 @@ const baseCandidates = [
 ].filter(Boolean)
 
 const outputRoot = process.env.UI_WALK_OUT || 'ops/artifacts/ui_walkthrough'
+const debugEnabled = (process.env.UI_WALK_DEBUG ?? '1').toLowerCase() !== '0'
+const deviceScaleFactor = Number.parseFloat(process.env.UI_WALK_DPR || '1')
+const navTimeout = Number.parseInt(process.env.UI_WALK_TIMEOUT || '60000', 10)
+const viewports = (process.env.UI_WALK_VIEWPORTS || '1920x1080')
+  .split(',')
+  .map((entry) => entry.trim())
+  .filter(Boolean)
+  .map((entry) => {
+    const [w, h] = entry.toLowerCase().split('x').map((value) => Number.parseInt(value, 10))
+    if (!w || !h) {
+      throw new Error(`Invalid viewport entry: ${entry}`)
+    }
+    return { width: w, height: h, label: `${w}x${h}` }
+  })
 
 async function ensureDir(dirPath) {
   await fs.mkdir(dirPath, { recursive: true })
 }
 
+async function gotoWithRetry(page, url, options = {}, attempts = 2) {
+  let lastError
+  for (let i = 0; i < attempts; i += 1) {
+    try {
+      await page.goto(url, { timeout: navTimeout, ...options })
+      return
+    } catch (error) {
+      lastError = error
+      await page.waitForTimeout(1200)
+    }
+  }
+  throw lastError
+}
+
+function withDebug(baseUrl, route) {
+  const url = new URL(route, baseUrl)
+  if (debugEnabled) {
+    url.searchParams.set('debug', '1')
+  }
+  return url.toString()
+}
+
 async function resolveBaseUrl(page) {
   for (const base of baseCandidates) {
     try {
-      await page.goto(new URL('/login', base).toString(), { waitUntil: 'domcontentloaded' })
+      await gotoWithRetry(page, withDebug(base, '/login'), { waitUntil: 'domcontentloaded' })
       return base
     } catch {
       // try next base
@@ -50,28 +86,30 @@ async function capture(page, outputDir, name, options = {}) {
   return fileName
 }
 
-async function main() {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const outputDir = path.resolve(process.cwd(), outputRoot, timestamp)
-  await ensureDir(outputDir)
+async function runViewport(browser, baseUrl, viewport) {
+  const viewportDir = path.resolve(
+    process.cwd(),
+    outputRoot,
+    `${new Date().toISOString().replace(/[:.]/g, '-')}_${viewport.label}`,
+  )
+  await ensureDir(viewportDir)
 
-  const browser = await chromium.launch({ headless: true })
-  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } })
+  const context = await browser.newContext({
+    viewport: { width: viewport.width, height: viewport.height },
+    deviceScaleFactor: Number.isFinite(deviceScaleFactor) ? deviceScaleFactor : 1,
+  })
   const page = await context.newPage()
-
-  const baseUrl = await resolveBaseUrl(page)
 
   const results = []
 
-  // Login page before register
+  await gotoWithRetry(page, withDebug(baseUrl, '/login'), { waitUntil: 'domcontentloaded' })
   results.push({
     route: '/login',
-    screenshot: await capture(page, outputDir, 'login', { fullPage: true }),
+    screenshot: await capture(page, viewportDir, 'login', { fullPage: true }),
   })
 
   const creds = await registerUser(page)
 
-  // Main pages
   const mainRoutes = [
     { name: 'dashboard', route: '/dashboard' },
     { name: 'roadmap', route: '/dashboard/roadmap' },
@@ -80,52 +118,63 @@ async function main() {
   ]
 
   for (const entry of mainRoutes) {
-    const url = new URL(entry.route, baseUrl).toString()
-    await page.goto(url, { waitUntil: 'networkidle' })
+    await gotoWithRetry(page, withDebug(baseUrl, entry.route), { waitUntil: 'networkidle' })
     results.push({
       route: entry.route,
-      screenshot: await capture(page, outputDir, entry.name, { fullPage: true }),
+      screenshot: await capture(page, viewportDir, entry.name, { fullPage: true }),
     })
   }
 
-  // Content page (top)
-  await page.goto(new URL('/dashboard/content/all', baseUrl).toString(), {
-    waitUntil: 'networkidle',
-  })
+  await gotoWithRetry(page, withDebug(baseUrl, '/dashboard/content/all'), { waitUntil: 'networkidle' })
   await page.waitForSelector('.ax-content-list', { timeout: 30_000 })
   results.push({
     route: '/dashboard/content/all',
-    screenshot: await capture(page, outputDir, 'content', { fullPage: true }),
+    screenshot: await capture(page, viewportDir, 'content', { fullPage: true }),
   })
 
-  // Content page (scrolled)
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
   await page.waitForTimeout(600)
   results.push({
     route: '/dashboard/content/all#scroll',
-    screenshot: await capture(page, outputDir, 'content-scroll', { fullPage: false }),
+    screenshot: await capture(page, viewportDir, 'content-scroll', { fullPage: false }),
   })
 
-  // Content read page
-  await page.goto(new URL('/dashboard/content/read/LOC-ECHELON-CORE', baseUrl).toString(), {
+  await gotoWithRetry(page, withDebug(baseUrl, '/dashboard/content/read/LOC-ECHELON-CORE'), {
     waitUntil: 'networkidle',
   })
   results.push({
     route: '/dashboard/content/read/LOC-ECHELON-CORE',
-    screenshot: await capture(page, outputDir, 'content-read', { fullPage: true }),
+    screenshot: await capture(page, viewportDir, 'content-read', { fullPage: true }),
   })
 
-  await browser.close()
+  await context.close()
 
   const report = {
     baseUrl,
-    outputDir,
+    outputDir: viewportDir,
+    viewport,
+    debug: debugEnabled,
+    deviceScaleFactor: Number.isFinite(deviceScaleFactor) ? deviceScaleFactor : 1,
     credentials: creds,
     pages: results,
   }
-  const reportPath = path.join(outputDir, 'report.json')
+  const reportPath = path.join(viewportDir, 'report.json')
   await fs.writeFile(reportPath, JSON.stringify(report, null, 2))
   console.log(`[ui-walk] report saved to ${reportPath}`)
+}
+
+async function main() {
+  const browser = await chromium.launch({ headless: true })
+  const probeContext = await browser.newContext()
+  const probePage = await probeContext.newPage()
+  const baseUrl = await resolveBaseUrl(probePage)
+  await probeContext.close()
+
+  for (const viewport of viewports) {
+    await runViewport(browser, baseUrl, viewport)
+  }
+
+  await browser.close()
 }
 
 main().catch((err) => {

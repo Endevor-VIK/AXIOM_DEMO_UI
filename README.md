@@ -147,6 +147,9 @@ CI/локально: если `npm run test:lighthouse` падает с `No Chro
 Опции:
 - `UI_WALK_BASE` — базовый URL (по умолчанию `http://127.0.0.1:5173`, fallback `:4173`)
 - `UI_WALK_OUT` — каталог результатов
+- `UI_WALK_VIEWPORTS` — список размеров (например `1920x1080,1600x900,1440x900`)
+- `UI_WALK_DEBUG` — добавлять `?debug=1` (по умолчанию `1`)
+- `UI_WALK_DPR` — deviceScaleFactor (по умолчанию `1`)
 
 ---
 
