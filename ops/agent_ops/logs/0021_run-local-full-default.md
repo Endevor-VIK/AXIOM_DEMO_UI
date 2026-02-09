@@ -37,7 +37,7 @@ AXS_HEADER_META:
 - 2026-02-09T21:07:10+03:00 — Действие: N/A (скрипт изменения). → Результат: SKIP
 
 ## Step E — Git
-- 2026-02-09T21:07:10+03:00 — Commit: `<pending>` — `chore(devtools): default run_local to full` — Файлы: `scripts/devtools/run_local.py`, `README.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `ops/agent_ops/logs/0021_run-local-full-default.md`
+- 2026-02-09T21:07:10+03:00 — Commit: `aae9793` — `chore(devtools): default run_local full` — Файлы: `scripts/devtools/run_local.py`, `README.md`, `ops/agent_ops/logs/0021_run-local-full-default.md`
 
 ---
 
