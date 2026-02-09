@@ -185,7 +185,7 @@ export default function LoginPage() {
   }, []);
 
   const [mode, setMode] = useState<Mode>("login");
-  const [login, setLogin] = useState("");
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -209,7 +209,7 @@ export default function LoginPage() {
 
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); if (busy) return; setBusy(true); setErr(null);
-    const user = login.trim(); const key = password;
+    const user = userId.trim(); const key = password;
     try {
       if (!user || !key) throw new Error("Fill both fields");
       if (mode === "register") {
@@ -229,7 +229,7 @@ export default function LoginPage() {
       else if (msg === "rate_limited") setErr("Too many attempts. Try again later.");
       else setErr(msg);
     } finally { setBusy(false); }
-  }, [busy, login, password, mode, nav]);
+  }, [busy, userId, password, mode, nav]);
 
   const cardClasses = ["ax-card", "low", "ax-login-card"];
   if (err) cardClasses.push("is-error");
@@ -257,7 +257,7 @@ export default function LoginPage() {
           <div className="ax-login-fields ax-stack-sm" aria-describedby={err ? idErr : caps ? idCaps : undefined}>
             <label className="ax-visually-hidden" htmlFor={idUser}>User ID</label>
             <input id={idUser} className={`ax-input${err ? " is-invalid" : ""}`} name="user" placeholder="USER ID"
-              value={login} onChange={(e) => setLogin(e.target.value)} autoComplete="username" aria-invalid={err ? "true" : undefined} disabled={busy} />
+              value={userId} onChange={(e) => setUserId(e.target.value)} autoComplete="username" aria-invalid={err ? "true" : undefined} disabled={busy} />
             <label className="ax-visually-hidden" htmlFor={idKey}>Access Key</label>
             <input id={idKey} className={`ax-input${err ? " is-invalid" : ""}`} name="key" placeholder="ACCESS KEY" type="password"
               value={password} onChange={(e) => setPassword(e.target.value)} onKeyUp={handleCaps}
