@@ -154,6 +154,34 @@ Seed accounts (local):
 
 ---
 
+## Admin ops (local)
+
+База пользователей хранится в `runtime/auth.sqlite` (SQLite).
+
+Быстрые команды (sqlite3):
+```
+sqlite3 runtime/auth.sqlite
+.headers on
+.mode column
+SELECT id, email FROM users;
+SELECT user_id, role FROM user_roles;
+SELECT id, user_id, expires_at, revoked_at FROM sessions;
+```
+
+Роли:
+```
+-- добавить роль creator
+INSERT OR IGNORE INTO user_roles (user_id, role) VALUES ('<USER_ID>', 'creator');
+-- убрать роль
+DELETE FROM user_roles WHERE user_id='<USER_ID>' AND role='creator';
+```
+
+Сессии:
+```
+-- принудительно отозвать сессию
+UPDATE sessions SET revoked_at=strftime('%s','now')*1000 WHERE id='<SESSION_ID>';
+```
+
 ## AI UI Scan (быстрый визуальный обзор)
 
 Команда:

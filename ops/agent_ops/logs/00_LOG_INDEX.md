@@ -41,4 +41,5 @@ AXS_HEADER_META:
 | 0016 | 2026-02-09T18:33:46+03:00 | Backend auth + roles + demo mode                | main                        | docs/specs/0016_backend-auth-roles-demo-mode.md | ops/agent_ops/logs/0016_backend-auth-roles-demo-mode.md | DONE |
 | 0021 | 2026-02-09T21:07:10+03:00 | run_local.py default full (UI+API)              | main                        | —                                          | ops/agent_ops/logs/0021_run-local-full-default.md | DONE |
 | 0022 | 2026-02-09T21:40:10+03:00 | Login shadow fix (login handler)                | main                        | —                                          | ops/agent_ops/logs/0022_login-shadow-fix.md | DONE |
+| 0023 | 2026-02-09T21:40:10+03:00 | Admin ops guide (DB/roles/sessions)             | main                        | —                                          | ops/agent_ops/logs/0023_admin-ops-guide.md | DONE |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).
