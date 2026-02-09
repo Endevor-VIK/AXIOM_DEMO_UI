@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0014_READER_RESTORE_LEGACY_MD
   title: "GLOBAL LOG — 0014_reader-restore-legacy"
-  status: ACTIVE
+  status: DONE
   mode: Log
   goal: "Restore legacy reader behavior after AXS restructure"
   scope: "AXIOM WEB CORE UI"
@@ -20,7 +20,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: Вернуть legacy reader к состоянию до переноса (навигация + fallback на локальные данные)
 - SPEC: —
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -37,7 +37,7 @@ AXS_HEADER_META:
 - 2026-02-09T16:45:00+03:00 — Действие: Ручной UI‑smoke не запускался (нужны проверки `/content/:id` и переходов из Content Hub). → Результат: SKIP
 
 ## Step E — Git
-- 2026-02-09T16:45:00+03:00 — Commit: <pending> — fix(reader): restore legacy reader routing + fallback data — Файлы: `app/routes/dashboard/content/ContentCategoryView.tsx`, `src/features/content/data/useContentIndex.ts`, `src/features/content/pages/ReaderPage.tsx`, `ops/agent_ops/logs/0014_reader-restore-legacy.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
+- 2026-02-09T16:45:00+03:00 — Commit: 7e11a56 — fix(reader): restore legacy reader routing — Файлы: `app/routes/dashboard/content/ContentCategoryView.tsx`, `src/features/content/data/useContentIndex.ts`, `src/features/content/pages/ReaderPage.tsx`, `ops/agent_ops/logs/0014_reader-restore-legacy.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 
 ---
 
