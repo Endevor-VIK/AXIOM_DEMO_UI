@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-05
+  last_updated: 2026-02-09
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
