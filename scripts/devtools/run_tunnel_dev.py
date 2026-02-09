@@ -24,6 +24,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import urllib.response
 from collections import deque
 from typing import Callable, Deque, Optional
 
@@ -114,6 +115,17 @@ def wait_for_status(url: str, expected_status: int, timeout: int, proc: subproce
     if last_error:
         sys.stderr.write(f"Last error while probing {url}: {last_error}\n")
     return False
+
+
+def fetch_tunnel_password() -> Optional[str]:
+    """Fetch localtunnel password from https://loca.lt/mytunnelpassword."""
+    try:
+        req = urllib.request.Request("https://loca.lt/mytunnelpassword", method="GET")
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            data = resp.read().decode("utf-8", errors="ignore").strip()
+            return data or None
+    except Exception:
+        return None
 
 
 def caddy_hash_password(plaintext: str) -> str:
@@ -367,15 +379,21 @@ def run(args: argparse.Namespace) -> int:
             found = LT_URL_RE.search(line)
             if tunnel_url is None and found:
                 tunnel_url = found.group(0)
-                sys.stdout.write(
+                tunnel_password = fetch_tunnel_password()
+                output = (
                     "------ Tunnel ready ------\n"
                     f"Vite: {vite_origin} (OK)\n"
                     f"Proxy (BasicAuth): {proxy_url} (401 expected)\n"
                     f"Tunnel: {tunnel_url}\n"
+                )
+                if tunnel_password:
+                    output += f"Tunnel password: {tunnel_password}\n"
+                output += (
                     f"Auth user: {args.auth_user}\n"
                     f"Auth pass: {masked_pass} (masked)\n"
                     "Press Ctrl+C to stop\n"
                 )
+                sys.stdout.write(output)
                 sys.stdout.flush()
                 summary_printed = True
 
