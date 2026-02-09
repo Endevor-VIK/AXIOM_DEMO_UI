@@ -44,16 +44,14 @@ const USE_EXISTING_SERVER =
   USE_EXISTING_SERVER_RAW === 'true' ||
   (USE_EXISTING_SERVER_RAW === 'auto' && isServerReachable(BASE_URL))
 
-const WEB_SERVER = USE_EXISTING_SERVER
-  ? undefined
-  : {
-      command: `VITE_AX_DEPLOY_TARGET=ghpages npm run dev -- --host ${HOST} --port ${PORT}`,
-      url: `${BASE_URL}`,
-      timeout: 120_000,
-      reuseExistingServer: !process.env.CI,
-      stdout: 'pipe',
-      stderr: 'pipe',
-    }
+const WEB_SERVER = {
+  command: `VITE_AX_DEPLOY_TARGET=ghpages npm run dev -- --host ${HOST} --port ${PORT}`,
+  url: BASE_URL,
+  timeout: 120_000,
+  reuseExistingServer: !process.env.CI,
+  stdout: 'pipe' as const,
+  stderr: 'pipe' as const,
+}
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -74,7 +72,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     viewport: { width: 1400, height: 900 },
   },
-  webServer: WEB_SERVER,
+  ...(USE_EXISTING_SERVER ? {} : { webServer: WEB_SERVER }),
   projects: [
     {
       name: 'chromium',
