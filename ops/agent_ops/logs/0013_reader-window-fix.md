@@ -37,7 +37,7 @@ AXS_HEADER_META:
 - 2026-02-09T16:27:40+03:00 — Действие: Ручной UI‑smoke не запускался (нужен прогон reader `/dashboard/content/read/:id` и legacy `/content/:id`). → Результат: SKIP
 
 ## Step E — Git
-- 2026-02-09T16:27:40+03:00 — Commit: <pending> — fix(reader): isolate legacy reader styles — Файлы: `styles/content-hub-v2.css`, `src/features/content/pages/ReaderPage.tsx`, `ops/agent_ops/logs/0013_reader-window-fix.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
+- 2026-02-09T16:27:40+03:00 — Commit: 6e0fedf — fix(reader): isolate legacy reader styles — Файлы: `styles/content-hub-v2.css`, `src/features/content/pages/ReaderPage.tsx`, `ops/agent_ops/logs/0013_reader-window-fix.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 
 ---
 
