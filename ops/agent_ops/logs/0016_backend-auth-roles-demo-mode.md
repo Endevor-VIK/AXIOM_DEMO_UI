@@ -40,7 +40,10 @@ AXS_HEADER_META:
 - 2026-02-09T18:33:46+03:00 — Действие: `npm install` → Результат: FAIL (argon2 build/network); `npm install --ignore-scripts` → PASS (lockfile обновлён).
 
 ## Step E — Git
-- 2026-02-09T18:33:46+03:00 — Commit: — — PENDING
+- 2026-02-09T18:33:46+03:00 — Commit: 6846fb7 — feat(auth): add backend server skeleton
+- 2026-02-09T18:33:46+03:00 — Commit: e47a1b1 — feat(auth): add local/demo auth client
+- 2026-02-09T18:33:46+03:00 — Commit: 3788869 — docs(tools): expand ui walkthrough options
+- 2026-02-09T18:33:46+03:00 — Commit: dfe312d — docs(ops): add backend auth spec/log
 
 ---
 
