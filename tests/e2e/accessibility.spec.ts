@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test'
 import axe from 'axe-core'
 
-import { bootstrapSession, ensureSessionStorage, stubContentApi } from './utils'
+import { bootstrapSession, ensureSessionStorage, stubAuthApi, stubContentApi } from './utils'
 
 test.describe('Accessibility', () => {
   test('content dashboard has no axe violations', async ({ page }, testInfo) => {
     test.setTimeout(180_000)
     page.setDefaultTimeout(120_000)
+    await stubAuthApi(page)
     await stubContentApi(page)
     await bootstrapSession(page)
     await page.addInitScript({ content: axe.source })

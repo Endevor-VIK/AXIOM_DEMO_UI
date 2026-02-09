@@ -11,6 +11,10 @@
         {
           "name": "ax_favorites_v1",
           "value": "[]"
+        },
+        {
+          "name": "ax_demo_session_v1",
+          "value": "{\"email\":\"playwright@demo.local\"}"
         }
       ]
     }

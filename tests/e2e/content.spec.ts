@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
-import { bootstrapSession, ensureSessionStorage, stubContentApi } from './utils'
+import { bootstrapSession, ensureSessionStorage, stubAuthApi, stubContentApi } from './utils'
 
 async function clickTestId(page: Page, testId: string): Promise<void> {
   await page.waitForFunction(
@@ -25,7 +25,9 @@ async function ensureContentList(page: Page) {
   const list = page.locator('.ax-content-list')
   for (let attempt = 0; attempt < 2; attempt += 1) {
     await page.goto('/dashboard/content/all', { waitUntil: 'commit' })
-    if (page.url().includes('/login')) {
+    const loginHeading = page.getByRole('heading', { name: /welcome to axiom panel/i })
+    const loginVisible = await loginHeading.isVisible({ timeout: 1500 }).catch(() => false)
+    if (page.url().includes('/login') || loginVisible) {
       await ensureSessionStorage(page, { pins: [] })
       await page.goto('/dashboard/content/all', { waitUntil: 'commit' })
     }
@@ -42,6 +44,19 @@ async function ensureContentList(page: Page) {
 
 test.describe('Content hub flows', () => {
   test('supports selection, pinning, reader navigation, and images load', async ({ page }) => {
+    if (process.env.PLAYWRIGHT_AUTH_DEBUG === '1') {
+      page.on('request', (req) => {
+        if (req.url().includes('/api/auth/')) {
+          console.log('[auth request]', req.method(), req.url())
+        }
+      })
+      page.on('response', (res) => {
+        if (res.url().includes('/api/auth/')) {
+          console.log('[auth response]', res.status(), res.url())
+        }
+      })
+    }
+    await stubAuthApi(page)
     await stubContentApi(page)
     await bootstrapSession(page, { pins: [] })
 

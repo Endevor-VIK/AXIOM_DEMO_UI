@@ -8,8 +8,11 @@ Usage:
 Переменные окружения:
   PORT                 Порт dev-сервера (по умолчанию 5173)
   HOST                 Хост для проб (по умолчанию 127.0.0.1)
+  DEV_MODE             ui | full | api (по умолчанию ui)
   DEV_HOST             Хост для Vite (авто 0.0.0.0 в WSL)
   HMR_HOST             Хост для Vite HMR (по умолчанию HOST)
+  AX_API_PORT          Порт API (по умолчанию 8787)
+  AX_API_HOST          Хост API (по умолчанию 127.0.0.1, в WSL 0.0.0.0)
   SKIP_WSL_PORTPROXY   Выключить auto netsh portproxy в WSL
 
 Примечания:
@@ -168,6 +171,13 @@ def main() -> int:
     root = repo_root()
     port = int(os.environ.get('PORT') or 5173)
     host = os.environ.get('HOST') or '127.0.0.1'
+    mode = (os.environ.get('DEV_MODE') or 'ui').strip().lower()
+    if mode not in {'ui', 'full', 'api'}:
+        sys.stderr.write(
+            f"[dev] Invalid DEV_MODE={mode!r}. Expected ui | full | api.\n"
+        )
+        return 2
+
     url = f"http://{host}:{port}/"
 
     env = os.environ.copy()
@@ -175,9 +185,22 @@ def main() -> int:
     if host != '0.0.0.0':
         env.setdefault('HMR_HOST', host)
 
-    ensure_export_snapshot(root)
-    if not validate_export_snapshot(root):
-        return 2
+    if mode in {'ui', 'full'}:
+        ensure_export_snapshot(root)
+        if not validate_export_snapshot(root):
+            return 2
+
+    api_port = int(env.get('AX_API_PORT') or env.get('API_PORT') or 8787)
+    if mode in {'api', 'full'}:
+        if is_wsl():
+            env.setdefault('AX_API_HOST', '0.0.0.0')
+        else:
+            env.setdefault('AX_API_HOST', '127.0.0.1')
+        env.setdefault('AX_API_PORT', str(api_port))
+
+    api_host = env.get('AX_API_HOST') or '127.0.0.1'
+    api_probe_host = host if api_host == '0.0.0.0' else api_host
+    api_url = f"http://{api_probe_host}:{api_port}/api/health"
 
     # In WSL, explicitly mirror to Windows localhost if possible
     if is_wsl() and not env.get('SKIP_WSL_PORTPROXY'):
@@ -189,9 +212,11 @@ def main() -> int:
     # Choose platform-appropriate npm executable
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
 
+    script = {'ui': 'dev', 'full': 'dev:full', 'api': 'dev:api'}[mode]
+
     # Start dev server
     proc = subprocess.Popen(
-        [npm, 'run', 'dev'],
+        [npm, 'run', script],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -200,7 +225,11 @@ def main() -> int:
         cwd=root,
     )
 
-    print(f"Dev server starting (PID {proc.pid}). Waiting for {url} ...", flush=True)
+    target_url = api_url if mode == 'api' else url
+    print(
+        f"Dev server ({mode}) starting (PID {proc.pid}). Waiting for {target_url} ...",
+        flush=True,
+    )
 
     # Stream early output while waiting, to aid debugging
     ready = False
@@ -213,13 +242,24 @@ def main() -> int:
             break
 
         # Interleave readiness probe and log streaming
-        if not ready and wait_for_http(url, attempts=1):
+        if not ready and wait_for_http(target_url, attempts=1):
             ready = True
             elapsed = time.time() - start
-            print(f"Ready in {elapsed:.1f}s → {url}", flush=True)
+            print(f"Ready in {elapsed:.1f}s → {target_url}", flush=True)
+            if mode in {'api', 'full'}:
+                if wait_for_http(api_url, attempts=1):
+                    print(f"[dev] API ready → {api_url}", flush=True)
+                else:
+                    print(f"[dev] API not ready yet → {api_url}", flush=True)
             print(
                 "[dev] Playwright (existing server): "
                 f"PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT={port} "
+                "npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts",
+                flush=True,
+            )
+            print(
+                "[dev] Playwright (auto-detect): "
+                f"PLAYWRIGHT_USE_EXISTING_SERVER=auto PLAYWRIGHT_PORT={port} "
                 "npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts",
                 flush=True,
             )

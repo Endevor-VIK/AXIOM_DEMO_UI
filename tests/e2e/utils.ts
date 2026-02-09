@@ -2,6 +2,48 @@ import type { Page } from '@playwright/test'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 
+export async function stubAuthApi(page: Page): Promise<void> {
+  const user = {
+    id: 'playwright',
+    email: 'playwright@demo.local',
+    displayName: 'PLAYWRIGHT',
+    handle: '@playwright',
+    roles: ['user'],
+  }
+  await page.route('**/api/auth/**', async (route) => {
+    const request = route.request()
+    const url = new URL(request.url())
+    if (url.pathname.endsWith('/me')) {
+      console.log('[stubAuthApi] fulfilled', url.pathname)
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ user }),
+      })
+      return
+    }
+    if (url.pathname.endsWith('/login') || url.pathname.endsWith('/register')) {
+      console.log('[stubAuthApi] fulfilled', url.pathname)
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ user }),
+      })
+      return
+    }
+    if (url.pathname.endsWith('/logout')) {
+      console.log('[stubAuthApi] fulfilled', url.pathname)
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true }),
+      })
+      return
+    }
+    await route.continue()
+  })
+}
+
 export async function stubContentApi(page: Page): Promise<void> {
   await page.route('**/data/**', async (route) => {
     const request = route.request()
@@ -29,7 +71,7 @@ export async function stubContentApi(page: Page): Promise<void> {
   })
 }
 
-type SessionPayload = { auth: string; pins: string }
+type SessionPayload = { auth: string; pins: string; demoAuth: string }
 
 export function buildSessionPayload(options?: { pins?: string[] }): SessionPayload {
   const favorites = (options?.pins ?? []).map((id) => ({
@@ -53,25 +95,24 @@ export function buildSessionPayload(options?: { pins?: string[] }): SessionPaylo
       },
     }),
     pins: JSON.stringify(favorites),
+    demoAuth: JSON.stringify({ email: 'playwright@demo.local' }),
   }
 }
 
 export async function bootstrapSession(page: Page, options?: { pins?: string[] }): Promise<void> {
   const payload = buildSessionPayload(options)
-  await page.addInitScript(({ auth, pins }) => {
-    if (!window.localStorage.getItem('ax_session_v1')) {
-      window.localStorage.setItem('ax_session_v1', auth)
-    }
-    if (!window.localStorage.getItem('ax_favorites_v1')) {
-      window.localStorage.setItem('ax_favorites_v1', pins)
-    }
+  await page.addInitScript(({ auth, pins, demoAuth }) => {
+    window.localStorage.setItem('ax_session_v1', auth)
+    window.localStorage.setItem('ax_favorites_v1', pins)
+    window.localStorage.setItem('ax_demo_session_v1', demoAuth)
   }, payload)
 }
 
 export async function ensureSessionStorage(page: Page, options?: { pins?: string[] }): Promise<void> {
   const payload = buildSessionPayload(options)
-  await page.evaluate(({ auth, pins }) => {
+  await page.evaluate(({ auth, pins, demoAuth }) => {
     window.localStorage.setItem('ax_session_v1', auth)
     window.localStorage.setItem('ax_favorites_v1', pins)
+    window.localStorage.setItem('ax_demo_session_v1', demoAuth)
   }, payload)
 }
