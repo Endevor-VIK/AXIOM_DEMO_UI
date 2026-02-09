@@ -41,7 +41,7 @@ AXS_HEADER_META:
 
 ## Step E — Git
 - 2026-02-09T22:49:21+03:00 — Commit: `fcd1da5` — `fix(devtools): disable caddy admin endpoint` — Файлы: `scripts/devtools/run_tunnel_dev.py`
-- 2026-02-09T22:49:21+03:00 — Commit: `TBD` — `docs(ops): log tunnel dev checks` — Файлы: `ops/agent_ops/logs/0025_tunnel-dev-full-check.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
+- 2026-02-09T22:49:21+03:00 — Commit: `a90472f` — `docs(ops): log tunnel dev checks` — Файлы: `ops/agent_ops/logs/0025_tunnel-dev-full-check.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 
 ---
 
