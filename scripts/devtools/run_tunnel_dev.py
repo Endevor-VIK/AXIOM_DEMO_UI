@@ -27,9 +27,10 @@ import urllib.request
 from collections import deque
 from typing import Deque, Optional
 
-DEFAULT_HASH_PATH = os.path.expanduser(
-    os.environ.get("AXIOM_TUNNEL_HASH_FILE", "~/.axiom_tunnel_dev/auth.bcrypt")
-)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+LOCAL_HASH_PATH = os.path.join(SCRIPT_DIR, "data", "auth.bcrypt")
+FALLBACK_HASH_PATH = os.path.expanduser("~/.axiom_tunnel_dev/auth.bcrypt")
+DEFAULT_HASH_PATH = os.path.expanduser(os.environ.get("AXIOM_TUNNEL_HASH_FILE", LOCAL_HASH_PATH))
 
 TRY_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.trycloudflare\.com")
 
@@ -135,12 +136,16 @@ def caddy_hash_password(plaintext: str) -> str:
 
 def build_temp_caddyfile(auth_user: str, bcrypt: str, upstream_url: str, proxy_port: int) -> str:
     """Write temporary Caddyfile for BasicAuth reverse proxy."""
+    parsed = urllib.parse.urlparse(upstream_url)
+    upstream_hostport = parsed.netloc or upstream_url.replace("http://", "").replace("https://", "")
     content = (
         f":{proxy_port} {{\n"
         f"  basicauth /* {{\n"
         f"    {auth_user} {bcrypt}\n"
         f"  }}\n"
-        f"  reverse_proxy {upstream_url}\n"
+        f"  reverse_proxy {upstream_url} {{\n"
+        f"    header_up Host {upstream_hostport}\n"
+        f"  }}\n"
         f"}}\n"
     )
     tmp = tempfile.NamedTemporaryFile(
@@ -233,22 +238,45 @@ def resolve_bcrypt(args: argparse.Namespace) -> tuple[str, str]:
     If --auth-hash-file is provided, read bcrypt from there and mask as 'bcrypt-file'.
     Otherwise, derive bcrypt via caddy hash-password using provided/plain password.
     """
-    hash_path = args.auth_hash_file or DEFAULT_HASH_PATH
-    if hash_path and os.path.exists(hash_path):
-        bcrypt = read_bcrypt_from_file(hash_path)
+    existing_path = find_existing_hash_path(args)
+    if existing_path:
+        bcrypt = read_bcrypt_from_file(existing_path)
         return bcrypt, "bcrypt-file"
 
     password = get_password(args)
     masked = mask_secret(password)
     bcrypt = caddy_hash_password(password)
     if args.write_hash_file:
-        target = args.auth_hash_file or DEFAULT_HASH_PATH
+        target = resolve_hash_write_path(args)
         os.makedirs(os.path.dirname(target), exist_ok=True)
         with open(target, "w", encoding="utf-8") as fh:
             fh.write(bcrypt + "\n")
         if not args.quiet:
             sys.stdout.write(f"Stored bcrypt at {target}\n")
     return bcrypt, masked
+
+
+def resolve_hash_write_path(args: argparse.Namespace) -> str:
+    if args.auth_hash_file:
+        return os.path.expanduser(args.auth_hash_file)
+    env_path = os.environ.get("AXIOM_TUNNEL_HASH_FILE")
+    if env_path:
+        return os.path.expanduser(env_path)
+    return DEFAULT_HASH_PATH
+
+
+def find_existing_hash_path(args: argparse.Namespace) -> Optional[str]:
+    candidates = []
+    if args.auth_hash_file:
+        candidates.append(os.path.expanduser(args.auth_hash_file))
+    env_path = os.environ.get("AXIOM_TUNNEL_HASH_FILE")
+    if env_path:
+        candidates.append(os.path.expanduser(env_path))
+    candidates.extend([DEFAULT_HASH_PATH, FALLBACK_HASH_PATH])
+    for path in candidates:
+        if path and os.path.exists(path):
+            return path
+    return None
 
 
 def build_cloudflared_cmd(target: str, args: argparse.Namespace) -> list[str]:
@@ -273,7 +301,7 @@ def run(args: argparse.Namespace) -> int:
 
     vite_origin = normalize_url(args.vite_url) if args.vite_url else f"http://{args.vite_host}:{args.vite_port}"
     proxy_url = f"http://127.0.0.1:{args.proxy_port}"
-    tunnel_target = normalize_url(args.tunnel_url) if args.tunnel_url else f"http://localhost:{args.proxy_port}"
+    tunnel_target = normalize_url(args.tunnel_url) if args.tunnel_url else proxy_url
 
     if args.protocol.lower() != "http2" and not args.quiet:
         sys.stdout.write("Note: --protocol is not http2; QUIC/UDP may be unstable. Recommend --protocol http2.\n")
