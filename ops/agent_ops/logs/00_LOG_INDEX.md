@@ -45,4 +45,5 @@ AXS_HEADER_META:
 | 0024 | 2026-02-09T22:27:21+03:00 | Tunnel dev fix (host header + hash defaults)    | main                        | —                                          | ops/agent_ops/logs/0024_tunnel-dev-fix.md | DONE |
 | 0025 | 2026-02-09T22:49:21+03:00 | Tunnel dev full check + password reset          | main                        | —                                          | ops/agent_ops/logs/0025_tunnel-dev-full-check.md | DONE |
 | 0026 | 2026-02-09T23:14:46+03:00 | Open 7844 + tunnel verification                 | main                        | —                                          | ops/agent_ops/logs/0026_tunnel-dev-7844-open.md | PAUSED |
+| 0027 | 2026-02-09T23:32:54+03:00 | Localtunnel fallback for WSL                    | main                        | —                                          | ops/agent_ops/logs/0027_tunnel-localtunnel-fallback.md | PAUSED |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).
