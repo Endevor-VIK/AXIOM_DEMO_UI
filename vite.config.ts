@@ -12,6 +12,7 @@ const isCI =
 const DEV_HOST = (process.env.DEV_HOST || '').trim()  // set to "192.168.0.11" for LAN
 const HMR_HOST = (process.env.HMR_HOST || '').trim()
 const PORT = Number(process.env.PORT || 5173)
+const API_PORT = Number(process.env.AX_API_PORT || 8787)
 const EXPORT_ROOT = (process.env.AXS_EXPORT_ROOT || '').trim() || '/app/content'
 const resolvedHmrHost =
   HMR_HOST || (DEV_HOST && DEV_HOST !== '0.0.0.0' ? DEV_HOST : '')
@@ -42,6 +43,12 @@ export default defineConfig({
       port: PORT,
       clientPort: PORT,
       ...(resolvedHmrHost ? { host: resolvedHmrHost } : {}), // avoid 0.0.0.0 for HMR
+    },
+    proxy: {
+      '/api': {
+        target: `http://127.0.0.1:${API_PORT}`,
+        changeOrigin: true,
+      },
     },
   },
 })
