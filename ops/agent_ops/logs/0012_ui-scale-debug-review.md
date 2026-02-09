@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0012_UI_SCALE_DEBUG_REVIEW_MD
   title: "GLOBAL LOG — 0012_ui-scale-debug-review"
-  status: ACTIVE
+  status: DONE
   mode: Log
   goal: "Scale/viewport review + preview card fix + debug screenshots"
   scope: "AXIOM WEB CORE UI"
@@ -20,7 +20,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: Проверка масштабов + фиксы карточек + debug-скриншоты
 - SPEC: —
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -39,7 +39,7 @@ AXS_HEADER_META:
 - 2026-02-09T16:02:26+03:00 — Действие: `UI_WALK_VIEWPORTS=1920x1080,1600x900,1440x900 UI_WALK_DEBUG=1 npm run ui:walk` → Результат: PASS (reports: `ops/artifacts/ui_walkthrough/2026-02-09T12-59-53-030Z_1920x1080/`, `..._1600x900/`, `..._1440x900/`).
 
 ## Step E — Git
-- 2026-02-09T16:02:26+03:00 — Commit: — — PENDING
+- 2026-02-09T16:02:26+03:00 — Commit: e3a341d — fix(ui): stabilize preview card scale
 
 ---
 
@@ -50,5 +50,5 @@ AXS_HEADER_META:
 - Для backend‑auth нужны решения по хранилищу/ролям/интеграции.
 
 ## Чеклист приёмки
-- [ ] Скриншоты 1920/1600/1440 с debug=1
-- [ ] Карточка предпросмотра стабилизирована
+- [x] Скриншоты 1920/1600/1440 с debug=1
+- [x] Карточка предпросмотра стабилизирована
