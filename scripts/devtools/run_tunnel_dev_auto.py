@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Интерактивная обёртка: автоматически стартует Vite (run_local.py), ждёт готовности и запускает туннель (run_tunnel_dev.py) с bcrypt.
+Интерактивная обёртка: автоматически стартует Vite (run_local.py), ждёт готовности и запускает туннель (run_tunnel_dev.py).
 
 Поток выполнения:
 - Переиспользует уже работающий Vite (по умолчанию), иначе запускает run_local.py и ждёт готовности.
 - Затем стартует run_tunnel_dev.py с нужными флагами (hash-файл/путь по умолчанию).
 - По Ctrl+C корректно гасит туннель, потом dev-сервер.
-- Если запустить без аргументов — откроется меню с типовыми действиями (старт с дефолтами/кастом портами/путём хэша).
+- Если запустить без аргументов — откроется меню с типовыми действиями.
 """
 
 from __future__ import annotations
@@ -24,11 +24,11 @@ import urllib.request
 from typing import Callable, Optional
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.dirname(SCRIPT_DIR)
 RUN_LOCAL = os.path.join(SCRIPT_DIR, "run_local.py")
 RUN_TUNNEL = os.path.join(SCRIPT_DIR, "run_tunnel_dev.py")
 DEFAULT_HASH_PATH = os.path.join(SCRIPT_DIR, "data", "auth.bcrypt")
-TRY_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.trycloudflare\.com")
+DEFAULT_LT_HOST = os.environ.get("AXIOM_TUNNEL_LT_HOST", "https://loca.lt")
+LT_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.(?:loca\.lt|localtunnel\.me)")
 
 
 def wait_for_http_ok(url: str, timeout: int) -> bool:
@@ -118,14 +118,12 @@ def build_tunnel_cmd(args: argparse.Namespace) -> list[str]:
         cmd += ["--auth-hash-file", args.auth_hash_file]
     if args.write_hash_file:
         cmd.append("--write-hash-file")
-    if args.protocol:
-        cmd += ["--protocol", args.protocol]
-    if args.edge_ip_version:
-        cmd += ["--edge-ip-version", str(args.edge_ip_version)]
-    if args.no_autoupdate is not None:
-        cmd += ["--no-autoupdate", "true" if args.no_autoupdate else "false"]
-    if args.tunnel_url:
-        cmd += ["--tunnel-url", args.tunnel_url]
+    if args.subdomain:
+        cmd += ["--subdomain", args.subdomain]
+    if args.lt_host:
+        cmd += ["--lt-host", args.lt_host]
+    if args.localtunnel_bin:
+        cmd += ["--localtunnel-bin", args.localtunnel_bin]
     if args.verify is not None:
         cmd += ["--verify", "true" if args.verify else "false"]
     if args.timeout:
@@ -205,7 +203,7 @@ def prompt_bool(prompt: str, default: bool) -> bool:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Авто-старт Vite (run_local) и туннеля (run_tunnel_dev).")
+    parser = argparse.ArgumentParser(description="Авто-старт Vite (run_local) и туннеля (localtunnel).")
     parser.add_argument("--vite-host", default="127.0.0.1", help="Хост Vite (по умолчанию 127.0.0.1)")
     parser.add_argument("--vite-port", type=int, default=5173, help="Порт Vite (по умолчанию 5173)")
     parser.add_argument("--vite-url", help="Полный URL Vite; если указан, переопределяет host/port.")
@@ -215,12 +213,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--auth-pass-env", default="AXIOM_TUNNEL_PASS", help="Имя ENV с паролем (по умолчанию AXIOM_TUNNEL_PASS)")
     parser.add_argument("--auth-hash-file", help=f"Путь к файлу bcrypt (по умолчанию {DEFAULT_HASH_PATH}).")
     parser.add_argument("--write-hash-file", action="store_true", help="Сохранять сгенерированный bcrypt в файл при хэшировании пароля.")
-    parser.add_argument("--protocol", default="http2", help="Протокол cloudflared (по умолчанию http2)")
-    parser.add_argument("--edge-ip-version", default="4", help="Версия edge IP для cloudflared (по умолчанию 4)")
-    parser.add_argument("--no-autoupdate", type=parse_bool, nargs="?", const=True, default=True, help="Пробрасывать --no-autoupdate в cloudflared (по умолчанию true)")
-    parser.add_argument("--tunnel-url", help="Переопределить цель туннеля (по умолчанию локальный прокси).")
+    parser.add_argument("--subdomain", help="Опциональный сабдомен localtunnel (может быть занят).")
+    parser.add_argument(
+        "--lt-host",
+        default=DEFAULT_LT_HOST,
+        help="Переопределить host localtunnel (по умолчанию https://loca.lt).",
+    )
+    parser.add_argument("--localtunnel-bin", help="Явный путь к бинарнику localtunnel (если не хотим npx).")
     parser.add_argument("--verify", type=parse_bool, nargs="?", const=True, default=True, help="Проверять Vite перед туннелем (по умолчанию true)")
-    parser.add_argument("--timeout", type=int, default=30, help="Таймаут ожидания готовности Vite (сек, по умолчанию 30)")
+    parser.add_argument("--timeout", type=int, default=90, help="Таймаут ожидания готовности Vite (сек, по умолчанию 90)")
     parser.add_argument("--reuse-if-running", type=parse_bool, nargs="?", const=True, default=True, help="Если Vite уже отвечает, не запускать run_local.py (по умолчанию true)")
     parser.add_argument("--quiet", action="store_true", help="Меньше логов (префиксы сохраняются).")
     return parser
@@ -236,7 +237,7 @@ def run_with_args(args: argparse.Namespace) -> int:
 
     def handle_tunnel_line(line: str) -> None:
         nonlocal tunnel_url
-        found = TRY_URL_RE.search(line)
+        found = LT_URL_RE.search(line)
         if found and tunnel_url is None:
             tunnel_url = found.group(0)
             if not args.quiet:
@@ -251,7 +252,6 @@ def run_with_args(args: argparse.Namespace) -> int:
                 sys.stdout.flush()
 
     try:
-        # Авто-подбор порта, если занято
         if not is_port_free(args.proxy_port):
             new_port = find_free_port(args.proxy_port + 1)
             if not args.quiet:
@@ -276,13 +276,13 @@ def run_with_args(args: argparse.Namespace) -> int:
         tunnel_proc = start_tunnel(tunnel_cmd, args.quiet, on_line=handle_tunnel_line)
         if not args.quiet:
             sys.stdout.write(f"Started tunnel: {' '.join(tunnel_cmd)}\n")
-        # Wait while processes alive
+
         while True:
             if tunnel_proc.poll() is not None:
                 if tunnel_proc.returncode not in (0, None):
                     raise RuntimeError(
                         f"Tunnel exited with code {tunnel_proc.returncode}. "
-                        "Проверьте порт прокси (--proxy-port) или настройки cloudflared."
+                        "Проверьте порт прокси (--proxy-port) или настройки localtunnel."
                     )
                 break
             time.sleep(0.5)
@@ -314,7 +314,6 @@ def interactive_menu(default_args: argparse.Namespace) -> None:
         sys.stdout.flush()
         return
 
-    # Базовые значения
     args = argparse.Namespace(**vars(default_args))
 
     if choice == "2":
@@ -322,11 +321,11 @@ def interactive_menu(default_args: argparse.Namespace) -> None:
         args.vite_port = prompt_int("Vite port", args.vite_port)
         args.proxy_port = prompt_int("Proxy port", args.proxy_port)
         args.auth_hash_file = prompt_default("Путь к bcrypt-файлу", args.auth_hash_file or DEFAULT_HASH_PATH)
+        args.subdomain = prompt_default("Сабдомен localtunnel (опционально)", args.subdomain or "") or None
         args.verify = prompt_bool("Проверять Vite перед стартом (verify)", True)
         args.reuse_if_running = prompt_bool("Переиспользовать уже запущенный Vite", True)
         args.quiet = not prompt_bool("Подробный вывод (Y = подробно, N = тише)", True)
     else:
-        # Опция 1 или неизвестная — старт с дефолтами
         args.auth_hash_file = args.auth_hash_file or DEFAULT_HASH_PATH
 
     rc = run_with_args(args)

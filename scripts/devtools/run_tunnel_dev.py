@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Запуск защищённого Quick Tunnel для Vite (Caddy BasicAuth + cloudflared).
+Запуск защищённого туннеля для Vite (Caddy BasicAuth + localtunnel).
 
 - Проверяет доступность Vite (опционально).
 - Поднимает Caddy reverse proxy с BasicAuth (bcrypt через `caddy hash-password`).
-- Открывает Cloudflare Quick Tunnel к защищённому прокси (по умолчанию http2).
+- Открывает localtunnel к защищённому прокси.
 - Корректно гасит процессы и временный Caddyfile по Ctrl+C.
 """
 
@@ -25,14 +25,15 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import deque
-from typing import Deque, Optional
+from typing import Callable, Deque, Optional
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 LOCAL_HASH_PATH = os.path.join(SCRIPT_DIR, "data", "auth.bcrypt")
 FALLBACK_HASH_PATH = os.path.expanduser("~/.axiom_tunnel_dev/auth.bcrypt")
 DEFAULT_HASH_PATH = os.path.expanduser(os.environ.get("AXIOM_TUNNEL_HASH_FILE", LOCAL_HASH_PATH))
+DEFAULT_LT_HOST = os.environ.get("AXIOM_TUNNEL_LT_HOST", "https://loca.lt")
 
-TRY_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.trycloudflare\.com")
+LT_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.(?:loca\.lt|localtunnel\.me)")
 
 
 def parse_bool(value: str) -> bool:
@@ -127,7 +128,6 @@ def caddy_hash_password(plaintext: str) -> str:
     lines = [ln.strip() for ln in output.splitlines() if ln.strip()]
     if res.returncode != 0 or not lines:
         raise RuntimeError(f"caddy hash-password failed (code {res.returncode}): {output}")
-    # Take the last bcrypt-looking line
     for line in reversed(lines):
         if line.startswith("$2"):
             return line
@@ -174,20 +174,21 @@ def is_port_free(port: int, host: str = "127.0.0.1") -> bool:
     return True
 
 
-def parse_trycloudflare_url(line: str) -> Optional[str]:
-    match = TRY_URL_RE.search(line)
-    if match:
-        return match.group(0)
-    return None
-
-
-def stream_output(proc: subprocess.Popen, label: str, buf: Deque[str], quiet: bool) -> None:
+def stream_output(
+    proc: subprocess.Popen,
+    label: str,
+    buf: Deque[str],
+    quiet: bool,
+    on_line: Callable[[str], None] | None = None,
+) -> None:
     """Stream subprocess output with optional prefix, keeping a small buffer."""
     if proc.stdout is None:
         return
     for raw_line in proc.stdout:
         line = raw_line.rstrip("\n")
         buf.append(line)
+        if on_line:
+            on_line(line)
         if not quiet:
             sys.stdout.write(f"[{label}] {line}\n")
             sys.stdout.flush()
@@ -234,6 +235,29 @@ def get_password(args: argparse.Namespace) -> str:
     )
 
 
+def resolve_hash_write_path(args: argparse.Namespace) -> str:
+    if args.auth_hash_file:
+        return os.path.expanduser(args.auth_hash_file)
+    env_path = os.environ.get("AXIOM_TUNNEL_HASH_FILE")
+    if env_path:
+        return os.path.expanduser(env_path)
+    return DEFAULT_HASH_PATH
+
+
+def find_existing_hash_path(args: argparse.Namespace) -> Optional[str]:
+    candidates = []
+    if args.auth_hash_file:
+        candidates.append(os.path.expanduser(args.auth_hash_file))
+    env_path = os.environ.get("AXIOM_TUNNEL_HASH_FILE")
+    if env_path:
+        candidates.append(os.path.expanduser(env_path))
+    candidates.extend([DEFAULT_HASH_PATH, FALLBACK_HASH_PATH])
+    for path in candidates:
+        if path and os.path.exists(path):
+            return path
+    return None
+
+
 def resolve_bcrypt(args: argparse.Namespace) -> tuple[str, str]:
     """
     Return (bcrypt_hash, display_mask).
@@ -259,55 +283,31 @@ def resolve_bcrypt(args: argparse.Namespace) -> tuple[str, str]:
     return bcrypt, masked
 
 
-def resolve_hash_write_path(args: argparse.Namespace) -> str:
-    if args.auth_hash_file:
-        return os.path.expanduser(args.auth_hash_file)
-    env_path = os.environ.get("AXIOM_TUNNEL_HASH_FILE")
-    if env_path:
-        return os.path.expanduser(env_path)
-    return DEFAULT_HASH_PATH
-
-
-def find_existing_hash_path(args: argparse.Namespace) -> Optional[str]:
-    candidates = []
-    if args.auth_hash_file:
-        candidates.append(os.path.expanduser(args.auth_hash_file))
-    env_path = os.environ.get("AXIOM_TUNNEL_HASH_FILE")
-    if env_path:
-        candidates.append(os.path.expanduser(env_path))
-    candidates.extend([DEFAULT_HASH_PATH, FALLBACK_HASH_PATH])
-    for path in candidates:
-        if path and os.path.exists(path):
-            return path
-    return None
-
-
-def build_cloudflared_cmd(target: str, args: argparse.Namespace) -> list[str]:
-    cmd = [
-        "cloudflared",
-        "tunnel",
-        "--url",
-        target,
-        "--protocol",
-        args.protocol,
-        "--edge-ip-version",
-        str(args.edge_ip_version),
-    ]
-    if args.no_autoupdate:
-        cmd.append("--no-autoupdate")
+def build_localtunnel_cmd(args: argparse.Namespace) -> list[str]:
+    if args.localtunnel_bin:
+        cmd = [args.localtunnel_bin]
+    elif is_command_available("lt"):
+        cmd = ["lt"]
+    elif is_command_available("localtunnel"):
+        cmd = ["localtunnel"]
+    else:
+        cmd = ["npx", "--yes", "localtunnel"]
+    cmd += ["--port", str(args.proxy_port)]
+    if args.subdomain:
+        cmd += ["--subdomain", args.subdomain]
+    host = args.lt_host or DEFAULT_LT_HOST
+    if host:
+        cmd += ["--host", host]
     return cmd
 
 
 def run(args: argparse.Namespace) -> int:
-    require_command("cloudflared", "Install from https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/")
     require_command("caddy", "Install from https://caddyserver.com/docs/install")
+    if not (is_command_available("lt") or is_command_available("localtunnel") or is_command_available("npx") or args.localtunnel_bin):
+        raise RuntimeError("localtunnel requires 'npx' or a localtunnel binary (lt/localtunnel).")
 
     vite_origin = normalize_url(args.vite_url) if args.vite_url else f"http://{args.vite_host}:{args.vite_port}"
     proxy_url = f"http://127.0.0.1:{args.proxy_port}"
-    tunnel_target = normalize_url(args.tunnel_url) if args.tunnel_url else proxy_url
-
-    if args.protocol.lower() != "http2" and not args.quiet:
-        sys.stdout.write("Note: --protocol is not http2; QUIC/UDP may be unstable. Recommend --protocol http2.\n")
 
     if args.verify:
         sys.stdout.write(f"Checking Vite at {vite_origin} ...\n")
@@ -324,8 +324,8 @@ def run(args: argparse.Namespace) -> int:
     caddyfile_path = build_temp_caddyfile(args.auth_user, bcrypt, vite_origin, args.proxy_port)
     caddy_buf: Deque[str] = deque(maxlen=80)
     caddy_proc: subprocess.Popen | None = None
-    cloudflared_proc: subprocess.Popen | None = None
-    cloudflared_buf: Deque[str] = deque(maxlen=120)
+    lt_proc: subprocess.Popen | None = None
+    lt_buf: Deque[str] = deque(maxlen=120)
 
     try:
         caddy_cmd = ["caddy", "run", "--config", caddyfile_path, "--adapter", "caddyfile"]
@@ -338,7 +338,7 @@ def run(args: argparse.Namespace) -> int:
         )
         threading.Thread(
             target=stream_output,
-            args=(caddy_proc, "caddy", caddy_buf, args.quiet),
+            args=(caddy_proc, "caddy", caddy_buf, args.quiet, None),
             daemon=True,
         ).start()
 
@@ -350,9 +350,9 @@ def run(args: argparse.Namespace) -> int:
         sys.stdout.write(f"Proxy (BasicAuth): {proxy_url} (401 expected)\n")
         sys.stdout.flush()
 
-        cloudflared_cmd = build_cloudflared_cmd(tunnel_target, args)
-        cloudflared_proc = subprocess.Popen(
-            cloudflared_cmd,
+        lt_cmd = build_localtunnel_cmd(args)
+        lt_proc = subprocess.Popen(
+            lt_cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -361,22 +361,12 @@ def run(args: argparse.Namespace) -> int:
 
         tunnel_url: Optional[str] = None
         summary_printed = False
-        tunnel_deadline = time.time() + max(args.timeout, 30)
 
-        if cloudflared_proc.stdout is None:
-            raise RuntimeError("Failed to capture cloudflared output.")
-
-        for raw_line in cloudflared_proc.stdout:
-            line = raw_line.rstrip("\n")
-            cloudflared_buf.append(line)
-            found = parse_trycloudflare_url(line)
-
-            if not args.quiet:
-                sys.stdout.write(f"[cloudflared] {line}\n")
-                sys.stdout.flush()
-
+        def handle_lt_line(line: str) -> None:
+            nonlocal tunnel_url, summary_printed
+            found = LT_URL_RE.search(line)
             if tunnel_url is None and found:
-                tunnel_url = found
+                tunnel_url = found.group(0)
                 sys.stdout.write(
                     "------ Tunnel ready ------\n"
                     f"Vite: {vite_origin} (OK)\n"
@@ -388,23 +378,24 @@ def run(args: argparse.Namespace) -> int:
                 )
                 sys.stdout.flush()
                 summary_printed = True
-            elif tunnel_url is None and time.time() > tunnel_deadline:
-                error_tail = "\n".join(list(cloudflared_buf)[-10:])
-                raise RuntimeError(
-                    "Timed out waiting for tunnel URL from cloudflared "
-                    f"(>{max(args.timeout, 30)}s). Last lines:\n{error_tail}"
-                )
 
-            if cloudflared_proc.poll() is not None:
+        threading.Thread(
+            target=stream_output,
+            args=(lt_proc, "localtunnel", lt_buf, args.quiet, handle_lt_line),
+            daemon=True,
+        ).start()
+
+        tunnel_deadline = time.time() + max(args.timeout, 30)
+        while tunnel_url is None and time.time() < tunnel_deadline:
+            if lt_proc.poll() is not None:
                 break
-
-        cloudflared_proc.wait()
+            time.sleep(0.5)
 
         if tunnel_url is None:
-            error_tail = "\n".join(list(cloudflared_buf)[-10:])
+            error_tail = "\n".join(list(lt_buf)[-10:])
             raise RuntimeError(
-                "cloudflared exited before reporting tunnel URL. "
-                f"Return code: {cloudflared_proc.returncode}. Last lines:\n{error_tail}"
+                "Timed out waiting for tunnel URL from localtunnel "
+                f"(>{max(args.timeout, 30)}s). Last lines:\n{error_tail}"
             )
 
         if not summary_printed:
@@ -416,11 +407,8 @@ def run(args: argparse.Namespace) -> int:
             )
             sys.stdout.flush()
 
-        # Keep running until interrupted or subprocesses exit
         while True:
-            if (cloudflared_proc and cloudflared_proc.poll() is not None) or (
-                caddy_proc and caddy_proc.poll() is not None
-            ):
+            if (lt_proc and lt_proc.poll() is not None) or (caddy_proc and caddy_proc.poll() is not None):
                 break
             time.sleep(0.5)
 
@@ -428,7 +416,7 @@ def run(args: argparse.Namespace) -> int:
         sys.stdout.write("\nCtrl+C received, shutting down...\n")
         sys.stdout.flush()
     finally:
-        stop_process(cloudflared_proc, "cloudflared", args.quiet)
+        stop_process(lt_proc, "localtunnel", args.quiet)
         stop_process(caddy_proc, "caddy", args.quiet)
         if os.path.exists(caddyfile_path):
             try:
@@ -440,7 +428,7 @@ def run(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Защищённый Quick Tunnel для Vite (Caddy + cloudflared).")
+    parser = argparse.ArgumentParser(description="Защищённый туннель для Vite (Caddy + localtunnel).")
     parser.add_argument("--vite-host", default="127.0.0.1", help="Хост Vite (по умолчанию 127.0.0.1)")
     parser.add_argument("--vite-port", type=int, default=5173, help="Порт Vite (по умолчанию 5173)")
     parser.add_argument("--vite-url", help="Полный URL Vite (переопределяет host/port).")
@@ -461,21 +449,19 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Если хэш считан из пароля, сохранить bcrypt в файл (или путь по умолчанию).",
     )
-    parser.add_argument("--protocol", default="http2", help="Протокол cloudflared (по умолчанию http2)")
     parser.add_argument(
-        "--edge-ip-version",
-        default="4",
-        help="Версия edge IP для cloudflared (по умолчанию 4)",
+        "--subdomain",
+        help="Опциональный сабдомен localtunnel (может быть занят).",
     )
     parser.add_argument(
-        "--no-autoupdate",
-        type=parse_bool,
-        nargs="?",
-        const=True,
-        default=True,
-        help="Пробрасывать --no-autoupdate в cloudflared (по умолчанию true).",
+        "--lt-host",
+        default=None,
+        help="Переопределить host localtunnel (по умолчанию https://loca.lt).",
     )
-    parser.add_argument("--tunnel-url", help="Переопределить цель cloudflared --url (по умолчанию локальный прокси).")
+    parser.add_argument(
+        "--localtunnel-bin",
+        help="Явный путь к бинарнику localtunnel (если не хотим npx).",
+    )
     parser.add_argument(
         "--verify",
         type=parse_bool,
@@ -487,8 +473,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--timeout",
         type=int,
-        default=20,
-        help="Таймаут (сек) проверки готовности Vite/прокси (по умолчанию 20).",
+        default=90,
+        help="Таймаут (сек) проверки готовности Vite/прокси/URL (по умолчанию 90).",
     )
     parser.add_argument(
         "--quiet",
