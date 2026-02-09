@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { ContentPreviewData } from '../types'
 import { useContentIndex } from '../data/useContentIndex'
 import { withExportPath } from '../exportRoot'
+import { withBasePath } from '../utils'
 import { ReaderMenuLayer } from '../components/ReaderMenuLayer'
 
 import '@/styles/content-hub-v2.css'
@@ -84,25 +85,38 @@ const ReaderPage: React.FC = () => {
     const controller = new AbortController()
     setState({ html: '', loading: true, error: null })
 
-    const target = withExportPath(`/content-html/${encodeURIComponent(entry.id)}.html`)
-    fetch(target, { signal: controller.signal })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.text()
-      })
-      .then((html) => {
-        const trimmed = html.trim()
-        if (!trimmed) {
-          setState({ html: '', loading: false, error: 'Пустое тело файла: ' + target })
-        } else {
+    const exportRoot = ((import.meta as any)?.env?.AXS_EXPORT_ROOT as string | undefined)?.trim()
+    const exportTarget = exportRoot
+      ? withExportPath(`/content-html/${encodeURIComponent(entry.id)}.html`)
+      : null
+    const legacyTarget = withBasePath(`/content-html/${encodeURIComponent(entry.id)}.html`)
+    const targets = exportTarget ? [exportTarget, legacyTarget] : [legacyTarget]
+
+    const load = async () => {
+      let lastError: string | null = null
+      for (const target of targets) {
+        try {
+          const res = await fetch(target, { signal: controller.signal })
+          if (!res.ok) throw new Error(`HTTP ${res.status}`)
+          const html = await res.text()
+          const trimmed = html.trim()
+          if (!trimmed) {
+            throw new Error('Пустое тело файла')
+          }
           setState({ html: trimmed, loading: false, error: null })
+          return
+        } catch (err) {
+          if (controller.signal.aborted) return
+          const message = err instanceof Error ? err.message : String(err)
+          lastError = `${message} · ${target}`
         }
-      })
-      .catch((err) => {
-        if (controller.signal.aborted) return
-        const message = err instanceof Error ? err.message : String(err)
-        setState({ html: '', loading: false, error: `${message} · ${target}` })
-      })
+      }
+      if (!controller.signal.aborted) {
+        setState({ html: '', loading: false, error: lastError })
+      }
+    }
+
+    load()
 
     return () => controller.abort()
   }, [entry, fetchKey])
@@ -125,11 +139,11 @@ const ReaderPage: React.FC = () => {
     navigate(`/dashboard/content?id=${encodeURIComponent(entry?.id ?? '')}`, { replace: true })
   }
 
-  if (loading) {
+  if (loading && entries.length === 0) {
     return <p className='axcp-empty'>Загрузка контента...</p>
   }
 
-  if (error) {
+  if (error && entries.length === 0) {
     return <p className='axcp-empty'>{error}</p>
   }
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import type { ContentPreviewData } from '../types'
 import { withExportPath } from '../exportRoot'
+import contentIndexFallback from './content-index.json'
 
 interface ContentIndexState {
   entries: ContentPreviewData[]
@@ -11,8 +12,15 @@ interface ContentIndexState {
 
 const MANIFEST_FILE = 'manifest.json'
 const INDEX_FILE = 'content-index.json'
+const FALLBACK_ENTRIES: ContentPreviewData[] = Array.isArray(contentIndexFallback)
+  ? (contentIndexFallback as ContentPreviewData[])
+  : []
 
 async function loadContentIndex(): Promise<ContentPreviewData[]> {
+  const exportRoot = ((import.meta as any)?.env?.AXS_EXPORT_ROOT as string | undefined)?.trim()
+  if (!exportRoot) {
+    return FALLBACK_ENTRIES
+  }
   const manifestUrl = withExportPath(`/${MANIFEST_FILE}`)
   const manifestRes = await fetch(manifestUrl, { cache: 'no-store' })
   if (!manifestRes.ok) {
@@ -39,8 +47,8 @@ async function loadContentIndex(): Promise<ContentPreviewData[]> {
 }
 
 export function useContentIndex(): ContentIndexState {
-  const [entries, setEntries] = useState<ContentPreviewData[]>([])
-  const [loading, setLoading] = useState(true)
+  const [entries, setEntries] = useState<ContentPreviewData[]>(FALLBACK_ENTRIES)
+  const [loading, setLoading] = useState(FALLBACK_ENTRIES.length === 0)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -51,13 +59,15 @@ export function useContentIndex(): ContentIndexState {
     loadContentIndex()
       .then((items) => {
         if (!active) return
-        setEntries(items)
+        if (items.length) setEntries(items)
         setLoading(false)
       })
       .catch((err) => {
         if (!active) return
         const message = err instanceof Error ? err.message : String(err)
-        setError(message)
+        if (!FALLBACK_ENTRIES.length) {
+          setError(message)
+        }
         setLoading(false)
       })
 

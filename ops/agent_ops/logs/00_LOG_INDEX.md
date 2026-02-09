@@ -31,4 +31,5 @@ AXS_HEADER_META:
 | 0011 | 2026-02-09T15:27:32+03:00 | UI walkthrough (registration + screenshots)     | main                        | —                                          | ops/agent_ops/logs/0011_ui-walkthrough-screenshots.md | DONE |
 | 0012 | 2026-02-09T16:02:26+03:00 | Scale/viewport review + preview card fix        | main                        | —                                          | ops/agent_ops/logs/0012_ui-scale-debug-review.md | DONE |
 | 0013 | 2026-02-09T16:27:40+03:00 | Reader window fix (legacy vs ReadRoute styles)  | main                        | —                                          | ops/agent_ops/logs/0013_reader-window-fix.md     | DONE |
+| 0014 | 2026-02-09T16:45:00+03:00 | Restore legacy reader behavior                  | main                        | —                                          | ops/agent_ops/logs/0014_reader-restore-legacy.md | ACTIVE |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).
