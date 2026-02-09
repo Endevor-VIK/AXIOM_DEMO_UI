@@ -39,7 +39,7 @@ AXS_HEADER_META:
 - 2026-02-09T23:14:46+03:00 — Действие: Headless probe trycloudflare URL не выполнен из WSL (DNS: Name or service not known). → Результат: PARTIAL
 
 ## Step E — Git
-- 2026-02-09T23:14:46+03:00 — Commit: `<hash>` — `<message>` — Файлы: `ops/agent_ops/logs/0026_tunnel-dev-7844-open.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
+- 2026-02-09T23:14:46+03:00 — Commit: `5badbdf` — `docs(ops): log 7844 tunnel verification` — Файлы: `ops/agent_ops/logs/0026_tunnel-dev-7844-open.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 
 ---
 
