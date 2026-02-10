@@ -248,8 +248,8 @@ export default function LoginPage() {
 
   useEffect(() => {
     setBootPhase("booting");
-    const revealAt = reduced ? 180 : 2100;
-    const doneAt = reduced ? 520 : 2800;
+    const revealAt = reduced ? 220 : 2400;
+    const doneAt = reduced ? 620 : 3300;
     const t1 = window.setTimeout(() => setBootPhase("reveal"), revealAt);
     const t2 = window.setTimeout(() => setBootPhase("ready"), doneAt);
     return () => {
@@ -313,7 +313,12 @@ export default function LoginPage() {
   return (
     <section ref={rootRef} className="ax-login" aria-labelledby="login-title" data-boot={bootPhase}>
       {/* фон и кибер-слой строго позади карточки */}
-      <div className="ax-login__bg" aria-hidden />
+      <div className="ax-login__bg" aria-hidden>
+        <div className="ax-login__bg-city ax-login__bg-city--far" />
+        <div className="ax-login__bg-city ax-login__bg-city--mid" />
+        <div className="ax-login__bg-city ax-login__bg-city--near" />
+      </div>
+      <div className="ax-login__frame" aria-hidden />
       <CyberDeckOverlay root={rootRef} />
       <BootSequence phase={bootPhase} reduced={reduced} />
 

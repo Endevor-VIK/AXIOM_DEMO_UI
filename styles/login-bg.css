@@ -7,59 +7,147 @@
   }
   
   /* контейнер /login уже имеет position:relative */
-  .ax-login__bg{ position:fixed; inset:0; z-index:0; pointer-events:none; contain: paint; overflow: hidden; }
+  .ax-login__bg{ position:fixed; inset:0; z-index:0; pointer-events:none; contain: paint; overflow: hidden; isolation: isolate; }
   
-  /* БАЗА + ОБЪЁМ + СИЛУЭТ ГОРОДА */
+  /* БАЗА + ГЛУБИНА */
   .ax-login__bg::before{
     content:""; position:absolute; inset:0;
-    /* Слои: туман низа → глубинный ореол → диагональные панели → СИЛУЭТ ГОРОДА → база */
     background:
-      /* мягкая дымка у горизонта */
-      radial-gradient(1200px 360px at 50% 115%, rgba(255,32,52,.08), transparent 60%),
-      /* объёмный ореол */
-      radial-gradient(1400px 700px at 85% 110%, #17060a 0%, transparent 55%),
-      /* диагональные панели */
+      radial-gradient(1200px 360px at 50% 112%, rgba(255,32,52,.10), transparent 60%),
+      radial-gradient(1400px 700px at 85% 110%, #19060c 0%, transparent 55%),
+      radial-gradient(900px 420px at 18% 8%, rgba(255,255,255,.08), transparent 60%),
       repeating-linear-gradient(135deg, rgba(255,255,255,.02) 0 2px, transparent 2px 22px),
-      /* СИЛУЭТ: набор «зданий» у низа (несколько прямоугольников с разной высотой) */
-      linear-gradient(#151016 0 0) bottom 0 left 6% / 50px 14% no-repeat,
-      linear-gradient(#151016 0 0) bottom 0 left 12%/ 28px 10% no-repeat,
-      linear-gradient(#1a1118 0 0) bottom 0 left 18%/ 36px 16% no-repeat,
-      linear-gradient(#151016 0 0) bottom 0 left 25%/ 46px 12% no-repeat,
-      linear-gradient(#1a1118 0 0) bottom 0 left 34%/ 38px 18% no-repeat,
-      linear-gradient(#151016 0 0) bottom 0 left 42%/ 52px 15% no-repeat,
-      linear-gradient(#1a1118 0 0) bottom 0 left 51%/ 40px 20% no-repeat,
-      linear-gradient(#151016 0 0) bottom 0 left 60%/ 44px 13% no-repeat,
-      linear-gradient(#1a1118 0 0) bottom 0 left 68%/ 34px 17% no-repeat,
-      linear-gradient(#151016 0 0) bottom 0 left 76%/ 48px 11% no-repeat,
-      linear-gradient(#1a1118 0 0) bottom 0 left 84%/ 30px 15% no-repeat,
-      /* база */
-      linear-gradient(135deg, var(--ax-bg) 72%, var(--ax-ink) 100%);
-    filter: saturate(1.02);
+      linear-gradient(135deg, var(--ax-bg) 70%, var(--ax-ink) 100%);
+    filter: saturate(1.03);
+  }
+
+  /* 3D CITY LAYERS */
+  .ax-login__bg-city{
+    position:absolute; inset:0; pointer-events:none;
+    transform-origin: 50% 100%;
+    opacity:.7;
+  }
+  .ax-login__bg-city--far{
+    transform: perspective(1700px) rotateX(9deg) translateY(16%);
+    opacity:.32;
+    filter: blur(2px) saturate(.85);
+    animation: ax-city-float-far 22s ease-in-out infinite;
+  }
+  .ax-login__bg-city--mid{
+    transform: perspective(1450px) rotateX(7deg) translateY(10%);
+    opacity:.58;
+    filter: blur(.9px) saturate(.98);
+    animation: ax-city-float-mid 18s ease-in-out infinite;
+  }
+  .ax-login__bg-city--near{
+    transform: perspective(1200px) rotateX(5deg) translateY(4%);
+    opacity:.92;
+    filter: blur(.2px) saturate(1.08);
+    animation: ax-city-float-near 14s ease-in-out infinite;
+  }
+  .ax-login__bg-city--far::before,
+  .ax-login__bg-city--mid::before,
+  .ax-login__bg-city--near::before{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(120% 90% at 50% 110%, rgba(255,32,52,.12), transparent 62%);
+  }
+  .ax-login__bg-city--far::after,
+  .ax-login__bg-city--mid::after,
+  .ax-login__bg-city--near::after{
+    content:""; position:absolute; inset:0;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,64,86,.10) 0 1px, transparent 1px 6px);
+    mix-blend-mode: screen;
+    opacity:.6;
+    animation: ax-city-glitch 11s steps(1) infinite;
+  }
+  .ax-login__bg-city--far::before{
+    background:
+      linear-gradient(#0f0a0e 0 0) bottom 0 left 6%/ 48px 12% no-repeat,
+      linear-gradient(#120b10 0 0) bottom 0 left 14%/ 34px 16% no-repeat,
+      linear-gradient(#0f0a0e 0 0) bottom 0 left 20%/ 44px 14% no-repeat,
+      linear-gradient(#120b10 0 0) bottom 0 left 28%/ 38px 18% no-repeat,
+      linear-gradient(#0f0a0e 0 0) bottom 0 left 36%/ 52px 13% no-repeat,
+      linear-gradient(#120b10 0 0) bottom 0 left 44%/ 46px 19% no-repeat,
+      linear-gradient(#0f0a0e 0 0) bottom 0 left 54%/ 40px 16% no-repeat,
+      linear-gradient(#120b10 0 0) bottom 0 left 62%/ 50px 18% no-repeat,
+      linear-gradient(#0f0a0e 0 0) bottom 0 left 72%/ 42px 15% no-repeat,
+      linear-gradient(#120b10 0 0) bottom 0 left 82%/ 36px 17% no-repeat,
+      radial-gradient(120% 90% at 50% 110%, rgba(255,32,52,.08), transparent 62%);
+  }
+  .ax-login__bg-city--mid::before{
+    background:
+      linear-gradient(#120b10 0 0) bottom 0 left 4%/ 72px 16% no-repeat,
+      linear-gradient(#160d12 0 0) bottom 0 left 12%/ 46px 22% no-repeat,
+      linear-gradient(#120b10 0 0) bottom 0 left 20%/ 58px 18% no-repeat,
+      linear-gradient(#170f15 0 0) bottom 0 left 30%/ 64px 26% no-repeat,
+      linear-gradient(#140c11 0 0) bottom 0 left 40%/ 52px 20% no-repeat,
+      linear-gradient(#170f15 0 0) bottom 0 left 50%/ 70px 28% no-repeat,
+      linear-gradient(#140c11 0 0) bottom 0 left 60%/ 56px 22% no-repeat,
+      linear-gradient(#170f15 0 0) bottom 0 left 70%/ 64px 24% no-repeat,
+      linear-gradient(#140c11 0 0) bottom 0 left 80%/ 48px 18% no-repeat,
+      linear-gradient(#120b10 0 0) bottom 0 left 88%/ 60px 20% no-repeat,
+      radial-gradient(120% 90% at 50% 110%, rgba(255,32,52,.12), transparent 62%);
+  }
+  .ax-login__bg-city--near::before{
+    background:
+      linear-gradient(#1b1118 0 0) bottom 0 left 2%/ 110px 32% no-repeat,
+      linear-gradient(#1a1016 0 0) bottom 0 left 10%/ 78px 36% no-repeat,
+      linear-gradient(#1f121a 0 0) bottom 0 left 18%/ 94px 34% no-repeat,
+      linear-gradient(#1a1016 0 0) bottom 0 left 30%/ 86px 40% no-repeat,
+      linear-gradient(#1f121a 0 0) bottom 0 left 42%/ 102px 36% no-repeat,
+      linear-gradient(#1a1016 0 0) bottom 0 left 56%/ 90px 44% no-repeat,
+      linear-gradient(#1f121a 0 0) bottom 0 left 68%/ 98px 38% no-repeat,
+      linear-gradient(#1a1016 0 0) bottom 0 left 78%/ 82px 42% no-repeat,
+      linear-gradient(#1f121a 0 0) bottom 0 left 88%/ 104px 34% no-repeat,
+      radial-gradient(120% 90% at 50% 110%, rgba(255,32,52,.16), transparent 62%);
   }
   
   /* ДОРОГИ ДАННЫХ + УЗЛЫ + ВИНЬЕТКА */
   .ax-login__bg::after{
     content:""; position:absolute; inset:0;
     background:
-      /* «data lanes» — две диагональные световые трассы, мягко двигаются */
-      linear-gradient(110deg, transparent 0 46%, rgba(255,32,52,.10) 46% 47%, transparent 47% 100%) 0 0/ 100% 100%,
-      linear-gradient(70deg,  transparent 0 52%, rgba(255,32,52,.08) 52% 53%, transparent 53% 100%) 0 0/ 100% 100%,
-      /* редкие узлы‑огни */
-      radial-gradient(6px 6px at 18% 22%, rgba(255,64,86,.16), transparent 70%),
-      radial-gradient(8px 8px at 72% 32%, rgba(255,64,86,.12), transparent 70%),
-      radial-gradient(5px 5px at 64% 78%, rgba(255,64,86,.10), transparent 70%),
-      /* вертикальные «code runners» (очень лёгкие) */
-      linear-gradient(90deg, transparent 0, rgba(255,32,52,.10) 1px, transparent 2px) 0 0/ 120px 100%,
-      /* виньетка */
-      radial-gradient(1200px 360px at 50% 115%, rgba(255,32,52,.12), transparent 60%);
+      linear-gradient(110deg, transparent 0 46%, rgba(255,32,52,.12) 46% 47%, transparent 47% 100%) 0 0/ 100% 100%,
+      linear-gradient(70deg,  transparent 0 52%, rgba(255,32,52,.10) 52% 53%, transparent 53% 100%) 0 0/ 100% 100%,
+      radial-gradient(6px 6px at 18% 22%, rgba(255,64,86,.18), transparent 70%),
+      radial-gradient(8px 8px at 72% 32%, rgba(255,64,86,.16), transparent 70%),
+      radial-gradient(5px 5px at 64% 78%, rgba(255,64,86,.12), transparent 70%),
+      linear-gradient(180deg, rgba(255,255,255,.08) 0 1px, transparent 1px 4px) 0 0/ 100% 100%,
+      linear-gradient(90deg, transparent 0, rgba(255,32,52,.12) 1px, transparent 2px) 0 0/ 140px 100%,
+      radial-gradient(1200px 360px at 50% 115%, rgba(255,32,52,.16), transparent 60%);
     mix-blend-mode: soft-light;
-    opacity:.92;
-    animation: ax-bg-runners 18s linear infinite;
-    will-change: background-position;
+    opacity:.9;
+    animation: ax-bg-runners 18s linear infinite, ax-bg-glitch 9s steps(1) infinite;
+    will-change: background-position, transform;
   }
   @keyframes ax-bg-runners{
-    from{ background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
-    to  { background-position: 8% 0, -6% 0, 0 0, 0 0, 0 0, 120px 0, 0 0; }
+    from{ background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+    to  { background-position: 8% 0, -6% 0, 0 0, 0 0, 0 0, 0 0, 140px 0, 0 0; }
+  }
+  @keyframes ax-bg-glitch{
+    0%, 88%, 100%{ transform: translateX(0); }
+    89%{ transform: translateX(-0.6%); }
+    90%{ transform: translateX(0.4%); }
+    91%{ transform: translateX(0); }
+  }
+  @keyframes ax-city-float-far{
+    0%, 100%{ transform: perspective(1700px) rotateX(9deg) translateY(16%); }
+    50%{ transform: perspective(1700px) rotateX(9deg) translateY(12%); }
+  }
+  @keyframes ax-city-float-mid{
+    0%, 100%{ transform: perspective(1450px) rotateX(7deg) translateY(10%); }
+    50%{ transform: perspective(1450px) rotateX(7deg) translateY(6%); }
+  }
+  @keyframes ax-city-float-near{
+    0%, 100%{ transform: perspective(1200px) rotateX(5deg) translateY(4%); }
+    50%{ transform: perspective(1200px) rotateX(5deg) translateY(2%); }
+  }
+  @keyframes ax-city-glitch{
+    0%, 92%, 100%{ opacity:.86; transform: translateX(0); }
+    93%{ opacity:.72; transform: translateX(-0.8%); }
+    94%{ opacity:.6; transform: translateX(0.6%); }
+    95%{ opacity:.86; transform: translateX(0); }
   }
   
   /* опциональная сетка — просто включи класс .ax-login--grid на секции */
@@ -71,6 +159,121 @@
     mix-blend-mode: soft-light;
     opacity: max(var(--login-bg-grid-opacity), .25);
   }
+
+/* Frame overlay */
+.ax-login__frame{
+  position: fixed;
+  inset: clamp(10px, 2vw, 18px);
+  z-index: 2;
+  pointer-events: none;
+  border-radius: 18px;
+  background:
+    linear-gradient(90deg, rgba(255,32,52,.6), transparent 70%) top left/ 220px 1px no-repeat,
+    linear-gradient(90deg, transparent 30%, rgba(255,32,52,.45)) bottom right/ 200px 1px no-repeat,
+    linear-gradient(180deg, rgba(255,255,255,.12), transparent 60%) top right/1px 140px no-repeat,
+    linear-gradient(180deg, rgba(255,255,255,.12), transparent 60%) bottom left/1px 140px no-repeat;
+  filter: drop-shadow(0 0 22px rgba(255,32,52,.12));
+  animation: ax-frame-pulse 9s ease-in-out infinite;
+}
+.ax-login__frame::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius: inherit;
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+}
+.ax-login__frame::after{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border:1px solid rgba(255,32,52,.35);
+  border-radius: 14px;
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
+  opacity:.9;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+  background-size: 220px 2px;
+  background-repeat: no-repeat;
+  background-position: -240px 18%;
+  mix-blend-mode: screen;
+  animation: ax-frame-scan 10s linear infinite;
+}
+@keyframes ax-frame-pulse{
+  0%, 100%{ opacity:.9; }
+  50%{ opacity:.7; }
+}
+@keyframes ax-frame-scan{
+  0%{ background-position: -240px 18%; }
+  100%{ background-position: calc(100% + 240px) 82%; }
+}
+.ax-login.ax-glitch .ax-login__frame{
+  animation: ax-frame-jitter .18s steps(2) both;
+}
+@keyframes ax-frame-jitter{
+  0%{ transform: translateX(0); }
+  50%{ transform: translateX(1px) skewX(0.2deg); }
+  100%{ transform: translateX(0); }
+}
+
+/* Login card enhancements */
+.ax-login .ax-login-card{
+  position: relative;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: var(--r-xl, 18px);
+  border: 1px solid rgba(255,32,52,.42);
+  background:
+    linear-gradient(180deg, rgba(14,8,10,.94), rgba(8,6,8,.98)),
+    repeating-linear-gradient(0deg, rgba(255,32,52,.06) 0 1px, transparent 1px 6px);
+  box-shadow:
+    0 0 0 1px rgba(255,32,52,.16) inset,
+    0 22px 48px rgba(0,0,0,.45),
+    0 0 28px rgba(255,32,52,.18);
+}
+@supports (clip-path: polygon(0 0)){
+  .ax-login .ax-login-card{
+    clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+  }
+}
+.ax-login .ax-login-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(120deg, rgba(255,255,255,.10), transparent 35%),
+    radial-gradient(340px 140px at 18% 0%, rgba(255,32,52,.22), transparent 60%);
+  opacity:.6;
+  pointer-events:none;
+}
+.ax-login .ax-login-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, transparent 1px 4px),
+    linear-gradient(90deg, rgba(255,32,52,.16), transparent 60%);
+  opacity:0;
+  mix-blend-mode: screen;
+  animation: ax-card-glitch 12s steps(1) infinite;
+  pointer-events:none;
+}
+.ax-login.ax-glitch .ax-login-card{
+  animation: ax-card-jitter .18s steps(2) both;
+}
+.ax-login.ax-glitch .ax-login-card::after{
+  opacity:.35;
+}
+@keyframes ax-card-glitch{
+  0%, 92%, 100%{ opacity:0; transform: translateX(0); }
+  93%{ opacity:.28; transform: translateX(-5px); }
+  94%{ opacity:.12; transform: translateX(3px); }
+  95%{ opacity:0; transform: translateX(0); }
+}
+@keyframes ax-card-jitter{
+  0%{ transform: translateX(0); }
+  50%{ transform: translateX(-1px) skewX(-0.2deg); }
+  100%{ transform: translateX(0); }
+}
 
 /* Сабтайтл по центру: красивый градиент + бегущий underline */
 .ax-login .ax-login-sub{
@@ -250,11 +453,44 @@
   .ax-login .ax-bottom-hint__pill,
   .ax-login .ax-bottom-hint__panel{ transition: none; }
   .ax-login__bg::after{ animation: none !important; }
+  .ax-login__bg-city,
+  .ax-login__bg-city::after{ animation: none !important; }
+  .ax-login .ax-login-card::after{ animation: none !important; }
+  .ax-login__frame,
+  .ax-login__frame::after{ animation: none !important; }
   .ax-login .ax-login-sub::after{ animation: none !important; }
 }
 
 /* Smartphone оптимизации */
 @media (max-width: 560px){
+  .ax-login__frame{
+    inset: 10px;
+    border-radius: 14px;
+  }
+  .ax-login__bg-city--far{
+    transform: perspective(1200px) rotateX(7deg) translateY(18%);
+    animation: ax-city-float-far-mobile 20s ease-in-out infinite;
+  }
+  .ax-login__bg-city--mid{
+    transform: perspective(1100px) rotateX(6deg) translateY(12%);
+    animation: ax-city-float-mid-mobile 16s ease-in-out infinite;
+  }
+  .ax-login__bg-city--near{
+    transform: perspective(980px) rotateX(5deg) translateY(8%);
+    animation: ax-city-float-near-mobile 12s ease-in-out infinite;
+  }
+  @keyframes ax-city-float-far-mobile{
+    0%, 100%{ transform: perspective(1200px) rotateX(7deg) translateY(18%); }
+    50%{ transform: perspective(1200px) rotateX(7deg) translateY(14%); }
+  }
+  @keyframes ax-city-float-mid-mobile{
+    0%, 100%{ transform: perspective(1100px) rotateX(6deg) translateY(12%); }
+    50%{ transform: perspective(1100px) rotateX(6deg) translateY(8%); }
+  }
+  @keyframes ax-city-float-near-mobile{
+    0%, 100%{ transform: perspective(980px) rotateX(5deg) translateY(8%); }
+    50%{ transform: perspective(980px) rotateX(5deg) translateY(5%); }
+  }
   .ax-login__bg::before{
     background:
       radial-gradient(900px 360px at 80% 110%, #17060a 0%, transparent 55%),

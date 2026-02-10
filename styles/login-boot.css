@@ -19,7 +19,7 @@
 }
 
 .ax-boot.is-leaving{
-  animation: ax-boot-fade .6s ease forwards;
+  animation: ax-boot-fade .8s ease forwards;
 }
 
 .ax-boot__frame{
@@ -33,6 +33,20 @@
     0 18px 48px rgba(0,0,0,.45);
   position:relative;
   z-index:2;
+}
+
+.ax-boot__frame::after{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:12px;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, transparent 1px 4px),
+    linear-gradient(90deg, rgba(255,32,52,.22), transparent 55%);
+  opacity:0;
+  mix-blend-mode: screen;
+  pointer-events:none;
+  animation: ax-boot-glitch 9s steps(1) infinite;
 }
 
 .ax-boot__title{
@@ -156,7 +170,7 @@
 
 .ax-boot.is-leaving .ax-boot__wipe{
   opacity:1;
-  animation: ax-boot-wipe .55s ease forwards;
+  animation: ax-boot-wipe .7s ease forwards;
 }
 
 .ax-boot__noise{
@@ -200,6 +214,13 @@
   to{ opacity:0; pointer-events:none; }
 }
 
+@keyframes ax-boot-glitch{
+  0%, 92%, 100%{ opacity:0; transform: translateX(0); }
+  93%{ opacity:.32; transform: translateX(-6px); }
+  94%{ opacity:.14; transform: translateX(4px); }
+  95%{ opacity:0; transform: translateX(0); }
+}
+
 @keyframes ax-boot-noise{
   50%{ opacity:.26; }
 }
@@ -211,24 +232,29 @@
 /* взаимодействие с login layout */
 .ax-login .ax-login-card,
 .ax-login .ax-bottom-hint,
-.ax-login .ax-cyber{
-  transition: opacity .35s ease, transform .45s ease, filter .35s ease;
+.ax-login .ax-cyber,
+.ax-login .ax-login__frame{
+  transition: opacity .8s ease, transform .9s cubic-bezier(.2,.8,.2,1), filter .8s ease;
+  transition-delay: .04s;
 }
 
 .ax-login[data-boot="booting"] .ax-login-card,
 .ax-login[data-boot="booting"] .ax-bottom-hint,
-.ax-login[data-boot="booting"] .ax-cyber{
+.ax-login[data-boot="booting"] .ax-cyber,
+.ax-login[data-boot="booting"] .ax-login__frame{
   opacity:0;
-  transform: translateY(10px) scale(.99);
+  transform: translateY(14px) scale(.985);
   filter: blur(4px);
 }
 
 .ax-login[data-boot="reveal"] .ax-login-card,
 .ax-login[data-boot="reveal"] .ax-bottom-hint,
-.ax-login[data-boot="reveal"] .ax-cyber{
+.ax-login[data-boot="reveal"] .ax-cyber,
+.ax-login[data-boot="reveal"] .ax-login__frame{
   opacity:1;
   transform: translateY(0) scale(1);
   filter: blur(0);
+  transition-delay: .18s;
 }
 
 .ax-boot.is-reduced .ax-boot-line,
