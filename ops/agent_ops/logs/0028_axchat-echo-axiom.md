@@ -37,6 +37,8 @@ AXS_HEADER_META:
   - Обновлено: `tests/e2e/axchat.spec.ts`, `tools/ui-walkthrough.mjs`, `components/TerminalBoot.tsx`, `styles/app.css`
 - 2026-02-10T23:33:40+03:00 — Действие: зафиксированы незакоммиченные изменения AXCHAT (warmup endpoint + UI start model, full-height layout, footer auto-hide, обновление e2e auth cookies, timeout) → Результат: OBSERVED
   - Обновлено: `app/routes/_layout.tsx`, `lib/ui/footerBarController.ts`, `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/axchat.css`, `styles/red-protocol-overrides.css`, `tests/e2e/axchat.spec.ts`
+- 2026-02-11T02:33:40+03:00 — Действие: lore-scope фильтрация источников (без system docs по умолчанию), history для поддержания диалога, scroll-hardening (чат/источники) → Результат: OK
+  - Обновлено: `server/src/config.ts`, `server/src/axchat/indexer.ts`, `server/src/axchat/routes.ts`, `ops/axchat/indexer.ts`, `lib/axchat/api.ts`, `app/routes/dashboard/axchat/index.tsx`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`
 
 ## Step C — Documentation
 - 2026-02-10T15:59:30+03:00 — Действие: создан SPEC axchat-echo-axiom → Результат: OK
@@ -51,6 +53,8 @@ AXS_HEADER_META:
   - Проверки: `user` видит вкладку и получает ACCESS LOCKED (без AXCHAT API); `test` QA+SEARCH; `creator` desktop+mobile screenshots
 - 2026-02-11T01:24:30+03:00 — Действие: повторный прогон после фикса layout scroll-lock → Результат: PASS
   - Команда: `PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/axchat.spec.ts`
+- 2026-02-11T02:34:10+03:00 — Действие: повторный e2e прогон после lore-scope/history/scroll правок → Результат: PASS
+  - Команда: `PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/axchat.spec.ts`
 
 ## Step E — Git
 - 2026-02-10T20:57:40+03:00 — Commit: `6a2d93d` — `feat(axchat): add echo axiom module` — Файлы: `app/main.tsx`, `app/routes/_layout.tsx`, `app/routes/dashboard/audit/index.tsx`, `app/routes/dashboard/axchat/index.tsx`, `app/routes/dashboard/axchat/page.tsx`, `app/routes/dashboard/page.tsx`, `app/routes/help/page.tsx`, `components/PanelNav.tsx`, `components/TerminalBoot.tsx`, `docs/iterations/README.md`, `docs/iterations/axchat-echo-axiom/spec.md`, `docs/iterations/axchat-echo-axiom/spec_LOG_LINK.md`, `lib/axchat/api.ts`, `lib/featureFlags.ts`, `ops/agent_ops/logs/0028_axchat-echo-axiom.md`, `ops/axchat/indexer.ts`, `package.json`, `server/src/app.ts`, `server/src/auth/guards.ts`, `server/src/axchat/indexer.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/app.css`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`, `tools/ui-walkthrough.mjs`
@@ -59,6 +63,7 @@ AXS_HEADER_META:
 - 2026-02-11T01:12:08+03:00 — Commit: `2476134` — `feat(axchat): pro UI, model readiness, e2e` — Файлы: `app/routes/dashboard/axchat/index.tsx`, `index.html`, `lib/axchat/api.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`
 - 2026-02-11T01:21:03+03:00 — Commit: `cec5e01` — `docs(agent-ops): update AXCHAT QA + commits` — Файлы: `ops/agent_ops/logs/0028_axchat-echo-axiom.md`
 - 2026-02-11T01:23:40+03:00 — Commit: `e1ac8bc` — `fix(axchat): lock viewport scroll to panels` — Файлы: `app/routes/_layout.tsx`
+- 2026-02-11T02:33:26+03:00 — Commit: `eea1fd6` — `feat(axchat): lore scope, dialogue memory, scroll` — Файлы: `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `ops/axchat/indexer.ts`, `server/src/axchat/indexer.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`
 
 ---
 
@@ -72,7 +77,6 @@ AXS_HEADER_META:
 ## Чеклист приёмки
 - [x] /dashboard/axchat доступен для creator/test, user получает LOCKED
 - [ ] /dashboard/audit редиректит на /dashboard/axchat
-- [ ] /api/axchat/status показывает model/index
 - [x] /api/axchat/status показывает model/index
 - [ ] Запросы возвращают RU ответ + refs (реальная LLM, не stub)
 - [ ] ghpages режим скрывает вкладку и отключает backend
