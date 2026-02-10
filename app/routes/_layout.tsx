@@ -61,6 +61,7 @@ export default function Layout() {
   const userName = session.user?.displayName || 'CREATOR'
   const userRole = resolvePrimaryRole(session.user?.roles).toUpperCase()
   const userInitials = resolveInitials(userName)
+  const isAxchatRoute = route.startsWith('/dashboard/axchat')
 
   const navItems = useMemo<NavItem[]>(() => {
     const items: NavItem[] = [
@@ -104,7 +105,7 @@ export default function Layout() {
   }, [route])
 
   return (
-    <div className='ax-page'>
+    <div className={`ax-page${isAxchatRoute ? ' ax-page--axchat' : ''}`}>
       <header className='ax-header ax-topbar'>
         <div className='ax-container'>
           <div className='ax-topbar__inner'>
@@ -156,7 +157,7 @@ export default function Layout() {
       {/* FX-layer: эффекты/scanlines; без интеракции */}
       <div id='fx-layer' aria-hidden />
 
-      <main className='ax-shell ax-content'>
+      <main className={`ax-shell ax-content${isAxchatRoute ? ' ax-content--axchat' : ''}`}>
         <div className='ax-container'>
           <Outlet />
         </div>
