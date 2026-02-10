@@ -45,6 +45,10 @@ AXS_HEADER_META:
   - Обновлено: `styles/ticker.css` (приглушённый NEWS WIRE)
 - 2026-02-10T19:14:22+03:00 — Действие: вернул исходный цветокор NEWS WIRE (более яркий красный) → Результат: OK
   - Обновлено: `styles/ticker.css` (возврат базовой палитры тикера)
+- 2026-02-10T20:43:10+03:00 — Действие: усилил красный на NEWS странице + устранил горизонтальный overflow в статус-строке + стабилизировал hero meta на узких → Результат: OK
+  - Обновлено: `styles/news-signal-center.css` (яркость border/glow, clamp для meta, ширины hero side/panels)
+  - Обновлено: `styles/app.css` (status-line wrap на mobile)
+  - Обновлено: `tests/e2e/news.spec.ts` (допуск для hero side на <400px)
 - 2026-02-10T20:32:05+03:00 — Действие: улучшен UX Signal Center (CTA/quick actions, debounced search + clear, highlight, card actions) + доп. responsive polish, добавлен e2e тест → Результат: OK
   - Обновлено: `app/routes/dashboard/news/page.tsx`, `components/NewsCard.tsx`, `styles/news-signal-center.css`
   - Обновлено: `styles/ticker.css`, `tests/e2e/news.spec.ts`
@@ -60,6 +64,7 @@ AXS_HEADER_META:
 - 2026-02-10T16:28:22+03:00 — Действие: ui:walk 1920/1600/1440 (debug=1) → Результат: SKIP (нет запущенного локального UI сервера)
 - 2026-02-10T17:03:08+03:00 — Действие: ui:walk 1920/1600/1440 (debug=1) → Результат: PASS
   - Артефакты: `ops/artifacts/ui_walkthrough/2026-02-10T14-02-21-467Z_1920x1080/`, `ops/artifacts/ui_walkthrough/2026-02-10T14-02-29-239Z_1600x900/`, `ops/artifacts/ui_walkthrough/2026-02-10T14-02-39-207Z_1440x900/`
+- 2026-02-10T20:47:33+03:00 — Действие: `PLAYWRIGHT_BASE_URL=http://127.0.0.1:5173 PLAYWRIGHT_USE_EXISTING_SERVER=1 npx playwright test tests/e2e/news.spec.ts --project=chromium` → Результат: PASS
 - 2026-02-10T20:32:28+03:00 — Действие: доп. QA не запускался → Результат: SKIP
 - 2026-02-10T21:10:20+03:00 — Действие: доп. QA не запускался → Результат: SKIP
 
