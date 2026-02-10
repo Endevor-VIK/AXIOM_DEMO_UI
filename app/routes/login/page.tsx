@@ -88,14 +88,14 @@ function hydrate(p: Preset): Preset {
   const slot = randInt(1, 9);
   const utc = new Date().toISOString().slice(11, 19);
   const lines = p.lines.map((l) => l
-    .replaceAll("{lat}", String(lat))
-    .replaceAll("{nodes}", nodes)
-    .replaceAll("{rot}", rot)
-    .replaceAll("{ch}", ch)
-    .replaceAll("{sig}", String(sig))
-    .replaceAll("{hop}", String(hop))
-    .replaceAll("{slot}", String(slot))
-    .replaceAll("{utc}", utc));
+    .replace(/\{lat\}/g, String(lat))
+    .replace(/\{nodes\}/g, nodes)
+    .replace(/\{rot\}/g, rot)
+    .replace(/\{ch\}/g, ch)
+    .replace(/\{sig\}/g, String(sig))
+    .replace(/\{hop\}/g, String(hop))
+    .replace(/\{slot\}/g, String(slot))
+    .replace(/\{utc\}/g, utc));
   return { ...p, lines };
 }
 

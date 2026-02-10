@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-10
+  last_updated: 2026-02-11
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -28,6 +28,7 @@ AXS_HEADER_META:
 
 ## Step A — Discovery
 - 2026-02-10T19:41:16+03:00 — Действие: Зафиксированы вводные CREATOR (настроение референса, показывать при каждом логине, без звуков, без ограничений) → Результат: OK
+- 2026-02-11T02:49:10+03:00 — Действие: Уточнено у CREATOR: разрешение на перенос моделей с `https://orion.adrianred.com/` есть; фон нужен только на `/login`; вариант — урезанный/лёгкий → Результат: OK
 
 ## Step B — Implementation
 - 2026-02-10T19:50:03+03:00 — Действие: Добавлен boot-sequence overlay и переход в login, подключены стили → Результат: OK
@@ -37,6 +38,10 @@ AXS_HEADER_META:
   - Обновлено: `app/routes/login/page.tsx`, `styles/login-bg.css`
 - 2026-02-10T23:34:20+03:00 — Действие: зафиксированы незакоммиченные правки login (OrionCityBackground WebGL, обновлён cyber overlay, совместимость шаблонов boot-lines, добавлены three deps) → Результат: OBSERVED
   - Обновлено: `app/routes/login/page.tsx`, `components/login/OrionCityBackground.tsx`, `styles/login-cyber.css`, `package.json`, `package-lock.json`, `node_modules/.package-lock.json`
+- 2026-02-11T02:47:40+03:00 — Действие: Интегрирован Orion city model + flying transport в WebGL фон логина → Результат: OK
+  - Добавлено: `public/assets/orion/level.glb` (город + `flying-car*` + `air-traffic-*` маркеры)
+  - Добавлено: `public/draco/gltf/draco_decoder.js` (DRACO decoder для GLTFLoader)
+  - Обновлено: `components/login/OrionCityBackground.tsx` (GLTFLoader+DRACOLoader, материал-оверрайд под «окна», air-traffic по маркерам, дождь привязан к камере)
 
 ## Step C — Documentation
 - 2026-02-10T19:50:03+03:00 — Действие: Документация не требуется → Результат: SKIP
@@ -46,6 +51,9 @@ AXS_HEADER_META:
 - 2026-02-10T20:32:58+03:00 — Действие: доп. QA не запускался → Результат: SKIP
 - 2026-02-10T23:34:30+03:00 — Действие: QA для обнаруженных правок не запускался → Результат: SKIP
 - 2026-02-10T22:48:30+03:00 — Действие: доп. QA не запускался → Результат: SKIP
+- 2026-02-11T02:49:35+03:00 — Действие: Playwright smoke `/login` (скрин) → Результат: OK
+  - Артефакт: `ops/artifacts/ui_scan/manual/2026-02-11_login_orion.png`
+- 2026-02-11T02:50:10+03:00 — Действие: `npm run typecheck` → Результат: FAIL (несвязанные ошибки в `app/routes/dashboard/axchat/index.tsx`, `app/routes/dashboard/news/page.tsx`, `app/routes/dashboard/page.tsx`)
 
 ## Step E — Git
 - 2026-02-10T19:52:49+03:00 — Commit: `d761090` — `feat(login): add boot loader transition` — Файлы: `app/routes/login/page.tsx`, `styles/login-boot.css`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`

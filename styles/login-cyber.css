@@ -5,18 +5,21 @@
 
    /* scanlines (очень лёгкие) */
    .ax-cyber__scanlines{
-     position:absolute; inset:0; opacity:.075; mix-blend-mode: soft-light;
+     position:absolute; inset:0; opacity:.042; mix-blend-mode: soft-light;
      background: repeating-linear-gradient(180deg, rgba(255,255,255,.10) 0 1px, transparent 1px 3px);
-     animation: ax-scanline 8s linear infinite;
+     animation: ax-scanline 14s linear infinite;
    }
    @keyframes ax-scanline { to { background-position-y: 100%; } }
    
    /* консоль (терминал) */
    .ax-console{
+     --ax-console-accent: rgba(255,32,52,.75);
+     --ax-console-text: #e8e8f0;
+     --ax-console-prompt: #6aff9f;
      position:absolute; min-width: 300px; max-width: 520px;
      background: linear-gradient(180deg, rgba(18,10,12,.88), rgba(10,8,10,.90));
-     border:1px solid #3a1216; border-radius: 10px;
-     box-shadow: 0 0 0 1px rgba(255,32,52,.16) inset, 0 12px 32px rgba(0,0,0,.45);
+     border:1px solid rgba(255,32,52,.24); border-radius: 12px;
+     box-shadow: 0 0 0 1px rgba(255,32,52,.10) inset, 0 12px 32px rgba(0,0,0,.45);
      backdrop-filter: blur(6px);
      transform: translateY(8px) scale(.985); opacity: 0;
      transition: transform .26s cubic-bezier(.2,.8,.2,1), opacity .18s ease;
@@ -24,15 +27,50 @@
      will-change: transform, opacity;
      contain: paint;
    }
+   .ax-console::before{
+     content:"";
+     position:absolute;
+     inset:0;
+     border-radius: inherit;
+     border-left: 2px solid var(--ax-console-accent);
+     background:
+       linear-gradient(120deg, rgba(255,255,255,.10), transparent 34%),
+       repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 4px);
+     opacity:.26;
+     pointer-events:none;
+   }
+   .ax-console[data-kind="ok"]{ --ax-console-accent: rgba(125,255,176,.78); --ax-console-prompt:#7dffb0; }
+   .ax-console[data-kind="info"]{ --ax-console-accent: rgba(79,255,232,.68); --ax-console-prompt:#6aff9f; }
+   .ax-console[data-kind="warn"]{ --ax-console-accent: rgba(255,204,112,.72); --ax-console-prompt:#ffd07d; }
+   .ax-console[data-kind="alert"]{ --ax-console-accent: rgba(255,64,86,.78); --ax-console-prompt:#ff7a86; }
+   .ax-console[data-kind="ghost"]{ --ax-console-accent: rgba(210,190,255,.62); --ax-console-prompt:#c9ffef; }
    .ax-console.is-lite .ax-console__title{ color:#ffd7dc; letter-spacing:.08em; opacity:.9; }
    .ax-console.is-show{ transform: translateY(0) scale(1); opacity:1; }
    
-   .ax-console__head{ padding:6px 10px; border-bottom:1px solid rgba(255,32,52,.14);
-     font: 700 12px/1 var(--font-mono); text-transform: uppercase; }
+   .ax-console__head{
+     padding:8px 10px;
+     border-bottom:1px solid rgba(255,32,52,.14);
+     display:flex; align-items:center; justify-content:space-between; gap:10px;
+     font: 700 12px/1 var(--font-mono); text-transform: uppercase;
+   }
+   .ax-console__sig{ display:inline-flex; align-items:center; gap:6px; }
+   .ax-console__dot{
+     width:6px; height:6px; border-radius: 99px;
+     background: var(--ax-console-accent);
+     box-shadow: 0 0 12px color-mix(in srgb, var(--ax-console-accent) 65%, transparent);
+     opacity:.75;
+     animation: ax-console-dot 1.6s ease-in-out infinite;
+   }
+   .ax-console__dot:nth-child(2){ animation-delay: .18s; opacity:.58; }
+   .ax-console__dot:nth-child(3){ animation-delay: .36s; opacity:.42; }
+   @keyframes ax-console-dot{
+     0%, 100%{ transform: translateY(0); opacity: .55; }
+     50%{ transform: translateY(-1px); opacity: .95; }
+   }
    .ax-console__body{ padding:10px; }
-   .ax-console__pre{ margin:0; font: 500 12.5px/1.55 var(--font-mono); color:#e8e8f0; }
+   .ax-console__pre{ margin:0; font: 500 12.5px/1.55 var(--font-mono); color:var(--ax-console-text); }
    .ax-console__line{ display:flex; align-items:center; gap:8px; }
-   .ax-console__prompt{ color:#6aff9f; }
+   .ax-console__prompt{ color:var(--ax-console-prompt); }
    .ax-console__typed{ white-space: pre; }
    .ax-console__cursor{
      width:8px; height:12px;
@@ -42,6 +80,16 @@
      animation: ax-caret .9s steps(1) infinite;
    }
    @keyframes ax-caret{ 50% { opacity:.1; } }
+
+   .ax-console__foot{
+     margin-top: 8px;
+     padding-top: 8px;
+     border-top: 1px solid rgba(255,255,255,.06);
+     color: rgba(255,233,240,.74);
+     font: 700 10px/1.4 var(--font-mono);
+     letter-spacing: .14em;
+     text-transform: uppercase;
+   }
    
    /* локальный глитч — только для оверлея и только пока секция .ax-login.ax-glitch */
    .ax-login.ax-glitch .ax-cyber .ax-console{
@@ -56,6 +104,7 @@
    @media (prefers-reduced-motion: reduce){
      .ax-cyber__scanlines{ animation:none !important; }
      .ax-console{ transition: opacity .15s ease; }
+     .ax-console__dot{ animation: none !important; opacity: .7; }
    }
 
    /* мобильные ограничения консоли */
