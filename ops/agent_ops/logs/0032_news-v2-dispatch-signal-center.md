@@ -34,8 +34,8 @@ AXS_HEADER_META:
   - Требуемые изменения: master-detail (SmartHeader + Feed), UI-state (read/pinned/new since last visit)
 
 ## Step B — Implementation
-- 2026-02-10T23:37:40+03:00 — Действие: зафиксированы незакоммиченные правки NEWS v2 (master-detail feed, presets, read/pinned state, localStorage helpers, тесты) → Результат: OBSERVED
-  - Обновлено: `app/routes/dashboard/news/page.tsx`
+- 2026-02-10T23:37:40+03:00 — Действие: зафиксированы незакоммиченные правки NEWS v2 (master-detail feed, presets, read/pinned state, localStorage helpers, стили, тесты) → Результат: OBSERVED
+  - Обновлено: `app/routes/dashboard/news/page.tsx`, `styles/news-signal-center.css`
   - Добавлено: `lib/news/v2State.ts`, `tests/newsV2State.spec.ts`
 
 ## Step C — Documentation
