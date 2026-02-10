@@ -26,7 +26,8 @@
     "ui:walk": "node tools/ui-walkthrough.mjs",
     "format": "prettier --write .",
     "validate:content": "tsx tools/validate-content.ts",
-    "content-agent": "tsx tools/content-agent/index.ts"
+    "content-agent": "tsx tools/content-agent/index.ts",
+    "axchat:index": "tsx ops/axchat/indexer.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^9.4.0",

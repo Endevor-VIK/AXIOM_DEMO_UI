@@ -34,8 +34,8 @@ export default function TerminalBoot(){
         try { await Promise.allSettled([ vfs.readIndex(), vfs.readObjects(), vfs.readLogs() ]); push('Snapshots OK', 'ok'); }
         catch(e){ push('Snapshots partial/failed', 'warn'); }
 
-        push('Reading manifests: audits, content, news …');
-        try { await Promise.allSettled([ vfs.readAuditsManifest(), vfs.readContentManifest(), vfs.readNewsManifest() ]); push('Manifests OK', 'ok'); }
+        push('Reading manifests: content, news …');
+        try { await Promise.allSettled([ vfs.readContentManifest(), vfs.readNewsManifest() ]); push('Manifests OK', 'ok'); }
         catch(e){ push('Manifests partial/failed', 'warn'); }
 
         push('Warm-up caches …');

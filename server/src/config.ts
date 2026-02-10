@@ -5,6 +5,7 @@ const truthy = (value?: string) => value === '1' || value === 'true' || value ==
 export const config = {
   port: Number(process.env.AX_API_PORT || 8787),
   host: process.env.AX_API_HOST || '127.0.0.1',
+  deployTarget: process.env.AX_DEPLOY_TARGET === 'ghpages' ? 'ghpages' : 'local',
   dbPath:
     process.env.AX_DB_PATH ||
     path.resolve(process.cwd(), 'runtime', 'auth.sqlite'),
@@ -17,6 +18,14 @@ export const config = {
   seedTest: truthy(process.env.AX_SEED_TEST),
   testEmail: process.env.AX_TEST_EMAIL || 'test@local',
   testPassword: process.env.AX_TEST_PASSWORD || 'test12345',
+  axchatIndexPath:
+    process.env.AXCHAT_INDEX_PATH ||
+    path.resolve(process.cwd(), 'runtime', 'axchat', 'index.sqlite'),
+  axchatModel: process.env.AXCHAT_MODEL || 'qwen2.5:7b-instruct',
+  axchatHost: process.env.AXCHAT_HOST || 'http://127.0.0.1:11434',
+  axchatTopK: Number(process.env.AXCHAT_TOP_K || 4),
+  axchatChunkSize: Number(process.env.AXCHAT_CHUNK_SIZE || 1000),
+  axchatChunkOverlap: Number(process.env.AXCHAT_CHUNK_OVERLAP || 120),
 }
 
 export const SESSION_TTL_MS = config.sessionTtlDays * 24 * 60 * 60 * 1000

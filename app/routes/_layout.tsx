@@ -19,14 +19,6 @@ type NavItem = {
   end?: boolean
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { to: '/dashboard', label: 'HOME', end: true },
-  { to: '/dashboard/roadmap', label: 'ROADMAP' },
-  { to: '/dashboard/audit', label: 'AUDIT' },
-  { to: '/dashboard/content', label: 'CONTENT' },
-  { to: '/dashboard/news', label: 'NEWS' },
-]
-
 function resolveInitials(name: string): string {
   const parts = name.split(/\s+/).filter(Boolean)
   if (!parts.length) return 'AX'
@@ -67,6 +59,17 @@ export default function Layout() {
   const userRole = resolvePrimaryRole(session.user?.roles).toUpperCase()
   const userInitials = resolveInitials(userName)
 
+  const navItems = useMemo<NavItem[]>(() => {
+    const items: NavItem[] = [
+      { to: '/dashboard', label: 'HOME', end: true },
+      { to: '/dashboard/roadmap', label: 'ROADMAP' },
+      { to: '/dashboard/axchat', label: 'AXCHAT' },
+      { to: '/dashboard/content', label: 'CONTENT' },
+      { to: '/dashboard/news', label: 'NEWS' },
+    ]
+    return items
+  }, [])
+
   const handleLogout = useCallback(async () => {
     await logout()
     navigate('/', { replace: true })
@@ -95,7 +98,7 @@ export default function Layout() {
               AXIOM PANEL
             </div>
             <nav className='ax-tabs' aria-label='Primary navigation'>
-              {NAV_ITEMS.map((item) => (
+              {navItems.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}

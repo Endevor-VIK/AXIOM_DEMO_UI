@@ -12,6 +12,7 @@ import LoginPage from '@/app/routes/login/page'
 import DashboardPage from '@/app/routes/dashboard/page'
 import RoadmapPage from '@/app/routes/dashboard/roadmap/page'
 import AuditPage from '@/app/routes/dashboard/audit/page'
+import AxchatPage from '@/app/routes/dashboard/axchat/page'
 import ContentLayout from '@/app/routes/dashboard/content/_layout'
 import AllRoute from '@/app/routes/dashboard/content/AllRoute'
 import CategoryRoute from '@/app/routes/dashboard/content/CategoryRoute'
@@ -47,6 +48,7 @@ const routes = [
           { index: true, element: <DashboardPage /> },
           { path: 'roadmap', element: <RoadmapPage /> },
           { path: 'audit', element: <AuditPage /> },
+          { path: 'axchat', element: <AxchatPage /> },
           {
             path: 'content',
             element: <ContentLayout />,

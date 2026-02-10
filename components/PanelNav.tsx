@@ -2,7 +2,7 @@
 // Canvas: C08 — components/PanelNav.tsx
 // Purpose: Responsive primary navigation with mobile collapse and current route highlighting.
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 interface PanelNavProps {
@@ -12,6 +12,19 @@ interface PanelNavProps {
 export default function PanelNav({ onToggle }: PanelNavProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  const navItems = useMemo(
+    () => {
+      const items = [
+        { to: '/dashboard/roadmap', label: 'ROADMAP' },
+        { to: '/dashboard/axchat', label: 'AXCHAT' },
+        { to: '/dashboard/content', label: 'CONTENT' },
+        { to: '/dashboard/news', label: 'NEWS' },
+      ];
+      return items;
+    },
+    [],
+  );
 
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
@@ -30,10 +43,15 @@ export default function PanelNav({ onToggle }: PanelNavProps) {
         ☰ Меню
       </button>
       <nav id="ax-navmenu" className={`ax-nav ${open ? 'open' : ''}`} aria-label="Primary">
-        <NavLink to="/dashboard/roadmap" className={({isActive}) => isActive ? 'ax-tab active' : 'ax-tab'}>ROADMAP</NavLink>
-        <NavLink to="/dashboard/audit" className={({isActive}) => isActive ? 'ax-tab active' : 'ax-tab'}>AUDIT</NavLink>
-        <NavLink to="/dashboard/content" className={({isActive}) => isActive ? 'ax-tab active' : 'ax-tab'}>CONTENT</NavLink>
-        <NavLink to="/dashboard/news" className={({isActive}) => isActive ? 'ax-tab active' : 'ax-tab'}>NEWS</NavLink>
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) => (isActive ? 'ax-tab active' : 'ax-tab')}
+          >
+            {item.label}
+          </NavLink>
+        ))}
       </nav>
 
       <style>{`

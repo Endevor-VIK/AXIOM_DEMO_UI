@@ -144,7 +144,7 @@ async function runViewport(browser, baseUrl, viewport) {
   const mainRoutes = [
     { name: 'dashboard', route: '/dashboard' },
     { name: 'roadmap', route: '/dashboard/roadmap' },
-    { name: 'audit', route: '/dashboard/audit' },
+    { name: 'axchat', route: '/dashboard/axchat' },
     { name: 'news', route: '/dashboard/news' },
   ]
 

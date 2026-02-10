@@ -40,3 +40,14 @@ export function requireRole(role: string) {
     }
   }
 }
+
+export function requireAnyRole(roles: string[]) {
+  return async (request: FastifyRequest, reply: FastifyReply) => {
+    await requireAuth(request, reply)
+    if (reply.sent) return
+    const authUser = (request as any).authUser as AuthedUser | undefined
+    if (!authUser || !roles.some((role) => authUser.roles.includes(role))) {
+      reply.code(403).send({ error: 'forbidden' })
+    }
+  }
+}

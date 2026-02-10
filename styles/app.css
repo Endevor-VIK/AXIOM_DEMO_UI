@@ -628,6 +628,9 @@
    .ax-status-line .ax-chip[data-variant='online']{ background: rgba(22,80,52,0.16); border-color: rgba(96,255,178,0.4); color: #b9ffd8; box-shadow: 0 0 0 1px rgba(96,255,178,0.22) inset, 0 0 12px rgba(96,255,178,0.2); }
    .ax-status-line .ax-chip[data-variant='error']{ background: rgba(60,12,16,0.2); border-color: rgba(255,86,120,0.46); color: #ffc7d0; }
    @media (max-width: 720px){
+     .ax-status-line { align-items: flex-start; }
+     .ax-status-line__group--crumbs { flex: 1 1 100%; }
+     .ax-status-line__group--meta { flex: 1 1 100%; min-width: 0; justify-content: flex-start; }
      .ax-status-line [data-hide-sm='true']{ display: none; }
    }
    

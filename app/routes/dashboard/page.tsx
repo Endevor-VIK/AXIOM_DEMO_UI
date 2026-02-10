@@ -6,10 +6,9 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { vfs, type NewsItem } from '@/lib/vfs'
 import CounterWreath from '@/components/counters/CounterWreath'
-import { isAuditDisabled, isRoadmapDisabled } from '@/lib/featureFlags'
+import { resolveDeployTarget } from '@/lib/auth/deploy'
 
 interface Counts {
-  audits: number
   content: number
   news: number
 }
@@ -27,36 +26,33 @@ function resolveKindVariant(kind?: string): 'info' | 'good' | 'warn' {
 }
 
 function resolveCountVariant(count: number | string): 'online' | 'warn' {
-  if (typeof count !== 'number') return 'warn'
+  if (typeof count !== 'number') {
+    return count.toString().toUpperCase() === 'LOCAL' ? 'online' : 'warn'
+  }
   return count > 0 ? 'online' : 'warn'
 }
 
 export default function DashboardPage() {
-  const [counts, setCounts] = useState<Counts>({ audits: 0, content: 0, news: 0 })
+  const [counts, setCounts] = useState<Counts>({ content: 0, news: 0 })
   const [latest, setLatest] = useState<NewsItem[]>([])
   const [busy, setBusy] = useState(true)
   const [err, setErr] = useState<string | null>(null)
+  const deployTarget = resolveDeployTarget()
+  const showAxchat = deployTarget === 'local'
 
   useEffect(() => {
     let alive = true
     ;(async () => {
       try {
         setBusy(true)
-        const auditDisabled = isAuditDisabled || isRoadmapDisabled
-        const [aud, cont, news] = await Promise.allSettled([
-          auditDisabled ? Promise.resolve([]) : vfs.readAuditsManifest(),
+        const [cont, news] = await Promise.allSettled([
           vfs.readContentManifest(),
           vfs.readNewsManifest(),
         ])
-        const audits = auditDisabled
-          ? 0
-          : aud.status === 'fulfilled' && Array.isArray(aud.value)
-            ? aud.value.length
-            : 0
         const content = cont.status === 'fulfilled' && Array.isArray(cont.value) ? cont.value.length : 0
         const newsArr = news.status === 'fulfilled' && Array.isArray(news.value) ? (news.value as NewsItem[]) : []
         if (!alive) return
-        setCounts({ audits, content, news: newsArr.length })
+        setCounts({ content, news: newsArr.length })
         setLatest(newsArr.slice(0, 2)) // было 3 → делаем компактнее
         setErr(null)
       } catch (error: any) {
@@ -72,14 +68,15 @@ export default function DashboardPage() {
   }, [])
 
   const statusCounters = useMemo(() => {
-    const auditDisabled = isAuditDisabled || isRoadmapDisabled
-    const auditValue = auditDisabled ? 'ERR' : counts.audits
-    return [
-      { label: 'AUDIT', value: auditValue, to: '/dashboard/audit' },
+    const counters = [
       { label: 'CONTENT', value: counts.content, to: '/dashboard/content' },
       { label: 'NEWS', value: counts.news, to: '/dashboard/news' },
     ]
-  }, [counts])
+    if (showAxchat) {
+      counters.unshift({ label: 'AXCHAT', value: 'LOCAL', to: '/dashboard/axchat' })
+    }
+    return counters
+  }, [counts, showAxchat])
 
   return (
     <div className='ax-dashboard' aria-busy={busy} aria-live='polite'>
@@ -93,7 +90,7 @@ export default function DashboardPage() {
         <section className='ax-card ax-dashboard__panel ax-dashboard__panel--status' data-noise='on' aria-label='Status overview'>
           <header className='ax-dashboard__panel-head'>
             <h2 className='ax-blade-head'>CONTROL STATUS</h2>
-            <p className='ax-dashboard__panel-note'>Live counters from audit, content and news manifests.</p>
+            <p className='ax-dashboard__panel-note'>Live counters from content and news manifests.</p>
           </header>
           <div className='ax-dashboard__wreaths'>
             {statusCounters.map((counter) => (
@@ -116,7 +113,9 @@ export default function DashboardPage() {
           <div className='ax-hr-blade' aria-hidden='true' />
           <div className='ax-dashboard__actions'>
             <Link to='/dashboard/roadmap' className='ax-btn ghost ax-dashboard__action'>OPEN ROADMAP</Link>
-            <Link to='/dashboard/audit' className='ax-btn ghost ax-dashboard__action'>OPEN AUDIT</Link>
+            {showAxchat ? (
+              <Link to='/dashboard/axchat' className='ax-btn ghost ax-dashboard__action'>OPEN AXCHAT</Link>
+            ) : null}
             <Link to='/dashboard/content' className='ax-btn ghost ax-dashboard__action'>OPEN CONTENT</Link>
             <Link to='/dashboard/news' className='ax-btn ghost ax-dashboard__action' data-variant='accent'>VIEW NEWS</Link>
           </div>

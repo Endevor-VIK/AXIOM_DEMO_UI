@@ -6,6 +6,7 @@ import path from 'node:path'
 import { config } from './config'
 import { registerAuthRoutes } from './auth/routes'
 import { registerAdminRoutes } from './admin/routes'
+import { registerAxchatRoutes } from './axchat/routes'
 import { getDb } from './db/db'
 import { seedUsers } from './db/seed'
 
@@ -22,6 +23,10 @@ export async function buildApp() {
   app.register(async (instance) => {
     await registerAdminRoutes(instance)
   }, { prefix: '/api/admin' })
+
+  app.register(async (instance) => {
+    await registerAxchatRoutes(instance)
+  }, { prefix: '/api/axchat' })
 
   if (process.env.AX_SERVE_STATIC === '1' || process.env.NODE_ENV === 'production') {
     const distRoot = path.resolve(process.cwd(), 'dist')

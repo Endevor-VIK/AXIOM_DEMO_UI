@@ -3,6 +3,7 @@
 
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { resolveDeployTarget } from '@/lib/auth/deploy'
 
 const HELP_LINKS = [
   { label: 'Profile & Auth SoT', to: '/docs/identity_profile_auth/PROFILE_AUTH_SOT_v2.3.1.md' },
@@ -12,6 +13,8 @@ const HELP_LINKS = [
 ]
 
 export default function HelpPage() {
+  const deployTarget = resolveDeployTarget()
+  const showAxchat = deployTarget === 'local'
   return (
     <section className='ax-container ax-section'>
       <div className='ax-stack'>
@@ -61,9 +64,11 @@ export default function HelpPage() {
               for future feedback form wiring.
             </p>
             <div className='ax-help-actions'>
-              <Link to='/dashboard/audit' className='ax-btn ghost'>
-                OPEN AUDIT
-              </Link>
+              {showAxchat ? (
+                <Link to='/dashboard/axchat' className='ax-btn ghost'>
+                  OPEN AXCHAT
+                </Link>
+              ) : null}
               <Link to='/dashboard/news' className='ax-btn ghost'>
                 NEWS
               </Link>
