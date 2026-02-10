@@ -98,7 +98,7 @@ export default function Layout() {
       footerEl: footerRef.current,
       hotzoneEl: footerHotzoneRef.current,
       thresholdPx: 10,
-      hideDelayMs: 200,
+      hideDelayMs: 2000,
       showDelayMs: 0,
       idleHideMs: 9000,
     })

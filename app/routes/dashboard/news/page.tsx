@@ -1,22 +1,37 @@
 // AXIOM_DEMO_UI — WEB CORE
 // Canvas: C19 — app/routes/dashboard/news/page.tsx
-// Purpose: News panel with Red Protocol filters, grid layout and pagination.
+// Purpose: NEWS v2 master-detail feed with Dispatch + Signal Center preserved.
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+
 import CounterWreath from '@/components/counters/CounterWreath'
+import { countNewSince, newsV2Keys, readIdSet, readTimestamp, writeIdSet, writeTimestamp } from '@/lib/news/v2State'
+import { useSession } from '@/lib/identity/useSession'
 import { vfs, type NewsItem, type NewsKind } from '@/lib/vfs'
-import NewsCard from '@/components/NewsCard'
+
 import '@/styles/news-signal-center.css'
 
 const KIND_FILTERS: ('' | NewsKind)[] = ['', 'update', 'release', 'heads-up', 'roadmap']
-const PAGE_SIZES = [4, 8, 12]
+const PAGE_SIZES = [12, 20, 50]
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest first' },
   { value: 'oldest', label: 'Oldest first' },
 ] as const
 
 type SortOrder = (typeof SORT_OPTIONS)[number]['value']
+
+type SignalTab = 'summary' | 'meta' | 'links'
+
+type Preset = 'all' | 'updates' | 'releases' | 'audit' | 'fixes'
+
+const PRESET_LABELS: Record<Preset, string> = {
+  all: 'All',
+  updates: 'Updates',
+  releases: 'Releases',
+  audit: 'Audit',
+  fixes: 'Fixes',
+}
 
 const KIND_VARIANT: Record<string, 'info' | 'good' | 'warn'> = {
   release: 'good',
@@ -46,6 +61,21 @@ function matchesQuery(item: NewsItem, term: string) {
     .join(' ')
     .toLowerCase()
   return haystack.includes(term)
+}
+
+function matchesPreset(item: NewsItem, preset: Preset) {
+  if (preset === 'all') return true
+  if (preset === 'updates') return item.kind === 'update'
+  if (preset === 'releases') return item.kind === 'release'
+
+  const haystack = [item.title, item.summary, ...(item.tags ?? [])]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+
+  if (preset === 'audit') return haystack.includes('audit')
+  if (preset === 'fixes') return haystack.includes('fix') || haystack.includes('bug') || haystack.includes('patch')
+  return true
 }
 
 function normalizePath(path: string) {
@@ -84,21 +114,47 @@ function resolvePacketSource(item: NewsItem | null) {
   return 'manifest'
 }
 
-type NewsDispatchPillarProps = {
+type NewsDispatchPanelProps = {
   busy: boolean
+  preset: Preset
+  pinnedOnly: boolean
+  todayOnly: boolean
+  onPreset: (value: Preset) => void
+  onTogglePinnedOnly: () => void
+  onToggleToday: () => void
+  onMarkAllRead: () => void
   total: number
   visible: number
+  unread: number
+  fresh: number
+  pinned: number
   page: number
   pageCount: number
 }
 
-function NewsDispatchPillar({ busy, total, visible, page, pageCount }: NewsDispatchPillarProps) {
+function NewsDispatchPanel({
+  busy,
+  preset,
+  pinnedOnly,
+  todayOnly,
+  onPreset,
+  onTogglePinnedOnly,
+  onToggleToday,
+  onMarkAllRead,
+  total,
+  visible,
+  unread,
+  fresh,
+  pinned,
+  page,
+  pageCount,
+}: NewsDispatchPanelProps) {
   const state = busy ? 'loading' : total === 0 ? 'empty' : 'ready'
   const displayPage = pageCount > 0 ? page : 0
   const displayPageCount = pageCount > 0 ? pageCount : 0
 
   return (
-    <aside className='ax-card ax-news-pillar' data-state={state} aria-label='News dispatch telemetry'>
+    <aside className='ax-card ax-news-pillar' data-state={state} aria-label='News dispatch'>
       <header className='ax-news-pillar__header'>
         <div>
           <span className='ax-news-pillar__eyebrow'>NEWS DISPATCH</span>
@@ -112,23 +168,78 @@ function NewsDispatchPillar({ busy, total, visible, page, pageCount }: NewsDispa
       <div className='ax-hr-blade' aria-hidden />
 
       <div className='ax-news-pillar__ring'>
-        <CounterWreath value={total} label='TOTAL NEWS' size={190} ariaLabel={`Total news ${total}`} />
+        <CounterWreath value={total} label='TOTAL NEWS' size={180} ariaLabel={`Total news ${total}`} />
         <span className='ax-news-pillar__ring-label'>TOTAL NEWS</span>
       </div>
 
       <div className='ax-news-pillar__telemetry'>
         <div className='ax-news-telemetry'>
+          <span>UNREAD</span>
+          <strong>{unread}</strong>
+        </div>
+        <div className='ax-news-telemetry'>
+          <span>NEW</span>
+          <strong>{fresh}</strong>
+        </div>
+        <div className='ax-news-telemetry'>
           <span>VISIBLE</span>
           <strong>{visible}</strong>
         </div>
         <div className='ax-news-telemetry'>
-          <span>TOTAL</span>
-          <strong>{total}</strong>
+          <span>PAGE</span>
+          <strong>
+            {displayPage} / {displayPageCount}
+          </strong>
         </div>
         <div className='ax-news-telemetry'>
-          <span>PAGE</span>
-          <strong>{displayPage} / {displayPageCount}</strong>
+          <span>PINNED</span>
+          <strong>{pinned}</strong>
         </div>
+      </div>
+
+      <div className='ax-news-pillar__presets' aria-label='Feed presets'>
+        {(Object.keys(PRESET_LABELS) as Preset[]).map((key) => (
+          <button
+            key={key}
+            type='button'
+            className='ax-btn ghost ax-news-pillar__preset'
+            onClick={() => onPreset(key)}
+            data-active={preset === key ? 'true' : undefined}
+            disabled={busy}
+            data-testid={`news-preset-${key}`}
+          >
+            {PRESET_LABELS[key]}
+          </button>
+        ))}
+      </div>
+
+      <div className='ax-news-pillar__actions' aria-label='Dispatch actions'>
+        <button
+          type='button'
+          className='ax-btn ghost ax-news-pillar__action'
+          onClick={onMarkAllRead}
+          disabled={busy || visible === 0}
+        >
+          MARK ALL READ
+        </button>
+        <button
+          type='button'
+          className='ax-btn ghost ax-news-pillar__action'
+          onClick={onTogglePinnedOnly}
+          disabled={busy}
+          data-active={pinnedOnly ? 'true' : undefined}
+        >
+          PINNED ONLY
+        </button>
+        <button
+          type='button'
+          className='ax-btn ghost ax-news-pillar__action'
+          onClick={onToggleToday}
+          disabled={busy}
+          data-active={todayOnly ? 'true' : undefined}
+        >
+          TODAY
+        </button>
       </div>
 
       <div className='ax-news-pillar__links' aria-label='Quick routes'>
@@ -143,20 +254,51 @@ function NewsDispatchPillar({ busy, total, visible, page, pageCount }: NewsDispa
   )
 }
 
-type SignalCenterHeroProps = {
+type SignalCenterProps = {
   busy: boolean
+  mode: 'selected' | 'pinned' | 'latest'
   item: NewsItem | null
+  expanded: boolean
+  tab: SignalTab
+  pinned: boolean
+  read: boolean
   resolvedLink: string | null
+  canPrev: boolean
+  canNext: boolean
+  onPrev: () => void
+  onNext: () => void
+  onToggleExpanded: () => void
+  onSelectTab: (value: SignalTab) => void
+  onTogglePinned: () => void
+  onToggleRead: () => void
 }
 
-function SignalCenterHero({ busy, item, resolvedLink }: SignalCenterHeroProps) {
+function SignalCenter({
+  busy,
+  mode,
+  item,
+  expanded,
+  tab,
+  pinned,
+  read,
+  resolvedLink,
+  canPrev,
+  canNext,
+  onPrev,
+  onNext,
+  onToggleExpanded,
+  onSelectTab,
+  onTogglePinned,
+  onToggleRead,
+}: SignalCenterProps) {
   const state = busy ? 'loading' : item ? 'ready' : 'empty'
   const variant = resolveKindVariant(item?.kind)
   const kindLabel = (item?.kind || 'news').toUpperCase()
-  const tagCount = item?.tags?.length ?? 0
+  const modeLabel = mode.toUpperCase()
   const versionLabel = resolvePacketVersion(item)
   const sourceLabel = resolvePacketSource(item)
-  const linkHref = resolvedLink ?? ''
+  const tagCount = item?.tags?.length ?? 0
+
   const [copied, setCopied] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -167,180 +309,191 @@ function SignalCenterHero({ busy, item, resolvedLink }: SignalCenterHeroProps) {
   }, [copied])
 
   useEffect(() => {
+    if (!expanded) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onToggleExpanded()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [expanded, onToggleExpanded])
+
+  useEffect(() => {
     if (!modalOpen) return undefined
-    const handleKey = (event: KeyboardEvent) => {
+    const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setModalOpen(false)
     }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
   }, [modalOpen])
 
   const handleCopy = async () => {
-    if (!linkHref || !navigator?.clipboard) return
+    if (!resolvedLink || !navigator?.clipboard) return
     try {
-      await navigator.clipboard.writeText(linkHref)
+      await navigator.clipboard.writeText(resolvedLink)
       setCopied(true)
     } catch {
       setCopied(false)
     }
   }
 
-  const canOpen = Boolean(linkHref)
-  const actions = [
-    canOpen
-      ? {
-          id: 'open',
-          label: 'OPEN PACKET',
-          href: linkHref,
-          variant: 'primary' as const,
-        }
-      : null,
-    canOpen
-      ? {
-          id: 'copy',
-          label: copied ? 'COPIED' : 'COPY LINK',
-          onClick: handleCopy,
-        }
-      : null,
-    item
-      ? {
-          id: 'modal',
-          label: 'OPEN MODAL',
-          onClick: () => setModalOpen(true),
-        }
-      : null,
-  ].filter(Boolean) as Array<{
-    id: string
-    label: string
-    href?: string
-    onClick?: () => void
-    variant?: 'primary'
-  }>
-
-  const primaryAction = actions.find((action) => action.variant === 'primary')
-  const quickActions = actions.filter((action) => action.variant !== 'primary')
+  const linkAvailable = Boolean(resolvedLink)
 
   return (
-    <section className='ax-card ax-signal-hero' data-state={state} aria-label='Signal Center last packet'>
-      <header className='ax-signal-hero__header'>
+    <section
+      className='ax-card ax-signal-hero ax-signal-center'
+      data-state={state}
+      data-expanded={expanded ? 'true' : undefined}
+      aria-label='Signal Center'
+      data-testid='signal-center'
+    >
+      <header className='ax-signal-hero__header ax-signal-center__header'>
         <div className='ax-signal-hero__label'>
           <span className='ax-signal-hero__eyebrow'>SIGNAL CENTER</span>
-          <h2 className='ax-signal-hero__title'>LAST PACKET</h2>
-          <span className='ax-signal-hero__subtitle'>FRESH DISPATCH</span>
+          <h2 className='ax-signal-hero__title'>PACKET READER</h2>
+          <span className='ax-signal-hero__subtitle'>MODE :: {modeLabel}</span>
         </div>
-        <div className='ax-signal-hero__status-strip'>
-          <span className='ax-chip' data-variant={variant}>{kindLabel}</span>
-          <span className='ax-signal-hero__date'>{item?.date ?? '-'}</span>
+
+        <div className='ax-signal-center__status'>
+          <div className='ax-signal-hero__status-strip'>
+            <span className='ax-chip' data-variant={variant}>
+              {kindLabel}
+            </span>
+            <span className='ax-signal-hero__date'>{item?.date ?? '-'}</span>
+          </div>
+
+          <div className='ax-signal-center__actions' aria-label='Signal actions'>
+            <button type='button' className='ax-btn ghost' onClick={onPrev} disabled={!canPrev || busy}>
+              Prev
+            </button>
+            <button type='button' className='ax-btn ghost' onClick={onNext} disabled={!canNext || busy}>
+              Next
+            </button>
+            <button type='button' className='ax-btn ghost' onClick={onTogglePinned} disabled={!item || busy}>
+              {pinned ? 'UNPIN' : 'PIN'}
+            </button>
+            <button type='button' className='ax-btn ghost' onClick={onToggleRead} disabled={!item || busy}>
+              {read ? 'MARK UNREAD' : 'MARK READ'}
+            </button>
+            <button type='button' className='ax-btn ghost' onClick={onToggleExpanded} disabled={busy || !item}>
+              {expanded ? 'COLLAPSE' : 'EXPAND'}
+            </button>
+          </div>
         </div>
       </header>
 
-      {busy ? (
-        <div className='ax-signal-hero__skeleton' aria-hidden>
-          <span className='ax-signal-hero__bar' />
-          <span className='ax-signal-hero__bar is-wide' />
-          <span className='ax-signal-hero__bar is-mid' />
-        </div>
-      ) : item ? (
-        <div className='ax-signal-hero__body'>
-          <div className='ax-signal-hero__main'>
-            <div className='ax-signal-hero__content'>
-              <h3 className='ax-signal-hero__headline'>{item.title}</h3>
-              {item.summary ? <p className='ax-signal-hero__summary'>{item.summary}</p> : null}
-            </div>
+      <div className='ax-signal-center__tabs' role='tablist' aria-label='Signal tabs'>
+        {(
+          [
+            { id: 'summary' as const, label: 'SUMMARY' },
+            { id: 'meta' as const, label: 'META' },
+            { id: 'links' as const, label: 'LINKS' },
+          ] as const
+        ).map((entry) => (
+          <button
+            key={entry.id}
+            type='button'
+            role='tab'
+            className='ax-btn ghost ax-signal-center__tab'
+            aria-selected={tab === entry.id}
+            data-active={tab === entry.id ? 'true' : undefined}
+            onClick={() => onSelectTab(entry.id)}
+            disabled={busy}
+          >
+            {entry.label}
+          </button>
+        ))}
+      </div>
 
-            <div className='ax-signal-hero__tags-row'>
-              {item.tags?.length ? (
-                <div className='ax-signal-hero__tags' aria-label='tags'>
-                  {item.tags.map((tag) => (
-                    <span key={tag} className='ax-chip' data-variant='info'>
-                      {tag.toUpperCase()}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <span className='ax-signal-hero__tags-empty'>NO TAGS</span>
-              )}
-            </div>
-
-            <div className='ax-signal-hero__cta'>
-              {primaryAction?.href ? (
-                <a
-                  className='ax-btn primary ax-signal-hero__cta-primary'
-                  href={primaryAction.href}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  {primaryAction.label}
-                </a>
-              ) : (
-                <span className='ax-chip' data-variant='warn'>COMING SOON</span>
-              )}
-            </div>
+      <div className='ax-signal-center__body' data-tab={tab}>
+        {busy ? (
+          <div className='ax-signal-hero__skeleton' aria-hidden>
+            <span className='ax-signal-hero__bar' />
+            <span className='ax-signal-hero__bar is-wide' />
+            <span className='ax-signal-hero__bar is-mid' />
           </div>
+        ) : item ? (
+          <>
+            {tab === 'summary' ? (
+              <div className='ax-signal-center__panel'>
+                <h3 className='ax-signal-hero__headline'>{item.title}</h3>
+                {item.summary ? <p className='ax-signal-center__summary'>{item.summary}</p> : null}
+                {item.tags?.length ? (
+                  <div className='ax-signal-center__tags' aria-label='tags'>
+                    {item.tags.slice(0, 8).map((tag) => (
+                      <span key={tag} className='ax-chip' data-variant='info'>
+                        {tag.toUpperCase()}
+                      </span>
+                    ))}
+                    {item.tags.length > 8 ? (
+                      <span className='ax-chip' data-variant='level'>
+                        +{item.tags.length - 8}
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
-          <aside className='ax-signal-hero__side'>
-            <div className='ax-signal-hero__panel'>
-              <span className='ax-signal-hero__panel-title'>PACK META</span>
-              <div className='ax-signal-hero__meta-grid'>
-                <div className='ax-signal-hero__meta-item'>
-                  <span className='ax-signal-hero__meta-label'>DATE</span>
-                  <span className='ax-signal-hero__meta-value'>{item.date}</span>
-                </div>
-                <div className='ax-signal-hero__meta-item'>
-                  <span className='ax-signal-hero__meta-label'>TYPE</span>
-                  <span className='ax-signal-hero__meta-value'>{kindLabel}</span>
-                </div>
-                <div className='ax-signal-hero__meta-item'>
-                  <span className='ax-signal-hero__meta-label'>VERSION</span>
-                  <span className='ax-signal-hero__meta-value'>{versionLabel}</span>
-                </div>
-                <div className='ax-signal-hero__meta-item'>
-                  <span className='ax-signal-hero__meta-label'>SOURCE</span>
-                  <span className='ax-signal-hero__meta-value'>{sourceLabel}</span>
-                </div>
-                <div className='ax-signal-hero__meta-item'>
-                  <span className='ax-signal-hero__meta-label'>TAGS</span>
-                  <span className='ax-signal-hero__meta-value'>{tagCount}</span>
+            {tab === 'meta' ? (
+              <div className='ax-signal-hero__panel ax-signal-center__panel'>
+                <span className='ax-signal-hero__panel-title'>PACK META</span>
+                <div className='ax-signal-hero__meta-grid'>
+                  <div className='ax-signal-hero__meta-item'>
+                    <span className='ax-signal-hero__meta-label'>DATE</span>
+                    <span className='ax-signal-hero__meta-value'>{item.date}</span>
+                  </div>
+                  <div className='ax-signal-hero__meta-item'>
+                    <span className='ax-signal-hero__meta-label'>TYPE</span>
+                    <span className='ax-signal-hero__meta-value'>{kindLabel}</span>
+                  </div>
+                  <div className='ax-signal-hero__meta-item'>
+                    <span className='ax-signal-hero__meta-label'>VERSION</span>
+                    <span className='ax-signal-hero__meta-value'>{versionLabel}</span>
+                  </div>
+                  <div className='ax-signal-hero__meta-item'>
+                    <span className='ax-signal-hero__meta-label'>SOURCE</span>
+                    <span className='ax-signal-hero__meta-value'>{sourceLabel}</span>
+                  </div>
+                  <div className='ax-signal-hero__meta-item'>
+                    <span className='ax-signal-hero__meta-label'>TAGS</span>
+                    <span className='ax-signal-hero__meta-value'>{tagCount}</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : null}
 
-            <div className='ax-signal-hero__panel'>
-              <span className='ax-signal-hero__panel-title'>QUICK LINKS</span>
-              <div className='ax-signal-hero__quick-links'>
-                {quickActions.map((action) =>
-                  action.href ? (
-                    <a
-                      key={action.id}
-                      className='ax-btn ghost'
-                      href={action.href}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      {action.label}
+            {tab === 'links' ? (
+              <div className='ax-signal-hero__panel ax-signal-center__panel'>
+                <span className='ax-signal-hero__panel-title'>QUICK LINKS</span>
+                <div className='ax-signal-hero__quick-links'>
+                  {linkAvailable ? (
+                    <a className='ax-btn primary' href={resolvedLink as string} target='_blank' rel='noopener noreferrer'>
+                      OPEN
                     </a>
                   ) : (
-                    <button
-                      key={action.id}
-                      type='button'
-                      className='ax-btn ghost'
-                      onClick={action.onClick}
-                      disabled={!action.onClick}
-                    >
-                      {action.label}
-                    </button>
-                  )
-                )}
+                    <span className='ax-chip' data-variant='warn'>
+                      COMING SOON
+                    </span>
+                  )}
+
+                  <button type='button' className='ax-btn ghost' onClick={handleCopy} disabled={!linkAvailable}>
+                    {copied ? 'COPIED' : 'COPY LINK'}
+                  </button>
+
+                  <button type='button' className='ax-btn ghost' onClick={() => setModalOpen(true)}>
+                    OPEN MODAL
+                  </button>
+                </div>
               </div>
-            </div>
-          </aside>
-        </div>
-      ) : (
-        <div className='ax-signal-hero__empty'>
-          <h3 className='ax-signal-hero__headline'>NO DISPATCHES</h3>
-          <p className='ax-signal-hero__summary'>News manifest is empty. Add items to populate the feed.</p>
-        </div>
-      )}
+            ) : null}
+          </>
+        ) : (
+          <div className='ax-signal-hero__empty'>
+            <h3 className='ax-signal-hero__headline'>NO DISPATCHES</h3>
+            <p className='ax-signal-hero__summary'>News manifest is empty. Add items to populate the feed.</p>
+          </div>
+        )}
+      </div>
 
       {modalOpen && item ? (
         <div className='ax-modal' role='dialog' aria-modal='true' aria-label='News packet preview'>
@@ -351,25 +504,35 @@ function SignalCenterHero({ busy, item, resolvedLink }: SignalCenterHeroProps) {
                 <span className='ax-signal-modal__eyebrow'>SIGNAL CENTER</span>
                 <h3 className='ax-signal-modal__title'>{item.title}</h3>
               </div>
-              <button type='button' className='ax-btn ghost' onClick={() => setModalOpen(false)}>CLOSE</button>
+              <button type='button' className='ax-btn ghost' onClick={() => setModalOpen(false)}>
+                CLOSE
+              </button>
             </header>
             <div className='ax-signal-modal__meta'>
-              <span className='ax-chip' data-variant={variant}>{kindLabel}</span>
+              <span className='ax-chip' data-variant={variant}>
+                {kindLabel}
+              </span>
               <span className='ax-signal-modal__date'>{item.date}</span>
             </div>
             {item.summary ? <p className='ax-signal-modal__summary'>{item.summary}</p> : null}
             {item.tags?.length ? (
               <div className='ax-signal-modal__tags'>
                 {item.tags.map((tag) => (
-                  <span key={tag} className='ax-chip' data-variant='info'>{tag.toUpperCase()}</span>
+                  <span key={tag} className='ax-chip' data-variant='info'>
+                    {tag.toUpperCase()}
+                  </span>
                 ))}
               </div>
             ) : null}
             <div className='ax-signal-modal__actions'>
-              {linkHref ? (
-                <a className='ax-btn primary' href={linkHref} target='_blank' rel='noopener noreferrer'>OPEN PACKET</a>
+              {resolvedLink ? (
+                <a className='ax-btn primary' href={resolvedLink} target='_blank' rel='noopener noreferrer'>
+                  OPEN
+                </a>
               ) : (
-                <span className='ax-chip' data-variant='warn'>COMING SOON</span>
+                <span className='ax-chip' data-variant='warn'>
+                  COMING SOON
+                </span>
               )}
             </div>
           </div>
@@ -379,53 +542,55 @@ function SignalCenterHero({ busy, item, resolvedLink }: SignalCenterHeroProps) {
   )
 }
 
-type NewsFilterBarProps = {
+type NewsToolbarProps = {
   busy: boolean
   q: string
   kind: '' | NewsKind
   sort: SortOrder
   pageSize: number
-  total: number
-  visible: number
   page: number
   pageCount: number
   onQueryChange: (value: string) => void
   onKindChange: (value: '' | NewsKind) => void
   onSortChange: (value: SortOrder) => void
   onPageSizeChange: (value: number) => void
-  onPrev: () => void
-  onNext: () => void
+  onPrevPage: () => void
+  onNextPage: () => void
 }
 
-function NewsFilterBar({
+function NewsToolbar({
   busy,
   q,
   kind,
   sort,
   pageSize,
-  total,
-  visible,
   page,
   pageCount,
   onQueryChange,
   onKindChange,
   onSortChange,
   onPageSizeChange,
-  onPrev,
-  onNext,
-}: NewsFilterBarProps) {
+  onPrevPage,
+  onNextPage,
+}: NewsToolbarProps) {
   const displayPage = pageCount > 0 ? page : 0
   const displayPageCount = pageCount > 0 ? pageCount : 0
   const canGoPrev = displayPage > 1
   const canGoNext = displayPageCount > 0 && displayPage < displayPageCount
 
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
   return (
-    <section className='ax-card ax-news-bar' data-state={busy ? 'loading' : 'ready'} aria-label='News filters'>
+    <section className='ax-card ax-news-bar' data-state={busy ? 'loading' : 'ready'} aria-label='News toolbar'>
       <div className='ax-news-bar__rail'>
         <div className='ax-news-bar__left'>
-          <label className='visually-hidden' htmlFor='news-search'>Search news</label>
+          <label className='visually-hidden' htmlFor='news-search'>
+            Search news
+          </label>
           <div className='ax-news-bar__search'>
-            <span className='ax-news-bar__icon' aria-hidden='true'>⌕</span>
+            <span className='ax-news-bar__icon' aria-hidden='true'>
+              ⌕
+            </span>
             <input
               id='news-search'
               className='ax-input'
@@ -436,18 +601,15 @@ function NewsFilterBar({
               disabled={busy}
             />
             {q ? (
-              <button
-                type='button'
-                className='ax-news-bar__clear'
-                onClick={() => onQueryChange('')}
-                aria-label='Clear search'
-              >
+              <button type='button' className='ax-news-bar__clear' onClick={() => onQueryChange('')} aria-label='Clear search'>
                 ×
               </button>
             ) : null}
           </div>
 
-          <label className='visually-hidden' htmlFor='news-kind'>Filter by kind</label>
+          <label className='visually-hidden' htmlFor='news-kind'>
+            Filter by kind
+          </label>
           <select
             id='news-kind'
             className='ax-input'
@@ -463,7 +625,9 @@ function NewsFilterBar({
             ))}
           </select>
 
-          <label className='visually-hidden' htmlFor='news-sort'>Sort news</label>
+          <label className='visually-hidden' htmlFor='news-sort'>
+            Sort news
+          </label>
           <select
             id='news-sort'
             className='ax-input'
@@ -478,7 +642,9 @@ function NewsFilterBar({
             ))}
           </select>
 
-          <label className='visually-hidden' htmlFor='news-size'>Items per page</label>
+          <label className='visually-hidden' htmlFor='news-size'>
+            Items per page
+          </label>
           <select
             id='news-size'
             className='ax-input ax-news-bar__size'
@@ -492,41 +658,147 @@ function NewsFilterBar({
               </option>
             ))}
           </select>
+
+          <button type='button' className='ax-btn ghost ax-news-bar__btn' onClick={() => setDrawerOpen((v) => !v)}>
+            Filters…
+          </button>
         </div>
 
         <div className='ax-news-bar__right'>
-          <div className='ax-news-bar__meta'>
-            <span className='ax-chip ax-news-bar__pill' data-variant='info'>TOTAL :: {total}</span>
-            <span className='ax-chip ax-news-bar__pill' data-variant='info'>VISIBLE :: {visible}</span>
-            <span className='ax-chip ax-news-bar__pill' data-variant='level'>PAGE :: {displayPage} / {displayPageCount}</span>
-          </div>
           <div className='ax-news-bar__nav'>
-            <button type='button' className='ax-btn ghost ax-news-bar__btn' onClick={onPrev} disabled={!canGoPrev}>
-              <span className='ax-news-bar__arrow' aria-hidden='true'>&larr;</span>
+            <span className='ax-chip ax-news-bar__pill' data-variant='level'>
+              PAGE :: {displayPage} / {displayPageCount}
+            </span>
+            <button type='button' className='ax-btn ghost ax-news-bar__btn' onClick={onPrevPage} disabled={!canGoPrev}>
+              <span className='ax-news-bar__arrow' aria-hidden='true'>
+                ←
+              </span>
               Prev
             </button>
-            <button type='button' className='ax-btn ghost ax-news-bar__btn' onClick={onNext} disabled={!canGoNext}>
+            <button type='button' className='ax-btn ghost ax-news-bar__btn' onClick={onNextPage} disabled={!canGoNext}>
               Next
-              <span className='ax-news-bar__arrow' aria-hidden='true'>&rarr;</span>
+              <span className='ax-news-bar__arrow' aria-hidden='true'>
+                →
+              </span>
             </button>
           </div>
         </div>
       </div>
+
+      {drawerOpen ? (
+        <div className='ax-news-drawer' role='region' aria-label='Advanced filters'>
+          <div className='ax-news-drawer__hint'>
+            <span className='ax-chip' data-variant='ghost'>
+              ADVANCED FILTERS
+            </span>
+            <span className='ax-news-drawer__text'>Tags, date ranges, source and language will land here in v2.1.</span>
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }
 
+type FeedRowProps = {
+  item: NewsItem
+  active: boolean
+  pinned: boolean
+  read: boolean
+  onSelect: () => void
+}
+
+function FeedRow({ item, active, pinned, read, onSelect }: FeedRowProps) {
+  const variant = resolveKindVariant(item.kind)
+  const kindLabel = (item.kind || 'news').toUpperCase()
+  const tags = item.tags ?? []
+  const visibleTags = tags.slice(0, 3)
+  const rest = Math.max(0, tags.length - visibleTags.length)
+
+  return (
+    <button
+      type='button'
+      className='ax-news-row'
+      onClick={onSelect}
+      data-active={active ? 'true' : undefined}
+      data-read={read ? 'true' : undefined}
+      data-pinned={pinned ? 'true' : undefined}
+      role='option'
+      aria-selected={active}
+    >
+      <span className='ax-news-row__dot' aria-hidden='true' />
+      <span className='ax-chip ax-news-row__kind' data-variant={variant}>
+        {kindLabel}
+      </span>
+      <span className='ax-news-row__date'>{item.date}</span>
+      <span className='ax-news-row__title'>{item.title}</span>
+      <span className='ax-news-row__summary'>{item.summary || ''}</span>
+      <span className='ax-news-row__tags' aria-label='tags'>
+        {visibleTags.map((tag) => (
+          <span key={tag} className='ax-chip ax-news-row__tag' data-variant='ghost'>
+            {tag.toUpperCase()}
+          </span>
+        ))}
+        {rest ? (
+          <span className='ax-chip ax-news-row__tag' data-variant='level'>
+            +{rest}
+          </span>
+        ) : null}
+      </span>
+      <span className='ax-news-row__flags' aria-label='flags'>
+        {pinned ? <span className='ax-chip ax-news-row__flag' data-variant='level'>PIN</span> : null}
+        {!read ? <span className='ax-chip ax-news-row__flag' data-variant='warn'>UNREAD</span> : null}
+      </span>
+    </button>
+  )
+}
+
 export default function NewsPage() {
+  const session = useSession()
+  const userId = session.user?.id ?? null
+  const location = useLocation()
+
+  const keys = useMemo(() => newsV2Keys(userId), [userId])
+  const storage = typeof window !== 'undefined' ? window.localStorage : undefined
+
+  const [readIds, setReadIds] = useState<Set<string>>(() => new Set())
+  const [pinnedIds, setPinnedIds] = useState<Set<string>>(() => new Set())
+  const [lastSeenAt, setLastSeenAt] = useState<string | null>(null)
+
+  useEffect(() => {
+    setReadIds(readIdSet(storage, keys.readIds))
+    setPinnedIds(readIdSet(storage, keys.pinnedIds))
+    setLastSeenAt(readTimestamp(storage, keys.lastSeenAt))
+  }, [keys.lastSeenAt, keys.pinnedIds, keys.readIds])
+
+  useEffect(() => {
+    writeIdSet(storage, keys.readIds, readIds)
+  }, [keys.readIds, readIds])
+
+  useEffect(() => {
+    writeIdSet(storage, keys.pinnedIds, pinnedIds)
+  }, [keys.pinnedIds, pinnedIds])
+
+  useEffect(() => {
+    return () => {
+      writeTimestamp(storage, keys.lastSeenAt, new Date().toISOString())
+    }
+  }, [keys.lastSeenAt])
+
   const [items, setItems] = useState<NewsItem[]>([])
   const [rawQuery, setRawQuery] = useState('')
   const [q, setQ] = useState('')
   const [kind, setKind] = useState<'' | NewsKind>('')
   const [sort, setSort] = useState<SortOrder>('newest')
   const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(8)
+  const [pageSize, setPageSize] = useState(20)
+  const [preset, setPreset] = useState<Preset>('all')
+  const [pinnedOnly, setPinnedOnly] = useState(false)
+  const [todayOnly, setTodayOnly] = useState(false)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [signalTab, setSignalTab] = useState<SignalTab>('summary')
+  const [signalExpanded, setSignalExpanded] = useState(false)
   const [busy, setBusy] = useState(true)
   const [err, setErr] = useState<string | null>(null)
-  const location = useLocation()
 
   useEffect(() => {
     let alive = true
@@ -550,20 +822,27 @@ export default function NewsPage() {
   }, [])
 
   useEffect(() => {
-    setPage(1)
-  }, [q, kind, pageSize, sort])
-
-  useEffect(() => {
     const timer = window.setTimeout(() => {
       setQ(rawQuery.trim())
     }, 200)
     return () => window.clearTimeout(timer)
   }, [rawQuery])
 
+  useEffect(() => {
+    setPage(1)
+  }, [q, kind, pageSize, sort, preset, pinnedOnly, todayOnly])
+
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), [])
+
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase()
-    return items.filter((item) => matchesQuery(item, term) && (!kind || item.kind === kind))
-  }, [items, q, kind])
+    return items
+      .filter((item) => matchesQuery(item, term))
+      .filter((item) => matchesPreset(item, preset))
+      .filter((item) => (!kind ? true : item.kind === kind))
+      .filter((item) => (todayOnly ? item.date === todayStr : true))
+      .filter((item) => (pinnedOnly ? pinnedIds.has(item.id) : true))
+  }, [items, q, kind, preset, todayOnly, todayStr, pinnedOnly, pinnedIds])
 
   const newestFirst = useMemo(() => {
     const list = [...filtered]
@@ -576,79 +855,198 @@ export default function NewsPage() {
     return [...newestFirst].sort(compareDatesAsc)
   }, [newestFirst, sort])
 
-  const featuredItem = newestFirst[0] ?? null
+  useEffect(() => {
+    if (!selectedId) return
+    if (sortedItems.some((it) => it.id === selectedId)) return
+    setSelectedId(null)
+  }, [selectedId, sortedItems])
+
   const totalPages = Math.max(1, Math.ceil(sortedItems.length / pageSize))
 
   useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages)
-    }
+    if (page > totalPages) setPage(totalPages)
   }, [page, totalPages])
 
   const pageItems = sortedItems.slice((page - 1) * pageSize, page * pageSize)
-  const newsTotal = items.length
-  const visibleTotal = filtered.length
-  const currentPath = location.pathname
-  const heroLink = resolveActionLink(featuredItem?.link, currentPath)
 
-  const handlePrev = () => setPage((prev) => Math.max(1, prev - 1))
-  const handleNext = () => setPage((prev) => Math.min(totalPages, prev + 1))
+  const newsTotal = items.length
+  const visibleTotal = sortedItems.length
+  const unreadTotal = useMemo(() => sortedItems.filter((it) => !readIds.has(it.id)).length, [sortedItems, readIds])
+  const newTotal = useMemo(() => countNewSince(items, lastSeenAt), [items, lastSeenAt])
+  const pinnedTotal = useMemo(() => pinnedIds.size, [pinnedIds])
+
+  const activeItem = useMemo(() => {
+    if (selectedId) {
+      const hit = sortedItems.find((it) => it.id === selectedId)
+      if (hit) return hit
+    }
+    return sortedItems[0] ?? null
+  }, [selectedId, sortedItems])
+
+  const mode: SignalCenterProps['mode'] = useMemo(() => {
+    if (selectedId) return 'selected'
+    if (pinnedOnly) return 'pinned'
+    return 'latest'
+  }, [selectedId, pinnedOnly])
+
+  const activeIndex = useMemo(() => {
+    if (!activeItem) return -1
+    return sortedItems.findIndex((it) => it.id === activeItem.id)
+  }, [sortedItems, activeItem])
+
+  const canPrev = activeIndex > 0
+  const canNext = activeIndex >= 0 && activeIndex < sortedItems.length - 1
+
+  const currentPath = location.pathname
+  const resolvedLink = resolveActionLink(activeItem?.link, currentPath)
+
+  const applyPreset = (value: Preset) => {
+    setPreset(value)
+    setTodayOnly(false)
+    if (value === 'updates') {
+      setKind('update')
+      return
+    }
+    if (value === 'releases') {
+      setKind('release')
+      return
+    }
+    setKind('')
+  }
+
+  const markRead = (id: string) => {
+    setReadIds((prev) => {
+      if (prev.has(id)) return prev
+      const next = new Set(prev)
+      next.add(id)
+      return next
+    })
+  }
+
+  const togglePinned = (id: string) => {
+    setPinnedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const toggleRead = (id: string) => {
+    setReadIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const handleSelect = (item: NewsItem) => {
+    setSelectedId(item.id)
+    markRead(item.id)
+  }
+
+  const handlePrevItem = () => {
+    if (!canPrev) return
+    const nextItem = sortedItems[activeIndex - 1]
+    if (!nextItem) return
+    setSelectedId(nextItem.id)
+    markRead(nextItem.id)
+  }
+
+  const handleNextItem = () => {
+    if (!canNext) return
+    const nextItem = sortedItems[activeIndex + 1]
+    if (!nextItem) return
+    setSelectedId(nextItem.id)
+    markRead(nextItem.id)
+  }
+
+  const handlePrevPage = () => setPage((prev) => Math.max(1, prev - 1))
+  const handleNextPage = () => setPage((prev) => Math.min(totalPages, prev + 1))
+
+  const handleMarkAllRead = () => {
+    setReadIds((prev) => {
+      const next = new Set(prev)
+      sortedItems.forEach((it) => next.add(it.id))
+      return next
+    })
+  }
+
+  const pinnedActive = activeItem ? pinnedIds.has(activeItem.id) : false
+  const readActive = activeItem ? readIds.has(activeItem.id) : false
 
   return (
     <section className='ax-container ax-section ax-news-signal' aria-busy={busy}>
       <div className='ax-news-signal__stack'>
         <div className='ax-news-signal__hero-row'>
-          <NewsDispatchPillar
+          <NewsDispatchPanel
             busy={busy}
+            preset={preset}
+            pinnedOnly={pinnedOnly}
+            todayOnly={todayOnly}
+            onPreset={applyPreset}
+            onTogglePinnedOnly={() => setPinnedOnly((v) => !v)}
+            onToggleToday={() => setTodayOnly((v) => !v)}
+            onMarkAllRead={handleMarkAllRead}
             total={newsTotal}
             visible={visibleTotal}
+            unread={unreadTotal}
+            fresh={newTotal}
+            pinned={pinnedTotal}
             page={page}
             pageCount={sortedItems.length ? totalPages : 0}
           />
-          <SignalCenterHero
+
+          <SignalCenter
             busy={busy}
-            item={featuredItem}
-            resolvedLink={heroLink}
+            mode={mode}
+            item={activeItem}
+            expanded={signalExpanded}
+            tab={signalTab}
+            pinned={pinnedActive}
+            read={readActive}
+            resolvedLink={resolvedLink}
+            canPrev={canPrev}
+            canNext={canNext}
+            onPrev={handlePrevItem}
+            onNext={handleNextItem}
+            onToggleExpanded={() => setSignalExpanded((v) => !v)}
+            onSelectTab={setSignalTab}
+            onTogglePinned={() => (activeItem ? togglePinned(activeItem.id) : undefined)}
+            onToggleRead={() => (activeItem ? toggleRead(activeItem.id) : undefined)}
           />
         </div>
 
-        <NewsFilterBar
+        <NewsToolbar
           busy={busy}
           q={rawQuery}
           kind={kind}
           sort={sort}
           pageSize={pageSize}
-          total={newsTotal}
-          visible={visibleTotal}
           page={page}
           pageCount={sortedItems.length ? totalPages : 0}
           onQueryChange={setRawQuery}
-          onKindChange={setKind}
+          onKindChange={(value) => {
+            setKind(value)
+            setPreset('all')
+          }}
           onSortChange={setSort}
           onPageSizeChange={setPageSize}
-          onPrev={handlePrev}
-          onNext={handleNext}
+          onPrevPage={handlePrevPage}
+          onNextPage={handleNextPage}
         />
 
-        {err && <div className='ax-dashboard__alert' role='alert'>{err}</div>}
+        {err ? (
+          <div className='ax-dashboard__alert' role='alert'>
+            {err}
+          </div>
+        ) : null}
 
-        <div className='ax-news-grid' id='news-grid'>
+        <div className='ax-news-feed' role='listbox' aria-label='News feed'>
           {busy && items.length === 0 ? (
-            Array.from({ length: Math.min(pageSize, 4) }).map((_, index) => (
-              <article key={`skeleton-${index}`} className='ax-card ax-news-card is-skeleton' aria-hidden='true'>
-                <div className='ax-news-card__skeleton-head'>
-                  <span className='ax-news-card__skeleton-line is-wide' />
-                  <span className='ax-news-card__skeleton-line is-mid' />
-                </div>
-                <div className='ax-news-card__skeleton-meta'>
-                  <span className='ax-news-card__skeleton-pill' />
-                  <span className='ax-news-card__skeleton-pill' />
-                </div>
-                <div className='ax-news-card__skeleton-body'>
-                  <span className='ax-news-card__skeleton-line' />
-                  <span className='ax-news-card__skeleton-line is-wide' />
-                </div>
-              </article>
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={`skeleton-${index}`} className='ax-news-row ax-news-row--skeleton' aria-hidden='true' />
             ))
           ) : pageItems.length === 0 ? (
             <div className='ax-card ax-news-empty'>
@@ -657,11 +1055,13 @@ export default function NewsPage() {
             </div>
           ) : (
             pageItems.map((item) => (
-              <NewsCard
+              <FeedRow
                 key={item.id}
                 item={item}
-                searchTerm={q}
-                resolvedLink={resolveActionLink(item.link, currentPath)}
+                active={Boolean(activeItem && item.id === activeItem.id)}
+                pinned={pinnedIds.has(item.id)}
+                read={readIds.has(item.id)}
+                onSelect={() => handleSelect(item)}
               />
             ))
           )}

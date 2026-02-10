@@ -57,7 +57,7 @@
   100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}
 }
 
-.ax-ticker__viewport { position:relative; flex:1; height:100%; overflow:hidden; }
+.ax-ticker__viewport { position:relative; flex:1; height:100%; overflow:hidden; contain: layout paint; }
 .ax-track {
   position:absolute; left:0; top:50%; translate:0 -50%;
   display:flex; align-items:center; gap:var(--ax-gap);

@@ -11,7 +11,7 @@ export function attachFooterBarController({
   footerEl,
   hotzoneEl,
   thresholdPx = 10,
-  hideDelayMs = 180,
+  hideDelayMs = 1800,
   showDelayMs = 0,
   idleHideMs = 9000,
 }: FooterBarControllerOptions): () => void {
