@@ -23,6 +23,7 @@ export const config = {
     path.resolve(process.cwd(), 'runtime', 'axchat', 'index.sqlite'),
   axchatModel: process.env.AXCHAT_MODEL || 'qwen2.5:7b-instruct',
   axchatHost: process.env.AXCHAT_HOST || 'http://127.0.0.1:11434',
+  axchatTimeoutMs: Number(process.env.AXCHAT_TIMEOUT_MS || 60_000),
   axchatTopK: Number(process.env.AXCHAT_TOP_K || 4),
   axchatChunkSize: Number(process.env.AXCHAT_CHUNK_SIZE || 1000),
   axchatChunkOverlap: Number(process.env.AXCHAT_CHUNK_OVERLAP || 120),

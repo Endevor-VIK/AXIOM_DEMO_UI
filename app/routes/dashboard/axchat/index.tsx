@@ -9,6 +9,7 @@ import {
   queryAxchat,
   searchAxchat,
   reindexAxchat,
+  warmupAxchat,
   type AxchatRef,
   type AxchatStatus,
 } from '@/lib/axchat/api'
@@ -76,6 +77,7 @@ export default function AxchatRoute() {
   const [modalRef, setModalRef] = useState<AxchatRef | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [reindexing, setReindexing] = useState(false)
+  const [warming, setWarming] = useState(false)
   const endRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -87,23 +89,57 @@ export default function AxchatRoute() {
       .slice(0, 8)
   }, [lastQuery])
 
-  const modelOnline = status?.model?.online ?? false
+  const ollamaOnline = status?.model?.online ?? false
+  const modelReady = status?.model?.ready ?? ollamaOnline
   const indexOnline = status?.index?.ok ?? false
   const canSearch = indexOnline
-  const canQa = indexOnline && modelOnline
+  const canQa = indexOnline && ollamaOnline && modelReady
   const canSend = mode === 'search' ? canSearch : canQa
+
+  const llmLabel = !ollamaOnline ? 'OLLAMA OFFLINE' : !modelReady ? 'MODEL MISSING' : 'MODEL ONLINE'
+  const modelName = status?.model?.name || 'qwen2.5:7b-instruct'
+
   const statusNote = !indexOnline
     ? 'INDEX OFFLINE — запусти Reindex, чтобы открыть доступ.'
-    : !modelOnline
-      ? 'MODEL OFFLINE — QA недоступен.'
-      : null
+    : !ollamaOnline
+      ? 'OLLAMA OFFLINE — запусти локальный runtime модели (localhost only).'
+      : !modelReady
+        ? `MODEL MISSING — установи: ollama pull ${modelName}.`
+        : null
+
   const blockedReason = !canSend
     ? !indexOnline
       ? primaryRole === 'creator'
         ? 'INDEX OFFLINE — пересобери индекс, чтобы активировать запросы.'
         : 'INDEX OFFLINE — запросы недоступны. Попроси CREATOR запустить reindex.'
-      : 'MODEL OFFLINE — QA недоступен, включи локальную модель.'
+      : !ollamaOnline
+        ? 'OLLAMA OFFLINE — QA недоступен. Запусти Ollama локально.'
+        : !modelReady
+          ? `MODEL MISSING — QA недоступен. Установи: ollama pull ${modelName}.`
+          : 'MODEL OFFLINE — QA недоступен, включи локальную модель.'
     : null
+
+  const formatApiError = useCallback(
+    (err: any) => {
+      const code = err?.message || 'request_failed'
+      const payload = err?.payload
+      if (code === 'ollama_offline') return 'LLM OFFLINE. Запусти Ollama локально (127.0.0.1).'
+      if (code === 'model_missing') {
+        const modelName = payload?.model || status?.model?.name || 'local-model'
+        const available: string[] = Array.isArray(payload?.available) ? payload.available : []
+        const hint = available.length ? ` Доступные модели: ${available.slice(0, 4).join(', ')}.` : ''
+        return `Модель не установлена: ${modelName}. Установи: ollama pull ${modelName}.${hint}`
+      }
+      if (code === 'model_offline' || code === 'model_warmup_failed') {
+        return 'Модель не отвечает. Проверь Ollama/модель и повтори.'
+      }
+      if (code === 'axchat_disabled') {
+        return 'AXCHAT выключен для текущего deploy target.'
+      }
+      return `Ошибка запроса: ${code}.`
+    },
+    [status?.model?.name],
+  )
 
   useEffect(() => {
     if (!hasAccess || deployTarget !== 'local') return
@@ -166,17 +202,17 @@ export default function AxchatRoute() {
         })
       }
     } catch (err: any) {
-      const msg = err?.message || 'Ошибка запроса'
+      const msg = formatApiError(err)
       setError(msg)
       pushMessage({
         id: `assistant-${Date.now()}`,
         role: 'assistant',
-        content: `Ошибка: ${msg}.`,
+        content: msg,
       })
     } finally {
       setBusy(false)
     }
-  }, [input, busy, mode, canSend, pushMessage])
+  }, [input, busy, mode, canSend, pushMessage, formatApiError])
 
   const handleChipClick = useCallback((label: string) => {
     setInput(label)
@@ -221,6 +257,32 @@ export default function AxchatRoute() {
     }
   }, [reindexing])
 
+  const handleWarmup = useCallback(async () => {
+    if (warming) return
+    setWarming(true)
+    setError(null)
+    try {
+      await warmupAxchat()
+      const next = await fetchAxchatStatus()
+      setStatus(next)
+      pushMessage({
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: 'MODEL: OK. Можно выполнять QA.',
+      })
+    } catch (err: any) {
+      const msg = formatApiError(err)
+      setError(msg)
+      pushMessage({
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: msg,
+      })
+    } finally {
+      setWarming(false)
+    }
+  }, [warming, pushMessage, formatApiError])
+
   if (deployTarget !== 'local') {
     return (
       <RouteHoldBanner
@@ -245,13 +307,14 @@ export default function AxchatRoute() {
     <section className='ax-card ax-axchat'>
       <header className='ax-axchat__head'>
         <div className='ax-axchat__title'>
-          <p className='ax-axchat__eyebrow'>ECHO AXIOM · 1/1000</p>
+          <div className='ax-axchat__kicker'>
+            <p className='ax-axchat__eyebrow'>ECHO AXIOM · 1/1000</p>
+            <div className='ax-axchat__kicker-chips'>
+              <span className='ax-axchat__meta-chip'>LOCAL</span>
+              <span className='ax-axchat__meta-chip'>BETA</span>
+            </div>
+          </div>
           <h2 className='ax-axchat__name'>AXCHAT</h2>
-          <p className='ax-axchat__subnote'>BETA / LOCAL ONLY</p>
-        </div>
-        <div className='ax-axchat__head-meta'>
-          <span className='ax-axchat__meta-chip'>CONTROL STRIP</span>
-          <span className='ax-axchat__meta-chip'>SECURE LOCAL</span>
         </div>
       </header>
 
@@ -275,14 +338,24 @@ export default function AxchatRoute() {
               </button>
             </div>
             <div className='ax-axchat__control-status'>
-              <span className='ax-axchat__status-item' data-online={modelOnline ? 'true' : 'false'}>
-                MODEL {modelOnline ? 'ONLINE' : 'OFFLINE'}
+              <span className='ax-axchat__status-item' data-online={ollamaOnline && modelReady ? 'true' : 'false'}>
+                {llmLabel}
               </span>
               <span className='ax-axchat__status-item' data-online={indexOnline ? 'true' : 'false'}>
                 INDEX {indexOnline ? 'ONLINE' : 'OFFLINE'}
               </span>
             </div>
             <div className='ax-axchat__control-actions'>
+              {primaryRole === 'creator' && ollamaOnline && !modelReady ? (
+                <button
+                  type='button'
+                  className='ax-btn ax-btn--ghost'
+                  onClick={handleWarmup}
+                  disabled={warming}
+                >
+                  {warming ? 'Start…' : 'Start model'}
+                </button>
+              ) : null}
               {primaryRole === 'creator' ? (
                 <button
                   type='button'
@@ -348,7 +421,6 @@ export default function AxchatRoute() {
         <aside className='ax-axchat__sources' data-label='CONTEXT / SOURCES'>
           <header className='ax-axchat__sources-head'>
             <div>
-              <p className='ax-muted'>CONTEXT / SOURCES</p>
               <h3 className='ax-blade-head'>Источники</h3>
             </div>
             <div className='ax-axchat__sources-meta'>

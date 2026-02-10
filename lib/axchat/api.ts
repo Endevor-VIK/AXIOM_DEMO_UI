@@ -11,6 +11,8 @@ export type AxchatStatus = {
   model: {
     name: string
     online: boolean
+    ready?: boolean
+    available?: string[]
   }
   index: {
     ok: boolean
@@ -30,13 +32,17 @@ async function fetchJson<T>(path: string, options: RequestInit = {}): Promise<T>
   })
   if (!res.ok) {
     let error = 'request_failed'
+    let payload: any = null
     try {
-      const payload = await res.json()
+      payload = await res.json()
       error = payload?.error || error
     } catch {
       // ignore
     }
-    throw new Error(error)
+    const err: any = new Error(error)
+    err.payload = payload
+    err.status = res.status
+    throw err
   }
   return res.json()
 }
@@ -59,4 +65,8 @@ export async function searchAxchat(query: string) {
 
 export async function reindexAxchat() {
   return fetchJson<{ ok: boolean; indexed_at?: string }>('/api/axchat/reindex', { method: 'POST' })
+}
+
+export async function warmupAxchat() {
+  return fetchJson<{ ok: boolean; latency_ms?: number }>('/api/axchat/warmup', { method: 'POST' })
 }

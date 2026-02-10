@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
+const API_PORT = Number(process.env.AX_API_PORT || 8787)
+const API_BASE = `http://127.0.0.1:${API_PORT}`
+const UI_PORT = Number(process.env.PLAYWRIGHT_PORT || 4173)
+const UI_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1'
+const UI_BASE = process.env.PLAYWRIGHT_BASE_URL || `http://${UI_HOST}:${UI_PORT}`
+
 const USER_EMAIL = process.env.AX_USER_EMAIL || 'user@local'
 const USER_PASS = process.env.AX_USER_PASSWORD || 'user12345'
 const TEST_EMAIL = process.env.AX_TEST_EMAIL || 'test@local'
@@ -25,21 +31,53 @@ const stubRefs = [
   },
 ]
 
+async function stubGoogleFonts(page: Page) {
+  await page.route('**/fonts.googleapis.com/**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'text/css; charset=utf-8',
+      body: '/* stub fonts */',
+    })
+  })
+  await page.route('**/fonts.gstatic.com/**', async (route) => {
+    await route.fulfill({ status: 204, body: '' })
+  })
+}
+
 async function login(page: Page, email: string, password: string) {
-  const res = await page.request.post('/api/auth/login', {
+  const res = await page.request.post(`${API_BASE}/api/auth/login`, {
     data: { email, password },
   })
   if (!res.ok()) {
     const payload = await res.json().catch(() => ({}))
     throw new Error(`login_failed:${payload?.error || res.status()}`)
   }
+
+  const setCookie = res.headers()['set-cookie']
+  if (!setCookie) throw new Error('login_failed:no_set_cookie')
+  const token = /ax_session=([^;]+)/.exec(setCookie)?.[1]
+  if (!token) throw new Error('login_failed:no_session_cookie')
+  await page.context().addCookies([
+    { name: 'ax_session', value: token, url: UI_BASE },
+  ])
 }
 
 async function registerIfNeeded(page: Page, email: string, password: string) {
-  const res = await page.request.post('/api/auth/register', {
+  const res = await page.request.post(`${API_BASE}/api/auth/register`, {
     data: { email, password, displayName: email.toUpperCase() },
   })
-  if (res.ok()) return
+  if (res.ok()) {
+    const setCookie = res.headers()['set-cookie']
+    if (setCookie) {
+      const token = /ax_session=([^;]+)/.exec(setCookie)?.[1]
+      if (token) {
+        await page.context().addCookies([
+          { name: 'ax_session', value: token, url: UI_BASE },
+        ])
+      }
+    }
+    return
+  }
   const payload = await res.json().catch(() => ({}))
   if (payload?.error === 'user_exists') {
     await login(page, email, password)
@@ -92,13 +130,14 @@ test.describe('AXCHAT access control', () => {
   test.describe.configure({ timeout: 120_000 })
 
   test('user sees tab and gets ACCESS LOCKED', async ({ page }) => {
+    await stubGoogleFonts(page)
     await registerIfNeeded(page, USER_EMAIL, USER_PASS)
 
     await page.route('**/api/axchat/**', async () => {
       throw new Error('AXCHAT API should not be called for user role')
     })
 
-    await page.goto('/dashboard/axchat', { waitUntil: 'domcontentloaded' })
+    await page.goto('/dashboard/axchat', { waitUntil: 'commit' })
     await expect(page.getByRole('link', { name: 'AXCHAT' })).toBeVisible()
     await expect(page.getByText(/access locked/i)).toBeVisible()
   })
@@ -108,11 +147,12 @@ test.describe('AXCHAT full access', () => {
   test.describe.configure({ timeout: 120_000 })
 
   test('test role: QA + Search flows', async ({ page, context }) => {
+    await stubGoogleFonts(page)
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
     await login(page, TEST_EMAIL, TEST_PASS)
     await stubAxchatApi(page)
 
-    await page.goto('/dashboard/axchat', { waitUntil: 'domcontentloaded' })
+    await page.goto('/dashboard/axchat', { waitUntil: 'commit' })
     await expect(page.locator('.ax-axchat')).toBeVisible()
     await expect(page.locator('.ax-axchat__status-item', { hasText: 'MODEL' })).toContainText('ONLINE')
     await expect(page.locator('.ax-axchat__status-item', { hasText: 'INDEX' })).toContainText('ONLINE')
@@ -149,23 +189,25 @@ test.describe('AXCHAT full access', () => {
   })
 
   test('creator role: UI status + screenshots', async ({ page }, testInfo) => {
+    await stubGoogleFonts(page)
     await login(page, CREATOR_EMAIL, CREATOR_PASS)
     await stubAxchatApi(page)
 
-    await page.goto('/dashboard/axchat', { waitUntil: 'domcontentloaded' })
+    await page.goto('/dashboard/axchat', { waitUntil: 'commit' })
     await expect(page.locator('.ax-axchat')).toBeVisible()
 
-    await page.screenshot({ path: testInfo.outputPath('axchat-desktop.png'), fullPage: true })
+    await page.screenshot({ path: testInfo.outputPath('axchat-desktop.png') })
   })
 
   test('creator role mobile snapshot', async ({ page }, testInfo) => {
+    await stubGoogleFonts(page)
     await login(page, CREATOR_EMAIL, CREATOR_PASS)
     await stubAxchatApi(page)
 
     await page.setViewportSize({ width: 390, height: 844 })
-    await page.goto('/dashboard/axchat', { waitUntil: 'domcontentloaded' })
+    await page.goto('/dashboard/axchat', { waitUntil: 'commit' })
     await expect(page.locator('.ax-axchat')).toBeVisible()
 
-    await page.screenshot({ path: testInfo.outputPath('axchat-mobile.png'), fullPage: true })
+    await page.screenshot({ path: testInfo.outputPath('axchat-mobile.png') })
   })
 })

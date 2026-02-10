@@ -46,7 +46,8 @@ function buildContext(refs: AxchatRef[]) {
 
 async function callOllama(prompt: string) {
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 12_000)
+  const timeoutMs = Number.isFinite(config.axchatTimeoutMs) ? Math.max(10_000, config.axchatTimeoutMs) : 60_000
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
   try {
     const res = await fetch(`${config.axchatHost}/api/chat`, {
       method: 'POST',
@@ -76,17 +77,31 @@ async function callOllama(prompt: string) {
   }
 }
 
-async function probeModel() {
+type OllamaTagsPayload = {
+  models?: Array<{
+    name?: string
+  }>
+}
+
+async function fetchOllamaTags(timeoutMs = 2500): Promise<OllamaTagsPayload | null> {
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 2500)
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
   try {
     const res = await fetch(`${config.axchatHost}/api/tags`, { signal: controller.signal })
-    return res.ok
+    if (!res.ok) return null
+    return (await res.json()) as OllamaTagsPayload
   } catch {
-    return false
+    return null
   } finally {
     clearTimeout(timeout)
   }
+}
+
+function extractModelNames(payload: OllamaTagsPayload | null): string[] {
+  if (!payload?.models?.length) return []
+  return payload.models
+    .map((m) => (typeof m?.name === 'string' ? m.name : ''))
+    .filter(Boolean)
 }
 
 export async function registerAxchatRoutes(app: FastifyInstance) {
@@ -103,11 +118,51 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
         return
       }
       const indexStatus = readIndexStatus(config.axchatIndexPath)
-      const modelOnline = await probeModel()
+      const tags = await fetchOllamaTags()
+      const available = extractModelNames(tags)
+      const serviceOnline = Boolean(tags)
+      const modelReady = serviceOnline && available.includes(config.axchatModel)
       reply.send({
-        model: { name: config.axchatModel, online: modelOnline },
+        model: {
+          name: config.axchatModel,
+          online: serviceOnline,
+          ready: modelReady,
+          available: serviceOnline ? available.slice(0, 12) : undefined,
+        },
         index: indexStatus,
       })
+    },
+  )
+
+  app.post(
+    '/warmup',
+    { preHandler: requireAnyRole(['creator', 'test']) },
+    async (_request, reply) => {
+      if (config.deployTarget !== 'local') {
+        reply.code(403).send({ error: 'axchat_disabled' })
+        return
+      }
+      const start = Date.now()
+      const response = await callOllama('WARMUP: ответь одним словом: OK')
+      if (!response) {
+        const tags = await fetchOllamaTags()
+        const available = extractModelNames(tags)
+        if (!tags) {
+          reply.code(503).send({ error: 'ollama_offline' })
+          return
+        }
+        if (!available.includes(config.axchatModel)) {
+          reply.code(409).send({
+            error: 'model_missing',
+            model: config.axchatModel,
+            available: available.slice(0, 12),
+          })
+          return
+        }
+        reply.code(503).send({ error: 'model_warmup_failed' })
+        return
+      }
+      reply.send({ ok: true, latency_ms: Date.now() - start })
     },
   )
 
@@ -171,7 +226,22 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
       const response = await callOllama(prompt)
       let answer = response?.trim() || ''
       if (!answer) {
-        answer = 'Ответ не получен. Проверь локальную модель.'
+        const tags = await fetchOllamaTags()
+        const available = extractModelNames(tags)
+        if (!tags) {
+          reply.code(503).send({ error: 'ollama_offline' })
+          return
+        }
+        if (!available.includes(config.axchatModel)) {
+          reply.code(409).send({
+            error: 'model_missing',
+            model: config.axchatModel,
+            available: available.slice(0, 12),
+          })
+          return
+        }
+        reply.code(503).send({ error: 'model_offline' })
+        return
       }
       if (!isLikelyRussian(answer)) {
         answer = RU_FALLBACK
