@@ -49,12 +49,16 @@ AXS_HEADER_META:
 - 2026-02-11T01:17:30+03:00 — Действие: Playwright e2e (Chromium) AXCHAT, через сайт + реальные auth-аккаунты (user/test/creator), AXCHAT API stubbed → Результат: PASS
   - Команда: `PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/axchat.spec.ts`
   - Проверки: `user` видит вкладку и получает ACCESS LOCKED (без AXCHAT API); `test` QA+SEARCH; `creator` desktop+mobile screenshots
+- 2026-02-11T01:24:30+03:00 — Действие: повторный прогон после фикса layout scroll-lock → Результат: PASS
+  - Команда: `PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/axchat.spec.ts`
 
 ## Step E — Git
 - 2026-02-10T20:57:40+03:00 — Commit: `6a2d93d` — `feat(axchat): add echo axiom module` — Файлы: `app/main.tsx`, `app/routes/_layout.tsx`, `app/routes/dashboard/audit/index.tsx`, `app/routes/dashboard/axchat/index.tsx`, `app/routes/dashboard/axchat/page.tsx`, `app/routes/dashboard/page.tsx`, `app/routes/help/page.tsx`, `components/PanelNav.tsx`, `components/TerminalBoot.tsx`, `docs/iterations/README.md`, `docs/iterations/axchat-echo-axiom/spec.md`, `docs/iterations/axchat-echo-axiom/spec_LOG_LINK.md`, `lib/axchat/api.ts`, `lib/featureFlags.ts`, `ops/agent_ops/logs/0028_axchat-echo-axiom.md`, `ops/axchat/indexer.ts`, `package.json`, `server/src/app.ts`, `server/src/auth/guards.ts`, `server/src/axchat/indexer.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/app.css`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`, `tools/ui-walkthrough.mjs`
 - 2026-02-11T00:20:10+03:00 — Commit: `abd2ef1` — `chore(agent-ops): trace task updates` — Файлы: `ops/agent_ops/logs/0028_axchat-echo-axiom.md`
 - 2026-02-11T01:10:48+03:00 — Commit: `8d56257` — `feat(shell): adaptive footer status bar` — Файлы: `app/routes/_layout.tsx`, `lib/ui/footerBarController.ts`, `styles/red-protocol-overrides.css`
 - 2026-02-11T01:12:08+03:00 — Commit: `2476134` — `feat(axchat): pro UI, model readiness, e2e` — Файлы: `app/routes/dashboard/axchat/index.tsx`, `index.html`, `lib/axchat/api.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`
+- 2026-02-11T01:21:03+03:00 — Commit: `cec5e01` — `docs(agent-ops): update AXCHAT QA + commits` — Файлы: `ops/agent_ops/logs/0028_axchat-echo-axiom.md`
+- 2026-02-11T01:23:40+03:00 — Commit: `e1ac8bc` — `fix(axchat): lock viewport scroll to panels` — Файлы: `app/routes/_layout.tsx`
 
 ---
 
