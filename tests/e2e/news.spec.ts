@@ -19,9 +19,9 @@ const viewports: ViewportSpec[] = [
 ]
 
 async function waitForNewsPage(page: Page) {
-  const hero = page.locator('.ax-signal-hero')
-  await hero.waitFor({ state: 'visible', timeout: 30_000 })
-  return hero
+  const signal = page.getByTestId('signal-center')
+  await signal.waitFor({ state: 'visible', timeout: 30_000 })
+  return signal
 }
 
 async function assertNoHorizontalScroll(page: Page, label: string) {
@@ -34,20 +34,10 @@ async function assertNoHorizontalScroll(page: Page, label: string) {
   }
 }
 
-async function assertHeroLayout(page: Page, viewportWidth: number) {
-  const hero = page.locator('.ax-signal-hero')
-  const side = page.locator('.ax-signal-hero__side')
-  await expect(hero).toBeVisible()
-  await expect(side).toBeVisible()
-  const heroBox = await hero.boundingBox()
-  const sideBox = await side.boundingBox()
-  expect(heroBox).not.toBeNull()
-  expect(sideBox).not.toBeNull()
-  if (heroBox && sideBox) {
-    const overflowAllowance = viewportWidth < 400 ? 12 : 2
-    expect(sideBox.x + sideBox.width).toBeLessThanOrEqual(heroBox.x + heroBox.width + overflowAllowance)
-    expect(sideBox.y + sideBox.height).toBeLessThanOrEqual(heroBox.y + heroBox.height + 2)
-  }
+async function assertHeaderBlocks(page: Page) {
+  await expect(page.locator('.ax-news-pillar')).toBeVisible()
+  await expect(page.getByTestId('signal-center')).toBeVisible()
+  await expect(page.locator('.ax-signal-center__tabs')).toBeVisible()
 }
 
 async function assertFilterBar(page: Page) {
@@ -60,6 +50,12 @@ async function assertFilterBar(page: Page) {
 
   const pageChip = page.locator('.ax-news-bar__pill').filter({ hasText: 'PAGE' })
   await expect(pageChip).toBeVisible()
+
+  const drawerToggle = page.locator('.ax-news-bar__btn').filter({ hasText: 'Filters' })
+  await expect(drawerToggle).toBeVisible()
+  await drawerToggle.click()
+  await expect(page.locator('.ax-news-drawer')).toBeVisible()
+  await drawerToggle.click()
 
   const nextButton = page.locator('.ax-news-bar__btn').filter({ hasText: 'Next' })
   const prevButton = page.locator('.ax-news-bar__btn').filter({ hasText: 'Prev' })
@@ -77,17 +73,12 @@ async function assertFilterBar(page: Page) {
   await expect(page.locator('#news-size')).toBeVisible()
 }
 
-async function assertCards(page: Page) {
-  const cards = page.locator('.ax-news-card')
-  await expect(cards.first()).toBeVisible()
-  const summary = cards.first().locator('.ax-news-card__summary')
-  if (await summary.count()) {
-    await expect(summary.first()).toBeVisible()
-  }
-  const action = page.locator('.ax-news-card__action')
-  if (await action.count()) {
-    await expect(action.first()).toBeVisible()
-  }
+async function assertFeed(page: Page) {
+  const feed = page.locator('.ax-news-feed')
+  await expect(feed).toBeVisible()
+
+  const anyRow = feed.locator('.ax-news-row').first().or(page.locator('.ax-news-empty'))
+  await expect(anyRow).toBeVisible()
 }
 
 test.describe('News responsive matrix', () => {
@@ -105,9 +96,51 @@ test.describe('News responsive matrix', () => {
       await page.waitForTimeout(200)
 
       await assertNoHorizontalScroll(page, viewport.label)
-      await assertHeroLayout(page, viewport.width)
+      await assertHeaderBlocks(page)
       await assertFilterBar(page)
-      await assertCards(page)
+      await assertFeed(page)
     }
+  })
+})
+
+test.describe('News master-detail flow', () => {
+  test('Dispatch presets + selection + pinning stay in sync', async ({ page }) => {
+    test.setTimeout(120_000)
+    await stubAuthApi(page)
+    await stubContentApi(page)
+    await bootstrapSession(page, { pins: [] })
+
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/dashboard/news', { waitUntil: 'domcontentloaded' })
+    await waitForNewsPage(page)
+
+    await page.getByTestId('news-preset-updates').click()
+    await expect(page.locator('#news-kind')).toHaveValue('update')
+
+    const feed = page.getByRole('listbox', { name: 'News feed' })
+    const rows = feed.getByRole('option')
+    await expect(rows.first()).toBeVisible()
+
+    const pickedTitleRaw = await rows.first().locator('.ax-news-row__title').textContent()
+    const pickedTitle = (pickedTitleRaw ?? '').trim()
+    await rows.first().click()
+
+    if (pickedTitle) {
+      await expect(page.getByTestId('signal-center').locator('.ax-signal-hero__headline')).toContainText(pickedTitle)
+    }
+
+    const pinButton = page.getByTestId('signal-center').getByRole('button', { name: 'PIN' })
+    await pinButton.click()
+    await expect(page.getByTestId('signal-center').getByRole('button', { name: 'UNPIN' })).toBeVisible()
+
+    await page.getByRole('button', { name: 'PINNED ONLY' }).click()
+    await expect(page.getByRole('button', { name: 'PINNED ONLY' })).toHaveAttribute('data-active', 'true')
+
+    const pinnedRows = feed.getByRole('option')
+    await expect(pinnedRows.first()).toBeVisible()
+    const allPinned = await pinnedRows.evaluateAll((nodes) =>
+      nodes.every((node) => node.getAttribute('data-pinned') === 'true')
+    )
+    expect(allPinned).toBe(true)
   })
 })
