@@ -43,14 +43,22 @@ AXS_HEADER_META:
   - Обновлено: `components/NewsCard.tsx` (кликабельная карточка, +N tags, coming soon label)
   - Обновлено: `styles/news-signal-center.css` (surface уровни, типографика, rail filter, meta panels, skeleton)
   - Обновлено: `styles/ticker.css` (приглушённый NEWS WIRE)
+- 2026-02-10T19:14:22+03:00 — Действие: вернул исходный цветокор NEWS WIRE (более яркий красный) → Результат: OK
+  - Обновлено: `styles/ticker.css` (возврат базовой палитры тикера)
+- 2026-02-10T20:32:05+03:00 — Действие: улучшен UX Signal Center (CTA/quick actions, debounced search + clear, highlight, card actions) + доп. responsive polish, добавлен e2e тест → Результат: OK
+  - Обновлено: `app/routes/dashboard/news/page.tsx`, `components/NewsCard.tsx`, `styles/news-signal-center.css`
+  - Обновлено: `styles/ticker.css`, `tests/e2e/news.spec.ts`
 
 ## Step C — Documentation
 - 2026-02-10T16:05:31+03:00 — Действие: создан `docs/iterations/0011_news-signal-center/SPEC_LOG_LINK.md` → Результат: OK
+- 2026-02-10T20:32:20+03:00 — Действие: добавлены SPEC + reference asset, обновлён AXS_HEADER_META → Результат: OK
+  - Добавлено: `docs/iterations/0011_news-signal-center/SPEC.md`, `docs/iterations/0011_news-signal-center/REF_NEWS_SIGNAL_CENTER_v0.1.png`
 
 ## Step D — QA
 - 2026-02-10T16:28:22+03:00 — Действие: ui:walk 1920/1600/1440 (debug=1) → Результат: SKIP (нет запущенного локального UI сервера)
 - 2026-02-10T17:03:08+03:00 — Действие: ui:walk 1920/1600/1440 (debug=1) → Результат: PASS
   - Артефакты: `ops/artifacts/ui_walkthrough/2026-02-10T14-02-21-467Z_1920x1080/`, `ops/artifacts/ui_walkthrough/2026-02-10T14-02-29-239Z_1600x900/`, `ops/artifacts/ui_walkthrough/2026-02-10T14-02-39-207Z_1440x900/`
+- 2026-02-10T20:32:28+03:00 — Действие: доп. QA не запускался → Результат: SKIP
 
 ## Step E — Git
 - 2026-02-10T16:28:25+03:00 — Commit: `fcb2401` — `feat(news): signal center redesign` — Файлы: `app/routes/dashboard/news/page.tsx`, `components/NewsCard.tsx`, `styles/news-signal-center.css`, `docs/iterations/0011_news-signal-center/SPEC_LOG_LINK.md`, `ops/agent_ops/logs/0029_news-signal-center.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`

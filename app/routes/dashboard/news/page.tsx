@@ -3,7 +3,7 @@
 // Purpose: News panel with Red Protocol filters, grid layout and pagination.
 
 import React, { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import CounterWreath from '@/components/counters/CounterWreath'
 import { vfs, type NewsItem, type NewsKind } from '@/lib/vfs'
 import NewsCard from '@/components/NewsCard'
@@ -46,6 +46,19 @@ function matchesQuery(item: NewsItem, term: string) {
     .join(' ')
     .toLowerCase()
   return haystack.includes(term)
+}
+
+function normalizePath(path: string) {
+  return path.replace(/\/+$/, '') || '/'
+}
+
+function resolveActionLink(link: string | undefined, currentPath: string) {
+  if (!link) return null
+  if (link.startsWith('http://') || link.startsWith('https://')) return link
+  const normalizedCurrent = normalizePath(currentPath)
+  const cleanLink = normalizePath(link.split('?')[0])
+  if (cleanLink === normalizedCurrent) return null
+  return link
 }
 
 function resolvePacketVersion(item: NewsItem | null) {
@@ -133,16 +146,17 @@ function NewsDispatchPillar({ busy, total, visible, page, pageCount }: NewsDispa
 type SignalCenterHeroProps = {
   busy: boolean
   item: NewsItem | null
+  resolvedLink: string | null
 }
 
-function SignalCenterHero({ busy, item }: SignalCenterHeroProps) {
+function SignalCenterHero({ busy, item, resolvedLink }: SignalCenterHeroProps) {
   const state = busy ? 'loading' : item ? 'ready' : 'empty'
   const variant = resolveKindVariant(item?.kind)
   const kindLabel = (item?.kind || 'news').toUpperCase()
   const tagCount = item?.tags?.length ?? 0
   const versionLabel = resolvePacketVersion(item)
   const sourceLabel = resolvePacketSource(item)
-  const linkHref = item?.link ?? ''
+  const linkHref = resolvedLink ?? ''
   const [copied, setCopied] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -170,6 +184,41 @@ function SignalCenterHero({ busy, item }: SignalCenterHeroProps) {
       setCopied(false)
     }
   }
+
+  const canOpen = Boolean(linkHref)
+  const actions = [
+    canOpen
+      ? {
+          id: 'open',
+          label: 'OPEN PACKET',
+          href: linkHref,
+          variant: 'primary' as const,
+        }
+      : null,
+    canOpen
+      ? {
+          id: 'copy',
+          label: copied ? 'COPIED' : 'COPY LINK',
+          onClick: handleCopy,
+        }
+      : null,
+    item
+      ? {
+          id: 'modal',
+          label: 'OPEN MODAL',
+          onClick: () => setModalOpen(true),
+        }
+      : null,
+  ].filter(Boolean) as Array<{
+    id: string
+    label: string
+    href?: string
+    onClick?: () => void
+    variant?: 'primary'
+  }>
+
+  const primaryAction = actions.find((action) => action.variant === 'primary')
+  const quickActions = actions.filter((action) => action.variant !== 'primary')
 
   return (
     <section className='ax-card ax-signal-hero' data-state={state} aria-label='Signal Center last packet'>
@@ -214,14 +263,18 @@ function SignalCenterHero({ busy, item }: SignalCenterHeroProps) {
             </div>
 
             <div className='ax-signal-hero__cta'>
-              {linkHref ? (
-                <a className='ax-btn primary ax-signal-hero__cta-primary' href={linkHref} target='_blank' rel='noopener noreferrer'>
-                  OPEN PACKET
+              {primaryAction?.href ? (
+                <a
+                  className='ax-btn primary ax-signal-hero__cta-primary'
+                  href={primaryAction.href}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  {primaryAction.label}
                 </a>
               ) : (
                 <span className='ax-chip' data-variant='warn'>COMING SOON</span>
               )}
-              <a className='ax-btn ghost' href='#news-grid'>VIEW ALL</a>
             </div>
           </div>
 
@@ -255,15 +308,29 @@ function SignalCenterHero({ busy, item }: SignalCenterHeroProps) {
             <div className='ax-signal-hero__panel'>
               <span className='ax-signal-hero__panel-title'>QUICK LINKS</span>
               <div className='ax-signal-hero__quick-links'>
-                <button type='button' className='ax-btn ghost' onClick={() => linkHref && window.open(linkHref, '_blank', 'noopener,noreferrer')} disabled={!linkHref}>
-                  OPEN
-                </button>
-                <button type='button' className='ax-btn ghost' onClick={handleCopy} disabled={!linkHref}>
-                  {copied ? 'COPIED' : 'COPY LINK'}
-                </button>
-                <button type='button' className='ax-btn ghost' onClick={() => setModalOpen(true)} disabled={!item}>
-                  OPEN MODAL
-                </button>
+                {quickActions.map((action) =>
+                  action.href ? (
+                    <a
+                      key={action.id}
+                      className='ax-btn ghost'
+                      href={action.href}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      {action.label}
+                    </a>
+                  ) : (
+                    <button
+                      key={action.id}
+                      type='button'
+                      className='ax-btn ghost'
+                      onClick={action.onClick}
+                      disabled={!action.onClick}
+                    >
+                      {action.label}
+                    </button>
+                  )
+                )}
               </div>
             </div>
           </aside>
@@ -357,15 +424,28 @@ function NewsFilterBar({
       <div className='ax-news-bar__rail'>
         <div className='ax-news-bar__left'>
           <label className='visually-hidden' htmlFor='news-search'>Search news</label>
-          <input
-            id='news-search'
-            className='ax-input'
-            type='search'
-            placeholder='Search title, summary, tags'
-            value={q}
-            onChange={(event) => onQueryChange(event.target.value)}
-            disabled={busy}
-          />
+          <div className='ax-news-bar__search'>
+            <span className='ax-news-bar__icon' aria-hidden='true'>⌕</span>
+            <input
+              id='news-search'
+              className='ax-input'
+              type='search'
+              placeholder='Search title, summary, tags'
+              value={q}
+              onChange={(event) => onQueryChange(event.target.value)}
+              disabled={busy}
+            />
+            {q ? (
+              <button
+                type='button'
+                className='ax-news-bar__clear'
+                onClick={() => onQueryChange('')}
+                aria-label='Clear search'
+              >
+                ×
+              </button>
+            ) : null}
+          </div>
 
           <label className='visually-hidden' htmlFor='news-kind'>Filter by kind</label>
           <select
@@ -438,6 +518,7 @@ function NewsFilterBar({
 
 export default function NewsPage() {
   const [items, setItems] = useState<NewsItem[]>([])
+  const [rawQuery, setRawQuery] = useState('')
   const [q, setQ] = useState('')
   const [kind, setKind] = useState<'' | NewsKind>('')
   const [sort, setSort] = useState<SortOrder>('newest')
@@ -445,6 +526,7 @@ export default function NewsPage() {
   const [pageSize, setPageSize] = useState(8)
   const [busy, setBusy] = useState(true)
   const [err, setErr] = useState<string | null>(null)
+  const location = useLocation()
 
   useEffect(() => {
     let alive = true
@@ -470,6 +552,13 @@ export default function NewsPage() {
   useEffect(() => {
     setPage(1)
   }, [q, kind, pageSize, sort])
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setQ(rawQuery.trim())
+    }, 200)
+    return () => window.clearTimeout(timer)
+  }, [rawQuery])
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase()
@@ -499,6 +588,8 @@ export default function NewsPage() {
   const pageItems = sortedItems.slice((page - 1) * pageSize, page * pageSize)
   const newsTotal = items.length
   const visibleTotal = filtered.length
+  const currentPath = location.pathname
+  const heroLink = resolveActionLink(featuredItem?.link, currentPath)
 
   const handlePrev = () => setPage((prev) => Math.max(1, prev - 1))
   const handleNext = () => setPage((prev) => Math.min(totalPages, prev + 1))
@@ -514,12 +605,16 @@ export default function NewsPage() {
             page={page}
             pageCount={sortedItems.length ? totalPages : 0}
           />
-          <SignalCenterHero busy={busy} item={featuredItem} />
+          <SignalCenterHero
+            busy={busy}
+            item={featuredItem}
+            resolvedLink={heroLink}
+          />
         </div>
 
         <NewsFilterBar
           busy={busy}
-          q={q}
+          q={rawQuery}
           kind={kind}
           sort={sort}
           pageSize={pageSize}
@@ -527,7 +622,7 @@ export default function NewsPage() {
           visible={visibleTotal}
           page={page}
           pageCount={sortedItems.length ? totalPages : 0}
-          onQueryChange={setQ}
+          onQueryChange={setRawQuery}
           onKindChange={setKind}
           onSortChange={setSort}
           onPageSizeChange={setPageSize}
@@ -561,7 +656,14 @@ export default function NewsPage() {
               <p className='ax-news-card__summary'>Adjust filters or add new content in the NEWS module.</p>
             </div>
           ) : (
-            pageItems.map((item) => <NewsCard key={item.id} item={item} />)
+            pageItems.map((item) => (
+              <NewsCard
+                key={item.id}
+                item={item}
+                searchTerm={q}
+                resolvedLink={resolveActionLink(item.link, currentPath)}
+              />
+            ))
           )}
         </div>
       </div>

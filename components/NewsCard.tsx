@@ -17,7 +17,31 @@ function variantFor(kind?: string): 'info' | 'good' | 'warn' {
   return KIND_VARIANT[key] || 'info'
 }
 
-export default function NewsCard({ item }: { item: NewsItem }) {
+type NewsCardProps = {
+  item: NewsItem
+  searchTerm?: string
+  resolvedLink?: string | null
+}
+
+function highlightText(text: string, term?: string) {
+  if (!term) return text
+  const trimmed = term.trim()
+  if (trimmed.length < 2) return text
+  const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const regex = new RegExp(`(${escaped})`, 'ig')
+  const parts = text.split(regex)
+  return parts.map((part, index) =>
+    index % 2 === 1 ? (
+      <mark key={`${part}-${index}`} className='ax-news-mark'>
+        {part}
+      </mark>
+    ) : (
+      <span key={`${part}-${index}`}>{part}</span>
+    )
+  )
+}
+
+export default function NewsCard({ item, searchTerm, resolvedLink }: NewsCardProps) {
   const variant = variantFor(item.kind)
   const kindLabel = (item.kind || 'news').toUpperCase()
   const isMinor = !item.link
@@ -26,10 +50,12 @@ export default function NewsCard({ item }: { item: NewsItem }) {
   const maxTags = 3
   const shownTags = tags.slice(0, maxTags)
   const extraTags = Math.max(0, tags.length - shownTags.length)
+  const link = resolvedLink ?? item.link ?? ''
+  const hasLink = Boolean(link)
 
   const handleOpen = () => {
-    if (!item.link) return
-    window.open(item.link, '_blank', 'noopener,noreferrer')
+    if (!hasLink) return
+    window.open(link, '_blank', 'noopener,noreferrer')
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
@@ -45,25 +71,25 @@ export default function NewsCard({ item }: { item: NewsItem }) {
       className='ax-card ax-news-card'
       data-kind={kindKey}
       data-state={isMinor ? 'minor' : 'normal'}
-      data-clickable={item.link ? 'true' : 'false'}
+      data-clickable={hasLink ? 'true' : 'false'}
       aria-labelledby={`news-${item.id}`}
-      role={item.link ? 'link' : undefined}
-      tabIndex={item.link ? 0 : undefined}
-      onClick={item.link ? handleOpen : undefined}
-      onKeyDown={item.link ? handleKeyDown : undefined}
+      role={hasLink ? 'link' : undefined}
+      tabIndex={hasLink ? 0 : undefined}
+      onClick={hasLink ? handleOpen : undefined}
+      onKeyDown={hasLink ? handleKeyDown : undefined}
     >
-      <header className='ax-news-card__head'>
-        <div className='ax-news-card__title-wrap'>
-          <span className='ax-news-card__eyebrow'>DATA SLATE</span>
-          <h3 id={`news-${item.id}`} className='ax-news-card__title'>
-            {item.title}
-          </h3>
-        </div>
+      <header className='ax-news-card__top'>
+        <span className='ax-chip ax-news-card__kind' data-variant={variant}>{kindLabel}</span>
         <span className='ax-news-card__date'>{item.date}</span>
       </header>
 
-      <div className='ax-news-card__meta'>
-        <span className='ax-chip' data-variant={variant}>{kindLabel}</span>
+      <h3 id={`news-${item.id}`} className='ax-news-card__title'>
+        {item.title}
+      </h3>
+
+      {item.summary && <p className='ax-news-card__summary'>{highlightText(item.summary, searchTerm)}</p>}
+
+      <footer className='ax-news-card__footer'>
         {tags.length ? (
           <div className='ax-news-card__tags' aria-label='tags'>
             {shownTags.map((tag) => (
@@ -75,26 +101,24 @@ export default function NewsCard({ item }: { item: NewsItem }) {
               <span className='ax-chip' data-variant='info'>+{extraTags}</span>
             ) : null}
           </div>
-        ) : null}
-      </div>
+        ) : (
+          <span className='ax-news-card__tags-empty'>NO TAGS</span>
+        )}
 
-      {item.summary && <p className='ax-news-card__summary'>{item.summary}</p>}
-
-      <div className='ax-news-card__actions'>
-        {item.link ? (
+        {hasLink ? (
           <a
-            className='ax-btn ghost'
-            href={item.link}
+            className='ax-news-card__action'
+            href={link}
             target='_blank'
             rel='noopener noreferrer'
             onClick={(event) => event.stopPropagation()}
           >
-            OPEN
+            OPEN <span aria-hidden='true'>→</span>
           </a>
-        ) : (
+        ) : !item.link ? (
           <span className='ax-news-card__coming'>COMING SOON</span>
-        )}
-      </div>
+        ) : null}
+      </footer>
     </article>
   )
 }
