@@ -35,6 +35,8 @@ AXS_HEADER_META:
   - Обновлено: `app/routes/login/page.tsx`, `styles/login-boot.css`, `styles/login-bg.css`
 - 2026-02-10T22:48:20+03:00 — Действие: добавлены фоновые слои (sky/haze/beams) в login и связаны со стилями → Результат: OK
   - Обновлено: `app/routes/login/page.tsx`, `styles/login-bg.css`
+- 2026-02-10T23:34:20+03:00 — Действие: зафиксированы незакоммиченные правки login (OrionCityBackground WebGL, обновлён cyber overlay, совместимость шаблонов boot-lines, добавлены three deps) → Результат: OBSERVED
+  - Обновлено: `app/routes/login/page.tsx`, `components/login/OrionCityBackground.tsx`, `styles/login-cyber.css`, `package.json`, `package-lock.json`, `node_modules/.package-lock.json`
 
 ## Step C — Documentation
 - 2026-02-10T19:50:03+03:00 — Действие: Документация не требуется → Результат: SKIP
@@ -42,6 +44,7 @@ AXS_HEADER_META:
 ## Step D — QA
 - 2026-02-10T19:50:03+03:00 — Действие: Локально не запускал, нужна проверка CREATOR → Результат: SKIP
 - 2026-02-10T20:32:58+03:00 — Действие: доп. QA не запускался → Результат: SKIP
+- 2026-02-10T23:34:30+03:00 — Действие: QA для обнаруженных правок не запускался → Результат: SKIP
 - 2026-02-10T22:48:30+03:00 — Действие: доп. QA не запускался → Результат: SKIP
 
 ## Step E — Git

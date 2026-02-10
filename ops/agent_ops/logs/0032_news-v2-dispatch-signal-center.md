@@ -34,7 +34,9 @@ AXS_HEADER_META:
   - Требуемые изменения: master-detail (SmartHeader + Feed), UI-state (read/pinned/new since last visit)
 
 ## Step B — Implementation
-- _pending_
+- 2026-02-10T23:37:40+03:00 — Действие: зафиксированы незакоммиченные правки NEWS v2 (master-detail feed, presets, read/pinned state, localStorage helpers, тесты) → Результат: OBSERVED
+  - Обновлено: `app/routes/dashboard/news/page.tsx`
+  - Добавлено: `lib/news/v2State.ts`, `tests/newsV2State.spec.ts`
 
 ## Step C — Documentation
 - 2026-02-10T22:46:00+03:00 — Действие: добавлен DRAFT SPEC + LOG LINK → Результат: OK
@@ -42,7 +44,7 @@ AXS_HEADER_META:
   - Добавлено: `docs/iterations/0012_news-v2-dispatch-signal-center/SPEC_LOG_LINK.md`
 
 ## Step D — QA
-- _pending_
+- 2026-02-10T23:37:50+03:00 — Действие: QA для обнаруженных правок не запускался → Результат: SKIP
 
 ## Step E — Git
 - _pending_
