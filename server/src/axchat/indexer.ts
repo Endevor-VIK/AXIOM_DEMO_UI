@@ -21,6 +21,7 @@ export type AxchatIndexStatus = {
 export type BuildIndexOptions = {
   root: string
   indexPath: string
+  sourceDirs?: string[]
   chunkSize: number
   chunkOverlap: number
 }
@@ -32,7 +33,7 @@ type Section = {
 }
 
 const INDEX_VERSION = 'fts5-v1'
-const DEFAULT_DIRS = ['docs', 'content-src', 'content']
+const DEFAULT_DIRS = ['export', 'content-src', 'content']
 
 function ensureDir(dir: string) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
@@ -111,14 +112,15 @@ function makeExcerpt(text: string, maxLen = 260) {
   return clean.slice(0, maxLen).trim() + '…'
 }
 
-function resolveSourceDirs(root: string) {
-  const exportDir = path.join(root, 'export')
+function resolveSourceDirs(root: string, sourceDirs: string[]) {
   const dirs: string[] = []
-  if (fs.existsSync(exportDir) && fs.statSync(exportDir).isDirectory()) {
-    dirs.push(exportDir)
-  }
-  for (const entry of DEFAULT_DIRS) {
-    const full = path.join(root, entry)
+  const seen = new Set<string>()
+  for (const entry of sourceDirs) {
+    const safe = entry.trim()
+    if (!safe) continue
+    if (seen.has(safe)) continue
+    seen.add(safe)
+    const full = path.join(root, safe)
     if (fs.existsSync(full) && fs.statSync(full).isDirectory()) {
       dirs.push(full)
     }
@@ -195,14 +197,14 @@ function setMeta(db: Database.Database, key: string, value: string) {
 }
 
 export function buildAxchatIndex(options: BuildIndexOptions) {
-  const { root, indexPath, chunkSize, chunkOverlap } = options
+  const { root, indexPath, chunkSize, chunkOverlap, sourceDirs } = options
   ensureDir(path.dirname(indexPath))
   const db = new Database(indexPath)
   ensureSchema(db)
   resetIndex(db)
 
   const now = new Date().toISOString()
-  const dirs = resolveSourceDirs(root)
+  const dirs = resolveSourceDirs(root, sourceDirs?.length ? sourceDirs : DEFAULT_DIRS)
   const files = walkMarkdownFiles(root, dirs)
   const insertDoc = db.prepare(
     `INSERT INTO documents (path, title, anchor, route, excerpt, source, updated_at)
@@ -281,24 +283,35 @@ export function readIndexStatus(indexPath: string): AxchatIndexStatus {
   }
 }
 
-export function searchAxchatIndex(indexPath: string, query: string, limit = 6): AxchatRef[] {
+export function searchAxchatIndex(
+  indexPath: string,
+  query: string,
+  limit = 6,
+  options: { allowedSources?: string[] } = {},
+): AxchatRef[] {
   if (!fs.existsSync(indexPath)) return []
   const tokens = (query.match(/[\p{L}\p{N}]+/gu) || []).map((t) => t.toLowerCase())
   if (tokens.length === 0) return []
   const ftsQuery = tokens.map((token) => `${token}*`).join(' ')
+  const allowedSources = (options.allowedSources || []).map((entry) => entry.trim()).filter(Boolean)
 
   try {
     const db = new Database(indexPath, { readonly: true })
+    const sourceClause = allowedSources.length
+      ? ` AND d.source IN (${allowedSources.map(() => '?').join(',')})`
+      : ''
     const stmt = db.prepare(
       `SELECT d.title as title, d.path as path, d.route as route, d.anchor as anchor, d.excerpt as excerpt,
               bm25(documents_fts) as score
        FROM documents_fts
        JOIN documents d ON d.id = documents_fts.doc_id
        WHERE documents_fts MATCH ?
+       ${sourceClause}
        ORDER BY score
        LIMIT ?`
     )
-    const rows = stmt.all(ftsQuery, limit) as AxchatRef[]
+    const params = allowedSources.length ? [ftsQuery, ...allowedSources, limit] : [ftsQuery, limit]
+    const rows = stmt.all(...params) as AxchatRef[]
     db.close()
     return rows.map((row) => ({
       ...row,

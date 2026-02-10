@@ -9,6 +9,7 @@ const chunkOverlap = Number.isFinite(config.axchatChunkOverlap) ? config.axchatC
 const result = buildAxchatIndex({
   root,
   indexPath: config.axchatIndexPath,
+  sourceDirs: config.axchatSourceDirs,
   chunkSize,
   chunkOverlap,
 })

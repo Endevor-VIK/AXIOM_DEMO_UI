@@ -10,6 +10,7 @@ import {
   searchAxchat,
   reindexAxchat,
   warmupAxchat,
+  type AxchatChatTurn,
   type AxchatRef,
   type AxchatStatus,
 } from '@/lib/axchat/api'
@@ -78,7 +79,8 @@ export default function AxchatRoute() {
   const [modalOpen, setModalOpen] = useState(false)
   const [reindexing, setReindexing] = useState(false)
   const [warming, setWarming] = useState(false)
-  const endRef = useRef<HTMLDivElement | null>(null)
+  const messagesViewportRef = useRef<HTMLDivElement | null>(null)
+  const stickToBottomRef = useRef(true)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
 
   const highlightTokens = useMemo(() => {
@@ -98,6 +100,19 @@ export default function AxchatRoute() {
 
   const llmLabel = !ollamaOnline ? 'OLLAMA OFFLINE' : !modelReady ? 'MODEL MISSING' : 'MODEL ONLINE'
   const modelName = status?.model?.name || 'qwen2.5:7b-instruct'
+  const legacyStatus = Boolean(status && status.model.ready === undefined)
+  const allowedSources = status?.sources?.length ? status.sources : ['export', 'content-src', 'content']
+  const allowedSourceSet = useMemo(() => new Set(allowedSources), [allowedSources.join('|')])
+
+  const filterLoreRefs = useCallback(
+    (next: AxchatRef[]) => {
+      return next.filter((ref) => {
+        const top = ref.path.split('/')[0] || ''
+        return allowedSourceSet.has(top)
+      })
+    },
+    [allowedSourceSet],
+  )
 
   const statusNote = !indexOnline
     ? 'INDEX OFFLINE — запусти Reindex, чтобы открыть доступ.'
@@ -105,6 +120,8 @@ export default function AxchatRoute() {
       ? 'OLLAMA OFFLINE — запусти локальный runtime модели (localhost only).'
       : !modelReady
         ? `MODEL MISSING — установи: ollama pull ${modelName}.`
+        : legacyStatus
+          ? 'STATUS LEGACY — перезапусти AX API, чтобы включить проверки readiness модели.'
         : null
 
   const blockedReason = !canSend
@@ -121,8 +138,12 @@ export default function AxchatRoute() {
 
   const formatApiError = useCallback(
     (err: any) => {
+      const httpStatus = err?.status
       const code = err?.message || 'request_failed'
       const payload = err?.payload
+      if (httpStatus === 404) {
+        return 'AX API не обновлён или не перезапущен. Перезапусти backend (dev:api/dev:full).'
+      }
       if (code === 'ollama_offline') return 'LLM OFFLINE. Запусти Ollama локально (127.0.0.1).'
       if (code === 'model_missing') {
         const modelName = payload?.model || status?.model?.name || 'local-model'
@@ -164,9 +185,18 @@ export default function AxchatRoute() {
     }
   }, [hasAccess, deployTarget])
 
+  const handleMessagesScroll = useCallback(() => {
+    const el = messagesViewportRef.current
+    if (!el) return
+    const distance = el.scrollHeight - el.scrollTop - el.clientHeight
+    stickToBottomRef.current = distance < 80
+  }, [])
+
   useEffect(() => {
-    if (!endRef.current) return
-    endRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    const el = messagesViewportRef.current
+    if (!el) return
+    if (!stickToBottomRef.current) return
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
   }, [messages])
 
   const pushMessage = useCallback((next: ChatMessage) => {
@@ -181,20 +211,24 @@ export default function AxchatRoute() {
     setError(null)
     setBusy(true)
     setLastQuery(trimmed)
+    stickToBottomRef.current = true
     pushMessage({ id: `user-${Date.now()}`, role: 'user', content: trimmed })
 
     try {
       if (mode === 'search') {
         const res = await searchAxchat(trimmed)
-        setRefs(res.refs || [])
+        setRefs(filterLoreRefs(res.refs || []))
         pushMessage({
           id: `assistant-${Date.now()}`,
           role: 'assistant',
           content: `Поиск завершен. Найдено источников: ${res.refs?.length ?? 0}.`,
         })
       } else {
-        const res = await queryAxchat(trimmed, 'qa')
-        setRefs(res.refs || [])
+        const history: AxchatChatTurn[] = [...messages, { id: 'pending', role: 'user', content: trimmed }]
+          .slice(-10)
+          .map((msg) => ({ role: msg.role, content: msg.content }))
+        const res = await queryAxchat(trimmed, 'qa', history)
+        setRefs(filterLoreRefs(res.refs || []))
         pushMessage({
           id: `assistant-${Date.now()}`,
           role: 'assistant',
@@ -212,7 +246,7 @@ export default function AxchatRoute() {
     } finally {
       setBusy(false)
     }
-  }, [input, busy, mode, canSend, pushMessage, formatApiError])
+  }, [input, busy, canSend, filterLoreRefs, formatApiError, messages, mode, pushMessage])
 
   const handleChipClick = useCallback((label: string) => {
     setInput(label)
@@ -346,7 +380,7 @@ export default function AxchatRoute() {
               </span>
             </div>
             <div className='ax-axchat__control-actions'>
-              {primaryRole === 'creator' && ollamaOnline && !modelReady ? (
+              {primaryRole === 'creator' && ollamaOnline && (legacyStatus || !modelReady) ? (
                 <button
                   type='button'
                   className='ax-btn ax-btn--ghost'
@@ -354,6 +388,21 @@ export default function AxchatRoute() {
                   disabled={warming}
                 >
                   {warming ? 'Start…' : 'Start model'}
+                </button>
+              ) : null}
+              {primaryRole === 'creator' && ollamaOnline && !modelReady ? (
+                <button
+                  type='button'
+                  className='ax-btn ax-btn--ghost'
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(`ollama pull ${modelName}`)
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                >
+                  Copy pull
                 </button>
               ) : null}
               {primaryRole === 'creator' ? (
@@ -369,7 +418,12 @@ export default function AxchatRoute() {
             </div>
           </div>
 
-          <div className='ax-axchat__messages' data-label='CHAT CONSOLE'>
+          <div
+            ref={messagesViewportRef}
+            className='ax-axchat__messages'
+            data-label='CHAT CONSOLE'
+            onScroll={handleMessagesScroll}
+          >
             {messages.map((msg) => (
               <div key={msg.id} className='ax-axchat__message' data-role={msg.role}>
                 <div className='ax-axchat__message-role'>
@@ -378,7 +432,6 @@ export default function AxchatRoute() {
                 <div className='ax-axchat__message-body'>{msg.content}</div>
               </div>
             ))}
-            <div ref={endRef} />
           </div>
 
           <div className='ax-axchat__chips'>

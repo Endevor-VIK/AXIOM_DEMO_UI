@@ -7,6 +7,11 @@ export type AxchatRef = {
   score?: number
 }
 
+export type AxchatChatTurn = {
+  role: 'user' | 'assistant'
+  content: string
+}
+
 export type AxchatStatus = {
   model: {
     name: string
@@ -19,6 +24,7 @@ export type AxchatStatus = {
     indexed_at?: string
     version?: string
   }
+  sources?: string[]
 }
 
 async function fetchJson<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -51,10 +57,14 @@ export async function fetchAxchatStatus(): Promise<AxchatStatus> {
   return fetchJson<AxchatStatus>('/api/axchat/status', { method: 'GET' })
 }
 
-export async function queryAxchat(message: string, mode: 'qa' | 'search' = 'qa') {
+export async function queryAxchat(
+  message: string,
+  mode: 'qa' | 'search' = 'qa',
+  history: AxchatChatTurn[] = [],
+) {
   return fetchJson<{ answer_markdown: string; refs: AxchatRef[]; notes?: any }>('/api/axchat/query', {
     method: 'POST',
-    body: JSON.stringify({ message, mode }),
+    body: JSON.stringify({ message, mode, history }),
   })
 }
 

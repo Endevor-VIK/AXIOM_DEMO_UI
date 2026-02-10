@@ -24,7 +24,7 @@ const stubRefs = [
   },
   {
     title: 'Empty Stub',
-    path: 'docs/empty.md',
+    path: 'content-src/empty.md',
     route: '',
     excerpt: '',
     score: 0.55,
@@ -92,8 +92,9 @@ async function stubAxchatApi(page: Page) {
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
-        model: { name: 'mock-ollama', online: true },
+        model: { name: 'mock-ollama', online: true, ready: true },
         index: { ok: true, indexed_at: '2026-02-10T00:00:00Z', version: 'fts5-v1' },
+        sources: ['export', 'content-src', 'content'],
       }),
     })
   })
@@ -183,7 +184,7 @@ test.describe('AXCHAT full access', () => {
     await page.getByRole('button', { name: /send/i }).click()
     await expect(page.getByText('Поиск завершен', { exact: false })).toBeVisible()
 
-    const emptyCard = page.locator('.ax-axchat__source', { hasText: 'docs/empty.md' })
+    const emptyCard = page.locator('.ax-axchat__source', { hasText: 'content-src/empty.md' })
     await expect(emptyCard.getByRole('link', { name: 'Открыть' })).toHaveCount(0)
     await expect(emptyCard.getByRole('button', { name: 'Открыть в модалке' })).toHaveCount(0)
   })

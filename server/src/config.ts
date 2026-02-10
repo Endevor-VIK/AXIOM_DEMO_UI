@@ -1,6 +1,14 @@
 import path from 'node:path'
 
 const truthy = (value?: string) => value === '1' || value === 'true' || value === 'on'
+const csv = (value?: string) =>
+  (value || '')
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)
+
+const DEFAULT_AXCHAT_SOURCE_DIRS = ['export', 'content-src', 'content']
+const AXCHAT_SOURCE_DIRS = csv(process.env.AXCHAT_SOURCE_DIRS)
 
 export const config = {
   port: Number(process.env.AX_API_PORT || 8787),
@@ -21,6 +29,7 @@ export const config = {
   axchatIndexPath:
     process.env.AXCHAT_INDEX_PATH ||
     path.resolve(process.cwd(), 'runtime', 'axchat', 'index.sqlite'),
+  axchatSourceDirs: AXCHAT_SOURCE_DIRS.length ? AXCHAT_SOURCE_DIRS : DEFAULT_AXCHAT_SOURCE_DIRS,
   axchatModel: process.env.AXCHAT_MODEL || 'qwen2.5:7b-instruct',
   axchatHost: process.env.AXCHAT_HOST || 'http://127.0.0.1:11434',
   axchatTimeoutMs: Number(process.env.AXCHAT_TIMEOUT_MS || 60_000),
