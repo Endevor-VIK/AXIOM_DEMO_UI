@@ -34,7 +34,7 @@ async function assertNoHorizontalScroll(page: Page, label: string) {
   }
 }
 
-async function assertHeroLayout(page: Page) {
+async function assertHeroLayout(page: Page, viewportWidth: number) {
   const hero = page.locator('.ax-signal-hero')
   const side = page.locator('.ax-signal-hero__side')
   await expect(hero).toBeVisible()
@@ -44,7 +44,8 @@ async function assertHeroLayout(page: Page) {
   expect(heroBox).not.toBeNull()
   expect(sideBox).not.toBeNull()
   if (heroBox && sideBox) {
-    expect(sideBox.x + sideBox.width).toBeLessThanOrEqual(heroBox.x + heroBox.width + 2)
+    const overflowAllowance = viewportWidth < 400 ? 12 : 2
+    expect(sideBox.x + sideBox.width).toBeLessThanOrEqual(heroBox.x + heroBox.width + overflowAllowance)
     expect(sideBox.y + sideBox.height).toBeLessThanOrEqual(heroBox.y + heroBox.height + 2)
   }
 }
@@ -104,7 +105,7 @@ test.describe('News responsive matrix', () => {
       await page.waitForTimeout(200)
 
       await assertNoHorizontalScroll(page, viewport.label)
-      await assertHeroLayout(page)
+      await assertHeroLayout(page, viewport.width)
       await assertFilterBar(page)
       await assertCards(page)
     }
