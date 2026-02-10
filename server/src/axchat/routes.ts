@@ -172,6 +172,7 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
       reply.send({
         model: {
           name: config.axchatModel,
+          host: config.axchatHost,
           online: serviceOnline,
           ready: modelReady,
           available: serviceOnline ? available.slice(0, 12) : undefined,

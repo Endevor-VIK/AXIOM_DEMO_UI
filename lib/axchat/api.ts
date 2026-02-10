@@ -15,6 +15,7 @@ export type AxchatChatTurn = {
 export type AxchatStatus = {
   model: {
     name: string
+    host?: string
     online: boolean
     ready?: boolean
     available?: string[]

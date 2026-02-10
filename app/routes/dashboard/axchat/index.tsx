@@ -100,6 +100,7 @@ export default function AxchatRoute() {
 
   const llmLabel = !ollamaOnline ? 'OLLAMA OFFLINE' : !modelReady ? 'MODEL MISSING' : 'MODEL ONLINE'
   const modelName = status?.model?.name || 'qwen2.5:7b-instruct'
+  const ollamaHost = status?.model?.host || 'http://127.0.0.1:11434'
   const legacyStatus = Boolean(status && status.model.ready === undefined)
   const allowedSources = status?.sources?.length ? status.sources : ['export', 'content-src', 'content']
   const allowedSourceSet = useMemo(() => new Set(allowedSources), [allowedSources.join('|')])
@@ -117,7 +118,7 @@ export default function AxchatRoute() {
   const statusNote = !indexOnline
     ? 'INDEX OFFLINE — запусти Reindex, чтобы открыть доступ.'
     : !ollamaOnline
-      ? 'OLLAMA OFFLINE — запусти локальный runtime модели (localhost only).'
+      ? `OLLAMA OFFLINE — запусти локальный runtime модели (AXCHAT_HOST=${ollamaHost}).`
       : !modelReady
         ? `MODEL MISSING — установи: ollama pull ${modelName}.`
         : legacyStatus
@@ -130,7 +131,7 @@ export default function AxchatRoute() {
         ? 'INDEX OFFLINE — пересобери индекс, чтобы активировать запросы.'
         : 'INDEX OFFLINE — запросы недоступны. Попроси CREATOR запустить reindex.'
       : !ollamaOnline
-        ? 'OLLAMA OFFLINE — QA недоступен. Запусти Ollama локально.'
+        ? `OLLAMA OFFLINE — QA недоступен. Проверь AXCHAT_HOST=${ollamaHost}.`
         : !modelReady
           ? `MODEL MISSING — QA недоступен. Установи: ollama pull ${modelName}.`
           : 'MODEL OFFLINE — QA недоступен, включи локальную модель.'
@@ -144,7 +145,7 @@ export default function AxchatRoute() {
       if (httpStatus === 404) {
         return 'AX API не обновлён или не перезапущен. Перезапусти backend (dev:api/dev:full).'
       }
-      if (code === 'ollama_offline') return 'LLM OFFLINE. Запусти Ollama локально (127.0.0.1).'
+      if (code === 'ollama_offline') return `LLM OFFLINE. Запусти Ollama локально (AXCHAT_HOST=${ollamaHost}).`
       if (code === 'model_missing') {
         const modelName = payload?.model || status?.model?.name || 'local-model'
         const available: string[] = Array.isArray(payload?.available) ? payload.available : []
@@ -159,7 +160,7 @@ export default function AxchatRoute() {
       }
       return `Ошибка запроса: ${code}.`
     },
-    [status?.model?.name],
+    [status?.model?.name, ollamaHost],
   )
 
   useEffect(() => {
