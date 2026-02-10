@@ -46,7 +46,7 @@ AXS_HEADER_META:
 - 2026-02-10T16:28:22+03:00 — Действие: ui:walk 1920/1600/1440 (debug=1) → Результат: SKIP (нет запущенного локального UI сервера)
 
 ## Step E — Git
-- 2026-02-10T16:02:27+03:00 — Commit: `<hash>` — `<message>` — Файлы: `...`
+- 2026-02-10T16:28:25+03:00 — Commit: `fcb2401` — `feat(news): signal center redesign` — Файлы: `app/routes/dashboard/news/page.tsx`, `components/NewsCard.tsx`, `styles/news-signal-center.css`, `docs/iterations/0011_news-signal-center/SPEC_LOG_LINK.md`, `ops/agent_ops/logs/0029_news-signal-center.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 
 ---
 
