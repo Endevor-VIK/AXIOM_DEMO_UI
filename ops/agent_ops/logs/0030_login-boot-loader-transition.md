@@ -44,6 +44,7 @@ AXS_HEADER_META:
 ## Step E — Git
 - 2026-02-10T19:52:49+03:00 — Commit: `d761090` — `feat(login): add boot loader transition` — Файлы: `app/routes/login/page.tsx`, `styles/login-boot.css`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
 - 2026-02-10T19:55:30+03:00 — Commit: `ab71a5e` — `chore(agent-ops): update log 0030` — Файлы: `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
+- 2026-02-10T21:22:00+03:00 — Commit: `06a6594` — `feat(login): refine boot transition` — Файлы: `app/routes/login/page.tsx`, `styles/login-bg.css`, `styles/login-boot.css`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 
 ---
 
