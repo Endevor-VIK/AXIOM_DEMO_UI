@@ -52,6 +52,7 @@ AXS_HEADER_META:
 
 ## Step E — Git
 - 2026-02-10T16:28:25+03:00 — Commit: `fcb2401` — `feat(news): signal center redesign` — Файлы: `app/routes/dashboard/news/page.tsx`, `components/NewsCard.tsx`, `styles/news-signal-center.css`, `docs/iterations/0011_news-signal-center/SPEC_LOG_LINK.md`, `ops/agent_ops/logs/0029_news-signal-center.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
+- 2026-02-10T16:44:58+03:00 — Commit: `af7dde4` — `feat(news): premium signal center polish` — Файлы: `app/routes/dashboard/news/page.tsx`, `components/NewsCard.tsx`, `styles/news-signal-center.css`, `styles/ticker.css`, `ops/agent_ops/logs/0029_news-signal-center.md`
 
 ---
 
