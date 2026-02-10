@@ -38,6 +38,11 @@ AXS_HEADER_META:
   - Обновлено: `app/routes/dashboard/news/page.tsx` (layout, sort, featured, telemetry)
   - Обновлено: `components/NewsCard.tsx` (data-slate структура, minor-state)
   - Добавлено: `styles/news-signal-center.css` (route-scoped стили, scanlines/noise, responsive)
+- 2026-02-10T16:46:50+03:00 — Действие: доработал HERO/FilterBar/Cards под premium-ритм (meta колонка, CTA, surface уровни, кликабельность, skeleton) → Результат: OK
+  - Обновлено: `app/routes/dashboard/news/page.tsx` (hero body, quick links, modal, filter rail, skeleton cards)
+  - Обновлено: `components/NewsCard.tsx` (кликабельная карточка, +N tags, coming soon label)
+  - Обновлено: `styles/news-signal-center.css` (surface уровни, типографика, rail filter, meta panels, skeleton)
+  - Обновлено: `styles/ticker.css` (приглушённый NEWS WIRE)
 
 ## Step C — Documentation
 - 2026-02-10T16:05:31+03:00 — Действие: создан `docs/iterations/0011_news-signal-center/SPEC_LOG_LINK.md` → Результат: OK

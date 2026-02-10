@@ -15,9 +15,9 @@
 .ax-ticker {
   position:relative; display:flex; align-items:center; gap:16px;
   height:var(--ax-height); padding:0 16px; overflow:hidden; isolation:isolate;
-  background:linear-gradient(180deg,#111113,#0c0c0d);
-  border-top:1px solid rgba(255,255,255,.06);
-  border-bottom:1px solid var(--ax-red);
+  background:linear-gradient(180deg,#111013,#0b0a0c);
+  border-top:1px solid rgba(255,255,255,.05);
+  border-bottom:1px solid rgba(255,32,52,.22);
 }
 .ax-ticker::before,
 .ax-ticker::after{
@@ -39,11 +39,12 @@
 }
 
 .ax-crest {
-  position:relative; font-size:11px; letter-spacing:.18em; text-transform:uppercase;
-  color:#fff; white-space:nowrap; user-select:none;
-  background:linear-gradient(90deg,var(--ax-red),var(--ax-red-700));
-  border:1px solid rgba(255,255,255,.25); padding:4px 10px 4px 28px; border-radius:999px;
-  text-shadow:0 0 8px rgba(255,32,52,.45);
+  position:relative; font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  color:#ffeef2; white-space:nowrap; user-select:none;
+  background:rgba(255,32,52,.12);
+  border:1px solid rgba(255,32,52,.28); padding:4px 10px 4px 28px; border-radius:999px;
+  text-shadow:0 0 6px rgba(255,32,52,.25);
 }
 .ax-crest::before {
   content:""; position:absolute; left:8px; top:50%; translate:0 -50%;
@@ -73,13 +74,14 @@
 .ax-item { color:var(--ax-fg); opacity:.92; display:inline-flex; align-items:center; gap:10px; }
 .ax-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.35); }
 .ax-pill {
-  font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
   padding:3px 8px; border-radius:999px;
-  border:1px solid rgba(255,255,255,.22); color:var(--ax-accent);
+  border:1px solid rgba(255,255,255,.16); color:rgba(255,233,240,.7);
 }
 .ax-item[data-level="priority"] .ax-pill {
-  background:linear-gradient(90deg,var(--ax-red),var(--ax-red-700)); color:#fff;
-  text-shadow:0 0 6px rgba(255,32,52,.35);
+  background:rgba(255,32,52,.18); color:#ffeef2;
+  text-shadow:none;
 }
 .ax-item[data-level="market"] .ax-pill {
   background:linear-gradient(90deg,#5aa7ff,#7dd3fc); color:#00111a;
