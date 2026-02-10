@@ -9,8 +9,10 @@ import { login, register } from "@/lib/identity/authService";
 
 import "@/styles/login-bg.css";
 import "@/styles/login-cyber.css";
+import "@/styles/login-boot.css";
 
 type Mode = "login" | "register";
+type BootPhase = "booting" | "reveal" | "ready";
 
 const TITLES: Record<Mode, string> = {
   login: "WELCOME TO AXIOM PANEL",
@@ -20,6 +22,15 @@ const SUBTITLES: Record<Mode, string> = {
   login: "RED PROTOCOL ACCESS GATEWAY",
   register: "PROVISION ACCESS KEY",
 };
+
+const BOOT_LINES = [
+  { tag: "SYS", text: "kernel integrity check", status: "OK" },
+  { tag: "NET", text: "uplink handshake • 5ms", status: "OK" },
+  { tag: "SEC", text: "cipher matrix sealed", status: "OK" },
+  { tag: "AI", text: "persona cache warmed", status: "OK" },
+  { tag: "UI", text: "render pipeline armed", status: "OK" },
+  { tag: "OPS", text: "access gate online", status: "OK" },
+];
 
 function SealDisk({ size = 84 }: { size?: number }) {
   const s = size;
@@ -174,15 +185,78 @@ function CyberDeckOverlay({ root }: { root: React.RefObject<HTMLElement> }) {
 }
 /* ---------- /overlay ---------- */
 
+function BootSequence({ phase, reduced }: { phase: BootPhase; reduced: boolean }) {
+  if (phase === "ready") return null;
+  const duration = reduced ? 0.6 : 2.8;
+
+  return (
+    <div
+      className={`ax-boot${phase === "reveal" ? " is-leaving" : ""}${reduced ? " is-reduced" : ""}`}
+      style={{ ["--boot-duration" as string]: `${duration}s` } as React.CSSProperties}
+      aria-hidden
+    >
+      <div className="ax-boot__noise" />
+      <div className="ax-boot__frame">
+        <div className="ax-boot__title">
+          <span className="ax-boot__brand">AXIOM.EXE</span>
+          <span className="ax-boot__state">initializing access gateway</span>
+        </div>
+        <div className="ax-boot__meta">
+          <span>build: core-ui</span>
+          <span>node: auth-gateway</span>
+          <span>mode: red protocol</span>
+        </div>
+        <div className="ax-boot__lines">
+          {BOOT_LINES.map((line, index) => (
+            <div
+              key={`${line.tag}-${index}`}
+              className="ax-boot-line"
+              style={{ ["--delay" as string]: `${0.2 + index * 0.12}s` } as React.CSSProperties}
+            >
+              <span className="ax-boot-tag">{line.tag}</span>
+              <span className="ax-boot-text">{line.text}</span>
+              <span className="ax-boot-ok">{line.status}</span>
+            </div>
+          ))}
+        </div>
+        <div className="ax-boot__progress">
+          <span className="ax-boot__progress-label">sync / handshake</span>
+          <span className="ax-boot__progress-bar" />
+        </div>
+        <div className="ax-boot__footer">
+          <span>access gate ready</span>
+          <span className="ax-boot__cursor" />
+        </div>
+      </div>
+      <div className="ax-boot__wipe" />
+      <div className="ax-boot__scanlines" />
+    </div>
+  );
+}
+
 export default function LoginPage() {
   const nav = useNavigate();
   const location = useLocation();
   const rootRef = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
+  const [bootPhase, setBootPhase] = useState<BootPhase>("booting");
 
   useEffect(() => {
     document.body.classList.add("ax-no-scroll");
     return () => document.body.classList.remove("ax-no-scroll");
   }, []);
+
+  useEffect(() => {
+    setBootPhase("booting");
+    const revealAt = reduced ? 180 : 2100;
+    const doneAt = reduced ? 520 : 2800;
+    const t1 = window.setTimeout(() => setBootPhase("reveal"), revealAt);
+    const t2 = window.setTimeout(() => setBootPhase("ready"), doneAt);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [reduced, location.key]);
 
   const [mode, setMode] = useState<Mode>("login");
   const [userId, setUserId] = useState("");
@@ -234,15 +308,24 @@ export default function LoginPage() {
   const cardClasses = ["ax-card", "low", "ax-login-card"];
   if (err) cardClasses.push("is-error");
   if (shake) cardClasses.push("is-shake");
+  const isBooting = bootPhase !== "ready";
 
   return (
-    <section ref={rootRef} className="ax-login" aria-labelledby="login-title">
+    <section ref={rootRef} className="ax-login" aria-labelledby="login-title" data-boot={bootPhase}>
       {/* фон и кибер-слой строго позади карточки */}
       <div className="ax-login__bg" aria-hidden />
       <CyberDeckOverlay root={rootRef} />
+      <BootSequence phase={bootPhase} reduced={reduced} />
 
       <div className="ax-container">
-        <form className={cardClasses.join(" ")} onSubmit={handleSubmit} aria-busy={busy} noValidate>
+        <form
+          className={cardClasses.join(" ")}
+          onSubmit={handleSubmit}
+          aria-busy={busy}
+          aria-hidden={isBooting ? "true" : undefined}
+          style={isBooting ? { pointerEvents: "none" } : undefined}
+          noValidate
+        >
           <div className="ax-login-head">
             <div className="ax-login-emblem" aria-hidden><SealDisk /></div>
             <h1 id="login-title" className="ax-blade-head">{title}</h1>

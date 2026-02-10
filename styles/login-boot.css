@@ -1,0 +1,261 @@
+/* styles/login-boot.css - boot sequence overlay for /login */
+
+.ax-boot{
+  position:fixed;
+  inset:0;
+  z-index:12;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(900px 420px at 65% 110%, rgba(255,32,52,.10), transparent 60%),
+    radial-gradient(1100px 520px at 20% -10%, rgba(255,255,255,.06), transparent 60%),
+    linear-gradient(145deg, #0b070a 0%, #130a0e 56%, #090608 100%);
+  color:#ffe9ec;
+  font: 500 12px/1.6 var(--ax-font-mono, "JetBrains Mono", monospace);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  overflow:hidden;
+  pointer-events:auto;
+}
+
+.ax-boot.is-leaving{
+  animation: ax-boot-fade .6s ease forwards;
+}
+
+.ax-boot__frame{
+  width:min(88vw, 720px);
+  padding:28px 26px 22px;
+  border-radius:16px;
+  background: linear-gradient(180deg, rgba(18,10,12,.92), rgba(10,8,10,.96));
+  border:1px solid rgba(255,32,52,.26);
+  box-shadow:
+    0 0 0 1px rgba(255,32,52,.08) inset,
+    0 18px 48px rgba(0,0,0,.45);
+  position:relative;
+  z-index:2;
+}
+
+.ax-boot__title{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:12px;
+}
+
+.ax-boot__brand{
+  font: 700 22px/1 var(--ax-font-mono, "JetBrains Mono", monospace);
+  letter-spacing:.28em;
+  color:#fff1f2;
+}
+
+.ax-boot__state{
+  font: 600 11px/1.6 var(--ax-font-mono, "JetBrains Mono", monospace);
+  color:#ffb0b8;
+  opacity:.9;
+}
+
+.ax-boot__meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px 18px;
+  margin-bottom:16px;
+  font-size:11px;
+  color:#ffd6db;
+  opacity:.78;
+}
+
+.ax-boot__lines{
+  display:grid;
+  gap:8px;
+  margin-bottom:18px;
+}
+
+.ax-boot-line{
+  display:grid;
+  grid-template-columns: 64px 1fr auto;
+  gap:12px;
+  align-items:center;
+  opacity:0;
+  transform: translateY(6px);
+  animation: ax-boot-line .7s ease forwards;
+  animation-delay: var(--delay, 0s);
+}
+
+.ax-boot-tag{
+  color:#ff8a96;
+  font-weight:700;
+}
+
+.ax-boot-text{
+  color:#ffe6ea;
+  opacity:.9;
+}
+
+.ax-boot-ok{
+  color:#7dffb0;
+  font-weight:700;
+  letter-spacing:.2em;
+}
+
+.ax-boot__progress{
+  display:grid;
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.ax-boot__progress-label{
+  font-size:10px;
+  color:#ffb6be;
+  opacity:.88;
+}
+
+.ax-boot__progress-bar{
+  height:2px;
+  background: rgba(255,255,255,.08);
+  border-radius:999px;
+  position:relative;
+  overflow:hidden;
+}
+
+.ax-boot__progress-bar::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(90deg, rgba(255,32,52,.2), var(--ax-red, #ff2034), #fff1f2);
+  transform: scaleX(0);
+  transform-origin:left;
+  animation: ax-boot-progress var(--boot-duration, 2.8s) linear forwards;
+}
+
+.ax-boot__footer{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:10px;
+  color:#ffd1d7;
+  opacity:.78;
+}
+
+.ax-boot__cursor{
+  width:10px;
+  height:12px;
+  background: linear-gradient(180deg, #ffe9ec, #ff8591);
+  box-shadow: 0 0 10px rgba(255,32,52,.45);
+  animation: ax-boot-caret .8s steps(1) infinite;
+}
+
+.ax-boot__wipe{
+  position:absolute;
+  inset:-20% 0;
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(255,64,86,.18) 45%, rgba(255,255,255,.12) 50%, rgba(255,64,86,.18) 55%, transparent 100%);
+  opacity:0;
+  mix-blend-mode: screen;
+  z-index:3;
+}
+
+.ax-boot.is-leaving .ax-boot__wipe{
+  opacity:1;
+  animation: ax-boot-wipe .55s ease forwards;
+}
+
+.ax-boot__noise{
+  position:absolute;
+  inset:0;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.018) 0 1px, transparent 1px 2px);
+  opacity:.18;
+  mix-blend-mode: soft-light;
+  animation: ax-boot-noise 2.4s steps(2) infinite;
+}
+
+.ax-boot__scanlines{
+  position:absolute;
+  inset:0;
+  background: repeating-linear-gradient(180deg, rgba(255,255,255,.08) 0 1px, transparent 1px 4px);
+  opacity:.12;
+  mix-blend-mode: soft-light;
+  animation: ax-boot-scan 7s linear infinite;
+}
+
+@keyframes ax-boot-line{
+  to{ opacity:.95; transform: translateY(0); }
+}
+
+@keyframes ax-boot-progress{
+  to{ transform: scaleX(1); }
+}
+
+@keyframes ax-boot-caret{
+  50%{ opacity:.1; }
+}
+
+@keyframes ax-boot-wipe{
+  from{ transform: translateY(-120%); }
+  to{ transform: translateY(120%); }
+}
+
+@keyframes ax-boot-fade{
+  to{ opacity:0; pointer-events:none; }
+}
+
+@keyframes ax-boot-noise{
+  50%{ opacity:.26; }
+}
+
+@keyframes ax-boot-scan{
+  to{ background-position-y: 100%; }
+}
+
+/* взаимодействие с login layout */
+.ax-login .ax-login-card,
+.ax-login .ax-bottom-hint,
+.ax-login .ax-cyber{
+  transition: opacity .35s ease, transform .45s ease, filter .35s ease;
+}
+
+.ax-login[data-boot="booting"] .ax-login-card,
+.ax-login[data-boot="booting"] .ax-bottom-hint,
+.ax-login[data-boot="booting"] .ax-cyber{
+  opacity:0;
+  transform: translateY(10px) scale(.99);
+  filter: blur(4px);
+}
+
+.ax-login[data-boot="reveal"] .ax-login-card,
+.ax-login[data-boot="reveal"] .ax-bottom-hint,
+.ax-login[data-boot="reveal"] .ax-cyber{
+  opacity:1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.ax-boot.is-reduced .ax-boot-line,
+.ax-boot.is-reduced .ax-boot__progress-bar::before,
+.ax-boot.is-reduced .ax-boot__cursor,
+.ax-boot.is-reduced .ax-boot__scanlines{
+  animation: none !important;
+}
+
+.ax-boot.is-reduced .ax-boot-line{
+  opacity:.95;
+  transform:none;
+}
+
+.ax-boot.is-reduced .ax-boot__progress-bar::before{
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .ax-boot *{ animation: none !important; transition: none !important; }
+}
+
+@media (max-width: 560px){
+  .ax-boot__frame{
+    width: min(92vw, 560px);
+    padding:22px 18px 18px;
+  }
+  .ax-boot__brand{ font-size: 18px; letter-spacing:.22em; }
+  .ax-boot-line{ grid-template-columns: 56px 1fr auto; }
+}
