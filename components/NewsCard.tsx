@@ -20,13 +20,23 @@ function variantFor(kind?: string): 'info' | 'good' | 'warn' {
 export default function NewsCard({ item }: { item: NewsItem }) {
   const variant = variantFor(item.kind)
   const kindLabel = (item.kind || 'news').toUpperCase()
+  const isMinor = !item.link
+  const kindKey = (item.kind || 'news').toLowerCase()
 
   return (
-    <article className='ax-card ax-news-card' aria-labelledby={`news-${item.id}`}>
+    <article
+      className='ax-card ax-news-card'
+      data-kind={kindKey}
+      data-state={isMinor ? 'minor' : 'normal'}
+      aria-labelledby={`news-${item.id}`}
+    >
       <header className='ax-news-card__head'>
-        <h3 id={`news-${item.id}`} className='ax-news-card__title'>
-          {item.title}
-        </h3>
+        <div className='ax-news-card__title-wrap'>
+          <span className='ax-news-card__eyebrow'>DATA SLATE</span>
+          <h3 id={`news-${item.id}`} className='ax-news-card__title'>
+            {item.title}
+          </h3>
+        </div>
         <span className='ax-news-card__date'>{item.date}</span>
       </header>
 
@@ -48,7 +58,7 @@ export default function NewsCard({ item }: { item: NewsItem }) {
       <div className='ax-news-card__actions'>
         {item.link ? (
           <a className='ax-btn ghost' href={item.link} target='_blank' rel='noopener noreferrer'>
-            Open
+            OPEN
           </a>
         ) : (
           <span className='ax-chip' data-variant='warn'>COMING SOON</span>

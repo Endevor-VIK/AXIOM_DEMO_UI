@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-09
+  last_updated: 2026-02-10
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -46,4 +46,6 @@ AXS_HEADER_META:
 | 0025 | 2026-02-09T22:49:21+03:00 | Tunnel dev full check + password reset          | main                        | —                                          | ops/agent_ops/logs/0025_tunnel-dev-full-check.md | DONE |
 | 0026 | 2026-02-09T23:14:46+03:00 | Open 7844 + tunnel verification                 | main                        | —                                          | ops/agent_ops/logs/0026_tunnel-dev-7844-open.md | PAUSED |
 | 0027 | 2026-02-09T23:32:54+03:00 | Localtunnel fallback for WSL                    | main                        | —                                          | ops/agent_ops/logs/0027_tunnel-localtunnel-fallback.md | PAUSED |
+| 0028 | 2026-02-10T15:58:43+03:00 | AXCHAT (ECHO AXIOM) — замена вкладки AUDIT      | main                        | docs/iterations/axchat-echo-axiom/spec.md   | ops/agent_ops/logs/0028_axchat-echo-axiom.md | ACTIVE |
+| 0029 | 2026-02-10T16:02:27+03:00 | NEWS Signal Center (редизайн вкладки NEWS)      | main                        | docs/iterations/0011_news-signal-center/SPEC.md | ops/agent_ops/logs/0029_news-signal-center.md | ACTIVE |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).

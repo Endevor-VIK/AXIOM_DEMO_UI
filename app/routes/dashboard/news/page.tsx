@@ -3,12 +3,41 @@
 // Purpose: News panel with Red Protocol filters, grid layout and pagination.
 
 import React, { useEffect, useMemo, useState } from 'react'
-import RouteWreath from '@/components/counters/RouteWreath'
+import { Link } from 'react-router-dom'
+import CounterWreath from '@/components/counters/CounterWreath'
 import { vfs, type NewsItem, type NewsKind } from '@/lib/vfs'
 import NewsCard from '@/components/NewsCard'
+import '@/styles/news-signal-center.css'
 
-const KIND_FILTERS: ("" | NewsKind)[] = ['', 'update', 'release', 'heads-up', 'roadmap']
+const KIND_FILTERS: ('' | NewsKind)[] = ['', 'update', 'release', 'heads-up', 'roadmap']
 const PAGE_SIZES = [4, 8, 12]
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest first' },
+  { value: 'oldest', label: 'Oldest first' },
+] as const
+
+type SortOrder = (typeof SORT_OPTIONS)[number]['value']
+
+const KIND_VARIANT: Record<string, 'info' | 'good' | 'warn'> = {
+  release: 'good',
+  update: 'info',
+  'heads-up': 'warn',
+  roadmap: 'info',
+}
+
+function resolveKindVariant(kind?: string): 'info' | 'good' | 'warn' {
+  if (!kind) return 'info'
+  const key = kind.toLowerCase()
+  return KIND_VARIANT[key] || 'info'
+}
+
+function compareDatesDesc(a: NewsItem, b: NewsItem) {
+  return a.date < b.date ? 1 : a.date > b.date ? -1 : 0
+}
+
+function compareDatesAsc(a: NewsItem, b: NewsItem) {
+  return a.date < b.date ? -1 : a.date > b.date ? 1 : 0
+}
 
 function matchesQuery(item: NewsItem, term: string) {
   if (!term) return true
@@ -19,10 +48,258 @@ function matchesQuery(item: NewsItem, term: string) {
   return haystack.includes(term)
 }
 
+type NewsDispatchPillarProps = {
+  busy: boolean
+  total: number
+  visible: number
+  page: number
+  pageCount: number
+}
+
+function NewsDispatchPillar({ busy, total, visible, page, pageCount }: NewsDispatchPillarProps) {
+  const state = busy ? 'loading' : total === 0 ? 'empty' : 'ready'
+  const displayPage = pageCount > 0 ? page : 0
+  const displayPageCount = pageCount > 0 ? pageCount : 0
+
+  return (
+    <aside className='ax-card ax-news-pillar' data-state={state} aria-label='News dispatch telemetry'>
+      <header className='ax-news-pillar__header'>
+        <div>
+          <span className='ax-news-pillar__eyebrow'>NEWS DISPATCH</span>
+          <h2 className='ax-news-pillar__title'>CONTROL STATUS</h2>
+        </div>
+        <span className='ax-news-pillar__status' aria-hidden>
+          LIVE
+        </span>
+      </header>
+
+      <div className='ax-hr-blade' aria-hidden />
+
+      <div className='ax-news-pillar__ring'>
+        <CounterWreath value={total} label='TOTAL NEWS' size={190} ariaLabel={`Total news ${total}`} />
+        <span className='ax-news-pillar__ring-label'>TOTAL NEWS</span>
+      </div>
+
+      <div className='ax-news-pillar__telemetry'>
+        <div className='ax-news-telemetry'>
+          <span>VISIBLE</span>
+          <strong>{visible}</strong>
+        </div>
+        <div className='ax-news-telemetry'>
+          <span>TOTAL</span>
+          <strong>{total}</strong>
+        </div>
+        <div className='ax-news-telemetry'>
+          <span>PAGE</span>
+          <strong>{displayPage} / {displayPageCount}</strong>
+        </div>
+      </div>
+
+      <div className='ax-news-pillar__links' aria-label='Quick routes'>
+        <Link className='ax-btn ghost' to='/dashboard/roadmap'>
+          ROADMAP
+        </Link>
+        <Link className='ax-btn ghost' to='/dashboard/content'>
+          CONTENT
+        </Link>
+      </div>
+    </aside>
+  )
+}
+
+type SignalCenterHeroProps = {
+  busy: boolean
+  item: NewsItem | null
+}
+
+function SignalCenterHero({ busy, item }: SignalCenterHeroProps) {
+  const state = busy ? 'loading' : item ? 'ready' : 'empty'
+  const variant = resolveKindVariant(item?.kind)
+  const kindLabel = (item?.kind || 'news').toUpperCase()
+
+  return (
+    <section className='ax-card ax-signal-hero' data-state={state} aria-label='Signal Center last packet'>
+      <header className='ax-signal-hero__header'>
+        <div className='ax-signal-hero__label'>
+          <span className='ax-signal-hero__eyebrow'>SIGNAL CENTER</span>
+          <h2 className='ax-signal-hero__title'>LAST PACKET</h2>
+          <span className='ax-signal-hero__subtitle'>FRESH DISPATCH</span>
+        </div>
+        <div className='ax-signal-hero__meta'>
+          <span className='ax-chip' data-variant={variant}>{kindLabel}</span>
+          <span className='ax-signal-hero__date'>{item?.date ?? '—'}</span>
+        </div>
+      </header>
+
+      {busy ? (
+        <div className='ax-signal-hero__skeleton' aria-hidden>
+          <span className='ax-signal-hero__bar' />
+          <span className='ax-signal-hero__bar is-wide' />
+          <span className='ax-signal-hero__bar is-mid' />
+        </div>
+      ) : item ? (
+        <>
+          <div className='ax-signal-hero__content'>
+            <h3 className='ax-signal-hero__headline'>{item.title}</h3>
+            {item.summary ? <p className='ax-signal-hero__summary'>{item.summary}</p> : null}
+          </div>
+          <div className='ax-signal-hero__actions'>
+            {item.tags?.length ? (
+              <div className='ax-signal-hero__tags' aria-label='tags'>
+                {item.tags.map((tag) => (
+                  <span key={tag} className='ax-chip' data-variant='info'>
+                    {tag.toUpperCase()}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className='ax-signal-hero__tags-empty'>NO TAGS</span>
+            )}
+            {item.link ? (
+              <a className='ax-btn ghost' href={item.link} target='_blank' rel='noopener noreferrer'>
+                OPEN
+              </a>
+            ) : (
+              <span className='ax-chip' data-variant='warn'>COMING SOON</span>
+            )}
+          </div>
+        </>
+      ) : (
+        <div className='ax-signal-hero__empty'>
+          <h3 className='ax-signal-hero__headline'>NO DISPATCHES</h3>
+          <p className='ax-signal-hero__summary'>News manifest is empty. Add items to populate the feed.</p>
+        </div>
+      )}
+    </section>
+  )
+}
+
+type NewsFilterBarProps = {
+  busy: boolean
+  q: string
+  kind: '' | NewsKind
+  sort: SortOrder
+  pageSize: number
+  total: number
+  visible: number
+  page: number
+  pageCount: number
+  onQueryChange: (value: string) => void
+  onKindChange: (value: '' | NewsKind) => void
+  onSortChange: (value: SortOrder) => void
+  onPageSizeChange: (value: number) => void
+  onPrev: () => void
+  onNext: () => void
+}
+
+function NewsFilterBar({
+  busy,
+  q,
+  kind,
+  sort,
+  pageSize,
+  total,
+  visible,
+  page,
+  pageCount,
+  onQueryChange,
+  onKindChange,
+  onSortChange,
+  onPageSizeChange,
+  onPrev,
+  onNext,
+}: NewsFilterBarProps) {
+  const displayPage = pageCount > 0 ? page : 0
+  const displayPageCount = pageCount > 0 ? pageCount : 0
+  const canGoPrev = displayPage > 1
+  const canGoNext = displayPageCount > 0 && displayPage < displayPageCount
+
+  return (
+    <section className='ax-card ax-news-bar' data-state={busy ? 'loading' : 'ready'} aria-label='News filters'>
+      <div className='ax-news-bar__row'>
+        <div className='ax-news-bar__inputs'>
+          <label className='visually-hidden' htmlFor='news-search'>Search news</label>
+          <input
+            id='news-search'
+            className='ax-input'
+            type='search'
+            placeholder='Search title, summary, tags'
+            value={q}
+            onChange={(event) => onQueryChange(event.target.value)}
+            disabled={busy}
+          />
+
+          <label className='visually-hidden' htmlFor='news-kind'>Filter by kind</label>
+          <select
+            id='news-kind'
+            className='ax-input'
+            value={kind}
+            onChange={(event) => onKindChange(event.target.value as '' | NewsKind)}
+            disabled={busy}
+          >
+            <option value=''>All kinds</option>
+            {KIND_FILTERS.filter(Boolean).map((value) => (
+              <option key={value} value={value}>
+                {value?.toUpperCase()}
+              </option>
+            ))}
+          </select>
+
+          <label className='visually-hidden' htmlFor='news-sort'>Sort news</label>
+          <select
+            id='news-sort'
+            className='ax-input'
+            value={sort}
+            onChange={(event) => onSortChange(event.target.value as SortOrder)}
+            disabled={busy}
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+
+          <label className='visually-hidden' htmlFor='news-size'>Items per page</label>
+          <select
+            id='news-size'
+            className='ax-input'
+            value={pageSize}
+            onChange={(event) => onPageSizeChange(Number(event.target.value))}
+            disabled={busy}
+          >
+            {PAGE_SIZES.map((size) => (
+              <option key={size} value={size}>
+                {size} / page
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className='ax-news-bar__meta'>
+          <span className='ax-chip' data-variant='info'>TOTAL :: {total}</span>
+          <span className='ax-chip' data-variant='info'>VISIBLE :: {visible}</span>
+          <span className='ax-chip' data-variant='level'>PAGE :: {displayPage} / {displayPageCount}</span>
+        </div>
+      </div>
+
+      <div className='ax-news-bar__nav'>
+        <button type='button' className='ax-btn ghost' onClick={onPrev} disabled={!canGoPrev}>
+          Prev
+        </button>
+        <button type='button' className='ax-btn ghost' onClick={onNext} disabled={!canGoNext}>
+          Next
+        </button>
+      </div>
+    </section>
+  )
+}
+
 export default function NewsPage() {
   const [items, setItems] = useState<NewsItem[]>([])
   const [q, setQ] = useState('')
   const [kind, setKind] = useState<'' | NewsKind>('')
+  const [sort, setSort] = useState<SortOrder>('newest')
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(8)
   const [busy, setBusy] = useState(true)
@@ -51,109 +328,85 @@ export default function NewsPage() {
 
   useEffect(() => {
     setPage(1)
-  }, [q, kind, pageSize])
+  }, [q, kind, pageSize, sort])
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase()
     return items.filter((item) => matchesQuery(item, term) && (!kind || item.kind === kind))
   }, [items, q, kind])
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
-  const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const newestFirst = useMemo(() => {
+    const list = [...filtered]
+    list.sort(compareDatesDesc)
+    return list
+  }, [filtered])
+
+  const sortedItems = useMemo(() => {
+    if (sort === 'newest') return newestFirst
+    return [...newestFirst].sort(compareDatesAsc)
+  }, [newestFirst, sort])
+
+  const featuredItem = newestFirst[0] ?? null
+  const totalPages = Math.max(1, Math.ceil(sortedItems.length / pageSize))
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages)
+    }
+  }, [page, totalPages])
+
+  const pageItems = sortedItems.slice((page - 1) * pageSize, page * pageSize)
   const newsTotal = items.length
-  const newsWreathDescription = busy
-    ? 'Loading news manifest...'
-    : newsTotal > 0
-      ? `${newsTotal} briefings archived. Showing ${filtered.length}.`
-      : 'No news briefings yet. Add items to populate the feed.'
+  const visibleTotal = filtered.length
 
   const handlePrev = () => setPage((prev) => Math.max(1, prev - 1))
   const handleNext = () => setPage((prev) => Math.min(totalPages, prev + 1))
 
   return (
-    <>
-      <section className='ax-container ax-section' aria-busy={busy}>
-        <div className='ax-stack'>
-          <RouteWreath
-            label='NEWS'
-            value={newsTotal}
-            title='News Dispatch'
-            description={newsWreathDescription}
-            ariaLabel={`NEWS module total ${newsTotal}`}
+    <section className='ax-container ax-section ax-news-signal' aria-busy={busy}>
+      <div className='ax-news-signal__stack'>
+        <div className='ax-news-signal__hero-row'>
+          <NewsDispatchPillar
+            busy={busy}
+            total={newsTotal}
+            visible={visibleTotal}
+            page={page}
+            pageCount={sortedItems.length ? totalPages : 0}
           />
-          <div className='ax-card ghost ax-news-controls'>
-            <div className='ax-filter-row'>
-              <label className='visually-hidden' htmlFor='news-search'>Search news</label>
-              <input
-                id='news-search'
-                className='ax-input'
-                type='search'
-                placeholder='Search title, summary, tags'
-                value={q}
-                onChange={(event) => setQ(event.target.value)}
-                disabled={busy}
-              />
-
-              <label className='visually-hidden' htmlFor='news-kind'>Filter by kind</label>
-              <select
-                id='news-kind'
-                className='ax-input'
-                value={kind}
-                onChange={(event) => setKind(event.target.value as '' | NewsKind)}
-                disabled={busy}
-              >
-                <option value=''>All kinds</option>
-                {KIND_FILTERS.filter(Boolean).map((value) => (
-                  <option key={value} value={value}>
-                    {value?.toUpperCase()}
-                  </option>
-                ))}
-              </select>
-
-              <label className='visually-hidden' htmlFor='news-size'>Items per page</label>
-              <select
-                id='news-size'
-                className='ax-input'
-                value={pageSize}
-                onChange={(event) => setPageSize(Number(event.target.value))}
-                disabled={busy}
-              >
-                {PAGE_SIZES.map((size) => (
-                  <option key={size} value={size}>
-                    {size} / page
-                  </option>
-                ))}
-              </select>
-
-              <span className='ax-chip' data-variant='info'>TOTAL :: {items.length}</span>
-              <span className='ax-chip' data-variant='info'>VISIBLE :: {filtered.length}</span>
-            </div>
-
-            <div className='ax-filter-row ax-news-pagination'>
-              <button type='button' className='ax-btn ghost' onClick={handlePrev} disabled={page <= 1}>
-                Prev
-              </button>
-              <span className='ax-chip' data-variant='level'>PAGE :: {page} / {totalPages}</span>
-              <button type='button' className='ax-btn ghost' onClick={handleNext} disabled={page >= totalPages}>
-                Next
-              </button>
-            </div>
-          </div>
-
-          {err && <div className='ax-dashboard__alert' role='alert'>{err}</div>}
-
-          <div className='ax-news-grid'>
-            {pageItems.length === 0 ? (
-              <div className='ax-card ax-news-empty'>
-                <h3 className='ax-blade-head'>No items found</h3>
-                <p className='ax-news-card__summary'>Adjust filters or add new content in the NEWS module.</p>
-              </div>
-            ) : (
-              pageItems.map((item) => <NewsCard key={item.id} item={item} />)
-            )}
-          </div>
+          <SignalCenterHero busy={busy} item={featuredItem} />
         </div>
-      </section>
-    </>
+
+        <NewsFilterBar
+          busy={busy}
+          q={q}
+          kind={kind}
+          sort={sort}
+          pageSize={pageSize}
+          total={newsTotal}
+          visible={visibleTotal}
+          page={page}
+          pageCount={sortedItems.length ? totalPages : 0}
+          onQueryChange={setQ}
+          onKindChange={setKind}
+          onSortChange={setSort}
+          onPageSizeChange={setPageSize}
+          onPrev={handlePrev}
+          onNext={handleNext}
+        />
+
+        {err && <div className='ax-dashboard__alert' role='alert'>{err}</div>}
+
+        <div className='ax-news-grid'>
+          {pageItems.length === 0 ? (
+            <div className='ax-card ax-news-empty'>
+              <h3 className='ax-blade-head'>No items found</h3>
+              <p className='ax-news-card__summary'>Adjust filters or add new content in the NEWS module.</p>
+            </div>
+          ) : (
+            pageItems.map((item) => <NewsCard key={item.id} item={item} />)
+          )}
+        </div>
+      </div>
+    </section>
   )
 }
