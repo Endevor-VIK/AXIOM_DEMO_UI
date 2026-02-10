@@ -37,6 +37,10 @@ AXS_HEADER_META:
 - 2026-02-10T23:37:40+03:00 — Действие: зафиксированы незакоммиченные правки NEWS v2 (master-detail feed, presets, read/pinned state, localStorage helpers, стили, тесты) → Результат: OBSERVED
   - Обновлено: `app/routes/dashboard/news/page.tsx`, `styles/news-signal-center.css`
   - Добавлено: `lib/news/v2State.ts`, `tests/newsV2State.spec.ts`
+- 2026-02-11T01:25:00+03:00 — Действие: доведён layout до требований SPEC (tabs/collapse, feed rows, presets/actions), устранён горизонтальный overflow на mobile → Результат: OK
+  - Обновлено: `styles/news-signal-center.css` (min-width:0 на grid items + responsive rules для feed rows)
+  - Обновлено: `styles/ticker.css` (contain для `.ax-ticker__viewport`, чтобы marquee не раздувал `scrollWidth`)
+  - Обновлено: `tests/e2e/news.spec.ts` (matrix + smoke под NEWS v2)
 
 ## Step C — Documentation
 - 2026-02-10T22:46:00+03:00 — Действие: добавлен DRAFT SPEC + LOG LINK → Результат: OK
@@ -45,9 +49,14 @@ AXS_HEADER_META:
 
 ## Step D — QA
 - 2026-02-10T23:37:50+03:00 — Действие: QA для обнаруженных правок не запускался → Результат: SKIP
+- 2026-02-11T01:38:00+03:00 — Действие: QA NEWS v2 → Результат: PASS
+  - Unit: `npm run test:run -- tests/newsV2State.spec.ts` → PASS
+  - E2E: `PLAYWRIGHT_PORT=5173 PLAYWRIGHT_USE_EXISTING_SERVER=1 npm run test:e2e -- tests/e2e/news.spec.ts --project=chromium` → PASS
 
 ## Step E — Git
 - 2026-02-11T00:20:40+03:00 — Commit: `abd2ef1` — `chore(agent-ops): trace task updates` — Файлы: `ops/agent_ops/logs/0032_news-v2-dispatch-signal-center.md`
+- 2026-02-11T01:43:00+03:00 — Commit: `4e76d57` — `feat(news): implement NEWS v2 master-detail feed` — Файлы: `app/routes/dashboard/news/page.tsx`, `styles/news-signal-center.css`, `styles/ticker.css`, `lib/news/v2State.ts`
+- 2026-02-11T01:46:21+03:00 — Commit: `1846c07` — `test(news): update NEWS v2 e2e + state unit tests` — Файлы: `tests/e2e/news.spec.ts`, `tests/newsV2State.spec.ts`
 
 ---
 
