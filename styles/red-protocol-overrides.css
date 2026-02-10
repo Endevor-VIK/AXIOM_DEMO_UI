@@ -20,7 +20,7 @@
   --ax-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
 
-/* Sticky header/footer with subtle gradients */
+/* Header/footer with subtle gradients */
 .ax-header {
   position: sticky;
   top: 0;
@@ -29,11 +29,33 @@
   background: linear-gradient(180deg, rgba(10,7,9,.78), rgba(10,7,9,.38));
 }
 .ax-footer {
-  position: sticky;
+  position: fixed !important;
+  left: 0;
+  right: 0;
   bottom: 0;
-  z-index: 100;
-  background: linear-gradient(180deg, rgba(10,7,9,0), rgba(10,7,9,.82));
-  border-top: 1px solid rgba(255,32,52,.2);
+  z-index: 900;
+
+  /* Readability layer (Adaptive Footer Status Bar v1) */
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0.55) 0%,
+    rgba(0,0,0,0.78) 60%,
+    rgba(0,0,0,0.88) 100%
+  );
+  border-top: 1px solid rgba(255, 32, 52, 0.28);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.45);
+
+  /* Nice but optional */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  /* Smooth show/hide */
+  transform: translateY(0);
+  transition: transform 220ms ease, opacity 220ms ease;
+  opacity: 1;
+  will-change: transform, opacity;
+
+  padding-bottom: var(--safe-bottom, 0px);
 }
 
 /* Compensate bars so content never hides under them */
@@ -41,6 +63,38 @@
   min-height: 0;
   flex: 1 1 auto;
   padding-block: 12px;
+}
+
+/* Hidden state */
+.ax-footer.is-hidden {
+  transform: translateY(90%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* When user interacts, keep it alive */
+.ax-footer.is-pinned {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+  pointer-events: auto;
+}
+
+/* Hot zone: invisible trigger area */
+.ax-footerbar-hotzone {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 22px;
+  z-index: 899;
+  background: transparent;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ax-footer {
+    transition: none;
+  }
 }
 
 /* FX layer stays behind everything, non-interactive */
@@ -51,6 +105,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
+  padding-bottom: calc(var(--ax-footer-h) + var(--safe-bottom, 0px));
 }
 html[data-scale-mode='legacy'] .ax-page {
   min-height: calc(100dvh / var(--ax-ui-scale));
@@ -60,7 +115,8 @@ html[data-scale-mode='managed'] .ax-page {
 }
 .ax-page > .ax-shell {
   flex: 1 1 auto;
-  min-height: 0;
+  /* Override `.ax-shell { min-height: 100dvh; }` to prevent fake global scroll on short pages. */
+  min-height: 0 !important;
 }
 .ax-page > .ax-footer {
   margin-top: auto;

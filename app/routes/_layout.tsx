@@ -12,6 +12,7 @@ import UserMenuDropdown from '@/components/UserMenuDropdown'
 import { logout } from '@/lib/identity/authService'
 import { resolvePrimaryRole } from '@/lib/identity/roles'
 import { useSession } from '@/lib/identity/useSession'
+import { attachFooterBarController } from '@/lib/ui/footerBarController'
 
 type NavItem = {
   to: string
@@ -33,6 +34,8 @@ export default function Layout() {
   const route = location.pathname || '/'
   const navigate = useNavigate()
   const avatarRef = useRef<HTMLButtonElement | null>(null)
+  const footerRef = useRef<HTMLElement | null>(null)
+  const footerHotzoneRef = useRef<HTMLDivElement | null>(null)
 
   const section = useMemo(() => {
     const parts = route.split('/').filter(Boolean)
@@ -58,6 +61,7 @@ export default function Layout() {
   const userName = session.user?.displayName || 'CREATOR'
   const userRole = resolvePrimaryRole(session.user?.roles).toUpperCase()
   const userInitials = resolveInitials(userName)
+  const isAxchatRoute = route.startsWith('/dashboard/axchat')
 
   const navItems = useMemo<NavItem[]>(() => {
     const items: NavItem[] = [
@@ -89,8 +93,19 @@ export default function Layout() {
     setMenuOpen(false)
   }, [route])
 
+  React.useEffect(() => {
+    return attachFooterBarController({
+      footerEl: footerRef.current,
+      hotzoneEl: footerHotzoneRef.current,
+      thresholdPx: 10,
+      hideDelayMs: 200,
+      showDelayMs: 0,
+      idleHideMs: 9000,
+    })
+  }, [route])
+
   return (
-    <div className='ax-page'>
+    <div className={`ax-page${isAxchatRoute ? ' ax-page--axchat' : ''}`}>
       <header className='ax-header ax-topbar'>
         <div className='ax-container'>
           <div className='ax-topbar__inner'>
@@ -142,13 +157,14 @@ export default function Layout() {
       {/* FX-layer: эффекты/scanlines; без интеракции */}
       <div id='fx-layer' aria-hidden />
 
-      <main className='ax-shell ax-content'>
+      <main className={`ax-shell ax-content${isAxchatRoute ? ' ax-content--axchat' : ''}`}>
         <div className='ax-container'>
           <Outlet />
         </div>
       </main>
 
-      <footer className='ax-footer ax-status'>
+      <div ref={footerHotzoneRef} className='ax-footerbar-hotzone' aria-hidden />
+      <footer ref={footerRef} className='ax-footer ax-status'>
         <div className='ax-container'>
           <StatusLine meta={statusMeta} />
         </div>
