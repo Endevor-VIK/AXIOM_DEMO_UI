@@ -10,6 +10,7 @@ import CategoryStats from '@/components/content/CategoryStats'
 import ContentFilters from '@/components/ContentFilters'
 import RouteWreath from '@/components/counters/RouteWreath'
 import { getCategoryStats, type ContentCategoryKey } from '@/lib/contentStats'
+import '@/styles/content-library.css'
 import {
   contentCategories,
   type ContentAggregate,
@@ -23,6 +24,7 @@ import { useFavorites } from '@/lib/identity/useFavorites'
 
 import {
   ContentHubContext,
+  type ContentLayoutMode,
   type ContentFiltersSnapshot,
   type ContentHubContextValue,
   type ContentViewMode,
@@ -33,7 +35,8 @@ const DEFAULT_FILTERS: ContentFiltersSnapshot = {
   tag: '',
   status: 'any',
   lang: 'any',
-  view: 'cards',
+  layout: 'inspect',
+  view: 'list',
 }
 
 function ensureTrailingSlash(value: string): string {
@@ -72,6 +75,15 @@ function parseStatus(raw: string | null): ContentStatus | 'any' {
   return 'any'
 }
 
+function parseBoolFlag(value: unknown): boolean | null {
+  if (value == null) return null
+  const raw = String(value).trim().toLowerCase()
+  if (!raw) return null
+  if (raw === '1' || raw === 'true' || raw === 'yes' || raw === 'on') return true
+  if (raw === '0' || raw === 'false' || raw === 'no' || raw === 'off') return false
+  return null
+}
+
 const ContentLayout: React.FC = () => {
   const [aggregate, setAggregate] = useState<ContentAggregate | null>(null)
   const [loading, setLoading] = useState(true)
@@ -85,6 +97,12 @@ const ContentLayout: React.FC = () => {
     () => ensureTrailingSlash(((import.meta as any)?.env?.VITE_DATA_BASE as string) ?? 'data/'),
     []
   )
+
+  const orbitEnabled = useMemo(() => {
+    const raw = (import.meta as any)?.env?.VITE_FEATURE_ORBIT_VIEW
+    const forced = parseBoolFlag(raw)
+    return forced ?? Boolean(import.meta.env.DEV)
+  }, [])
 
   useEffect(() => {
     let alive = true
@@ -113,10 +131,18 @@ const ContentLayout: React.FC = () => {
     const tag = searchParams.get('tag') ?? DEFAULT_FILTERS.tag
     const status = parseStatus(searchParams.get('status'))
     const lang = searchParams.get('lang') ?? DEFAULT_FILTERS.lang
+    const layoutParam = searchParams.get('layout')
+    const layout: ContentLayoutMode = layoutParam === 'browse' ? 'browse' : DEFAULT_FILTERS.layout
     const viewParam = searchParams.get('view')
-    const view: ContentViewMode = viewParam === 'list' ? 'list' : DEFAULT_FILTERS.view
-    return { query, tag, status, lang, view }
-  }, [searchParams])
+    let view: ContentViewMode = DEFAULT_FILTERS.view
+    if (viewParam === 'list' || viewParam === 'cards' || viewParam === 'orbit') {
+      view = viewParam
+    }
+    if (view === 'orbit' && !orbitEnabled) {
+      view = DEFAULT_FILTERS.view
+    }
+    return { query, tag, status, lang, layout, view }
+  }, [orbitEnabled, searchParams])
 
   const updateSearchParam = useCallback(
     (key: string, value: string | null) => {
@@ -137,19 +163,25 @@ const ContentLayout: React.FC = () => {
         updateSearchParam('status', value === 'any' ? null : value),
       setLang: (value: string | 'any') =>
         updateSearchParam('lang', value === 'any' ? null : value),
+      setLayout: (value: ContentLayoutMode) =>
+        updateSearchParam('layout', value === DEFAULT_FILTERS.layout ? null : value),
       setView: (value: ContentViewMode) =>
-        updateSearchParam('view', value === DEFAULT_FILTERS.view ? null : value),
+        updateSearchParam(
+          'view',
+          value === DEFAULT_FILTERS.view || (value === 'orbit' && !orbitEnabled) ? null : value
+        ),
       reset: () => {
         const next = new URLSearchParams(searchParams)
         next.delete('q')
         next.delete('tag')
         next.delete('status')
         next.delete('lang')
+        next.delete('layout')
         next.delete('view')
         setSearchParams(next, { replace: true })
       },
     }),
-    [filters, searchParams, updateSearchParam, setSearchParams]
+    [filters, orbitEnabled, searchParams, updateSearchParam, setSearchParams]
   )
 
   const categoryCounts = useMemo<Record<ContentCategoryKey, number>>(() => {
@@ -190,16 +222,20 @@ const ContentLayout: React.FC = () => {
   const activeTab = useMemo(() => parseActiveCategory(location.pathname), [location.pathname])
 
   const categoryStats = useMemo(() => {
+    const persisted = new URLSearchParams(searchParams)
+    persisted.delete('item')
+    const suffix = persisted.toString()
+    const withQuery = (href: string) => (suffix ? `${href}?${suffix}` : href)
     return getCategoryStats(categoryCounts).map((item) => {
       const isReserve = item.key === 'reserve'
       return {
         ...item,
         active: item.key === activeTab,
         disabled: isReserve,
-        href: isReserve ? location.pathname : item.href,
+        href: isReserve ? location.pathname : withQuery(item.href),
       }
     })
-  }, [categoryCounts, activeTab, location.pathname])
+  }, [categoryCounts, activeTab, location.pathname, searchParams])
 
   const availableTags = useMemo(() => {
     if (!aggregate) return []
@@ -273,6 +309,9 @@ const ContentLayout: React.FC = () => {
       categories, // было: categoryCounts — теперь корректный тип
       availableTags,
       availableLanguages,
+      features: {
+        orbitView: orbitEnabled,
+      },
       filters: filtersApi,
       pinned: pinnedContentIds,
       togglePin,
@@ -286,6 +325,7 @@ const ContentLayout: React.FC = () => {
       categories, // keep dependency on computed summaries
       availableTags,
       availableLanguages,
+      orbitEnabled,
       filtersApi,
       pinnedContentIds,
       togglePin,
@@ -296,18 +336,24 @@ const ContentLayout: React.FC = () => {
   return (
     <ContentHubContext.Provider value={contextValue}>
       <section className='ax-section'>
-        <div className='ax-container ax-content-hub' aria-busy={loading}>
-          <RouteWreath
-            label='CONTENT'
-            value={contentTotal}
-            title='Content Library'
-            description={contentWreathDescription}
-            ariaLabel={`CONTENT module total ${contentTotal}`}
-          />
-          {/* Category summary table (7 columns including ALL) */}
-          <CategoryStats items={categoryStats} variant='table' />
-          {/* Legacy tile grid removed per spec */}
-          <ContentFilters disabled={Boolean(error)} />
+	        <div
+	          className='ax-container ax-content-hub'
+	          data-layout-mode={filters.layout}
+	          aria-busy={loading}
+	        >
+	          <RouteWreath
+	            label='CONTENT'
+	            value={contentTotal}
+	            title='Content Library'
+	            description={contentWreathDescription}
+	            ariaLabel={`CONTENT module total ${contentTotal}`}
+	            size={filters.layout === 'inspect' ? 140 : 240}
+	            {...(filters.layout === 'inspect' ? { className: 'ax-route-wreath--compact' } : {})}
+	          />
+	          {/* Category summary table (7 columns including ALL) */}
+	          <CategoryStats items={categoryStats} variant='table' />
+	          {/* Legacy tile grid removed per spec */}
+	          <ContentFilters disabled={Boolean(error)} />
           <div className='ax-content-outlet'>
             {error ? <div className='ax-dashboard__alert' role='alert'>{error}</div> : <Outlet />}
           </div>

@@ -7,13 +7,15 @@ import type {
   ContentStatus,
 } from '@/lib/vfs'
 
-export type ContentViewMode = 'cards' | 'list'
+export type ContentLayoutMode = 'browse' | 'inspect'
+export type ContentViewMode = 'cards' | 'list' | 'orbit'
 
 export interface ContentFiltersSnapshot {
   query: string
   tag: string
   status: ContentStatus | 'any'
   lang: string | 'any'
+  layout: ContentLayoutMode
   view: ContentViewMode
 }
 
@@ -22,8 +24,13 @@ export interface ContentFiltersApi extends ContentFiltersSnapshot {
   setTag(value: string): void
   setStatus(value: ContentStatus | 'any'): void
   setLang(value: string | 'any'): void
+  setLayout(value: ContentLayoutMode): void
   setView(value: ContentViewMode): void
   reset(): void
+}
+
+export interface ContentFeatures {
+  orbitView: boolean
 }
 
 export interface ContentHubContextValue {
@@ -34,6 +41,7 @@ export interface ContentHubContextValue {
   categories: Record<'all' | ContentCategory, ContentCategorySummary>
   availableTags: string[]
   availableLanguages: string[]
+  features: ContentFeatures
   filters: ContentFiltersApi
   pinned: string[]
   togglePin(id: string): void

@@ -10,7 +10,7 @@ export interface ContentFiltersProps {
 const SEARCH_DEBOUNCE_MS = 200
 
 const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
-  const { filters, availableTags, availableLanguages, loading } = useContentHub()
+  const { filters, availableTags, availableLanguages, features, loading } = useContentHub()
   const isDisabled = Boolean(disabled) || loading
   const [queryValue, setQueryValue] = useState(filters.query)
 
@@ -73,7 +73,7 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
               {tag}
             </option>
           ))}
-        </select>
+          </select>
 
         <div className='ax-filter-group' role='group' aria-label='Filter by status'>
           {statusOptions.map(({ value, label }) => {
@@ -93,7 +93,9 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
             )
           })}
         </div>
+      </div>
 
+      <div className='ax-filter-row'>
         {shouldRenderLanguageChips ? (
           <div className='ax-filter-group' role='group' aria-label='Filter by language'>
             <button
@@ -146,7 +148,28 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
           </>
         )}
 
-        <div className='ax-filter-actions' role='group' aria-label='Change layout'>
+        <div className='ax-filter-actions' role='group' aria-label='Change layout mode'>
+          <button
+            type='button'
+            className='ax-btn ghost'
+            data-active={filters.layout === 'browse' ? 'true' : undefined}
+            onClick={() => filters.setLayout('browse')}
+            disabled={isDisabled}
+          >
+            Browse
+          </button>
+          <button
+            type='button'
+            className='ax-btn ghost'
+            data-active={filters.layout === 'inspect' ? 'true' : undefined}
+            onClick={() => filters.setLayout('inspect')}
+            disabled={isDisabled}
+          >
+            Inspect
+          </button>
+        </div>
+
+        <div className='ax-filter-actions' role='group' aria-label='Change view mode'>
           <button
             type='button'
             className='ax-btn ghost'
@@ -165,6 +188,17 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
           >
             List
           </button>
+          {features.orbitView ? (
+            <button
+              type='button'
+              className='ax-btn ghost'
+              data-active={filters.view === 'orbit' ? 'true' : undefined}
+              onClick={() => filters.setView('orbit')}
+              disabled={isDisabled}
+            >
+              Orbit
+            </button>
+          ) : null}
         </div>
 
         <button

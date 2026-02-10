@@ -2,13 +2,15 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ContentList from '@/components/ContentList'
+import OrbitView from '@/components/content/OrbitView'
 import { trackContentView } from '@/lib/analytics'
 import type { ContentCategory, ContentItem, ContentStatus } from '@/lib/vfs'
-import ContentPreview from '@/src/features/content/components/ContentPreview'
-import type { ContentPreviewData } from '@/src/features/content/types'
 import '@/styles/content-hub-v2.css'
 
 import { useContentHub } from './context'
+import ContentCardsGrid from './ContentCardsGrid'
+import ContentDetailsPanel from './ContentDetailsPanel'
+import { mapToPreview } from './contentUtils'
 
 function matchesQuery(item: ContentItem, query: string): boolean {
   const term = query.trim().toLowerCase()
@@ -82,65 +84,9 @@ export interface ContentCategoryViewProps {
 
 const noop = () => {}
 
-function pickImage(item: ContentItem): string {
-  const cover = item.cover
-  if (typeof cover === 'string' && cover.trim()) return cover
-  if (item.id === 'CHR-AXIOM-0303') return '/assets/content/03.03_AXIOM.png'
-  if (item.id === 'CHR-VIKTOR-0301') return '/assets/content/03.00_VIKTOR.png'
-  return '/assets/content/03.03_AXIOM.png'
-}
-
-function mapToPreview(entry: ContentItem | null): ContentPreviewData | null {
-  if (!entry) return null
-  const meta = (entry.meta as Record<string, unknown>) || {}
-  const rawVersion = entry.version || (meta.fileVersion as string | undefined) || 'v1.0'
-  const rawZone = (meta.zone as string | undefined) || entry.category
-  const rawStatus = (meta.fileStatus as string | undefined) || entry.status
-  const rawClass = entry.subCategory || entry.category
-  const normalizeLabel = (value: string, fallback: string) => {
-    const base = value?.trim?.() ? value : fallback
-    return String(base).replace(/[_-]+/g, ' ').toUpperCase()
-  }
-  const version = rawVersion
-  const zone = normalizeLabel(rawZone, entry.category.toUpperCase())
-  const statusLabel = normalizeLabel(rawStatus, entry.status)
-  const classLabel = normalizeLabel(rawClass, entry.category)
-  const summary = entry.summary || ''
-  const markers =
-    (entry.tags && entry.tags.length
-      ? entry.tags.slice(0, 3)
-      : summary
-          .split('.')
-          .map((x) => x.trim())
-          .filter(Boolean)
-          .slice(0, 3)) || []
-
-  return {
-    id: entry.id,
-    slug: (entry as any).slug || entry.id.toLowerCase(),
-    title: entry.title,
-    zone,
-    category: entry.category,
-    status: entry.status,
-    lang: entry.lang || 'ru',
-    version,
-    tags: entry.tags || [],
-    preview: {
-      kicker: `STATUS: ${statusLabel} · CLASS: ${classLabel}`,
-      logline: summary || entry.title,
-      markers: markers.length ? markers : ['Content preview'],
-      signature: [
-        `Author: ${entry.author || 'AXIOM'}`,
-        `Version: ${version}`,
-        `Status: ${statusLabel}`,
-      ],
-      image: pickImage(entry),
-    },
-  }
-}
-
 const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) => {
-  const { aggregate, loading, error, filters, pinned, togglePin, isPinned } = useContentHub()
+  const { aggregate, loading, error, dataBase, filters, pinned, togglePin, isPinned } =
+    useContentHub()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -160,6 +106,9 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   const ordered = useMemo(() => orderByPins(items, pinned), [items, pinned])
   const itemParam = searchParams.get('item') ?? ''
   const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
+  const layoutMode = filters.layout
+  const viewMode = filters.view
 
   useEffect(() => {
     if (!ordered.length) {
@@ -271,14 +220,19 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
 
   if (loading) {
     return (
-      <div className='ax-content-split'>
+      <div className='ax-content-inspect' data-columns='2' data-view='list'>
         <div className='ax-content-column list'>
           <ContentList items={[]} selectedId={null} onSelect={noop} />
         </div>
         {isDesktop ? (
-          <aside className='ax-panel-right' aria-label='Preview panel'>
-            <div className='ax-preview-panel ax-preview-panel--v2' ref={previewRef} role='region' aria-label='Content preview'>
-              <ContentPreview entry={null} />
+          <aside className='ax-panel-right' aria-label='Details panel'>
+            <div
+              className='ax-preview-panel ax-preview-panel--v2'
+              ref={previewRef}
+              role='region'
+              aria-label='Content details'
+            >
+              <ContentDetailsPanel item={null} preview={null} dataBase={dataBase} />
             </div>
           </aside>
         ) : null}
@@ -294,8 +248,73 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     return <p className='ax-muted'>No content found in this category.</p>
   }
 
+  const details = (
+    <ContentDetailsPanel
+      item={selectedItem}
+      preview={previewEntry}
+      dataBase={dataBase}
+      onOpenSource={(id) => handleOpenSource(id)}
+    />
+  )
+
+  const stage =
+    viewMode === 'list' ? (
+      <ContentList
+        items={ordered}
+        selectedId={selectedItem?.id ?? null}
+        onSelect={handleSelect}
+        onTogglePin={handleTogglePin}
+        isPinned={handleIsPinned}
+      />
+    ) : viewMode === 'cards' ? (
+      <ContentCardsGrid
+        items={ordered}
+        selectedId={selectedItem?.id ?? null}
+        onSelect={handleSelect}
+        onTogglePin={handleTogglePin}
+        isPinned={handleIsPinned}
+      />
+    ) : (
+      <OrbitView
+        items={ordered}
+        activeId={selectedItem?.id ?? null}
+        onSelect={(id) => {
+          const target = ordered.find((entry) => entry.id === id)
+          if (target) handleSelect(target)
+        }}
+        reducedMotion={reducedMotion || !isDesktop}
+        maxItems={24}
+        onExit={() => filters.setView('cards')}
+      />
+    )
+
+  // Mobile / narrow layout: single stage, selection opens reader.
+  if (!isDesktop) {
+    return (
+      <div className='ax-content-browse' data-layout={layoutMode} data-view={viewMode}>
+        {stage}
+      </div>
+    )
+  }
+
+  if (layoutMode === 'browse') {
+    return (
+      <div className='ax-content-browse' data-layout={layoutMode} data-view={viewMode}>
+        <div className='ax-content-stage' aria-label='Content stage'>
+          {stage}
+        </div>
+        <details className='ax-content-details-drawer'>
+          <summary className='ax-content-details-drawer__summary'>Details</summary>
+          <div className='ax-content-details-drawer__panel'>{details}</div>
+        </details>
+      </div>
+    )
+  }
+
+  const columns = viewMode === 'list' ? '2' : '3'
+
   return (
-    <div className='ax-content-split'>
+    <div className='ax-content-inspect' data-columns={columns} data-view={viewMode}>
       <div className='ax-content-column list'>
         <ContentList
           items={ordered}
@@ -305,13 +324,33 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
           isPinned={handleIsPinned}
         />
       </div>
-      {isDesktop ? (
-        <aside className='ax-panel-right' aria-label='Preview panel'>
-          <div className='ax-preview-panel ax-preview-panel--v2' ref={previewRef} role='region' aria-label='Content preview'>
-            <ContentPreview entry={previewEntry} onOpenSource={(id) => handleOpenSource(id)} />
-          </div>
-        </aside>
-      ) : null}
+
+      {viewMode === 'list' ? null : (
+        <div className='ax-content-column stage' aria-label='Preview stage'>
+          {viewMode === 'cards' ? (
+            <ContentCardsGrid
+              items={ordered}
+              selectedId={selectedItem?.id ?? null}
+              onSelect={handleSelect}
+              onTogglePin={handleTogglePin}
+              isPinned={handleIsPinned}
+            />
+          ) : (
+            stage
+          )}
+        </div>
+      )}
+
+      <aside className='ax-panel-right' aria-label='Details panel'>
+        <div
+          className='ax-preview-panel ax-preview-panel--v2'
+          ref={previewRef}
+          role='region'
+          aria-label='Content details'
+        >
+          {details}
+        </div>
+      </aside>
     </div>
   )
 }

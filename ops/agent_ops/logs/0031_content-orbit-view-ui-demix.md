@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-10
+  last_updated: 2026-02-11
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -32,20 +32,23 @@ AXS_HEADER_META:
 
 ## Step B — Implementation
 - 2026-02-10T22:35:53+03:00 — Действие: План: 1) LayoutMode/ViewMode state + toolbar de-mix 2) OrbitView MVP (drag/wheel/snap) 3) DetailsPanel tabs + reduced-motion fallback + tests → Результат: IN_PROGRESS
-- 2026-02-10T23:36:20+03:00 — Действие: зафиксированы незакоммиченные правки по LayoutMode/ViewMode + Orbit/Details (split browse/inspect, orbit feature-flag, details panel, cards grid, orbit math/view, утилиты/стили, тесты) → Результат: OBSERVED
-  - Обновлено: `app/routes/dashboard/content/_layout.tsx`, `app/routes/dashboard/content/context.tsx`, `components/ContentFilters.tsx`, `app/routes/dashboard/content/ContentCategoryView.tsx`, `app/routes/dashboard/content/ContentDetailsPanel.tsx`, `app/routes/dashboard/content/ContentCardsGrid.tsx`, `app/routes/dashboard/content/contentUtils.ts`
+- 2026-02-11T00:35:10+03:00 — Действие: Реализованы LayoutMode/ViewMode + Orbit MVP + DetailsPanel tabs + de-mix стили (feature-flag `VITE_FEATURE_ORBIT_VIEW`) → Результат: OK
+  - Обновлено: `app/routes/dashboard/content/_layout.tsx`, `app/routes/dashboard/content/context.tsx`, `components/ContentFilters.tsx`, `app/routes/dashboard/content/ContentCategoryView.tsx`
+  - Добавлено: `app/routes/dashboard/content/ContentDetailsPanel.tsx`, `app/routes/dashboard/content/ContentCardsGrid.tsx`, `app/routes/dashboard/content/contentUtils.ts`
   - Добавлено: `components/content/OrbitView.tsx`, `components/content/orbitMath.ts`, `components/content/orbit-view.css`, `lib/content/pickContentImage.ts`, `styles/content-library.css`
   - Добавлено: `tests/e2e/content-orbit.spec.ts`, `tests/orbitMath.spec.ts`
 
 ## Step C — Documentation
 - 2026-02-10T22:35:53+03:00 — Действие: Создать `docs/iterations/0031_content-orbit-view-ui-demix/SPEC.md` + `SPEC_LOG_LINK.md` → Результат: IN_PROGRESS
-- 2026-02-10T23:36:35+03:00 — Действие: зафиксированы DRAFT SPEC + LOG LINK (некоммичены) → Результат: OBSERVED
+- 2026-02-11T00:35:20+03:00 — Действие: Добавлены SPEC + LOG LINK → Результат: OK
   - Добавлено: `docs/iterations/0031_content-orbit-view-ui-demix/SPEC.md`, `docs/iterations/0031_content-orbit-view-ui-demix/SPEC_LOG_LINK.md`
 
 ## Step D — QA
 - 2026-02-10T22:35:53+03:00 — Действие: Запланировано: `npm run typecheck`, `npm run test:run`, `npm run test:e2e` (smoke content + orbit) → Результат: PENDING
-- 2026-02-10T23:36:45+03:00 — Действие: QA для обнаруженных правок не запускался → Результат: SKIP
+- 2026-02-11T00:20:25+03:00 — Действие: `npm run test:run -- tests/orbitMath.spec.ts` → Результат: PASS
+- 2026-02-11T00:33:10+03:00 — Действие: `npm run test:e2e -- tests/e2e/content-orbit.spec.ts` → Результат: PASS
+- 2026-02-11T00:34:10+03:00 — Действие: `npm run typecheck` → Результат: FAIL (ошибки в чужих изменениях: `app/routes/dashboard/news/page.tsx`, `app/routes/dashboard/page.tsx`, `components/login/OrionCityBackground.tsx`)
 
 ## Step E — Git
 - 2026-02-10T22:35:53+03:00 — Действие: Коммиты будут добавлены после реализации и QA → Результат: PENDING
-- 2026-02-11T00:20:30+03:00 — Commit: `abd2ef1` — `chore(agent-ops): trace task updates` — Файлы: `ops/agent_ops/logs/0031_content-orbit-view-ui-demix.md`
+- 2026-02-11T00:35:30+03:00 — Действие: Подготовка атомарного коммита (только файлы задачи 0031) → Результат: IN_PROGRESS
