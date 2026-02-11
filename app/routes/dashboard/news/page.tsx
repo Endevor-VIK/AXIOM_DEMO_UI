@@ -2,7 +2,7 @@
 // Canvas: C19 — app/routes/dashboard/news/page.tsx
 // Purpose: NEWS v2 master-detail feed with Dispatch + Signal Center preserved.
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 import CounterWreath from '@/components/counters/CounterWreath'
@@ -23,15 +23,7 @@ type SortOrder = (typeof SORT_OPTIONS)[number]['value']
 
 type SignalTab = 'summary' | 'meta' | 'links'
 
-type Preset = 'all' | 'updates' | 'releases' | 'audit' | 'fixes'
-
-const PRESET_LABELS: Record<Preset, string> = {
-  all: 'All',
-  updates: 'Updates',
-  releases: 'Releases',
-  audit: 'Audit',
-  fixes: 'Fixes',
-}
+const DEFAULT_AUTOPLAY_INTERVAL_SEC = 12
 
 const KIND_VARIANT: Record<string, 'info' | 'good' | 'warn'> = {
   release: 'good',
@@ -63,21 +55,6 @@ function matchesQuery(item: NewsItem, term: string) {
   return haystack.includes(term)
 }
 
-function matchesPreset(item: NewsItem, preset: Preset) {
-  if (preset === 'all') return true
-  if (preset === 'updates') return item.kind === 'update'
-  if (preset === 'releases') return item.kind === 'release'
-
-  const haystack = [item.title, item.summary, ...(item.tags ?? [])]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase()
-
-  if (preset === 'audit') return haystack.includes('audit')
-  if (preset === 'fixes') return haystack.includes('fix') || haystack.includes('bug') || haystack.includes('patch')
-  return true
-}
-
 function normalizePath(path: string) {
   return path.replace(/\/+$/, '') || '/'
 }
@@ -86,7 +63,7 @@ function resolveActionLink(link: string | undefined, currentPath: string) {
   if (!link) return null
   if (link.startsWith('http://') || link.startsWith('https://')) return link
   const normalizedCurrent = normalizePath(currentPath)
-  const cleanLink = normalizePath(link.split('?')[0])
+  const cleanLink = normalizePath(link.split('?')[0] ?? '')
   if (cleanLink === normalizedCurrent) return null
   return link
 }
@@ -116,12 +93,10 @@ function resolvePacketSource(item: NewsItem | null) {
 
 type NewsDispatchPanelProps = {
   busy: boolean
-  preset: Preset
   pinnedOnly: boolean
-  todayOnly: boolean
-  onPreset: (value: Preset) => void
+  unreadOnly: boolean
   onTogglePinnedOnly: () => void
-  onToggleToday: () => void
+  onToggleUnreadOnly: () => void
   onMarkAllRead: () => void
   total: number
   visible: number
@@ -134,12 +109,10 @@ type NewsDispatchPanelProps = {
 
 function NewsDispatchPanel({
   busy,
-  preset,
   pinnedOnly,
-  todayOnly,
-  onPreset,
+  unreadOnly,
   onTogglePinnedOnly,
-  onToggleToday,
+  onToggleUnreadOnly,
   onMarkAllRead,
   total,
   visible,
@@ -191,26 +164,10 @@ function NewsDispatchPanel({
             {displayPage} / {displayPageCount}
           </strong>
         </div>
-        <div className='ax-news-telemetry'>
+      <div className='ax-news-telemetry'>
           <span>PINNED</span>
           <strong>{pinned}</strong>
         </div>
-      </div>
-
-      <div className='ax-news-pillar__presets' aria-label='Feed presets'>
-        {(Object.keys(PRESET_LABELS) as Preset[]).map((key) => (
-          <button
-            key={key}
-            type='button'
-            className='ax-btn ghost ax-news-pillar__preset'
-            onClick={() => onPreset(key)}
-            data-active={preset === key ? 'true' : undefined}
-            disabled={busy}
-            data-testid={`news-preset-${key}`}
-          >
-            {PRESET_LABELS[key]}
-          </button>
-        ))}
       </div>
 
       <div className='ax-news-pillar__actions' aria-label='Dispatch actions'>
@@ -225,20 +182,20 @@ function NewsDispatchPanel({
         <button
           type='button'
           className='ax-btn ghost ax-news-pillar__action'
+          onClick={onToggleUnreadOnly}
+          disabled={busy}
+          data-active={unreadOnly ? 'true' : undefined}
+        >
+          UNREAD ONLY
+        </button>
+        <button
+          type='button'
+          className='ax-btn ghost ax-news-pillar__action'
           onClick={onTogglePinnedOnly}
           disabled={busy}
           data-active={pinnedOnly ? 'true' : undefined}
         >
           PINNED ONLY
-        </button>
-        <button
-          type='button'
-          className='ax-btn ghost ax-news-pillar__action'
-          onClick={onToggleToday}
-          disabled={busy}
-          data-active={todayOnly ? 'true' : undefined}
-        >
-          TODAY
         </button>
       </div>
 
@@ -258,16 +215,16 @@ type SignalCenterProps = {
   busy: boolean
   mode: 'selected' | 'pinned' | 'latest'
   item: NewsItem | null
-  expanded: boolean
   tab: SignalTab
   pinned: boolean
   read: boolean
+  autoplayIntervalSec: number
+  manualSelectionSeq: number
   resolvedLink: string | null
   canPrev: boolean
   canNext: boolean
   onPrev: () => void
   onNext: () => void
-  onToggleExpanded: () => void
   onSelectTab: (value: SignalTab) => void
   onTogglePinned: () => void
   onToggleRead: () => void
@@ -277,16 +234,16 @@ function SignalCenter({
   busy,
   mode,
   item,
-  expanded,
   tab,
   pinned,
   read,
+  autoplayIntervalSec,
+  manualSelectionSeq,
   resolvedLink,
   canPrev,
   canNext,
   onPrev,
   onNext,
-  onToggleExpanded,
   onSelectTab,
   onTogglePinned,
   onToggleRead,
@@ -299,23 +256,147 @@ function SignalCenter({
   const sourceLabel = resolvePacketSource(item)
   const tagCount = item?.tags?.length ?? 0
 
+  const autoplaySupported = autoplayIntervalSec > 0
   const [copied, setCopied] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [autoplayEnabled, setAutoplayEnabled] = useState(autoplaySupported)
+  const [autoplayProgress, setAutoplayProgress] = useState(0)
+  const [hovering, setHovering] = useState(false)
+  const [focusWithin, setFocusWithin] = useState(false)
+  const [interactionPause, setInteractionPause] = useState(false)
+
+  const interactionTimeoutRef = useRef<number | null>(null)
+  const tickTimerRef = useRef<number | null>(null)
+  const nextAtRef = useRef<number | null>(null)
+  const remainingMsRef = useRef<number | null>(null)
+  const lastManualSelectionSeqRef = useRef<number>(manualSelectionSeq)
+
+  const intervalMs = autoplayIntervalSec * 1000
+
+  const clearTickTimer = () => {
+    if (tickTimerRef.current == null) return
+    window.clearInterval(tickTimerRef.current)
+    tickTimerRef.current = null
+  }
+
+  const triggerInteractionPause = (ms = 1500) => {
+    if (interactionTimeoutRef.current != null) {
+      window.clearTimeout(interactionTimeoutRef.current)
+    }
+    setInteractionPause(true)
+    remainingMsRef.current = intervalMs
+    nextAtRef.current = null
+    setAutoplayProgress(0)
+    interactionTimeoutRef.current = window.setTimeout(() => {
+      setInteractionPause(false)
+    }, ms)
+  }
+
+  useEffect(() => {
+    return () => {
+      clearTickTimer()
+      if (interactionTimeoutRef.current != null) {
+        window.clearTimeout(interactionTimeoutRef.current)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const autoplayPauseReason = useMemo(() => {
+    if (!autoplayEnabled) return null
+    if (busy) return 'busy'
+    if (!item) return 'empty'
+    if (!canNext) return 'end'
+    if (modalOpen) return 'modal'
+    if (hovering) return 'hover'
+    if (focusWithin) return 'focus'
+    if (interactionPause) return 'interaction'
+    return null
+  }, [autoplayEnabled, busy, canNext, focusWithin, hovering, interactionPause, item, modalOpen])
+
+  useEffect(() => {
+    if (!autoplayEnabled) {
+      lastManualSelectionSeqRef.current = manualSelectionSeq
+      return
+    }
+    if (manualSelectionSeq === lastManualSelectionSeqRef.current) return
+    lastManualSelectionSeqRef.current = manualSelectionSeq
+    triggerInteractionPause(1500)
+  }, [manualSelectionSeq, autoplayEnabled])
+
+  useEffect(() => {
+    if (!autoplayEnabled) return
+    remainingMsRef.current = intervalMs
+    nextAtRef.current = null
+    setAutoplayProgress(0)
+  }, [autoplayEnabled, intervalMs, item?.id])
+
+  useEffect(() => {
+    clearTickTimer()
+    if (!autoplayEnabled) {
+      nextAtRef.current = null
+      remainingMsRef.current = null
+      setAutoplayProgress(0)
+      return
+    }
+
+    if (busy || !item) {
+      nextAtRef.current = null
+      setAutoplayProgress(0)
+      return
+    }
+
+    if (!canNext) {
+      setAutoplayEnabled(false)
+      nextAtRef.current = null
+      remainingMsRef.current = null
+      setAutoplayProgress(0)
+      return
+    }
+
+    if (autoplayPauseReason) {
+      if (nextAtRef.current != null) {
+        remainingMsRef.current = Math.max(0, nextAtRef.current - Date.now())
+      }
+      nextAtRef.current = null
+      return
+    }
+
+    if (nextAtRef.current == null) {
+      const remaining = remainingMsRef.current ?? intervalMs
+      nextAtRef.current = Date.now() + remaining
+      remainingMsRef.current = null
+    }
+
+    const tick = () => {
+      if (nextAtRef.current == null) return
+      const now = Date.now()
+      const remaining = nextAtRef.current - now
+      const nextProgress = 1 - remaining / intervalMs
+      setAutoplayProgress(Math.max(0, Math.min(1, nextProgress)))
+
+      if (remaining > 0) return
+
+      setAutoplayProgress(0)
+      if (!canNext) {
+        setAutoplayEnabled(false)
+        return
+      }
+      onNext()
+      nextAtRef.current = Date.now() + intervalMs
+    }
+
+    tick()
+    tickTimerRef.current = window.setInterval(tick, 50)
+
+    return () => clearTickTimer()
+  }, [autoplayEnabled, autoplayPauseReason, busy, canNext, intervalMs, item, onNext])
 
   useEffect(() => {
     if (!copied) return undefined
     const timer = window.setTimeout(() => setCopied(false), 1600)
     return () => window.clearTimeout(timer)
   }, [copied])
-
-  useEffect(() => {
-    if (!expanded) return
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onToggleExpanded()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [expanded, onToggleExpanded])
 
   useEffect(() => {
     if (!modalOpen) return undefined
@@ -342,9 +423,26 @@ function SignalCenter({
     <section
       className='ax-card ax-signal-hero ax-signal-center'
       data-state={state}
-      data-expanded={expanded ? 'true' : undefined}
+      data-autoplay={autoplayEnabled ? 'true' : undefined}
+      data-autoplay-paused={autoplayPauseReason ? 'true' : undefined}
       aria-label='Signal Center'
       data-testid='signal-center'
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      onFocusCapture={() => setFocusWithin(true)}
+      onBlurCapture={(event) => {
+        const next = event.relatedTarget as Node | null
+        if (next && event.currentTarget.contains(next)) return
+        setFocusWithin(false)
+      }}
+      onWheel={() => {
+        if (!autoplayEnabled) return
+        triggerInteractionPause(1500)
+      }}
+      onTouchStart={() => {
+        if (!autoplayEnabled) return
+        triggerInteractionPause(1500)
+      }}
     >
       <header className='ax-signal-hero__header ax-signal-center__header'>
         <div className='ax-signal-hero__label'>
@@ -362,20 +460,49 @@ function SignalCenter({
           </div>
 
           <div className='ax-signal-center__actions' aria-label='Signal actions'>
-            <button type='button' className='ax-btn ghost' onClick={onPrev} disabled={!canPrev || busy}>
+            <button
+              type='button'
+              className='ax-btn ghost'
+              onClick={() => {
+                if (autoplayEnabled) triggerInteractionPause(1500)
+                onPrev()
+              }}
+              disabled={!canPrev || busy}
+            >
               Prev
             </button>
-            <button type='button' className='ax-btn ghost' onClick={onNext} disabled={!canNext || busy}>
+            <button
+              type='button'
+              className='ax-btn ghost'
+              onClick={() => {
+                if (autoplayEnabled) triggerInteractionPause(1500)
+                onNext()
+              }}
+              disabled={!canNext || busy}
+            >
               Next
             </button>
-            <button type='button' className='ax-btn ghost' onClick={onTogglePinned} disabled={!item || busy}>
-              {pinned ? 'UNPIN' : 'PIN'}
-            </button>
-            <button type='button' className='ax-btn ghost' onClick={onToggleRead} disabled={!item || busy}>
-              {read ? 'MARK UNREAD' : 'MARK READ'}
-            </button>
-            <button type='button' className='ax-btn ghost' onClick={onToggleExpanded} disabled={busy || !item}>
-              {expanded ? 'COLLAPSE' : 'EXPAND'}
+
+            {autoplayEnabled ? (
+              <div
+                className='ax-autoplay-meter'
+                aria-hidden='true'
+                title={autoplayPauseReason ? `PAUSED :: ${autoplayPauseReason.toUpperCase()}` : `AUTOPLAY :: ${autoplayIntervalSec}s`}
+              >
+                <span className='ax-autoplay-meter__fill' style={{ transform: `scaleX(${autoplayProgress})` }} />
+              </div>
+            ) : null}
+
+            <button
+              type='button'
+              className='ax-btn ghost'
+              onClick={() => {
+                setAutoplayEnabled((v) => !v)
+              }}
+              data-active={autoplayEnabled ? 'true' : undefined}
+              disabled={!autoplaySupported || busy || !item || (!canNext && !autoplayEnabled)}
+            >
+              AUTO
             </button>
           </div>
         </div>
@@ -414,7 +541,7 @@ function SignalCenter({
         ) : item ? (
           <>
             {tab === 'summary' ? (
-              <div className='ax-signal-center__panel'>
+              <div key={item.id} className='ax-signal-center__panel ax-signal-center__packet'>
                 <h3 className='ax-signal-hero__headline'>{item.title}</h3>
                 {item.summary ? <p className='ax-signal-center__summary'>{item.summary}</p> : null}
                 {item.tags?.length ? (
@@ -435,7 +562,7 @@ function SignalCenter({
             ) : null}
 
             {tab === 'meta' ? (
-              <div className='ax-signal-hero__panel ax-signal-center__panel'>
+              <div key={item.id} className='ax-signal-hero__panel ax-signal-center__panel ax-signal-center__packet'>
                 <span className='ax-signal-hero__panel-title'>PACK META</span>
                 <div className='ax-signal-hero__meta-grid'>
                   <div className='ax-signal-hero__meta-item'>
@@ -463,7 +590,7 @@ function SignalCenter({
             ) : null}
 
             {tab === 'links' ? (
-              <div className='ax-signal-hero__panel ax-signal-center__panel'>
+              <div key={item.id} className='ax-signal-hero__panel ax-signal-center__panel ax-signal-center__packet'>
                 <span className='ax-signal-hero__panel-title'>QUICK LINKS</span>
                 <div className='ax-signal-hero__quick-links'>
                   {linkAvailable ? (
@@ -482,6 +609,13 @@ function SignalCenter({
 
                   <button type='button' className='ax-btn ghost' onClick={() => setModalOpen(true)}>
                     OPEN MODAL
+                  </button>
+
+                  <button type='button' className='ax-btn ghost' onClick={onTogglePinned} disabled={busy}>
+                    {pinned ? 'UNPIN' : 'PIN'}
+                  </button>
+                  <button type='button' className='ax-btn ghost' onClick={onToggleRead} disabled={busy}>
+                    {read ? 'MARK UNREAD' : 'MARK READ'}
                   </button>
                 </div>
               </div>
@@ -791,12 +925,11 @@ export default function NewsPage() {
   const [sort, setSort] = useState<SortOrder>('newest')
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
-  const [preset, setPreset] = useState<Preset>('all')
   const [pinnedOnly, setPinnedOnly] = useState(false)
-  const [todayOnly, setTodayOnly] = useState(false)
+  const [unreadOnly, setUnreadOnly] = useState(false)
+  const [manualSelectionSeq, setManualSelectionSeq] = useState(0)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [signalTab, setSignalTab] = useState<SignalTab>('summary')
-  const [signalExpanded, setSignalExpanded] = useState(false)
   const [busy, setBusy] = useState(true)
   const [err, setErr] = useState<string | null>(null)
 
@@ -830,19 +963,16 @@ export default function NewsPage() {
 
   useEffect(() => {
     setPage(1)
-  }, [q, kind, pageSize, sort, preset, pinnedOnly, todayOnly])
-
-  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), [])
+  }, [q, kind, pageSize, sort, pinnedOnly, unreadOnly])
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase()
     return items
       .filter((item) => matchesQuery(item, term))
-      .filter((item) => matchesPreset(item, preset))
       .filter((item) => (!kind ? true : item.kind === kind))
-      .filter((item) => (todayOnly ? item.date === todayStr : true))
+      .filter((item) => (unreadOnly ? !readIds.has(item.id) : true))
       .filter((item) => (pinnedOnly ? pinnedIds.has(item.id) : true))
-  }, [items, q, kind, preset, todayOnly, todayStr, pinnedOnly, pinnedIds])
+  }, [items, q, kind, unreadOnly, readIds, pinnedOnly, pinnedIds])
 
   const newestFirst = useMemo(() => {
     const list = [...filtered]
@@ -900,19 +1030,14 @@ export default function NewsPage() {
   const currentPath = location.pathname
   const resolvedLink = resolveActionLink(activeItem?.link, currentPath)
 
-  const applyPreset = (value: Preset) => {
-    setPreset(value)
-    setTodayOnly(false)
-    if (value === 'updates') {
-      setKind('update')
-      return
-    }
-    if (value === 'releases') {
-      setKind('release')
-      return
-    }
-    setKind('')
-  }
+  const autoplayIntervalSec = useMemo(() => {
+    const params = new URLSearchParams(location.search)
+    const raw = params.get('autoplay')
+    if (!raw) return DEFAULT_AUTOPLAY_INTERVAL_SEC
+    const n = Number(raw)
+    if (!Number.isFinite(n)) return DEFAULT_AUTOPLAY_INTERVAL_SEC
+    return Math.min(30, Math.max(2, Math.round(n)))
+  }, [location.search])
 
   const markRead = (id: string) => {
     setReadIds((prev) => {
@@ -944,6 +1069,7 @@ export default function NewsPage() {
   const handleSelect = (item: NewsItem) => {
     setSelectedId(item.id)
     markRead(item.id)
+    setManualSelectionSeq((v) => v + 1)
   }
 
   const handlePrevItem = () => {
@@ -977,17 +1103,15 @@ export default function NewsPage() {
   const readActive = activeItem ? readIds.has(activeItem.id) : false
 
   return (
-    <section className='ax-container ax-section ax-news-signal' aria-busy={busy}>
+    <section className='ax-container ax-section ax-news-signal' aria-busy={busy} data-density='compact'>
       <div className='ax-news-signal__stack'>
         <div className='ax-news-signal__hero-row'>
           <NewsDispatchPanel
             busy={busy}
-            preset={preset}
             pinnedOnly={pinnedOnly}
-            todayOnly={todayOnly}
-            onPreset={applyPreset}
+            unreadOnly={unreadOnly}
             onTogglePinnedOnly={() => setPinnedOnly((v) => !v)}
-            onToggleToday={() => setTodayOnly((v) => !v)}
+            onToggleUnreadOnly={() => setUnreadOnly((v) => !v)}
             onMarkAllRead={handleMarkAllRead}
             total={newsTotal}
             visible={visibleTotal}
@@ -1002,16 +1126,16 @@ export default function NewsPage() {
             busy={busy}
             mode={mode}
             item={activeItem}
-            expanded={signalExpanded}
             tab={signalTab}
             pinned={pinnedActive}
             read={readActive}
+            autoplayIntervalSec={autoplayIntervalSec}
+            manualSelectionSeq={manualSelectionSeq}
             resolvedLink={resolvedLink}
             canPrev={canPrev}
             canNext={canNext}
             onPrev={handlePrevItem}
             onNext={handleNextItem}
-            onToggleExpanded={() => setSignalExpanded((v) => !v)}
             onSelectTab={setSignalTab}
             onTogglePinned={() => (activeItem ? togglePinned(activeItem.id) : undefined)}
             onToggleRead={() => (activeItem ? toggleRead(activeItem.id) : undefined)}
@@ -1029,7 +1153,6 @@ export default function NewsPage() {
           onQueryChange={setRawQuery}
           onKindChange={(value) => {
             setKind(value)
-            setPreset('all')
           }}
           onSortChange={setSort}
           onPageSizeChange={setPageSize}
