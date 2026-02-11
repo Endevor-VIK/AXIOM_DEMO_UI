@@ -86,4 +86,15 @@ AXS_HEADER_META:
 
 ## Step E — Git
 
-- _pending_
+- 2026-02-11T05:22:35+03:00 — Commit: `809a27a` — `fix(content-hub): stabilize view modes (0034)` — Файлы:
+  - `app/routes/dashboard/content/context.tsx`
+  - `app/routes/dashboard/content/_layout.tsx`
+  - `components/ContentFilters.tsx`
+  - `app/routes/dashboard/content/ContentCategoryView.tsx`
+  - `app/routes/dashboard/content/ContentDetailsPanel.tsx`
+  - `src/features/content/components/ContentPreview.tsx`
+  - `styles/content-library.css`
+  - `docs/iterations/0034_content-hub-viewmodes-stabilization-v2/SPEC.md`
+  - `docs/iterations/0034_content-hub-viewmodes-stabilization-v2/SPEC_LOG_LINK.md`
+  - `ops/agent_ops/logs/0034_content-hub-viewmodes-stabilization-v2.md`
+  - `ops/agent_ops/logs/00_LOG_INDEX.md`

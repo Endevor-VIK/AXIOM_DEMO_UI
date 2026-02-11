@@ -225,9 +225,10 @@ export default function AxchatRoute() {
           content: `Поиск завершен. Найдено источников: ${res.refs?.length ?? 0}.`,
         })
       } else {
-        const history: AxchatChatTurn[] = [...messages, { id: 'pending', role: 'user', content: trimmed }]
+        const pending: ChatMessage = { id: 'pending', role: 'user', content: trimmed }
+        const history: AxchatChatTurn[] = [...messages, pending]
           .slice(-10)
-          .map((msg) => ({ role: msg.role, content: msg.content }))
+          .map((msg): AxchatChatTurn => ({ role: msg.role, content: msg.content }))
         const res = await queryAxchat(trimmed, 'qa', history)
         setRefs(filterLoreRefs(res.refs || []))
         pushMessage({
@@ -486,92 +487,94 @@ export default function AxchatRoute() {
             </div>
           </header>
 
-          {refs.length === 0 ? (
-            <div className='ax-axchat__sources-empty'>
-              Нет источников. Выполни запрос, чтобы увидеть контекст.
-            </div>
-          ) : (
-            <div className='ax-axchat__sources-list'>
-              {refs.map((ref, index) => {
-                const canOpen = Boolean(ref.route)
-                const canCopy = Boolean(ref.path)
-                const canModal = Boolean(ref.excerpt)
+          <div className='ax-axchat__sources-body'>
+            {refs.length === 0 ? (
+              <div className='ax-axchat__sources-empty'>
+                Нет источников. Выполни запрос, чтобы увидеть контекст.
+              </div>
+            ) : (
+              <div className='ax-axchat__sources-list'>
+                {refs.map((ref, index) => {
+                  const canOpen = Boolean(ref.route)
+                  const canCopy = Boolean(ref.path)
+                  const canModal = Boolean(ref.excerpt)
 
-                const handleCardOpen = () => {
-                  if (!canOpen) return
-                  window.open(ref.route, '_blank', 'noopener,noreferrer')
-                }
-
-                const handleCardKey: React.KeyboardEventHandler<HTMLElement> = (event) => {
-                  if (!canOpen) return
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault()
-                    handleCardOpen()
+                  const handleCardOpen = () => {
+                    if (!canOpen) return
+                    window.open(ref.route, '_blank', 'noopener,noreferrer')
                   }
-                }
 
-                return (
-                  <article
-                    key={`${ref.path}-${index}`}
-                    className='ax-axchat__source'
-                    data-clickable={canOpen ? 'true' : 'false'}
-                    tabIndex={canOpen ? 0 : undefined}
-                    role={canOpen ? 'link' : undefined}
-                    onClick={canOpen ? handleCardOpen : undefined}
-                    onKeyDown={canOpen ? handleCardKey : undefined}
-                  >
-                    <div className='ax-axchat__source-head'>
-                      <div>
-                        <p className='ax-axchat__source-title'>{ref.title || 'Untitled'}</p>
-                        <p className='ax-axchat__source-path'>{ref.path}</p>
+                  const handleCardKey: React.KeyboardEventHandler<HTMLElement> = (event) => {
+                    if (!canOpen) return
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      handleCardOpen()
+                    }
+                  }
+
+                  return (
+                    <article
+                      key={`${ref.path}-${index}`}
+                      className='ax-axchat__source'
+                      data-clickable={canOpen ? 'true' : 'false'}
+                      tabIndex={canOpen ? 0 : undefined}
+                      role={canOpen ? 'link' : undefined}
+                      onClick={canOpen ? handleCardOpen : undefined}
+                      onKeyDown={canOpen ? handleCardKey : undefined}
+                    >
+                      <div className='ax-axchat__source-head'>
+                        <div>
+                          <p className='ax-axchat__source-title'>{ref.title || 'Untitled'}</p>
+                          <p className='ax-axchat__source-path'>{ref.path}</p>
+                        </div>
+                        {typeof ref.score === 'number' ? (
+                          <span className='ax-axchat__source-score'>#{index + 1}</span>
+                        ) : null}
                       </div>
-                      {typeof ref.score === 'number' ? (
-                        <span className='ax-axchat__source-score'>#{index + 1}</span>
+                      {ref.excerpt ? <p className='ax-axchat__source-excerpt'>{ref.excerpt}</p> : null}
+                      {(canOpen || canModal || canCopy) ? (
+                        <div className='ax-axchat__source-actions'>
+                          {canOpen ? (
+                            <a
+                              className='ax-btn ax-btn--ghost'
+                              href={ref.route}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              Открыть
+                            </a>
+                          ) : null}
+                          {canModal ? (
+                            <button
+                              className='ax-btn ax-btn--ghost'
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                handleOpenModal(ref)
+                              }}
+                            >
+                              Открыть в модалке
+                            </button>
+                          ) : null}
+                          {canCopy ? (
+                            <button
+                              className='ax-btn ax-btn--ghost'
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                handleCopyPath(ref)
+                              }}
+                            >
+                              Скопировать путь
+                            </button>
+                          ) : null}
+                        </div>
                       ) : null}
-                    </div>
-                    {ref.excerpt ? <p className='ax-axchat__source-excerpt'>{ref.excerpt}</p> : null}
-                    {(canOpen || canModal || canCopy) ? (
-                      <div className='ax-axchat__source-actions'>
-                        {canOpen ? (
-                          <a
-                            className='ax-btn ax-btn--ghost'
-                            href={ref.route}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            onClick={(event) => event.stopPropagation()}
-                          >
-                            Открыть
-                          </a>
-                        ) : null}
-                        {canModal ? (
-                          <button
-                            className='ax-btn ax-btn--ghost'
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              handleOpenModal(ref)
-                            }}
-                          >
-                            Открыть в модалке
-                          </button>
-                        ) : null}
-                        {canCopy ? (
-                          <button
-                            className='ax-btn ax-btn--ghost'
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              handleCopyPath(ref)
-                            }}
-                          >
-                            Скопировать путь
-                          </button>
-                        ) : null}
-                      </div>
-                    ) : null}
-                  </article>
-                )
-              })}
-            </div>
-          )}
+                    </article>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         </aside>
       </div>
 
