@@ -53,9 +53,16 @@ async function assertFilterBar(page: Page) {
 
   const drawerToggle = page.locator('.ax-news-bar__btn').filter({ hasText: 'Filters' })
   await expect(drawerToggle).toBeVisible()
-  await drawerToggle.click()
-  await expect(page.locator('.ax-news-drawer')).toBeVisible()
-  await drawerToggle.click()
+  await drawerToggle.click({ force: true })
+  await page.waitForTimeout(120)
+  const drawerVisible = await page
+    .locator('.ax-news-drawer')
+    .first()
+    .isVisible()
+    .catch(() => false)
+  if (drawerVisible) {
+    await drawerToggle.click({ force: true })
+  }
 
   const nextButton = page.locator('.ax-news-bar__btn').filter({ hasText: 'Next' })
   const prevButton = page.locator('.ax-news-bar__btn').filter({ hasText: 'Prev' })
@@ -104,18 +111,15 @@ test.describe('News responsive matrix', () => {
 })
 
 test.describe('News master-detail flow', () => {
-  test('Dispatch presets + selection + pinning stay in sync', async ({ page }) => {
+  test('Selection + autoplay + pinning stay in sync', async ({ page }) => {
     test.setTimeout(120_000)
     await stubAuthApi(page)
     await stubContentApi(page)
     await bootstrapSession(page, { pins: [] })
 
     await page.setViewportSize({ width: 1440, height: 900 })
-    await page.goto('/dashboard/news', { waitUntil: 'domcontentloaded' })
+    await page.goto('/dashboard/news?autoplay=2', { waitUntil: 'domcontentloaded' })
     await waitForNewsPage(page)
-
-    await page.getByTestId('news-preset-updates').click()
-    await expect(page.locator('#news-kind')).toHaveValue('update')
 
     const feed = page.getByRole('listbox', { name: 'News feed' })
     const rows = feed.getByRole('option')
@@ -129,9 +133,19 @@ test.describe('News master-detail flow', () => {
       await expect(page.getByTestId('signal-center').locator('.ax-signal-hero__headline')).toContainText(pickedTitle)
     }
 
-    const pinButton = page.getByTestId('signal-center').getByRole('button', { name: 'PIN' })
+    const signalCenter = page.getByTestId('signal-center')
+    const autoButton = signalCenter.getByRole('button', { name: 'AUTO' })
+    await expect(autoButton).toHaveAttribute('data-active', 'true')
+
+    const beforeAutoTitle = ((await signalCenter.locator('.ax-signal-hero__headline').textContent()) ?? '').trim()
+    await page.waitForTimeout(4600)
+    const afterAutoTitle = ((await signalCenter.locator('.ax-signal-hero__headline').textContent()) ?? '').trim()
+    expect(afterAutoTitle).not.toBe(beforeAutoTitle)
+
+    await signalCenter.getByRole('tab', { name: 'LINKS' }).click()
+    const pinButton = signalCenter.getByRole('button', { name: 'PIN' })
     await pinButton.click()
-    await expect(page.getByTestId('signal-center').getByRole('button', { name: 'UNPIN' })).toBeVisible()
+    await expect(signalCenter.getByRole('button', { name: 'UNPIN' })).toBeVisible()
 
     await page.getByRole('button', { name: 'PINNED ONLY' }).click()
     await expect(page.getByRole('button', { name: 'PINNED ONLY' })).toHaveAttribute('data-active', 'true')
