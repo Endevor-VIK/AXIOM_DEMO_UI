@@ -7,16 +7,14 @@ import type {
   ContentStatus,
 } from '@/lib/vfs'
 
-export type ContentLayoutMode = 'browse' | 'inspect'
-export type ContentViewMode = 'cards' | 'list' | 'orbit'
+export type ContentViewMode = 'browse' | 'cards' | 'orbit' | 'inspect'
 
 export interface ContentFiltersSnapshot {
   query: string
   tag: string
   status: ContentStatus | 'any'
   lang: string | 'any'
-  layout: ContentLayoutMode
-  view: ContentViewMode
+  mode: ContentViewMode
 }
 
 export interface ContentFiltersApi extends ContentFiltersSnapshot {
@@ -24,8 +22,7 @@ export interface ContentFiltersApi extends ContentFiltersSnapshot {
   setTag(value: string): void
   setStatus(value: ContentStatus | 'any'): void
   setLang(value: string | 'any'): void
-  setLayout(value: ContentLayoutMode): void
-  setView(value: ContentViewMode): void
+  setMode(value: ContentViewMode): void
   reset(): void
 }
 

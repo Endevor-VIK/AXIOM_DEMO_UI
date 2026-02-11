@@ -93,6 +93,7 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   const previewRef = useRef<HTMLDivElement | null>(null)
   const lastScrolledId = useRef<string | null>(null)
   const lastTrackedId = useRef<string | null>(null)
+  const [cardsPage, setCardsPage] = useState(0)
 
   const items = useMemo(() => {
     if (!aggregate) return []
@@ -106,9 +107,11 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   const ordered = useMemo(() => orderByPins(items, pinned), [items, pinned])
   const itemParam = searchParams.get('item') ?? ''
   const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const isDesktopWide = useMediaQuery('(min-width: 1440px)')
+  const isTablet = useMediaQuery('(min-width: 768px)')
+  const isMobileWide = useMediaQuery('(min-width: 480px)')
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
-  const layoutMode = filters.layout
-  const viewMode = filters.view
+  const mode = filters.mode
 
   useEffect(() => {
     if (!ordered.length) {
@@ -137,6 +140,34 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     return ordered[0] ?? null
   }, [ordered, itemParam])
   const previewEntry = useMemo(() => mapToPreview(selectedItem), [selectedItem])
+
+  const cardsPerPage = useMemo(() => {
+    if (isDesktopWide) return 6
+    if (isDesktop) return 4
+    if (isTablet) return 3
+    if (isMobileWide) return 2
+    return 1
+  }, [isDesktopWide, isDesktop, isTablet, isMobileWide])
+
+  const cardsTotalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(ordered.length / cardsPerPage))
+  }, [ordered.length, cardsPerPage])
+
+  useEffect(() => {
+    if (mode !== 'cards') return
+    if (!selectedItem) return
+    const idx = ordered.findIndex((entry) => entry.id === selectedItem.id)
+    if (idx < 0) return
+    const desiredPage = Math.floor(idx / cardsPerPage)
+    setCardsPage((prev) => (prev === desiredPage ? prev : desiredPage))
+  }, [cardsPerPage, mode, ordered, selectedItem])
+
+  useEffect(() => {
+    setCardsPage((prev) => {
+      const maxPage = Math.max(0, cardsTotalPages - 1)
+      return Math.min(Math.max(prev, 0), maxPage)
+    })
+  }, [cardsTotalPages])
 
   useEffect(() => {
     if (!selectedItem) return
@@ -220,7 +251,7 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
 
   if (loading) {
     return (
-      <div className='ax-content-inspect' data-columns='2' data-view='list'>
+      <div className='ax-content-inspect' data-columns='2' data-view='loading'>
         <div className='ax-content-column list'>
           <ContentList items={[]} selectedId={null} onSelect={noop} />
         </div>
@@ -232,7 +263,12 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
               role='region'
               aria-label='Content details'
             >
-              <ContentDetailsPanel item={null} preview={null} dataBase={dataBase} />
+              <ContentDetailsPanel
+                item={null}
+                preview={null}
+                dataBase={dataBase}
+                variant={mode === 'inspect' ? 'inspect' : 'preview'}
+              />
             </div>
           </aside>
         ) : null}
@@ -254,100 +290,137 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
       preview={previewEntry}
       dataBase={dataBase}
       onOpenSource={(id) => handleOpenSource(id)}
+      variant={mode === 'inspect' ? 'inspect' : 'preview'}
     />
   )
 
-  const stage =
-    viewMode === 'list' ? (
-      <ContentList
-        items={ordered}
-        selectedId={selectedItem?.id ?? null}
-        onSelect={handleSelect}
-        onTogglePin={handleTogglePin}
-        isPinned={handleIsPinned}
-      />
-    ) : viewMode === 'cards' ? (
+  const listStage = (
+    <ContentList
+      items={ordered}
+      selectedId={selectedItem?.id ?? null}
+      onSelect={handleSelect}
+      onTogglePin={handleTogglePin}
+      isPinned={handleIsPinned}
+    />
+  )
+
+  const cardsStart = cardsPage * cardsPerPage
+  const visibleCards = useMemo(
+    () => ordered.slice(cardsStart, cardsStart + cardsPerPage),
+    [ordered, cardsStart, cardsPerPage],
+  )
+
+  const cardsStage = (
+    <>
+      {cardsTotalPages > 1 ? (
+        <div className='ax-content-cards-nav' role='group' aria-label='Cards batch navigation'>
+          <button
+            type='button'
+            className='ax-btn ghost'
+            onClick={() => setCardsPage((prev) => Math.max(0, prev - 1))}
+            disabled={cardsPage <= 0}
+          >
+            Prev batch
+          </button>
+          <span className='ax-content-cards-nav__stepper' aria-label={`Batch ${cardsPage + 1} of ${cardsTotalPages}`}>
+            {cardsPage + 1}/{cardsTotalPages}
+          </span>
+          <button
+            type='button'
+            className='ax-btn ghost'
+            onClick={() => setCardsPage((prev) => Math.min(cardsTotalPages - 1, prev + 1))}
+            disabled={cardsPage >= cardsTotalPages - 1}
+          >
+            Next batch
+          </button>
+        </div>
+      ) : null}
       <ContentCardsGrid
-        items={ordered}
+        items={visibleCards}
         selectedId={selectedItem?.id ?? null}
         onSelect={handleSelect}
         onTogglePin={handleTogglePin}
         isPinned={handleIsPinned}
       />
-    ) : (
-      <OrbitView
-        items={ordered}
-        activeId={selectedItem?.id ?? null}
-        onSelect={(id) => {
-          const target = ordered.find((entry) => entry.id === id)
-          if (target) handleSelect(target)
-        }}
-        reducedMotion={reducedMotion || !isDesktop}
-        maxItems={24}
-        onExit={() => filters.setView('cards')}
-      />
-    )
+    </>
+  )
+
+  const orbitStage = (
+    <OrbitView
+      items={ordered}
+      activeId={selectedItem?.id ?? null}
+      onSelect={(id) => {
+        const target = ordered.find((entry) => entry.id === id)
+        if (target) handleSelect(target)
+      }}
+      reducedMotion={reducedMotion || !isDesktop}
+      maxItems={24}
+      onExit={() => filters.setMode('cards')}
+    />
+  )
 
   // Mobile / narrow layout: single stage, selection opens reader.
   if (!isDesktop) {
     return (
-      <div className='ax-content-browse' data-layout={layoutMode} data-view={viewMode}>
-        {stage}
+      <div className='ax-content-browse' data-mode={mode}>
+        {mode === 'orbit' ? orbitStage : mode === 'cards' ? cardsStage : listStage}
       </div>
     )
   }
 
-  if (layoutMode === 'browse') {
+  if (mode === 'orbit') {
     return (
-      <div className='ax-content-browse' data-layout={layoutMode} data-view={viewMode}>
-        <div className='ax-content-stage' aria-label='Content stage'>
-          {stage}
+      <div className='ax-content-orbit' data-mode='orbit'>
+        <div className='ax-content-orbit__actions' role='group' aria-label='Orbit actions'>
+          <button type='button' className='ax-btn ghost' onClick={() => filters.setMode('cards')}>
+            Back to Cards
+          </button>
+          <button type='button' className='ax-btn' onClick={() => filters.setMode('inspect')}>
+            Open Inspect
+          </button>
         </div>
-        <details className='ax-content-details-drawer'>
-          <summary className='ax-content-details-drawer__summary'>Details</summary>
-          <div className='ax-content-details-drawer__panel'>{details}</div>
-        </details>
+        <div className='ax-content-stage' aria-label='Orbit stage'>
+          {orbitStage}
+        </div>
       </div>
     )
   }
 
-  const columns = viewMode === 'list' ? '2' : '3'
+  if (mode === 'inspect') {
+    return (
+      <div className='ax-content-inspect' data-columns='2' data-view='inspect'>
+        <div className='ax-content-column list'>{listStage}</div>
+        <aside className='ax-panel-right' aria-label='Details panel'>
+          <div
+            className='ax-preview-panel ax-preview-panel--v2'
+            ref={previewRef}
+            role='region'
+            aria-label='Content details'
+          >
+            {details}
+          </div>
+        </aside>
+      </div>
+    )
+  }
 
   return (
-    <div className='ax-content-inspect' data-columns={columns} data-view={viewMode}>
-      <div className='ax-content-column list'>
-        <ContentList
-          items={ordered}
-          selectedId={selectedItem?.id ?? null}
-          onSelect={handleSelect}
-          onTogglePin={handleTogglePin}
-          isPinned={handleIsPinned}
-        />
+    <div className='ax-content-browse' data-mode={mode}>
+      <div className='ax-content-stage' aria-label='Content stage'>
+        {mode === 'cards' ? cardsStage : listStage}
       </div>
-
-      {viewMode === 'list' ? null : (
-        <div className='ax-content-column stage' aria-label='Preview stage'>
-          {viewMode === 'cards' ? (
-            <ContentCardsGrid
-              items={ordered}
-              selectedId={selectedItem?.id ?? null}
-              onSelect={handleSelect}
-              onTogglePin={handleTogglePin}
-              isPinned={handleIsPinned}
-            />
-          ) : (
-            stage
-          )}
-        </div>
-      )}
-
-      <aside className='ax-panel-right' aria-label='Details panel'>
+      <aside className='ax-panel-right' aria-label='Preview panel'>
         <div
           className='ax-preview-panel ax-preview-panel--v2'
           ref={previewRef}
           role='region'
-          aria-label='Content details'
+          aria-label='Content preview'
         >
+          <div className='ax-content-preview-actions' role='group' aria-label='Preview actions'>
+            <button type='button' className='ax-btn ghost' onClick={() => filters.setMode('inspect')}>
+              Open Inspect
+            </button>
+          </div>
           {details}
         </div>
       </aside>

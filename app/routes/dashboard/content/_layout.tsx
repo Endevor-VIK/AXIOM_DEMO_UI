@@ -24,7 +24,6 @@ import { useFavorites } from '@/lib/identity/useFavorites'
 
 import {
   ContentHubContext,
-  type ContentLayoutMode,
   type ContentFiltersSnapshot,
   type ContentHubContextValue,
   type ContentViewMode,
@@ -35,8 +34,7 @@ const DEFAULT_FILTERS: ContentFiltersSnapshot = {
   tag: '',
   status: 'any',
   lang: 'any',
-  layout: 'inspect',
-  view: 'list',
+  mode: 'browse',
 }
 
 function ensureTrailingSlash(value: string): string {
@@ -131,17 +129,28 @@ const ContentLayout: React.FC = () => {
     const tag = searchParams.get('tag') ?? DEFAULT_FILTERS.tag
     const status = parseStatus(searchParams.get('status'))
     const lang = searchParams.get('lang') ?? DEFAULT_FILTERS.lang
-    const layoutParam = searchParams.get('layout')
-    const layout: ContentLayoutMode = layoutParam === 'browse' ? 'browse' : DEFAULT_FILTERS.layout
-    const viewParam = searchParams.get('view')
-    let view: ContentViewMode = DEFAULT_FILTERS.view
-    if (viewParam === 'list' || viewParam === 'cards' || viewParam === 'orbit') {
-      view = viewParam
+    const modeParam = (searchParams.get('mode') ?? '').trim().toLowerCase()
+    const legacyLayout = (searchParams.get('layout') ?? '').trim().toLowerCase()
+    const legacyView = (searchParams.get('view') ?? '').trim().toLowerCase()
+
+    let mode: ContentViewMode = DEFAULT_FILTERS.mode
+    if (modeParam === 'browse' || modeParam === 'cards' || modeParam === 'orbit' || modeParam === 'inspect') {
+      mode = modeParam as ContentViewMode
+    } else if (legacyLayout === 'inspect') {
+      mode = 'inspect'
+    } else if (legacyView === 'orbit') {
+      mode = 'orbit'
+    } else if (legacyView === 'cards') {
+      mode = 'cards'
+    } else {
+      mode = 'browse'
     }
-    if (view === 'orbit' && !orbitEnabled) {
-      view = DEFAULT_FILTERS.view
+
+    if (mode === 'orbit' && !orbitEnabled) {
+      mode = DEFAULT_FILTERS.mode
     }
-    return { query, tag, status, lang, layout, view }
+
+    return { query, tag, status, lang, mode }
   }, [orbitEnabled, searchParams])
 
   const updateSearchParam = useCallback(
@@ -163,21 +172,28 @@ const ContentLayout: React.FC = () => {
         updateSearchParam('status', value === 'any' ? null : value),
       setLang: (value: string | 'any') =>
         updateSearchParam('lang', value === 'any' ? null : value),
-      setLayout: (value: ContentLayoutMode) =>
-        updateSearchParam('layout', value === DEFAULT_FILTERS.layout ? null : value),
-      setView: (value: ContentViewMode) =>
-        updateSearchParam(
-          'view',
-          value === DEFAULT_FILTERS.view || (value === 'orbit' && !orbitEnabled) ? null : value
-        ),
+      setMode: (value: ContentViewMode) => {
+        const next = new URLSearchParams(searchParams)
+        // Migrate away from legacy params.
+        next.delete('layout')
+        next.delete('view')
+
+        const safeValue = value === 'orbit' && !orbitEnabled ? DEFAULT_FILTERS.mode : value
+        if (safeValue === DEFAULT_FILTERS.mode) next.delete('mode')
+        else next.set('mode', safeValue)
+        setSearchParams(next, { replace: true })
+      },
       reset: () => {
         const next = new URLSearchParams(searchParams)
         next.delete('q')
         next.delete('tag')
         next.delete('status')
         next.delete('lang')
+        next.delete('mode')
         next.delete('layout')
         next.delete('view')
+        // Explicit Reset clears selection; fallback selection will apply.
+        next.delete('item')
         setSearchParams(next, { replace: true })
       },
     }),
@@ -338,7 +354,7 @@ const ContentLayout: React.FC = () => {
       <section className='ax-section'>
 	        <div
 	          className='ax-container ax-content-hub'
-	          data-layout-mode={filters.layout}
+	          data-layout-mode={filters.mode === 'inspect' ? 'inspect' : 'browse'}
 	          aria-busy={loading}
 	        >
 	          <RouteWreath
@@ -347,8 +363,8 @@ const ContentLayout: React.FC = () => {
 	            title='Content Library'
 	            description={contentWreathDescription}
 	            ariaLabel={`CONTENT module total ${contentTotal}`}
-	            size={filters.layout === 'inspect' ? 140 : 240}
-	            {...(filters.layout === 'inspect' ? { className: 'ax-route-wreath--compact' } : {})}
+	            size={filters.mode === 'inspect' ? 140 : 240}
+	            {...(filters.mode === 'inspect' ? { className: 'ax-route-wreath--compact' } : {})}
 	          />
 	          {/* Category summary table (7 columns including ALL) */}
 	          <CategoryStats items={categoryStats} variant='table' />

@@ -6,6 +6,7 @@ import ContentPreview from '@/src/features/content/components/ContentPreview'
 import type { ContentPreviewData } from '@/src/features/content/types'
 
 type DetailsTabKey = 'summary' | 'meta' | 'source' | 'links'
+export type ContentDetailsPanelVariant = 'inspect' | 'preview'
 
 function ensureContentPath(file: string): string {
   const trimmed = file.replace(/^\/+/, '')
@@ -17,6 +18,7 @@ export interface ContentDetailsPanelProps {
   preview: ContentPreviewData | null
   dataBase: string
   onOpenSource?(id: string): void
+  variant?: ContentDetailsPanelVariant
 }
 
 const ContentDetailsPanel: React.FC<ContentDetailsPanelProps> = ({
@@ -24,7 +26,9 @@ const ContentDetailsPanel: React.FC<ContentDetailsPanelProps> = ({
   preview,
   dataBase,
   onOpenSource,
+  variant = 'inspect',
 }) => {
+  const isInspect = variant === 'inspect'
   const [tab, setTab] = useState<DetailsTabKey>('summary')
 
   useEffect(() => {
@@ -48,65 +52,67 @@ const ContentDetailsPanel: React.FC<ContentDetailsPanelProps> = ({
   }, [item])
 
   return (
-    <section className='ax-details-panel' aria-label='Details panel'>
-      <header className='ax-details-head'>
-        <div className='ax-details-tabs' role='tablist' aria-label='Details tabs'>
-          <button
-            type='button'
-            role='tab'
-            className='ax-details-tab'
-            aria-selected={tab === 'summary'}
-            data-active={tab === 'summary' ? 'true' : undefined}
-            onClick={() => setTab('summary')}
-          >
-            Summary
-          </button>
-          <button
-            type='button'
-            role='tab'
-            className='ax-details-tab'
-            aria-selected={tab === 'meta'}
-            data-active={tab === 'meta' ? 'true' : undefined}
-            onClick={() => setTab('meta')}
-            disabled={!item}
-          >
-            Meta
-          </button>
-          <button
-            type='button'
-            role='tab'
-            className='ax-details-tab'
-            aria-selected={tab === 'source'}
-            data-active={tab === 'source' ? 'true' : undefined}
-            onClick={() => setTab('source')}
-            disabled={!item}
-          >
-            Source
-          </button>
-          <button
-            type='button'
-            role='tab'
-            className='ax-details-tab'
-            aria-selected={tab === 'links'}
-            data-active={tab === 'links' ? 'true' : undefined}
-            onClick={() => setTab('links')}
-            disabled={!item}
-          >
-            Links
-          </button>
-        </div>
-      </header>
+    <section className='ax-details-panel' aria-label='Details panel' data-variant={variant}>
+      {isInspect ? (
+        <header className='ax-details-head'>
+          <div className='ax-details-tabs' role='tablist' aria-label='Details tabs'>
+            <button
+              type='button'
+              role='tab'
+              className='ax-details-tab'
+              aria-selected={tab === 'summary'}
+              data-active={tab === 'summary' ? 'true' : undefined}
+              onClick={() => setTab('summary')}
+            >
+              Summary
+            </button>
+            <button
+              type='button'
+              role='tab'
+              className='ax-details-tab'
+              aria-selected={tab === 'meta'}
+              data-active={tab === 'meta' ? 'true' : undefined}
+              onClick={() => setTab('meta')}
+              disabled={!item}
+            >
+              Meta
+            </button>
+            <button
+              type='button'
+              role='tab'
+              className='ax-details-tab'
+              aria-selected={tab === 'source'}
+              data-active={tab === 'source' ? 'true' : undefined}
+              onClick={() => setTab('source')}
+              disabled={!item}
+            >
+              Source
+            </button>
+            <button
+              type='button'
+              role='tab'
+              className='ax-details-tab'
+              aria-selected={tab === 'links'}
+              data-active={tab === 'links' ? 'true' : undefined}
+              onClick={() => setTab('links')}
+              disabled={!item}
+            >
+              Links
+            </button>
+          </div>
+        </header>
+      ) : null}
 
       <div className='ax-details-body'>
-        {tab === 'summary' ? (
+        {tab === 'summary' || !isInspect ? (
           <ContentPreview
             entry={preview}
             {...(onOpenSource ? { onOpenSource } : {})}
-            onViewMeta={() => setTab('meta')}
+            {...(isInspect ? { onViewMeta: (_id: string) => setTab('meta') } : {})}
           />
         ) : null}
 
-        {tab === 'meta' ? (
+        {isInspect && tab === 'meta' ? (
           item ? (
             <div className='ax-details-pane' role='tabpanel' aria-label='Meta'>
               <div className='ax-details-kv'>
@@ -140,7 +146,7 @@ const ContentDetailsPanel: React.FC<ContentDetailsPanelProps> = ({
           )
         ) : null}
 
-        {tab === 'source' ? (
+        {isInspect && tab === 'source' ? (
           item ? (
             <div className='ax-details-pane' role='tabpanel' aria-label='Source'>
               <div className='ax-details-kv'>
@@ -186,7 +192,7 @@ const ContentDetailsPanel: React.FC<ContentDetailsPanelProps> = ({
           )
         ) : null}
 
-        {tab === 'links' ? (
+        {isInspect && tab === 'links' ? (
           item ? (
             <div className='ax-details-pane' role='tabpanel' aria-label='Links'>
               {item.links && item.links.length ? (

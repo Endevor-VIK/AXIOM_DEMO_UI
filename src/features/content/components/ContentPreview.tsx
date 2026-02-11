@@ -91,14 +91,11 @@ const ContentPreview: React.FC<ContentPreviewProps> = ({ entry, onOpenSource, on
               ))}
             </div>
             <div className='axcp-actions'>
-              <button
-                className='axcp-btn axcp-btn--ghost'
-                type='button'
-                onClick={handleMeta}
-                disabled={!onViewMeta}
-              >
-                View meta
-              </button>
+              {onViewMeta ? (
+                <button className='axcp-btn axcp-btn--ghost' type='button' onClick={handleMeta}>
+                  View meta
+                </button>
+              ) : null}
               <button className='axcp-btn axcp-btn--primary' type='button' onClick={handleOpen}>
                 Open source
               </button>

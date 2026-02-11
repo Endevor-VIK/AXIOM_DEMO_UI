@@ -148,12 +148,12 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
           </>
         )}
 
-        <div className='ax-filter-actions' role='group' aria-label='Change layout mode'>
+        <div className='ax-filter-actions' role='group' aria-label='Change view mode'>
           <button
             type='button'
             className='ax-btn ghost'
-            data-active={filters.layout === 'browse' ? 'true' : undefined}
-            onClick={() => filters.setLayout('browse')}
+            data-active={filters.mode === 'browse' ? 'true' : undefined}
+            onClick={() => filters.setMode('browse')}
             disabled={isDisabled}
           >
             Browse
@@ -161,44 +161,32 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
           <button
             type='button'
             className='ax-btn ghost'
-            data-active={filters.layout === 'inspect' ? 'true' : undefined}
-            onClick={() => filters.setLayout('inspect')}
-            disabled={isDisabled}
-          >
-            Inspect
-          </button>
-        </div>
-
-        <div className='ax-filter-actions' role='group' aria-label='Change view mode'>
-          <button
-            type='button'
-            className='ax-btn ghost'
-            data-active={filters.view === 'cards' ? 'true' : undefined}
-            onClick={() => filters.setView('cards')}
+            data-active={filters.mode === 'cards' ? 'true' : undefined}
+            onClick={() => filters.setMode('cards')}
             disabled={isDisabled}
           >
             Cards
-          </button>
-          <button
-            type='button'
-            className='ax-btn ghost'
-            data-active={filters.view === 'list' ? 'true' : undefined}
-            onClick={() => filters.setView('list')}
-            disabled={isDisabled}
-          >
-            List
           </button>
           {features.orbitView ? (
             <button
               type='button'
               className='ax-btn ghost'
-              data-active={filters.view === 'orbit' ? 'true' : undefined}
-              onClick={() => filters.setView('orbit')}
+              data-active={filters.mode === 'orbit' ? 'true' : undefined}
+              onClick={() => filters.setMode('orbit')}
               disabled={isDisabled}
             >
               Orbit
             </button>
           ) : null}
+          <button
+            type='button'
+            className='ax-btn ghost'
+            data-active={filters.mode === 'inspect' ? 'true' : undefined}
+            onClick={() => filters.setMode('inspect')}
+            disabled={isDisabled}
+          >
+            Inspect
+          </button>
         </div>
 
         <button
