@@ -390,10 +390,6 @@ export default function LoginPage() {
       {/* фон и кибер-слой строго позади карточки */}
       <div className="ax-login__bg" aria-hidden>
         <OrionCityBackground enabled={!reduced} reducedMotion={reduced} />
-        <div className="ax-login__bg-sky" />
-        <div className="ax-login__bg-haze" />
-        <div className="ax-login__x-scan" />
-        <div className="ax-login__bg-beams" />
       </div>
       <div className="ax-login__frame" aria-hidden />
       <CyberDeckOverlay root={rootRef} />

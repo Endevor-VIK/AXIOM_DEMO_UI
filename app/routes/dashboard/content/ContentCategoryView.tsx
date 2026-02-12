@@ -305,10 +305,9 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   )
 
   const cardsStart = cardsPage * cardsPerPage
-  const visibleCards = useMemo(
-    () => ordered.slice(cardsStart, cardsStart + cardsPerPage),
-    [ordered, cardsStart, cardsPerPage],
-  )
+  // NOTE: Don't use hooks after early returns (loading/error/empty), otherwise React will
+  // throw "Rendered more hooks than during the previous render" on the first non-loading render.
+  const visibleCards = ordered.slice(cardsStart, cardsStart + cardsPerPage)
 
   const cardsStage = (
     <>
