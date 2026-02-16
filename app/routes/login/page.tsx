@@ -104,11 +104,24 @@ async function warmPrimaryRoutes(deployTarget: string) {
     vfs.readIndex(),
     vfs.readObjects(),
     vfs.readLogs(),
+    import("@/app/routes/dashboard/page"),
+    import("@/app/routes/dashboard/news/page"),
+    import("@/app/routes/dashboard/content/_layout"),
+    import("@/app/routes/dashboard/content/AllRoute"),
+    import("@/app/routes/dashboard/content/CategoryRoute"),
+    import("@/app/routes/dashboard/content/ReadRoute"),
+    import("@/app/routes/dashboard/axchat/page"),
+    import("@/app/routes/dashboard/roadmap/page"),
+    import("@/app/routes/profile/page"),
+    import("@/app/routes/settings/page"),
+    import("@/app/routes/favorites/page"),
   ];
 
   if (deployTarget === "local") {
     tasks.push(
-      fetch("/api/axchat/status", { method: "GET", credentials: "include" }).catch(() => undefined),
+      import("@/lib/axchat/api")
+        .then(({ fetchAxchatStatus }) => fetchAxchatStatus())
+        .catch(() => undefined),
     );
   }
 

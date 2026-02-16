@@ -83,6 +83,8 @@ AXS_HEADER_META:
   - Обновлено: `app/routes/login/page.tsx`
 - 2026-02-16T23:33:18+03:00 — Действие: добавлена telemetry фиксация `login_boot` (time-to-ready, reveal-duration, fallback reason, gate states) через существующий analytics bridge + локальный debug-buffer `window.__AX_LOGIN_BOOT_METRICS__`; расширен post-ready warmup на данные частых dashboard-сценариев и `axchat/status` (local) для снижения видимых догрузок после входа → Результат: OK
   - Обновлено: `app/routes/login/page.tsx`, `lib/analytics.ts`
+- 2026-02-17T00:32:18+03:00 — Действие: переведены основные приватные route-экраны на lazy loading (`React.lazy + Suspense`) для реального code-splitting; синхронизирован `warmPrimaryRoutes` на prefetch route-chunks после `boot=ready` → Результат: OK
+  - Обновлено: `app/main.tsx`, `app/routes/login/page.tsx`
 
 ## Step C — Documentation
 - 2026-02-10T19:50:03+03:00 — Действие: Документация не требуется → Результат: SKIP
@@ -148,6 +150,10 @@ AXS_HEADER_META:
 - 2026-02-16T23:46:57+03:00 — Действие: повторный `npm run test:e2e:preview -- --project=chromium tests/e2e/login-boot.spec.ts` после чистки no-op dynamic imports из warmup → Результат: PASS
   - Итого: `4 passed` (`1.4m`), сборка без предупреждений о mixed static/dynamic import для dashboard-модулей.
 - 2026-02-16T23:47:54+03:00 — Действие: финальный `npm run typecheck` после чистки warmup → Результат: PASS
+- 2026-02-17T00:34:20+03:00 — Действие: `npm run typecheck` после lazy-route рефактора → Результат: PASS
+- 2026-02-17T00:42:06+03:00 — Действие: `npm run test:e2e:preview -- --project=chromium tests/e2e/login-boot.spec.ts` после lazy-route рефактора → Результат: PASS
+  - Итого: `4 passed` (`1.6m`), boot-контракт сохранён.
+  - Подтверждено: production build разрезан на route-chunks (news/content/profile/settings/favorites/reader и др.), без предупреждений mixed static/dynamic import для этих модулей.
 
 ## Step E — Git
 - 2026-02-10T19:52:49+03:00 — Commit: `d761090` — `feat(login): add boot loader transition` — Файлы: `app/routes/login/page.tsx`, `styles/login-boot.css`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
@@ -161,6 +167,7 @@ AXS_HEADER_META:
 - 2026-02-16T20:16:34+03:00 — Commit: `c51a323` — `feat(login-bg): retune Orion scene depth and lighting` — Файлы: `components/login/OrionCityBackground.tsx`
 - 2026-02-16T20:24:55+03:00 — Commit: `8b3d328` — `fix(login-bg): guard material and fog typings` — Файлы: `components/login/OrionCityBackground.tsx`
 - 2026-02-17T00:04:04+03:00 — Commit: `c633c8a` — `feat(login): implement readiness boot gate and telemetry` — Файлы: `app/routes/login/page.tsx`, `components/login/OrionCityBackground.tsx`, `styles/login-bg.css`, `styles/login-boot.css`, `playwright.config.ts`, `package.json`, `lib/analytics.ts`, `tests/e2e/login-boot.spec.ts`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
+- 2026-02-17T00:04:04+03:00 — Commit: `c5a4d4d` — `chore(agent-ops): record login boot commit` — Файлы: `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 
 ---
 

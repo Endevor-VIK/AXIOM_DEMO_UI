@@ -9,28 +9,41 @@ import '../styles/red-protocol-overrides.css'
 
 import Layout from '@/app/routes/_layout'
 import LoginPage from '@/app/routes/login/page'
-import DashboardPage from '@/app/routes/dashboard/page'
-import RoadmapPage from '@/app/routes/dashboard/roadmap/page'
-import AuditPage from '@/app/routes/dashboard/audit/page'
-import AxchatPage from '@/app/routes/dashboard/axchat/page'
-import ContentLayout from '@/app/routes/dashboard/content/_layout'
-import AllRoute from '@/app/routes/dashboard/content/AllRoute'
-import CategoryRoute from '@/app/routes/dashboard/content/CategoryRoute'
-import LoreRoute from '@/app/routes/dashboard/content/LoreRoute'
-import ReadRoute from '@/app/routes/dashboard/content/ReadRoute'
-import NewsPage from '@/app/routes/dashboard/news/page'
-import ReaderPage from '@/src/features/content/pages/ReaderPage'
-import FavoritesPage from '@/app/routes/favorites/page'
-import ProfilePage from '@/app/routes/profile/page'
-import SettingsPage from '@/app/routes/settings/page'
-import PersonalizationPage from '@/app/routes/settings/personalization/page'
-import HelpPage from '@/app/routes/help/page'
 
 import AuthGate from '@/components/AuthGate'
 import ScaleViewport from '@/components/ScaleViewport'
 import TerminalBoot from '@/components/TerminalBoot'
 import { initAnalyticsBridge } from '@/lib/analytics/init'
 import { initScaleManager } from '@/lib/ui/scaleManager'
+
+const DashboardPage = React.lazy(() => import('@/app/routes/dashboard/page'))
+const RoadmapPage = React.lazy(() => import('@/app/routes/dashboard/roadmap/page'))
+const AuditPage = React.lazy(() => import('@/app/routes/dashboard/audit/page'))
+const AxchatPage = React.lazy(() => import('@/app/routes/dashboard/axchat/page'))
+const ContentLayout = React.lazy(() => import('@/app/routes/dashboard/content/_layout'))
+const AllRoute = React.lazy(() => import('@/app/routes/dashboard/content/AllRoute'))
+const CategoryRoute = React.lazy(() => import('@/app/routes/dashboard/content/CategoryRoute'))
+const LoreRoute = React.lazy(() => import('@/app/routes/dashboard/content/LoreRoute'))
+const ReadRoute = React.lazy(() => import('@/app/routes/dashboard/content/ReadRoute'))
+const NewsPage = React.lazy(() => import('@/app/routes/dashboard/news/page'))
+const ReaderPage = React.lazy(() => import('@/src/features/content/pages/ReaderPage'))
+const FavoritesPage = React.lazy(() => import('@/app/routes/favorites/page'))
+const ProfilePage = React.lazy(() => import('@/app/routes/profile/page'))
+const SettingsPage = React.lazy(() => import('@/app/routes/settings/page'))
+const PersonalizationPage = React.lazy(() => import('@/app/routes/settings/personalization/page'))
+const HelpPage = React.lazy(() => import('@/app/routes/help/page'))
+
+function RouteLoadingFallback() {
+  return (
+    <div role='status' aria-live='polite' style={{ padding: '16px', color: 'var(--ax-text)' }}>
+      LOADING ROUTE...
+    </div>
+  )
+}
+
+function withRouteSuspense(element: React.ReactElement) {
+  return <React.Suspense fallback={<RouteLoadingFallback />}>{element}</React.Suspense>
+}
 
 const routes = [
   { path: '/', element: <TerminalBoot /> },
@@ -45,36 +58,36 @@ const routes = [
       {
         path: 'dashboard',
         children: [
-          { index: true, element: <DashboardPage /> },
-          { path: 'roadmap', element: <RoadmapPage /> },
-          { path: 'audit', element: <AuditPage /> },
-          { path: 'axchat', element: <AxchatPage /> },
+          { index: true, element: withRouteSuspense(<DashboardPage />) },
+          { path: 'roadmap', element: withRouteSuspense(<RoadmapPage />) },
+          { path: 'audit', element: withRouteSuspense(<AuditPage />) },
+          { path: 'axchat', element: withRouteSuspense(<AxchatPage />) },
           {
             path: 'content',
-            element: <ContentLayout />,
+            element: withRouteSuspense(<ContentLayout />),
             children: [
               { index: true, element: <Navigate to='all' replace /> },
-              { path: 'all', element: <AllRoute /> },
-              { path: 'lore/*', element: <LoreRoute /> },
-              { path: 'read/:id', element: <ReadRoute /> },
-              { path: ':category', element: <CategoryRoute /> },
+              { path: 'all', element: withRouteSuspense(<AllRoute />) },
+              { path: 'lore/*', element: withRouteSuspense(<LoreRoute />) },
+              { path: 'read/:id', element: withRouteSuspense(<ReadRoute />) },
+              { path: ':category', element: withRouteSuspense(<CategoryRoute />) },
             ],
           },
-          { path: 'news', element: <NewsPage /> },
+          { path: 'news', element: withRouteSuspense(<NewsPage />) },
         ],
       },
-      { path: 'profile', element: <ProfilePage /> },
-      { path: 'favorites', element: <FavoritesPage /> },
-      { path: 'settings', element: <SettingsPage /> },
-      { path: 'settings/personalization', element: <PersonalizationPage /> },
-      { path: 'help', element: <HelpPage /> },
+      { path: 'profile', element: withRouteSuspense(<ProfilePage />) },
+      { path: 'favorites', element: withRouteSuspense(<FavoritesPage />) },
+      { path: 'settings', element: withRouteSuspense(<SettingsPage />) },
+      { path: 'settings/personalization', element: withRouteSuspense(<PersonalizationPage />) },
+      { path: 'help', element: withRouteSuspense(<HelpPage />) },
     ],
   },
   {
     path: '/content/:id',
     element: (
       <AuthGate>
-        <ReaderPage />
+        {withRouteSuspense(<ReaderPage />)}
       </AuthGate>
     ),
   },
