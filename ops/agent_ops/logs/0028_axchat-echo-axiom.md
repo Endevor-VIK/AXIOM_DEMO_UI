@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0028_AXCHAT_ECHO_AXIOM
   title: "GLOBAL LOG — 0028_axchat-echo-axiom"
-  status: ACTIVE
+  status: DONE
   mode: Doc
   goal: "Log"
   scope: "AXIOM WEB CORE UI"
@@ -22,7 +22,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: AXCHAT (ECHO AXIOM) — замена вкладки AUDIT
 - SPEC: docs/iterations/axchat-echo-axiom/spec.md
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 

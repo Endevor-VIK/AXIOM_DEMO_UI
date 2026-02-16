@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.DOCS_ITERATIONS_AXCHAT_ECHO_AXIOM_SPEC_MD
   title: "AXCHAT (ECHO AXIOM) — замена вкладки AUDIT"
-  status: ACTIVE
+  status: DONE
   mode: Doc
   goal: "SPEC"
   scope: "AXIOM WEB CORE UI"
@@ -87,10 +87,10 @@ AXS_HEADER_META:
 - S4 (0.5-1 день): стабилизировать наблюдаемость и DX (прозрачные статусы, детерминированные сообщения ошибок, rollback-профиль конфигурации).
 - S5 (1-2 часа): финальный QA + закрытие задачи (Step D/Step E, статус DONE в индексе).
 
-## 11) Текущие блокеры (срез на 2026-02-16)
-- `npm run typecheck` падает на `app/routes/dashboard/page.tsx` и `components/login/OrionCityBackground.tsx`.
-- e2e AXCHAT падает из-за рассинхронизации placeholder между UI и тестом (`app/routes/dashboard/axchat/index.tsx` vs `tests/e2e/axchat.spec.ts`).
-- В AgentOps-чеклисте остаются незакрытые пункты по ghpages и real-LLM проверке.
+## 11) Исторические блокеры (закрыты 2026-02-16)
+- `npm run typecheck` стабилизирован, PASS.
+- e2e AXCHAT синхронизирован с UI (`tests/e2e/axchat.spec.ts`), PASS.
+- ghpages guard + real-LLM smoke закрыты и зафиксированы в AgentOps.
 
 ## 12) Quality Gates для закрытия 0028
 - Gate 1: `npm run typecheck` = PASS.
