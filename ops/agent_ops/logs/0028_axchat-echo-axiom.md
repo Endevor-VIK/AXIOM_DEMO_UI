@@ -42,6 +42,8 @@ AXS_HEADER_META:
   - Обновлено: `server/src/config.ts`, `server/src/axchat/indexer.ts`, `server/src/axchat/routes.ts`, `ops/axchat/indexer.ts`, `lib/axchat/api.ts`, `app/routes/dashboard/axchat/index.tsx`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`
 - 2026-02-16T20:16:34+03:00 — Действие: закоммичены кодовые правки AXCHAT для scope-модели PUBLIC/CREATOR/ADMIN (UI + API + roles + e2e stubs) и команд `/scope`/`/reindex` с ограничением операций по роли → Результат: OK
   - Обновлено: `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `lib/identity/roles.ts`, `lib/identity/types.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `tests/e2e/axchat.spec.ts`
+- 2026-02-16T20:24:55+03:00 — Действие: закрыт S1-блокер по тестам AXCHAT (синхронизирован placeholder/поисковый matcher в e2e) и устранён общий typecheck-блокер dashboard counter typing → Результат: OK
+  - Обновлено: `tests/e2e/axchat.spec.ts`, `app/routes/dashboard/page.tsx`
 
 ## Step C — Documentation
 - 2026-02-10T15:59:30+03:00 — Действие: создан SPEC axchat-echo-axiom → Результат: OK
@@ -66,6 +68,9 @@ AXS_HEADER_META:
 - 2026-02-16T20:03:44+03:00 — Действие: `npm run build` → Результат: PASS
 - 2026-02-16T20:03:44+03:00 — Действие: e2e AXCHAT (`PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/axchat.spec.ts`) → Результат: FAIL (1/4)
   - Причина: `tests/e2e/axchat.spec.ts` ожидает placeholder `Спроси по базе (RU)…`, в UI фактический placeholder `Спроси по базе (RU) или /help…`.
+- 2026-02-16T20:24:55+03:00 — Действие: `npm run typecheck` → Результат: PASS
+- 2026-02-16T20:24:55+03:00 — Действие: `npm run build` → Результат: PASS
+- 2026-02-16T20:24:55+03:00 — Действие: e2e AXCHAT (`PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/axchat.spec.ts`) → Результат: PASS (4/4)
 
 ## Step E — Git
 - 2026-02-10T20:57:40+03:00 — Commit: `6a2d93d` — `feat(axchat): add echo axiom module` — Файлы: `app/main.tsx`, `app/routes/_layout.tsx`, `app/routes/dashboard/audit/index.tsx`, `app/routes/dashboard/axchat/index.tsx`, `app/routes/dashboard/axchat/page.tsx`, `app/routes/dashboard/page.tsx`, `app/routes/help/page.tsx`, `components/PanelNav.tsx`, `components/TerminalBoot.tsx`, `docs/iterations/README.md`, `docs/iterations/axchat-echo-axiom/spec.md`, `docs/iterations/axchat-echo-axiom/spec_LOG_LINK.md`, `lib/axchat/api.ts`, `lib/featureFlags.ts`, `ops/agent_ops/logs/0028_axchat-echo-axiom.md`, `ops/axchat/indexer.ts`, `package.json`, `server/src/app.ts`, `server/src/auth/guards.ts`, `server/src/axchat/indexer.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/app.css`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`, `tools/ui-walkthrough.mjs`
@@ -78,6 +83,7 @@ AXS_HEADER_META:
 - 2026-02-11T02:37:58+03:00 — Commit: `3bb5526` — `fix(axchat): show ollama host in statuses` — Файлы: `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `server/src/axchat/routes.ts`
 - 2026-02-16T20:08:33+03:00 — Commit: `b1f5632` — `docs(0028): add execution roadmap and QA baseline` — Файлы: `docs/iterations/axchat-echo-axiom/spec.md`, `ops/agent_ops/logs/0028_axchat-echo-axiom.md`
 - 2026-02-16T20:16:34+03:00 — Commit: `a6b93af` — `feat(axchat): add scope-based access and public mode` — Файлы: `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `lib/identity/roles.ts`, `lib/identity/types.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `tests/e2e/axchat.spec.ts`
+- 2026-02-16T20:24:55+03:00 — Commit: `140a1fd` — `fix(axchat): align e2e prompt and unblock typecheck` — Файлы: `tests/e2e/axchat.spec.ts`, `app/routes/dashboard/page.tsx`
 
 ---
 
@@ -87,7 +93,6 @@ AXS_HEADER_META:
 
 ## Риски / Открытые вопросы
 - Требуется реальная локальная модель Ollama для проверки query.
-- Есть drift между UI-копирайтом и e2e-ожиданиями, что ломает регрессионный прогон.
 
 ## Чеклист приёмки
 - [x] user работает в PUBLIC scope без раскрытия внутренних путей/файлов

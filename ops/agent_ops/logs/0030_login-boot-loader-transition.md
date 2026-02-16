@@ -71,6 +71,8 @@ AXS_HEADER_META:
   - Обновлено: `components/login/OrionCityBackground.tsx`
 - 2026-02-16T20:16:34+03:00 — Действие: закоммичен пакет retune для Orion login-background (rollback depth-grade, усиление bloom/света и подъём читаемости глубины сцены) → Результат: OK
   - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-16T20:24:55+03:00 — Действие: закрыт S1-блокер typecheck для login background (null/material guards без изменения визуальной логики рендера) → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
 
 ## Step C — Documentation
 - 2026-02-10T19:50:03+03:00 — Действие: Документация не требуется → Результат: SKIP
@@ -116,6 +118,10 @@ AXS_HEADER_META:
 - 2026-02-16T20:03:44+03:00 — Действие: `npm run build` → Результат: PASS
 - 2026-02-16T20:03:44+03:00 — Действие: инструментальный smoke `/login` (Playwright headless, ожидание 12s) → Результат: OK
   - Проверка: `data-boot=ready`, `hasCanvas=true`, `hasLoginPanel=true`, `failedCount=0`, `errorCount=0`.
+- 2026-02-16T20:24:55+03:00 — Действие: `npm run typecheck` → Результат: PASS
+- 2026-02-16T20:24:55+03:00 — Действие: `npm run build` → Результат: PASS
+- 2026-02-16T20:24:55+03:00 — Действие: инструментальный smoke `/login` (Playwright headless, ожидание 12s) → Результат: OK
+  - Проверка: `data-boot=ready`, `hasCanvas=true`, `hasLoginPanel=true`, `failedCount=0`, `errorCount=0`.
 
 ## Step E — Git
 - 2026-02-10T19:52:49+03:00 — Commit: `d761090` — `feat(login): add boot loader transition` — Файлы: `app/routes/login/page.tsx`, `styles/login-boot.css`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
@@ -127,6 +133,7 @@ AXS_HEADER_META:
 - 2026-02-11T19:34:26+03:00 — Действие: Подготовлен новый пакет textured-ассетов Orion + рефактор `OrionCityBackground`; коммит не выполнен (ожидает проверки CREATOR) → Результат: IN_PROGRESS
 - 2026-02-16T20:08:33+03:00 — Commit: `2ed8d4b` — `docs(0030): create spec and sync log index links` — Файлы: `docs/iterations/0030_login-boot-loader-transition/SPEC.md`, `docs/iterations/0030_login-boot-loader-transition/SPEC_LOG_LINK.md`, `docs/iterations/README.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 - 2026-02-16T20:16:34+03:00 — Commit: `c51a323` — `feat(login-bg): retune Orion scene depth and lighting` — Файлы: `components/login/OrionCityBackground.tsx`
+- 2026-02-16T20:24:55+03:00 — Commit: `8b3d328` — `fix(login-bg): guard material and fog typings` — Файлы: `components/login/OrionCityBackground.tsx`
 
 ---
 
