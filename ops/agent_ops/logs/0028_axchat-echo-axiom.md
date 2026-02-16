@@ -40,6 +40,8 @@ AXS_HEADER_META:
   - Обновлено: `app/routes/_layout.tsx`, `lib/ui/footerBarController.ts`, `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/axchat.css`, `styles/red-protocol-overrides.css`, `tests/e2e/axchat.spec.ts`
 - 2026-02-11T02:33:40+03:00 — Действие: lore-scope фильтрация источников (без system docs по умолчанию), history для поддержания диалога, scroll-hardening (чат/источники) → Результат: OK
   - Обновлено: `server/src/config.ts`, `server/src/axchat/indexer.ts`, `server/src/axchat/routes.ts`, `ops/axchat/indexer.ts`, `lib/axchat/api.ts`, `app/routes/dashboard/axchat/index.tsx`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`
+- 2026-02-16T20:16:34+03:00 — Действие: закоммичены кодовые правки AXCHAT для scope-модели PUBLIC/CREATOR/ADMIN (UI + API + roles + e2e stubs) и команд `/scope`/`/reindex` с ограничением операций по роли → Результат: OK
+  - Обновлено: `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `lib/identity/roles.ts`, `lib/identity/types.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `tests/e2e/axchat.spec.ts`
 
 ## Step C — Documentation
 - 2026-02-10T15:59:30+03:00 — Действие: создан SPEC axchat-echo-axiom → Результат: OK
@@ -75,6 +77,7 @@ AXS_HEADER_META:
 - 2026-02-11T02:33:26+03:00 — Commit: `eea1fd6` — `feat(axchat): lore scope, dialogue memory, scroll` — Файлы: `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `ops/axchat/indexer.ts`, `server/src/axchat/indexer.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`
 - 2026-02-11T02:37:58+03:00 — Commit: `3bb5526` — `fix(axchat): show ollama host in statuses` — Файлы: `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `server/src/axchat/routes.ts`
 - 2026-02-16T20:08:33+03:00 — Commit: `b1f5632` — `docs(0028): add execution roadmap and QA baseline` — Файлы: `docs/iterations/axchat-echo-axiom/spec.md`, `ops/agent_ops/logs/0028_axchat-echo-axiom.md`
+- 2026-02-16T20:16:34+03:00 — Commit: `a6b93af` — `feat(axchat): add scope-based access and public mode` — Файлы: `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `lib/identity/roles.ts`, `lib/identity/types.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `tests/e2e/axchat.spec.ts`
 
 ---
 

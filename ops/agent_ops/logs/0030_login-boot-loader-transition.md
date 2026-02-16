@@ -69,6 +69,8 @@ AXS_HEADER_META:
   - Обновлено: `components/login/OrionCityBackground.tsx`
 - 2026-02-12T12:01:16+03:00 — Действие: Проведён разбор «почему не видно изменений» по истории и runtime-снимкам. Подтверждено: визуальный провал объёма связан не с высотой камеры, а с затемняющим post-process (`depth-grade`) + ослабленными значениями fog/bloom/emissive. Выполнен целевой rollback этого блока к прежнему диапазону, сохранив актуальный профиль камеры. → Результат: OK
   - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-16T20:16:34+03:00 — Действие: закоммичен пакет retune для Orion login-background (rollback depth-grade, усиление bloom/света и подъём читаемости глубины сцены) → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
 
 ## Step C — Documentation
 - 2026-02-10T19:50:03+03:00 — Действие: Документация не требуется → Результат: SKIP
@@ -124,6 +126,7 @@ AXS_HEADER_META:
 - 2026-02-11T02:52:40+03:00 — Commit: `23db653` — `feat(login-bg): integrate Orion city model background` — Файлы: `components/login/OrionCityBackground.tsx`, `public/assets/orion/level.glb`, `public/draco/gltf/draco_decoder.js`, `app/routes/login/page.tsx`, `styles/login-cyber.css`, `package.json`, `package-lock.json`, `node_modules/.package-lock.json`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 - 2026-02-11T19:34:26+03:00 — Действие: Подготовлен новый пакет textured-ассетов Orion + рефактор `OrionCityBackground`; коммит не выполнен (ожидает проверки CREATOR) → Результат: IN_PROGRESS
 - 2026-02-16T20:08:33+03:00 — Commit: `2ed8d4b` — `docs(0030): create spec and sync log index links` — Файлы: `docs/iterations/0030_login-boot-loader-transition/SPEC.md`, `docs/iterations/0030_login-boot-loader-transition/SPEC_LOG_LINK.md`, `docs/iterations/README.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
+- 2026-02-16T20:16:34+03:00 — Commit: `c51a323` — `feat(login-bg): retune Orion scene depth and lighting` — Файлы: `components/login/OrionCityBackground.tsx`
 
 ---
 
