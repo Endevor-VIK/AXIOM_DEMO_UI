@@ -160,8 +160,7 @@ AXS_HEADER_META:
 - 2026-02-16T20:08:33+03:00 — Commit: `2ed8d4b` — `docs(0030): create spec and sync log index links` — Файлы: `docs/iterations/0030_login-boot-loader-transition/SPEC.md`, `docs/iterations/0030_login-boot-loader-transition/SPEC_LOG_LINK.md`, `docs/iterations/README.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 - 2026-02-16T20:16:34+03:00 — Commit: `c51a323` — `feat(login-bg): retune Orion scene depth and lighting` — Файлы: `components/login/OrionCityBackground.tsx`
 - 2026-02-16T20:24:55+03:00 — Commit: `8b3d328` — `fix(login-bg): guard material and fog typings` — Файлы: `components/login/OrionCityBackground.tsx`
-- 2026-02-16T23:47:54+03:00 — Действие: рабочее дерево содержит изменения boot coordinator + telemetry + e2e gate, коммит не выполнен (ожидает approve CREATOR) → Результат: IN_PROGRESS
-  - Файлы: `app/routes/login/page.tsx`, `components/login/OrionCityBackground.tsx`, `styles/login-bg.css`, `styles/login-boot.css`, `playwright.config.ts`, `package.json`, `lib/analytics.ts`, `tests/e2e/login-boot.spec.ts`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
+- 2026-02-17T00:04:04+03:00 — Commit: `c633c8a` — `feat(login): implement readiness boot gate and telemetry` — Файлы: `app/routes/login/page.tsx`, `components/login/OrionCityBackground.tsx`, `styles/login-bg.css`, `styles/login-boot.css`, `playwright.config.ts`, `package.json`, `lib/analytics.ts`, `tests/e2e/login-boot.spec.ts`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 
 ---
 
