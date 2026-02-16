@@ -709,7 +709,7 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
 
   app.post(
     '/reindex',
-    { preHandler: requireAnyRole(['creator', 'admin', 'dev']) },
+    { preHandler: requireAnyRole(['creator', 'test', 'admin', 'dev']) },
     async (request, reply) => {
       if (config.deployTarget !== 'local') {
         reply.code(403).send({ error: 'axchat_disabled' })
