@@ -215,10 +215,10 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
       renderer.setClearColor(0x000000, 0);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.08;
+      renderer.toneMappingExposure = 1.2;
 
       const scene = new THREE.Scene();
-      scene.fog = new THREE.FogExp2(0x070d18, 0.00082);
+      scene.fog = new THREE.FogExp2(0x070d18, 0.00062);
 
       const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 3200);
       camera.position.set(0, 200, 632);
@@ -226,71 +226,15 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
 
       const composer = new EffectComposer(renderer);
       composer.addPass(new RenderPass(scene, camera));
-      const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.68, 0.61, 0.3);
+      const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.9, 0.84, 0.2);
       composer.addPass(bloom);
-      const depthGradePass = new ShaderPass({
-        uniforms: {
-          tDiffuse: { value: null },
-          uTime: { value: 0 },
-          uFloorMask: { value: 0.19 },
-          uVignette: { value: 0.1 },
-        },
-        vertexShader: `
-          varying vec2 vUv;
-          void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }
-        `,
-        fragmentShader: `
-          uniform sampler2D tDiffuse;
-          uniform float uTime;
-          uniform float uFloorMask;
-          uniform float uVignette;
-          varying vec2 vUv;
-
-          float hash21(vec2 p) {
-            p = fract(p * vec2(234.34, 435.345));
-            p += dot(p, p + 34.23);
-            return fract(p.x * p.y);
-          }
-
-          void main() {
-            vec2 uv = vUv;
-            vec4 src = texture2D(tDiffuse, uv);
-
-            float fringe = (1.0 - smoothstep(0.12, 0.9, uv.y)) * 0.0015;
-            vec3 col;
-            col.r = texture2D(tDiffuse, uv + vec2(fringe, 0.0)).r;
-            col.g = src.g;
-            col.b = texture2D(tDiffuse, uv - vec2(fringe, 0.0)).b;
-
-            float lowerMask = smoothstep(uFloorMask, uFloorMask + 0.2, uv.y);
-            col = mix(col * 0.94, col, lowerMask);
-
-            float horizon = 1.0 - smoothstep(0.24, 0.92, uv.y);
-            col += vec3(0.028, 0.062, 0.11) * horizon * 0.62;
-
-            float radial = distance(uv, vec2(0.5, 0.54));
-            float vignette = smoothstep(0.34, 0.98, radial);
-            col *= 1.0 - vignette * uVignette;
-
-            float grain = (hash21(uv * 820.0 + uTime * 0.1) - 0.5) * 0.009;
-            col += grain;
-
-            gl_FragColor = vec4(col, src.a);
-          }
-        `,
-      });
-      composer.addPass(depthGradePass);
       const fxaaPass = new ShaderPass(FXAAShader);
       composer.addPass(fxaaPass);
-      const depthGradeUniforms = (depthGradePass.material as any).uniforms;
       const fxaaUniforms = (fxaaPass.material as any).uniforms;
 
-      const amb = new THREE.AmbientLight(0xffffff, 0.34);
-      const hemi = new THREE.HemisphereLight(0x8bcfff, 0x120a11, 0.4);
-      const key = new THREE.DirectionalLight(0xb5ddff, 0.5);
+      const amb = new THREE.AmbientLight(0xffffff, 0.42);
+      const hemi = new THREE.HemisphereLight(0x8bcfff, 0x120a11, 0.5);
+      const key = new THREE.DirectionalLight(0xb5ddff, 0.62);
       key.position.set(28, 44, 24);
       const fill = new THREE.PointLight(0x44f7e0, 0.58, 340, 2);
       fill.position.set(-62, 30, -96);
@@ -518,10 +462,10 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         map: gridTex ?? null,
         emissiveMap: gridTex ?? null,
         emissive: new THREE.Color(0x4affea),
-        emissiveIntensity: 0.12,
-        metalness: 0.78,
-        roughness: 0.38,
-        envMapIntensity: 0.32,
+        emissiveIntensity: 0.18,
+        metalness: 0.9,
+        roughness: 0.27,
+        envMapIntensity: 0.42,
       }));
 
       const floor = new THREE.Mesh(
@@ -529,7 +473,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         floorMat,
       );
       floor.rotation.x = -Math.PI / 2;
-      floor.position.set(centerX, cityGroundY - 4.8, centerZ - 160);
+      floor.position.set(centerX, cityGroundY - 2.6, centerZ - 150);
       floor.receiveShadow = false;
       world.add(floor);
 
@@ -543,7 +487,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         map: floorGlowTex ?? null,
         color: 0x56e9ff,
         transparent: true,
-        opacity: 0.12,
+        opacity: 0.18,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
       }));
@@ -553,7 +497,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         floorGlowMat,
       );
       floorGlow.rotation.x = -Math.PI / 2;
-      floorGlow.position.set(centerX, cityGroundY - 1.3, centerZ - 132);
+      floorGlow.position.set(centerX, cityGroundY - 0.2, centerZ - 120);
       world.add(floorGlow);
 
       const laneCount = 5;
@@ -561,7 +505,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
       const laneMat = registerMaterial(new THREE.MeshBasicMaterial({
         color: 0x41ffe6,
         transparent: true,
-        opacity: 0.11,
+        opacity: 0.15,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
       }));
@@ -569,7 +513,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
       for (let i = 0; i < laneCount; i++) {
         const lane = new THREE.Mesh(laneGeo, laneMat);
         const t = i - (laneCount - 1) * 0.5;
-        lane.position.set(centerX + (t * 84), cityGroundY - 1.4, centerZ - 332);
+        lane.position.set(centerX + (t * 84), cityGroundY - 0.15, centerZ - 320);
         lane.rotation.x = -Math.PI / 2;
         laneGroup.add(lane);
       }
@@ -579,7 +523,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         map: set1Diffuse,
         emissiveMap: set1Emission,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 1.56,
+        emissiveIntensity: 1.95,
         roughnessMap: set1RM,
         metalnessMap: set1RM,
         metalness: 0.6,
@@ -591,7 +535,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         map: set2Diffuse,
         emissiveMap: set2Emission,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 1.56,
+        emissiveIntensity: 1.95,
         roughnessMap: set2RM,
         metalnessMap: set2RM,
         metalness: 0.6,
@@ -607,7 +551,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         roughnessMap: set1RM,
         metalnessMap: set1RM,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 1.94,
+        emissiveIntensity: 2.5,
         metalness: 0.68,
         roughness: 0.42,
         side: THREE.DoubleSide,
@@ -618,7 +562,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         emissiveMap: mainDiffuse,
         alphaMap: mainAlpha,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 0.72,
+        emissiveIntensity: 0.85,
         metalness: 0.05,
         roughness: 0.88,
         alphaTest: 0.5,
@@ -630,7 +574,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         map: building4Cars,
         emissiveMap: building4Cars,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 0.78,
+        emissiveIntensity: 0.92,
         metalness: 0.3,
         roughness: 0.6,
         side: THREE.DoubleSide,
@@ -1070,14 +1014,14 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         rainAnchor.position.copy(camera.position);
 
         const pulse = 0.5 + 0.5 * Math.sin(t * 0.22);
-        floorGlowMat.opacity = 0.08 + pulse * 0.08;
-        laneMat.opacity = 0.06 + pulse * 0.09;
-        skyGlowMat.opacity = 0.04 + (0.5 + 0.5 * Math.sin(t * 0.17)) * 0.05;
+        floorGlowMat.opacity = 0.12 + pulse * 0.1;
+        laneMat.opacity = 0.1 + pulse * 0.12;
+        skyGlowMat.opacity = 0.05 + (0.5 + 0.5 * Math.sin(t * 0.17)) * 0.06;
 
         scene.fog.color.copy(tmpColor.setRGB(
-          0.028 + pulse * 0.012,
-          0.042 + pulse * 0.016,
-          0.074 + pulse * 0.024,
+          0.04 + pulse * 0.014,
+          0.058 + pulse * 0.018,
+          0.094 + pulse * 0.024,
         ));
 
         for (const c of cars) {
@@ -1115,9 +1059,8 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         }
         pos.needsUpdate = true;
 
-        depthGradeUniforms.uTime.value = t;
-        bloom.strength = 0.66 + Math.sin(t * 0.31) * 0.028;
-        bloom.radius = 0.61;
+        bloom.strength = 0.92;
+        bloom.radius = 0.84;
 
         composer.render();
         raf = requestAnimationFrame(render);
