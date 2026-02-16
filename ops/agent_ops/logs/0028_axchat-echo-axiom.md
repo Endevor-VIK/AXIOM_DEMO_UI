@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Log"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-11
+  last_updated: 2026-02-16
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -28,6 +28,7 @@ AXS_HEADER_META:
 
 ## Step A — Discovery
 - 2026-02-10T15:59:10+03:00 — Действие: проверил текущие роуты/навигацию/audit UI, backend auth/guards, env deploy target → Результат: OK
+- 2026-02-16T20:03:44+03:00 — Действие: по запросу CREATOR сформирован детальный план S0-S5 для вывода задачи на новый уровень; зафиксированы текущие блокеры (typecheck + e2e placeholder drift + незакрытые acceptance-пункты) → Результат: OK
 
 ## Step B — Implementation
 - 2026-02-10T15:59:20+03:00 — Действие: в работе (UI + backend + индексер) → Результат: IN_PROGRESS
@@ -43,6 +44,7 @@ AXS_HEADER_META:
 ## Step C — Documentation
 - 2026-02-10T15:59:30+03:00 — Действие: создан SPEC axchat-echo-axiom → Результат: OK
 - 2026-02-10T16:40:44+03:00 — Действие: обновлён docs/iterations/README.md + link/log → Результат: OK
+- 2026-02-16T20:03:44+03:00 — Действие: дополнен SPEC (`S0-S5`, блокеры на 2026-02-16, quality gates для DONE) для управляемого завершения задачи → Результат: OK
 
 ## Step D — QA
 - 2026-02-10T15:59:40+03:00 — Действие: локальный QA не запускался (ожидает после правок) → Результат: SKIP
@@ -57,6 +59,11 @@ AXS_HEADER_META:
   - Команда: `PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/axchat.spec.ts`
 - 2026-02-11T02:38:40+03:00 — Действие: e2e прогон после добавления LLM host в статус/ошибки → Результат: PASS
   - Команда: `PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/axchat.spec.ts`
+- 2026-02-16T20:03:44+03:00 — Действие: `npm run typecheck` на текущем дереве → Результат: FAIL
+  - Ошибки: `app/routes/dashboard/page.tsx:76`, `components/login/OrionCityBackground.tsx:662`, `components/login/OrionCityBackground.tsx:1021`.
+- 2026-02-16T20:03:44+03:00 — Действие: `npm run build` → Результат: PASS
+- 2026-02-16T20:03:44+03:00 — Действие: e2e AXCHAT (`PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT=5173 npm run test:e2e -- --project=chromium tests/e2e/axchat.spec.ts`) → Результат: FAIL (1/4)
+  - Причина: `tests/e2e/axchat.spec.ts` ожидает placeholder `Спроси по базе (RU)…`, в UI фактический placeholder `Спроси по базе (RU) или /help…`.
 
 ## Step E — Git
 - 2026-02-10T20:57:40+03:00 — Commit: `6a2d93d` — `feat(axchat): add echo axiom module` — Файлы: `app/main.tsx`, `app/routes/_layout.tsx`, `app/routes/dashboard/audit/index.tsx`, `app/routes/dashboard/axchat/index.tsx`, `app/routes/dashboard/axchat/page.tsx`, `app/routes/dashboard/page.tsx`, `app/routes/help/page.tsx`, `components/PanelNav.tsx`, `components/TerminalBoot.tsx`, `docs/iterations/README.md`, `docs/iterations/axchat-echo-axiom/spec.md`, `docs/iterations/axchat-echo-axiom/spec_LOG_LINK.md`, `lib/axchat/api.ts`, `lib/featureFlags.ts`, `ops/agent_ops/logs/0028_axchat-echo-axiom.md`, `ops/axchat/indexer.ts`, `package.json`, `server/src/app.ts`, `server/src/auth/guards.ts`, `server/src/axchat/indexer.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/app.css`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`, `tools/ui-walkthrough.mjs`
@@ -71,14 +78,15 @@ AXS_HEADER_META:
 ---
 
 ## Заметки / Решения
-- AXCHAT закрывается на ghpages по deploy target, доступ только creator/test.
+- AXCHAT работает по scope-модели PUBLIC/CREATOR/ADMIN; ghpages-профиль должен оставаться закрытым.
 - Индекс: SQLite FTS5 + локальная LLM (Ollama) через backend.
 
 ## Риски / Открытые вопросы
 - Требуется реальная локальная модель Ollama для проверки query.
+- Есть drift между UI-копирайтом и e2e-ожиданиями, что ломает регрессионный прогон.
 
 ## Чеклист приёмки
-- [x] /dashboard/axchat доступен для creator/test, user получает LOCKED
+- [x] user работает в PUBLIC scope без раскрытия внутренних путей/файлов
 - [ ] /dashboard/audit редиректит на /dashboard/axchat
 - [x] /api/axchat/status показывает model/index
 - [ ] Запросы возвращают RU ответ + refs (реальная LLM, не stub)
