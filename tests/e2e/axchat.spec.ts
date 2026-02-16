@@ -41,6 +41,8 @@ const publicStubRefs = [
   },
 ]
 
+const CHAT_PLACEHOLDER = /Спроси по базе \(RU\).+\/help…/
+
 async function stubGoogleFonts(page: Page) {
   await page.route('**/fonts.googleapis.com/**', async (route) => {
     await route.fulfill({
@@ -184,7 +186,7 @@ test.describe('AXCHAT access control', () => {
     await expect(page.locator('.ax-axchat')).toBeVisible()
     await expect(page.getByText('Scope: PUBLIC')).toBeVisible()
 
-    await page.getByPlaceholder('Спроси по базе (RU) или /help…').fill('Кто такая Лиза?')
+    await page.getByPlaceholder(CHAT_PLACEHOLDER).fill('Кто такая Лиза?')
     await page.getByRole('button', { name: /send/i }).click()
     await expect(page.locator('.ax-axchat__message-body').last()).toContainText('публичной базе')
     await expect(page.getByText('Публичная карточка #1')).toBeVisible()
@@ -207,7 +209,7 @@ test.describe('AXCHAT full access', () => {
     await expect(page.locator('.ax-axchat__status-item', { hasText: 'MODEL' })).toContainText('ONLINE')
     await expect(page.locator('.ax-axchat__status-item', { hasText: 'INDEX' })).toContainText('ONLINE')
 
-    await page.getByPlaceholder('Спроси по базе (RU)…').fill('Кто такая Лиза?')
+    await page.getByPlaceholder(CHAT_PLACEHOLDER).fill('Кто такая Лиза?')
     await page.getByRole('button', { name: /send/i }).click()
     await expect(page.locator('.ax-axchat__message-body').last()).toContainText('Лиза')
     await expect(page.getByText('content-src/03.02_LIZA.md')).toBeVisible()
@@ -229,9 +231,9 @@ test.describe('AXCHAT full access', () => {
     await copyButton.click()
 
     await page.getByRole('button', { name: 'SEARCH' }).click()
-    await page.getByPlaceholder('Спроси по базе (RU)…').fill('Nexus')
+    await page.getByPlaceholder(CHAT_PLACEHOLDER).fill('Nexus')
     await page.getByRole('button', { name: /send/i }).click()
-    await expect(page.getByText('Поиск завершен', { exact: false })).toBeVisible()
+    await expect(page.getByText(/Поиск заверш/i)).toBeVisible()
 
     const emptyCard = page.locator('.ax-axchat__source', { hasText: 'content-src/empty.md' })
     await expect(emptyCard.getByRole('link', { name: 'Открыть' })).toHaveCount(0)

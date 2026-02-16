@@ -68,7 +68,7 @@ export default function DashboardPage() {
   }, [])
 
   const statusCounters = useMemo(() => {
-    const counters = [
+    const counters: Array<{ label: string; value: number | string; to: string }> = [
       { label: 'CONTENT', value: counts.content, to: '/dashboard/content' },
       { label: 'NEWS', value: counts.news, to: '/dashboard/news' },
     ]
