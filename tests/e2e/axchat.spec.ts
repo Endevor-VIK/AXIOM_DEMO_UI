@@ -198,6 +198,16 @@ test.describe('AXCHAT access control', () => {
 test.describe('AXCHAT full access', () => {
   test.describe.configure({ timeout: 120_000 })
 
+  test('audit route redirects to AXCHAT', async ({ page }) => {
+    await stubGoogleFonts(page)
+    await login(page, TEST_EMAIL, TEST_PASS)
+    await stubAxchatApi(page)
+
+    await page.goto('/dashboard/audit', { waitUntil: 'commit' })
+    await expect(page).toHaveURL(/\/dashboard\/axchat/)
+    await expect(page.locator('.ax-axchat')).toBeVisible()
+  })
+
   test('test role: QA + Search flows', async ({ page, context }) => {
     await stubGoogleFonts(page)
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])

@@ -154,6 +154,72 @@ function isBroadQuestion(message: string) {
   return /(расскажи|подробно|обзор|всё|все|что известно|поясни|объясни|глубже|шире)/i.test(m)
 }
 
+const RETRIEVAL_STOPWORDS = new Set([
+  'кто',
+  'что',
+  'где',
+  'когда',
+  'как',
+  'почему',
+  'зачем',
+  'какой',
+  'какая',
+  'какие',
+  'такой',
+  'такая',
+  'такие',
+  'это',
+  'про',
+  'о',
+  'об',
+  'для',
+  'и',
+  'или',
+  'в',
+  'во',
+  'на',
+  'по',
+  'из',
+  'от',
+  'до',
+  'ли',
+  'расскажи',
+  'подробно',
+  'пожалуйста',
+])
+
+function tokenizeQuery(input: string) {
+  return input
+    .toLowerCase()
+    .replace(/[!"#$%&'()*+,./:;<=>?@[\\\]^_`{|}~]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+}
+
+function buildRetrievalCandidates(message: string, lastUser: string) {
+  const seeds = dedupeStrings([lastUser && lastUser !== message ? `${lastUser} ${message}` : '', message])
+  const out: string[] = []
+  const add = (value: string) => {
+    const next = value.trim()
+    if (next.length >= 2) out.push(next)
+  }
+
+  for (const seed of seeds) {
+    const tokens = tokenizeQuery(seed)
+    if (!tokens.length) continue
+    const core = tokens.filter((token) => token.length > 1 && !RETRIEVAL_STOPWORDS.has(token))
+    add(seed)
+    if (core.length) {
+      add(core.join(' '))
+      if (core.length >= 2) add(core.slice(-2).join(' '))
+      if (core.length >= 3) add(core.slice(-3).join(' '))
+    }
+    if (tokens.length >= 2) add(tokens.slice(-2).join(' '))
+  }
+
+  return dedupeStrings(out)
+}
+
 function resolveMode(rawMode: unknown, message: string): 'qa' | 'search' {
   if (rawMode === 'qa' || rawMode === 'search') return rawMode
   const m = message.toLowerCase()
@@ -535,12 +601,18 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
       const history = sanitizeHistory(body?.history)
       const dialogue = buildDialogue(history)
       const lastUser = [...history].reverse().find((turn) => turn.role === 'user')?.content || ''
-      const retrievalQuery =
-        message.length < 24 && lastUser && lastUser !== message ? `${lastUser} ${message}` : message
-
-      const refs = searchAxchatIndex(config.axchatIndexPath, retrievalQuery, topK, {
-        allowedSources: scope.allowedSources,
-      })
+      const retrievalCandidates = buildRetrievalCandidates(message, lastUser)
+      let retrievalQuery = retrievalCandidates[0] || message
+      let refs: AxchatRef[] = []
+      for (const candidate of retrievalCandidates) {
+        const next = searchAxchatIndex(config.axchatIndexPath, candidate, topK, {
+          allowedSources: scope.allowedSources,
+        })
+        if (!next.length) continue
+        refs = next
+        retrievalQuery = candidate
+        break
+      }
       const safeRefs = mapRefsForScope(refs, scope)
 
       if (mode === 'search') {
@@ -550,7 +622,13 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
             'открой нужную карточку в Sources или уточни формулировку запроса',
           ),
           refs: safeRefs,
-          notes: { latency_ms: Date.now() - start, model: config.axchatModel, scope: scope.role, mode },
+          notes: {
+            latency_ms: Date.now() - start,
+            model: config.axchatModel,
+            scope: scope.role,
+            mode,
+            retrieval_query: retrievalQuery,
+          },
         })
         return
       }
@@ -571,7 +649,13 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
               : 'уточни сущность или попроси CREATOR обновить индекс',
           ),
           refs: mapRefsForScope(nearby, scope),
-          notes: { latency_ms: Date.now() - start, model: config.axchatModel, scope: scope.role, mode },
+          notes: {
+            latency_ms: Date.now() - start,
+            model: config.axchatModel,
+            scope: scope.role,
+            mode,
+            retrieval_query: retrievalQuery,
+          },
         })
         return
       }
@@ -612,7 +696,13 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
       reply.send({
         answer_markdown: answer,
         refs: safeRefs,
-        notes: { latency_ms: Date.now() - start, model: config.axchatModel, scope: scope.role, mode },
+        notes: {
+          latency_ms: Date.now() - start,
+          model: config.axchatModel,
+          scope: scope.role,
+          mode,
+          retrieval_query: retrievalQuery,
+        },
       })
     },
   )
