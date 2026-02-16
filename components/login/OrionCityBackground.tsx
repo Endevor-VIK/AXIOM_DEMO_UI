@@ -659,7 +659,7 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
                 mm.emissiveIntensity = Math.min(1.1, Math.max(0.6, Number(mm.emissiveIntensity || 0.6)));
                 mm.side = THREE.DoubleSide;
               }
-              sceneMaterials.add(originalMaterial);
+              if (originalMaterial) sceneMaterials.add(originalMaterial);
             }
           }
 
@@ -1018,11 +1018,13 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         laneMat.opacity = 0.1 + pulse * 0.12;
         skyGlowMat.opacity = 0.05 + (0.5 + 0.5 * Math.sin(t * 0.17)) * 0.06;
 
-        scene.fog.color.copy(tmpColor.setRGB(
-          0.04 + pulse * 0.014,
-          0.058 + pulse * 0.018,
-          0.094 + pulse * 0.024,
-        ));
+        if (scene.fog instanceof THREE.FogExp2) {
+          scene.fog.color.copy(tmpColor.setRGB(
+            0.04 + pulse * 0.014,
+            0.058 + pulse * 0.018,
+            0.094 + pulse * 0.024,
+          ));
+        }
 
         for (const c of cars) {
           c.u = (c.u + dt * c.rate) % 1;
