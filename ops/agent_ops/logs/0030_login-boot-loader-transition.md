@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-12
+  last_updated: 2026-02-16
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -21,7 +21,7 @@ AXS_HEADER_META:
 - Репозиторий: axiom-web-core-ui
 - Ветка: main
 - Задача: Boot-sequence loader + переход на login (стилизованный)
-- SPEC: none
+- SPEC: docs/iterations/0030_login-boot-loader-transition/SPEC.md
 - Статус: ACTIVE
 
 ---
@@ -33,6 +33,7 @@ AXS_HEADER_META:
   - Подтверждено: текстуры и материалы не встроены в `level.glb`; рендер собирается из `level.glb` + `*.ktx2` + `building1..10.glb` + basis transcoder.
   - Артефакты: `ops/artifacts/ui_scan/manual/orion_source_requests.json`, `ops/artifacts/ui_scan/manual/orion_source_probe.png`
 - 2026-02-12T00:38:11+03:00 — Действие: По запросу CREATOR уточнено ограничение: движение камеры не менять (оставить parallax от курсора), требуется только правильный базовый ракурс на центр города. → Результат: OK
+- 2026-02-16T20:03:44+03:00 — Действие: по запросу CREATOR подготовлен план S0-S5 для вывода 0030 на новый уровень и отдельный SPEC с quality gates; зафиксированы блокеры (typecheck + отсутствие выделенного e2e login gate) → Результат: OK
 
 ## Step B — Implementation
 - 2026-02-10T19:50:03+03:00 — Действие: Добавлен boot-sequence overlay и переход в login, подключены стили → Результат: OK
@@ -66,9 +67,14 @@ AXS_HEADER_META:
   - Обновлено: `components/login/OrionCityBackground.tsx`
 - 2026-02-12T11:00:13+03:00 — Действие: По новому уточнению CREATOR выполнен rollback высоты камеры к «старому» уровню (как на предыдущем удачном скрине): возвращены значения `verticalOffset`, `lookLift` и Y-clamp камеры/взгляда до профиля до последнего подъёма высоты. → Результат: OK
   - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-12T12:01:16+03:00 — Действие: Проведён разбор «почему не видно изменений» по истории и runtime-снимкам. Подтверждено: визуальный провал объёма связан не с высотой камеры, а с затемняющим post-process (`depth-grade`) + ослабленными значениями fog/bloom/emissive. Выполнен целевой rollback этого блока к прежнему диапазону, сохранив актуальный профиль камеры. → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
 
 ## Step C — Documentation
 - 2026-02-10T19:50:03+03:00 — Действие: Документация не требуется → Результат: SKIP
+- 2026-02-16T20:03:44+03:00 — Действие: создан SPEC для 0030 и LOG LINK, обновлены индекс задач и портал iterations → Результат: OK
+  - Добавлено: `docs/iterations/0030_login-boot-loader-transition/SPEC.md`, `docs/iterations/0030_login-boot-loader-transition/SPEC_LOG_LINK.md`
+  - Обновлено: `ops/agent_ops/logs/00_LOG_INDEX.md`, `docs/iterations/README.md`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 
 ## Step D — QA
 - 2026-02-10T19:50:03+03:00 — Действие: Локально не запускал, нужна проверка CREATOR → Результат: SKIP
@@ -97,9 +103,17 @@ AXS_HEADER_META:
 - 2026-02-12T11:00:13+03:00 — Действие: QA после rollback высоты камеры (`npm run build` + smoke `/login` на `127.0.0.1:5173`) → Результат: OK
   - Артефакт: `ops/artifacts/ui_scan/manual/2026-02-12_login_orion_center_rig_v12_cam_height_restored_5173.png`
   - Проверка: `BOOT=ready`, `GLITCH=false`, `ERROR_COUNT=0`, `REQ_FAIL_COUNT=0`.
+- 2026-02-12T12:01:16+03:00 — Действие: QA после rollback post-process/light-параметров (`npm run build` + инструментальный smoke `/login` на `127.0.0.1:5173`) → Результат: OK
+  - Артефакты: `ops/artifacts/ui_scan/manual/2026-02-12_login_orion_center_rig_v13_baseline_before_ab_5173.png`, `ops/artifacts/ui_scan/manual/2026-02-12_login_orion_center_rig_v14_brightness_restored_5173.png`, `ops/artifacts/ui_scan/manual/2026-02-12_login_orion_center_rig_v15_brightness_restored_noglitch_5173.png`, `ops/artifacts/ui_scan/manual/2026-02-12_login_debug_t12000.png`
+  - Проверка: `BOOT=ready`, `GLITCH=false`, `ERROR_COUNT=0`, `REQ_FAIL_COUNT=0`; карточка login присутствует (`opacity=1`, `display=grid`) после завершения boot-фазы.
 - 2026-02-12T00:38:11+03:00 — Действие: Сверка локального набора Orion-ассетов против `orion_source_requests.json`. → Результат: PARTIAL
   - Итого: `26/27` запрошенных ресурсов покрыты локально.
   - Отсутствует: `assets/sky4k-75.avif` (фон preloader-сцены оригинального приложения; для login-фона не критичен).
+- 2026-02-16T20:03:44+03:00 — Действие: `npm run typecheck` на текущем дереве → Результат: FAIL
+  - Ошибки: `app/routes/dashboard/page.tsx:76`, `components/login/OrionCityBackground.tsx:662`, `components/login/OrionCityBackground.tsx:1021`.
+- 2026-02-16T20:03:44+03:00 — Действие: `npm run build` → Результат: PASS
+- 2026-02-16T20:03:44+03:00 — Действие: инструментальный smoke `/login` (Playwright headless, ожидание 12s) → Результат: OK
+  - Проверка: `data-boot=ready`, `hasCanvas=true`, `hasLoginPanel=true`, `failedCount=0`, `errorCount=0`.
 
 ## Step E — Git
 - 2026-02-10T19:52:49+03:00 — Commit: `d761090` — `feat(login): add boot loader transition` — Файлы: `app/routes/login/page.tsx`, `styles/login-boot.css`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
@@ -117,6 +131,7 @@ AXS_HEADER_META:
 
 ## Риски / Открытые вопросы
 - Нужны параметры точного тайминга/интенсивности после первого просмотра.
+- Нет выделенного e2e-гейта с проверкой `prefers-reduced-motion` и повторяемости boot-перехода.
 
 ## Чеклист приёмки
 - [ ] Есть loader-экран с boot-sequence

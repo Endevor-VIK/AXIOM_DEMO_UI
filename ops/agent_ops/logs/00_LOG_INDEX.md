@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-10
+  last_updated: 2026-02-16
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -48,7 +48,7 @@ AXS_HEADER_META:
 | 0027 | 2026-02-09T23:32:54+03:00 | Localtunnel fallback for WSL                    | main                        | —                                          | ops/agent_ops/logs/0027_tunnel-localtunnel-fallback.md | PAUSED |
 | 0028 | 2026-02-10T15:58:43+03:00 | AXCHAT (ECHO AXIOM) — замена вкладки AUDIT      | main                        | docs/iterations/axchat-echo-axiom/spec.md   | ops/agent_ops/logs/0028_axchat-echo-axiom.md | ACTIVE |
 | 0029 | 2026-02-10T16:02:27+03:00 | NEWS Signal Center (редизайн вкладки NEWS)      | main                        | docs/iterations/0011_news-signal-center/SPEC.md | ops/agent_ops/logs/0029_news-signal-center.md | ACTIVE |
-| 0030 | 2026-02-10T19:41:16+03:00 | Boot-sequence loader + переход на login         | main                        | —                                          | ops/agent_ops/logs/0030_login-boot-loader-transition.md | ACTIVE |
+| 0030 | 2026-02-10T19:41:16+03:00 | Boot-sequence loader + переход на login         | main                        | docs/iterations/0030_login-boot-loader-transition/SPEC.md | ops/agent_ops/logs/0030_login-boot-loader-transition.md | ACTIVE |
 | 0031 | 2026-02-10T22:35:53+03:00 | CONTENT LIBRARY — Orbit View + UI De-Mix        | main                        | docs/iterations/0031_content-orbit-view-ui-demix/SPEC.md | ops/agent_ops/logs/0031_content-orbit-view-ui-demix.md | ACTIVE |
 | 0032 | 2026-02-10T22:46:00+03:00 | NEWS v2 (Dispatch + Signal Center, Feed rework) | main                        | docs/iterations/0012_news-v2-dispatch-signal-center/SPEC.md | ops/agent_ops/logs/0032_news-v2-dispatch-signal-center.md | ACTIVE |
 | 0033 | 2026-02-11T02:28:36+03:00 | NEWS: Signal Center Rework v1 (autoplay + density) | main                     | docs/iterations/0013_news-signal-center-rework-v1/SPEC.md | ops/agent_ops/logs/0033_news-signal-center-rework-v1.md | ACTIVE |
