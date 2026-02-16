@@ -94,6 +94,10 @@
   animation: ax-boot-line .7s ease forwards;
   animation-delay: var(--delay, 0s);
 }
+.ax-boot-line[data-state="error"] .ax-boot-text{
+  color:#ffd2d8;
+  opacity:.96;
+}
 
 .ax-boot-tag{
   color:#ff8a96;
@@ -109,6 +113,12 @@
   color:#7dffb0;
   font-weight:700;
   letter-spacing:.2em;
+}
+.ax-boot-ok[data-state="loading"]{
+  color:#ffd58e;
+}
+.ax-boot-ok[data-state="error"]{
+  color:#ff8e9a;
 }
 
 .ax-boot__progress{
@@ -131,14 +141,13 @@
   overflow:hidden;
 }
 
-.ax-boot__progress-bar::before{
-  content:"";
+.ax-boot__progress-fill{
   position:absolute;
   inset:0;
   background: linear-gradient(90deg, rgba(255,32,52,.2), var(--ax-red, #ff2034), #fff1f2);
   transform: scaleX(0);
   transform-origin:left;
-  animation: ax-boot-progress var(--boot-duration, 2.8s) linear forwards;
+  transition: transform .32s ease;
 }
 
 .ax-boot__footer{

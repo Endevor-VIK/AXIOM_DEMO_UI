@@ -5,6 +5,7 @@ const PORT = Number(process.env.PLAYWRIGHT_PORT ?? 4173)
 const HOST = process.env.PLAYWRIGHT_HOST ?? '127.0.0.1'
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? `http://${HOST}:${PORT}`
 const USE_EXISTING_SERVER_RAW = process.env.PLAYWRIGHT_USE_EXISTING_SERVER
+const SERVER_MODE = process.env.PLAYWRIGHT_SERVER_MODE ?? 'dev'
 
 function isServerReachable(url: string): boolean {
   try {
@@ -44,8 +45,13 @@ const USE_EXISTING_SERVER =
   USE_EXISTING_SERVER_RAW === 'true' ||
   (USE_EXISTING_SERVER_RAW === 'auto' && isServerReachable(BASE_URL))
 
+const WEB_SERVER_COMMAND =
+  SERVER_MODE === 'preview'
+    ? `npm run build && VITE_AX_DEPLOY_TARGET=ghpages npm run preview -- --host ${HOST} --port ${PORT} --strictPort`
+    : `VITE_AX_DEPLOY_TARGET=ghpages npm run dev -- --host ${HOST} --port ${PORT}`
+
 const WEB_SERVER = {
-  command: `VITE_AX_DEPLOY_TARGET=ghpages npm run dev -- --host ${HOST} --port ${PORT}`,
+  command: WEB_SERVER_COMMAND,
   url: BASE_URL,
   timeout: 120_000,
   reuseExistingServer: !process.env.CI,

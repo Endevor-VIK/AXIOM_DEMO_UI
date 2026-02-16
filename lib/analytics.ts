@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-export type AnalyticsEventName = 'content_view' | 'reader_open' | 'mode_switch'
+export type AnalyticsEventName = 'content_view' | 'reader_open' | 'mode_switch' | 'login_boot'
 
 export interface AnalyticsEventBase {
   name: AnalyticsEventName
@@ -40,7 +40,19 @@ export interface ModeSwitchEvent extends AnalyticsEventBase {
   to: ContentRenderMode
 }
 
-export type AnalyticsEvent = ContentViewEvent | ReaderOpenEvent | ModeSwitchEvent
+export interface LoginBootEvent extends AnalyticsEventBase {
+  name: 'login_boot'
+  route: '/login'
+  bootMs: number
+  revealMs: number
+  reducedMotion: boolean
+  authState: 'loading' | 'ready' | 'error'
+  dataState: 'loading' | 'ready' | 'error'
+  orionState: 'loading' | 'ready' | 'error'
+  fallback: 'none' | 'watchdog' | 'orion-error'
+}
+
+export type AnalyticsEvent = ContentViewEvent | ReaderOpenEvent | ModeSwitchEvent | LoginBootEvent
 
 export interface AnalyticsAdapter {
   track(event: AnalyticsEvent): void
@@ -98,4 +110,8 @@ export function trackReaderOpen(event: Omit<ReaderOpenEvent, 'name'>): void {
 export function trackModeSwitch(event: Omit<ModeSwitchEvent, 'name'>): void {
   if (event.from === event.to) return
   trackEvent({ name: 'mode_switch', ...event })
+}
+
+export function trackLoginBoot(event: Omit<LoginBootEvent, 'name'>): void {
+  trackEvent({ name: 'login_boot', ...event })
 }

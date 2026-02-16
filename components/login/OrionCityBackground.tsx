@@ -1,9 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type * as ThreeTypes from "three";
 
 type OrionCityBackgroundProps = {
   enabled: boolean;
   reducedMotion: boolean;
+  onReady?: () => void;
+  onError?: () => void;
 };
 
 type BuildingSpec = {
@@ -175,18 +177,39 @@ function createRadialFogTexture(THREE: typeof import("three")) {
   return tex;
 }
 
-export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgroundProps) {
+export function OrionCityBackground({
+  enabled,
+  reducedMotion,
+  onReady,
+  onError,
+}: OrionCityBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setReady(false);
+  }, [enabled, reducedMotion]);
 
   useEffect(() => {
     if (!enabled || reducedMotion) return undefined;
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
-    if (!supportsWebGL(canvas)) return undefined;
+    if (!supportsWebGL(canvas)) {
+      onError?.();
+      return undefined;
+    }
 
     let disposed = false;
     let raf = 0;
     let cleanup = () => {};
+    let sentReady = false;
+
+    const markReady = () => {
+      if (disposed || sentReady) return;
+      sentReady = true;
+      setReady(true);
+      onReady?.();
+    };
 
     (async () => {
       const THREE = await import("three");
@@ -1067,6 +1090,9 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
         composer.render();
         raf = requestAnimationFrame(render);
       };
+      resize();
+      composer.render();
+      markReady();
       raf = requestAnimationFrame(render);
 
       cleanup = () => {
@@ -1109,19 +1135,20 @@ export function OrionCityBackground({ enabled, reducedMotion }: OrionCityBackgro
       };
     })().catch(() => {
       // Keep CSS fallback if loading fails.
+      if (!disposed) onError?.();
     });
 
     return () => {
       disposed = true;
       cleanup();
     };
-  }, [enabled, reducedMotion]);
+  }, [enabled, reducedMotion, onError, onReady]);
 
   if (!enabled || reducedMotion) return null;
   return (
     <canvas
       ref={canvasRef}
-      className="ax-orion"
+      className={`ax-orion${ready ? " is-ready" : ""}`}
       aria-hidden
     />
   );

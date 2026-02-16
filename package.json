@@ -20,6 +20,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:preview": "PLAYWRIGHT_SERVER_MODE=preview PLAYWRIGHT_USE_EXISTING_SERVER=0 playwright test",
     "test:lighthouse": "node tools/lighthouse-report.mjs",
     "test:all": "npm run test:run && npm run test:e2e && npm run test:lighthouse",
     "ui:scan": "node tools/ui-scan.mjs",

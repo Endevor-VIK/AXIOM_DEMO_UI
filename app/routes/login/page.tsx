@@ -5,8 +5,11 @@ import React, {
   useCallback, useEffect, useId, useMemo, useRef, useState,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { login, register } from "@/lib/identity/authService";
+import { trackLoginBoot } from "@/lib/analytics";
+import { resolveDeployTarget } from "@/lib/auth/deploy";
+import { login, refreshSession, register } from "@/lib/identity/authService";
 import { OrionCityBackground } from "@/components/login/OrionCityBackground";
+import { vfs } from "@/lib/vfs";
 
 import "@/styles/login-bg.css";
 import "@/styles/login-cyber.css";
@@ -14,6 +17,27 @@ import "@/styles/login-boot.css";
 
 type Mode = "login" | "register";
 type BootPhase = "booting" | "reveal" | "ready";
+type BootLineState = "loading" | "ready" | "error";
+type BootFallback = "none" | "watchdog" | "orion-error";
+
+type LoginBootMetric = {
+  route: "/login";
+  routeKey: string;
+  bootMs: number;
+  revealMs: number;
+  reducedMotion: boolean;
+  authState: BootLineState;
+  dataState: BootLineState;
+  orionState: BootLineState;
+  fallback: BootFallback;
+  timestamp: number;
+};
+
+declare global {
+  interface Window {
+    __AX_LOGIN_BOOT_METRICS__?: LoginBootMetric[];
+  }
+}
 
 const TITLES: Record<Mode, string> = {
   login: "WELCOME TO AXIOM PANEL",
@@ -25,13 +49,72 @@ const SUBTITLES: Record<Mode, string> = {
 };
 
 const BOOT_LINES = [
-  { tag: "SYS", text: "kernel integrity check", status: "OK" },
-  { tag: "NET", text: "uplink handshake • 5ms", status: "OK" },
-  { tag: "SEC", text: "cipher matrix sealed", status: "OK" },
-  { tag: "AI", text: "persona cache warmed", status: "OK" },
-  { tag: "UI", text: "render pipeline armed", status: "OK" },
-  { tag: "OPS", text: "access gate online", status: "OK" },
-];
+  { key: "auth", tag: "SYS", text: "session preflight" },
+  { key: "data", tag: "NET", text: "content/news cache warmup" },
+  { key: "orion", tag: "UI", text: "orion render sync" },
+  { key: "ops", tag: "OPS", text: "access gate online" },
+] as const;
+
+const BOOT_MIN_MS = 1800;
+const BOOT_MIN_MS_REDUCED = 180;
+const BOOT_REVEAL_MS = 860;
+const BOOT_REVEAL_MS_REDUCED = 260;
+const BOOT_MAX_WAIT_MS = 7000;
+const BOOT_MAX_WAIT_MS_REDUCED = 1200;
+
+function isBootTaskDone(state: BootLineState) {
+  return state === "ready" || state === "error";
+}
+
+function bootStateLabel(state: BootLineState) {
+  if (state === "ready") return "OK";
+  if (state === "error") return "WARN";
+  return "RUN";
+}
+
+function resolveBootFallback(
+  bootTimeoutReached: boolean,
+  orionError: boolean,
+  orionReady: boolean,
+): BootFallback {
+  if (bootTimeoutReached) return "watchdog";
+  if (orionError && !orionReady) return "orion-error";
+  return "none";
+}
+
+function pushBootMetric(metric: LoginBootMetric) {
+  if (typeof window === "undefined") return;
+  const history = window.__AX_LOGIN_BOOT_METRICS__ ? [...window.__AX_LOGIN_BOOT_METRICS__] : [];
+  history.push(metric);
+  if (history.length > 25) {
+    history.splice(0, history.length - 25);
+  }
+  window.__AX_LOGIN_BOOT_METRICS__ = history;
+  if ((import.meta as any)?.env?.DEV) {
+    console.debug("[login-boot]", metric);
+  }
+}
+
+async function warmPrimaryRoutes(deployTarget: string) {
+  const tasks: Array<Promise<unknown>> = [
+    vfs.readContentManifest(),
+    vfs.readNewsManifest(),
+    vfs.readAuditsManifest(),
+    vfs.readLoreIndex(),
+    vfs.readIndex(),
+    vfs.readObjects(),
+    vfs.readLogs(),
+  ];
+
+  if (deployTarget === "local") {
+    tasks.push(
+      fetch("/api/axchat/status", { method: "GET", credentials: "include" }).catch(() => undefined),
+    );
+  }
+
+  const settled = await Promise.allSettled(tasks);
+  return settled.some((entry) => entry.status === "rejected");
+}
 
 function SealDisk({ size = 84 }: { size?: number }) {
   const s = size;
@@ -260,9 +343,17 @@ function CyberDeckOverlay({ root }: { root: React.RefObject<HTMLElement> }) {
 }
 /* ---------- /overlay ---------- */
 
-function BootSequence({ phase, reduced }: { phase: BootPhase; reduced: boolean }) {
+type BootSequenceProps = {
+  phase: BootPhase;
+  reduced: boolean;
+  lineStates: Record<(typeof BOOT_LINES)[number]["key"], BootLineState>;
+  progress: number;
+};
+
+function BootSequence({ phase, reduced, lineStates, progress }: BootSequenceProps) {
   if (phase === "ready") return null;
   const duration = reduced ? 0.6 : 2.8;
+  const safeProgress = Math.max(0, Math.min(1, progress));
 
   return (
     <div
@@ -284,19 +375,27 @@ function BootSequence({ phase, reduced }: { phase: BootPhase; reduced: boolean }
         <div className="ax-boot__lines">
           {BOOT_LINES.map((line, index) => (
             <div
-              key={`${line.tag}-${index}`}
+              key={`${line.key}-${index}`}
               className="ax-boot-line"
+              data-state={lineStates[line.key]}
               style={{ ["--delay" as string]: `${0.2 + index * 0.12}s` } as React.CSSProperties}
             >
               <span className="ax-boot-tag">{line.tag}</span>
               <span className="ax-boot-text">{line.text}</span>
-              <span className="ax-boot-ok">{line.status}</span>
+              <span className="ax-boot-ok" data-state={lineStates[line.key]}>
+                {bootStateLabel(lineStates[line.key])}
+              </span>
             </div>
           ))}
         </div>
         <div className="ax-boot__progress">
           <span className="ax-boot__progress-label">sync / handshake</span>
-          <span className="ax-boot__progress-bar" />
+          <span className="ax-boot__progress-bar">
+            <span
+              className="ax-boot__progress-fill"
+              style={{ transform: `scaleX(${safeProgress})` }}
+            />
+          </span>
         </div>
         <div className="ax-boot__footer">
           <span>access gate ready</span>
@@ -315,6 +414,17 @@ export default function LoginPage() {
   const rootRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const [bootPhase, setBootPhase] = useState<BootPhase>("booting");
+  const [bootMinPassed, setBootMinPassed] = useState(false);
+  const [orionReady, setOrionReady] = useState(false);
+  const [orionError, setOrionError] = useState(false);
+  const [bootTimeoutReached, setBootTimeoutReached] = useState(false);
+  const [authState, setAuthState] = useState<BootLineState>("loading");
+  const [dataState, setDataState] = useState<BootLineState>("loading");
+  const postWarmupRef = useRef(false);
+  const bootWatchdogRef = useRef<number | null>(null);
+  const bootStartedAtRef = useRef(0);
+  const bootRevealAtRef = useRef<number | null>(null);
+  const bootTelemetrySentRef = useRef(false);
 
   useEffect(() => {
     document.body.classList.add("ax-no-scroll");
@@ -323,15 +433,150 @@ export default function LoginPage() {
 
   useEffect(() => {
     setBootPhase("booting");
-    const revealAt = reduced ? 220 : 2400;
-    const doneAt = reduced ? 620 : 3300;
-    const t1 = window.setTimeout(() => setBootPhase("reveal"), revealAt);
-    const t2 = window.setTimeout(() => setBootPhase("ready"), doneAt);
+    setBootMinPassed(false);
+    setOrionReady(reduced);
+    setOrionError(false);
+    setBootTimeoutReached(false);
+    setAuthState("loading");
+    setDataState("loading");
+    postWarmupRef.current = false;
+    bootTelemetrySentRef.current = false;
+    bootStartedAtRef.current = performance.now();
+    bootRevealAtRef.current = null;
+    const minBootMs = reduced ? BOOT_MIN_MS_REDUCED : BOOT_MIN_MS;
+    const maxWaitMs = reduced ? BOOT_MAX_WAIT_MS_REDUCED : BOOT_MAX_WAIT_MS;
+    const tMin = window.setTimeout(() => setBootMinPassed(true), minBootMs);
+    const tMax = window.setTimeout(() => setBootTimeoutReached(true), maxWaitMs);
+    bootWatchdogRef.current = tMax;
+    let active = true;
+
+    refreshSession()
+      .then(() => {
+        if (active) setAuthState("ready");
+      })
+      .catch(() => {
+        if (active) setAuthState("error");
+      });
+
+    Promise.allSettled([
+      vfs.readContentAggregate(),
+      vfs.readNewsManifest(),
+    ]).then((results) => {
+      if (!active) return;
+      const failed = results.some((entry) => entry.status === "rejected");
+      setDataState(failed ? "error" : "ready");
+    });
+
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
+      active = false;
+      clearTimeout(tMin);
+      clearTimeout(tMax);
+      if (bootWatchdogRef.current === tMax) bootWatchdogRef.current = null;
     };
   }, [reduced, location.key]);
+
+  const orionState: BootLineState = orionReady ? "ready" : ((orionError || bootTimeoutReached) ? "error" : "loading");
+  const authDone = isBootTaskDone(authState);
+  const dataDone = isBootTaskDone(dataState);
+  const bootCanReveal = bootMinPassed
+    && (orionReady || orionError || bootTimeoutReached)
+    && ((authDone && dataDone) || bootTimeoutReached);
+
+  useEffect(() => {
+    if (!bootCanReveal || bootWatchdogRef.current == null) return;
+    clearTimeout(bootWatchdogRef.current);
+    bootWatchdogRef.current = null;
+  }, [bootCanReveal]);
+
+  const lineStates = useMemo(() => ({
+    auth: authState,
+    data: dataState,
+    orion: orionState,
+    ops: bootCanReveal || bootPhase !== "booting" ? "ready" : "loading",
+  } as Record<(typeof BOOT_LINES)[number]["key"], BootLineState>), [authState, dataState, orionState, bootCanReveal, bootPhase]);
+
+  const bootProgress = useMemo(() => {
+    const done = BOOT_LINES.reduce((acc, line) => acc + (isBootTaskDone(lineStates[line.key]) ? 1 : 0), 0);
+    if (done === 0 && bootPhase === "booting") return 0.08;
+    return done / BOOT_LINES.length;
+  }, [lineStates, bootPhase]);
+  useEffect(() => {
+    if (!bootCanReveal || bootPhase !== "booting") return;
+    bootRevealAtRef.current = performance.now();
+    setBootPhase("reveal");
+  }, [bootCanReveal, bootPhase]);
+
+  useEffect(() => {
+    if (bootPhase !== "ready" || bootTelemetrySentRef.current) return;
+    bootTelemetrySentRef.current = true;
+    const now = performance.now();
+    const bootMs = Math.max(0, Math.round(now - (bootStartedAtRef.current || now)));
+    const revealMs = Math.max(0, Math.round(now - (bootRevealAtRef.current ?? now)));
+    const fallback = resolveBootFallback(bootTimeoutReached, orionError, orionReady);
+
+    trackLoginBoot({
+      route: "/login",
+      bootMs,
+      revealMs,
+      reducedMotion: reduced,
+      authState,
+      dataState,
+      orionState,
+      fallback,
+    });
+
+    pushBootMetric({
+      route: "/login",
+      routeKey: location.key,
+      bootMs,
+      revealMs,
+      reducedMotion: reduced,
+      authState,
+      dataState,
+      orionState,
+      fallback,
+      timestamp: Date.now(),
+    });
+  }, [
+    authState,
+    bootPhase,
+    bootTimeoutReached,
+    dataState,
+    location.key,
+    orionError,
+    orionReady,
+    orionState,
+    reduced,
+  ]);
+
+  useEffect(() => {
+    if (bootPhase !== "reveal") return undefined;
+    const revealMs = reduced ? BOOT_REVEAL_MS_REDUCED : BOOT_REVEAL_MS;
+    const t = window.setTimeout(() => setBootPhase("ready"), revealMs);
+    return () => clearTimeout(t);
+  }, [bootPhase, reduced]);
+
+  const handleOrionReady = useCallback(() => {
+    setOrionReady(true);
+  }, []);
+
+  const handleOrionError = useCallback(() => {
+    setOrionError(true);
+  }, []);
+
+  useEffect(() => {
+    if (bootPhase !== "ready" || postWarmupRef.current) return;
+    postWarmupRef.current = true;
+    const warmupStartedAt = performance.now();
+    const deployTarget = resolveDeployTarget();
+    void warmPrimaryRoutes(deployTarget)
+      .then((hadFailures) => {
+        if (!(import.meta as any)?.env?.DEV) return;
+        const took = Math.max(0, Math.round(performance.now() - warmupStartedAt));
+        console.debug("[login-boot] warmup", { deployTarget, took, hadFailures });
+      })
+      .catch(() => undefined);
+  }, [bootPhase]);
 
   const [mode, setMode] = useState<Mode>("login");
   const [userId, setUserId] = useState("");
@@ -386,14 +631,36 @@ export default function LoginPage() {
   const isBooting = bootPhase !== "ready";
 
   return (
-    <section ref={rootRef} className="ax-login" aria-labelledby="login-title" data-boot={bootPhase}>
+    <section
+      ref={rootRef}
+      className="ax-login"
+      aria-labelledby="login-title"
+      data-boot={bootPhase}
+      data-orion={orionReady ? "ready" : "loading"}
+      data-auth={authState}
+      data-data={dataState}
+      data-boot-timeout={bootTimeoutReached ? "1" : undefined}
+      data-boot-fallback={bootTimeoutReached
+        ? "watchdog"
+        : (orionError && !orionReady ? "orion-error" : undefined)}
+    >
       {/* фон и кибер-слой строго позади карточки */}
       <div className="ax-login__bg" aria-hidden>
-        <OrionCityBackground enabled={!reduced} reducedMotion={reduced} />
+        <OrionCityBackground
+          enabled={!reduced}
+          reducedMotion={reduced}
+          onReady={handleOrionReady}
+          onError={handleOrionError}
+        />
       </div>
       <div className="ax-login__frame" aria-hidden />
       <CyberDeckOverlay root={rootRef} />
-      <BootSequence phase={bootPhase} reduced={reduced} />
+      <BootSequence
+        phase={bootPhase}
+        reduced={reduced}
+        lineStates={lineStates}
+        progress={bootProgress}
+      />
 
       <div className="ax-container">
         <form
