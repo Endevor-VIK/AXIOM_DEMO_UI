@@ -23,12 +23,13 @@ type ChatMessage = {
 }
 
 const QUICK_CHIPS = [
-  'Виктор',
-  'Лиза',
+  'Кто такая Лиза?',
   'Nexus / Echelon / Erebus',
   'Nightmare',
   'Показать файл…',
 ]
+
+const COMMAND_CHIPS = ['/help', '/modes', '/sources', '/status', '/scope', '/reindex']
 
 function escapeHtml(value: string) {
   return value
@@ -58,7 +59,8 @@ export default function AxchatRoute() {
   const session = useSession()
   const primaryRole = resolvePrimaryRole(session.user?.roles)
   const deployTarget = resolveDeployTarget()
-  const hasAccess = primaryRole === 'creator' || primaryRole === 'test'
+  const canReindexByRole =
+    primaryRole === 'creator' || primaryRole === 'test' || primaryRole === 'admin' || primaryRole === 'dev'
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -94,6 +96,10 @@ export default function AxchatRoute() {
   const ollamaOnline = status?.model?.online ?? false
   const modelReady = status?.model?.ready ?? ollamaOnline
   const indexOnline = status?.index?.ok ?? false
+  const scopeRole = status?.scope?.role || (canReindexByRole ? 'CREATOR' : 'PUBLIC')
+  const canRevealPaths = status?.scope?.reveal_paths ?? scopeRole !== 'PUBLIC'
+  const canReindex = status?.scope?.can_reindex ?? canReindexByRole
+  const heartbeatLines = Boolean(status?.heartbeat_lines)
   const canSearch = indexOnline
   const canQa = indexOnline && ollamaOnline && modelReady
   const canSend = mode === 'search' ? canSearch : canQa
@@ -102,34 +108,44 @@ export default function AxchatRoute() {
   const modelName = status?.model?.name || 'qwen2.5:7b-instruct'
   const ollamaHost = status?.model?.host || 'http://127.0.0.1:11434'
   const legacyStatus = Boolean(status && status.model.ready === undefined)
-  const allowedSources = status?.sources?.length ? status.sources : ['export', 'content-src', 'content']
+  const allowedSources =
+    status?.sources?.length
+      ? status.sources
+      : canRevealPaths
+        ? ['export', 'content-src', 'content']
+        : []
   const allowedSourceSet = useMemo(() => new Set(allowedSources), [allowedSources.join('|')])
 
   const filterLoreRefs = useCallback(
     (next: AxchatRef[]) => {
+      if (!canRevealPaths) return next
       return next.filter((ref) => {
         const top = ref.path.split('/')[0] || ''
         return allowedSourceSet.has(top)
       })
     },
-    [allowedSourceSet],
+    [allowedSourceSet, canRevealPaths],
   )
 
   const statusNote = !indexOnline
-    ? 'INDEX OFFLINE — запусти Reindex, чтобы открыть доступ.'
+    ? canReindex
+      ? 'INDEX OFFLINE — запусти Reindex, чтобы открыть доступ.'
+      : 'INDEX OFFLINE — запросы ограничены. Попроси CREATOR обновить индекс.'
     : !ollamaOnline
-      ? `OLLAMA OFFLINE — запусти локальный runtime модели (AXCHAT_HOST=${ollamaHost}).`
+      ? `OLLAMA OFFLINE — QA недоступен. SEARCH работает по индексу (AXCHAT_HOST=${ollamaHost}).`
       : !modelReady
         ? `MODEL MISSING — установи: ollama pull ${modelName}.`
         : legacyStatus
           ? 'STATUS LEGACY — перезапусти AX API, чтобы включить проверки readiness модели.'
-        : null
+          : heartbeatLines
+            ? 'HEARTBEAT LINES: ON — системные акценты могут появляться после ответов.'
+            : null
 
   const blockedReason = !canSend
     ? !indexOnline
-      ? primaryRole === 'creator'
+      ? canReindex
         ? 'INDEX OFFLINE — пересобери индекс, чтобы активировать запросы.'
-        : 'INDEX OFFLINE — запросы недоступны. Попроси CREATOR запустить reindex.'
+        : 'INDEX OFFLINE — запросы недоступны. Попроси CREATOR запустить Reindex.'
       : !ollamaOnline
         ? `OLLAMA OFFLINE — QA недоступен. Проверь AXCHAT_HOST=${ollamaHost}.`
         : !modelReady
@@ -158,13 +174,16 @@ export default function AxchatRoute() {
       if (code === 'axchat_disabled') {
         return 'AXCHAT выключен для текущего deploy target.'
       }
+      if (code === 'forbidden') {
+        return 'Операция недоступна в текущем scope доступа.'
+      }
       return `Ошибка запроса: ${code}.`
     },
     [status?.model?.name, ollamaHost],
   )
 
   useEffect(() => {
-    if (!hasAccess || deployTarget !== 'local') return
+    if (deployTarget !== 'local') return
     let alive = true
 
     const load = async () => {
@@ -184,7 +203,7 @@ export default function AxchatRoute() {
       alive = false
       clearInterval(id)
     }
-  }, [hasAccess, deployTarget])
+  }, [deployTarget])
 
   const handleMessagesScroll = useCallback(() => {
     const el = messagesViewportRef.current
@@ -222,7 +241,7 @@ export default function AxchatRoute() {
         pushMessage({
           id: `assistant-${Date.now()}`,
           role: 'assistant',
-          content: `Поиск завершен. Найдено источников: ${res.refs?.length ?? 0}.`,
+          content: `Поиск завершён. Найдено источников: ${res.refs?.length ?? 0}.`,
         })
       } else {
         const pending: ChatMessage = { id: 'pending', role: 'user', content: trimmed }
@@ -329,16 +348,6 @@ export default function AxchatRoute() {
     )
   }
 
-  if (!hasAccess) {
-    return (
-      <RouteHoldBanner
-        title='ERROR / ACCESS LOCKED'
-        message='AXCHAT доступен только для ролей creator/test. Функционал отключён.'
-        note='Запроси доступ у CREATOR.'
-      />
-    )
-  }
-
   return (
     <section className='ax-card ax-axchat'>
       <header className='ax-axchat__head'>
@@ -382,7 +391,7 @@ export default function AxchatRoute() {
               </span>
             </div>
             <div className='ax-axchat__control-actions'>
-              {primaryRole === 'creator' && ollamaOnline && (legacyStatus || !modelReady) ? (
+              {canReindex && ollamaOnline && (legacyStatus || !modelReady) ? (
                 <button
                   type='button'
                   className='ax-btn ax-btn--ghost'
@@ -392,7 +401,7 @@ export default function AxchatRoute() {
                   {warming ? 'Start…' : 'Start model'}
                 </button>
               ) : null}
-              {primaryRole === 'creator' && ollamaOnline && !modelReady ? (
+              {canReindex && ollamaOnline && !modelReady ? (
                 <button
                   type='button'
                   className='ax-btn ax-btn--ghost'
@@ -407,7 +416,7 @@ export default function AxchatRoute() {
                   Copy pull
                 </button>
               ) : null}
-              {primaryRole === 'creator' ? (
+              {canReindex ? (
                 <button
                   type='button'
                   className='ax-btn'
@@ -447,6 +456,16 @@ export default function AxchatRoute() {
                 {label}
               </button>
             ))}
+            {COMMAND_CHIPS.map((label) => (
+              <button
+                key={label}
+                type='button'
+                className='ax-chip ax-axchat__chip'
+                onClick={() => handleChipClick(label)}
+              >
+                {label}
+              </button>
+            ))}
           </div>
 
           {error ? <div className='ax-axchat__error'>Ошибка: {error}</div> : null}
@@ -457,7 +476,7 @@ export default function AxchatRoute() {
             <textarea
               ref={inputRef}
               className='ax-input ax-axchat__input'
-              placeholder='Спроси по базе (RU)…'
+              placeholder='Спроси по базе (RU) или /help…'
               rows={3}
               value={input}
               onChange={(event) => setInput(event.target.value)}
@@ -479,6 +498,7 @@ export default function AxchatRoute() {
               <h3 className='ax-blade-head'>Источники</h3>
             </div>
             <div className='ax-axchat__sources-meta'>
+              <span className='ax-muted'>Scope: {scopeRole}</span>
               {status?.index?.indexed_at ? (
                 <span className='ax-muted'>Index: {status.index.indexed_at}</span>
               ) : (
@@ -495,8 +515,8 @@ export default function AxchatRoute() {
             ) : (
               <div className='ax-axchat__sources-list'>
                 {refs.map((ref, index) => {
-                  const canOpen = Boolean(ref.route)
-                  const canCopy = Boolean(ref.path)
+                  const canOpen = canRevealPaths && Boolean(ref.route)
+                  const canCopy = canRevealPaths && Boolean(ref.path)
                   const canModal = Boolean(ref.excerpt)
 
                   const handleCardOpen = () => {

@@ -26,6 +26,12 @@ export type AxchatStatus = {
     version?: string
   }
   sources?: string[]
+  scope?: {
+    role: 'PUBLIC' | 'CREATOR' | 'ADMIN'
+    reveal_paths: boolean
+    can_reindex: boolean
+  }
+  heartbeat_lines?: boolean
 }
 
 async function fetchJson<T>(path: string, options: RequestInit = {}): Promise<T> {

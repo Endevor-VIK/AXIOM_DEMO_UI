@@ -8,7 +8,13 @@ const csv = (value?: string) =>
     .filter(Boolean)
 
 const DEFAULT_AXCHAT_SOURCE_DIRS = ['export', 'content-src', 'content']
+const DEFAULT_AXCHAT_PUBLIC_SOURCE_DIRS = ['content-src', 'content']
+const DEFAULT_AXCHAT_CREATOR_SOURCE_DIRS = [...DEFAULT_AXCHAT_SOURCE_DIRS]
+const DEFAULT_AXCHAT_ADMIN_SOURCE_DIRS = [...DEFAULT_AXCHAT_SOURCE_DIRS]
 const AXCHAT_SOURCE_DIRS = csv(process.env.AXCHAT_SOURCE_DIRS)
+const AXCHAT_PUBLIC_SOURCE_DIRS = csv(process.env.AXCHAT_PUBLIC_SOURCE_DIRS)
+const AXCHAT_CREATOR_SOURCE_DIRS = csv(process.env.AXCHAT_CREATOR_SOURCE_DIRS)
+const AXCHAT_ADMIN_SOURCE_DIRS = csv(process.env.AXCHAT_ADMIN_SOURCE_DIRS)
 
 export const config = {
   port: Number(process.env.AX_API_PORT || 8787),
@@ -30,8 +36,18 @@ export const config = {
     process.env.AXCHAT_INDEX_PATH ||
     path.resolve(process.cwd(), 'runtime', 'axchat', 'index.sqlite'),
   axchatSourceDirs: AXCHAT_SOURCE_DIRS.length ? AXCHAT_SOURCE_DIRS : DEFAULT_AXCHAT_SOURCE_DIRS,
+  axchatPublicSourceDirs: AXCHAT_PUBLIC_SOURCE_DIRS.length
+    ? AXCHAT_PUBLIC_SOURCE_DIRS
+    : DEFAULT_AXCHAT_PUBLIC_SOURCE_DIRS,
+  axchatCreatorSourceDirs: AXCHAT_CREATOR_SOURCE_DIRS.length
+    ? AXCHAT_CREATOR_SOURCE_DIRS
+    : DEFAULT_AXCHAT_CREATOR_SOURCE_DIRS,
+  axchatAdminSourceDirs: AXCHAT_ADMIN_SOURCE_DIRS.length
+    ? AXCHAT_ADMIN_SOURCE_DIRS
+    : DEFAULT_AXCHAT_ADMIN_SOURCE_DIRS,
   axchatModel: process.env.AXCHAT_MODEL || 'qwen2.5:7b-instruct',
   axchatHost: process.env.AXCHAT_HOST || 'http://127.0.0.1:11434',
+  axchatHeartbeatLines: truthy(process.env.AXCHAT_HEARTBEAT_LINES),
   axchatTimeoutMs: Number(process.env.AXCHAT_TIMEOUT_MS || 60_000),
   axchatTopK: Number(process.env.AXCHAT_TOP_K || 4),
   axchatChunkSize: Number(process.env.AXCHAT_CHUNK_SIZE || 1000),

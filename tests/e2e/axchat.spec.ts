@@ -31,6 +31,16 @@ const stubRefs = [
   },
 ]
 
+const publicStubRefs = [
+  {
+    title: 'Публичная карточка — ЛИЗА',
+    path: 'Публичная карточка #1',
+    route: '',
+    excerpt: 'Лиза — оперативный координатор Axiom. Доступно в публичном контент-паке.',
+    score: 0.12,
+  },
+]
+
 async function stubGoogleFonts(page: Page) {
   await page.route('**/fonts.googleapis.com/**', async (route) => {
     await route.fulfill({
@@ -95,6 +105,7 @@ async function stubAxchatApi(page: Page) {
         model: { name: 'mock-ollama', online: true, ready: true },
         index: { ok: true, indexed_at: '2026-02-10T00:00:00Z', version: 'fts5-v1' },
         sources: ['export', 'content-src', 'content'],
+        scope: { role: 'CREATOR', reveal_paths: true, can_reindex: true },
       }),
     })
   })
@@ -127,20 +138,58 @@ async function stubAxchatApi(page: Page) {
   })
 }
 
+async function stubAxchatApiPublic(page: Page) {
+  await page.route('**/api/axchat/status', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        model: { name: 'mock-ollama', online: true, ready: true },
+        index: { ok: true, indexed_at: '2026-02-10T00:00:00Z', version: 'fts5-v1' },
+        scope: { role: 'PUBLIC', reveal_paths: false, can_reindex: false },
+        heartbeat_lines: true,
+      }),
+    })
+  })
+
+  await page.route('**/api/axchat/search**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ refs: publicStubRefs }),
+    })
+  })
+
+  await page.route('**/api/axchat/query', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        answer_markdown: 'Лиза присутствует в публичной базе. Полные внутренние файлы недоступны.',
+        refs: publicStubRefs,
+      }),
+    })
+  })
+}
+
 test.describe('AXCHAT access control', () => {
   test.describe.configure({ timeout: 120_000 })
 
-  test('user sees tab and gets ACCESS LOCKED', async ({ page }) => {
+  test('user works in PUBLIC scope without internal file access', async ({ page }) => {
     await stubGoogleFonts(page)
     await registerIfNeeded(page, USER_EMAIL, USER_PASS)
-
-    await page.route('**/api/axchat/**', async () => {
-      throw new Error('AXCHAT API should not be called for user role')
-    })
+    await stubAxchatApiPublic(page)
 
     await page.goto('/dashboard/axchat', { waitUntil: 'commit' })
-    await expect(page.getByRole('link', { name: 'AXCHAT' })).toBeVisible()
-    await expect(page.getByText(/access locked/i)).toBeVisible()
+    await expect(page.locator('.ax-axchat')).toBeVisible()
+    await expect(page.getByText('Scope: PUBLIC')).toBeVisible()
+
+    await page.getByPlaceholder('Спроси по базе (RU) или /help…').fill('Кто такая Лиза?')
+    await page.getByRole('button', { name: /send/i }).click()
+    await expect(page.locator('.ax-axchat__message-body').last()).toContainText('публичной базе')
+    await expect(page.getByText('Публичная карточка #1')).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Открыть' })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Скопировать путь' })).toHaveCount(0)
   })
 })
 
