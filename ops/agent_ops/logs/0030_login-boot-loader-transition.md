@@ -123,6 +123,7 @@ AXS_HEADER_META:
 - 2026-02-11T00:20:20+03:00 — Commit: `abd2ef1` — `chore(agent-ops): trace task updates` — Файлы: `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 - 2026-02-11T02:52:40+03:00 — Commit: `23db653` — `feat(login-bg): integrate Orion city model background` — Файлы: `components/login/OrionCityBackground.tsx`, `public/assets/orion/level.glb`, `public/draco/gltf/draco_decoder.js`, `app/routes/login/page.tsx`, `styles/login-cyber.css`, `package.json`, `package-lock.json`, `node_modules/.package-lock.json`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 - 2026-02-11T19:34:26+03:00 — Действие: Подготовлен новый пакет textured-ассетов Orion + рефактор `OrionCityBackground`; коммит не выполнен (ожидает проверки CREATOR) → Результат: IN_PROGRESS
+- 2026-02-16T20:08:33+03:00 — Commit: `2ed8d4b` — `docs(0030): create spec and sync log index links` — Файлы: `docs/iterations/0030_login-boot-loader-transition/SPEC.md`, `docs/iterations/0030_login-boot-loader-transition/SPEC_LOG_LINK.md`, `docs/iterations/README.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 
 ---
 

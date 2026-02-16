@@ -74,6 +74,7 @@ AXS_HEADER_META:
 - 2026-02-11T01:23:40+03:00 — Commit: `e1ac8bc` — `fix(axchat): lock viewport scroll to panels` — Файлы: `app/routes/_layout.tsx`
 - 2026-02-11T02:33:26+03:00 — Commit: `eea1fd6` — `feat(axchat): lore scope, dialogue memory, scroll` — Файлы: `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `ops/axchat/indexer.ts`, `server/src/axchat/indexer.ts`, `server/src/axchat/routes.ts`, `server/src/config.ts`, `styles/axchat.css`, `tests/e2e/axchat.spec.ts`
 - 2026-02-11T02:37:58+03:00 — Commit: `3bb5526` — `fix(axchat): show ollama host in statuses` — Файлы: `app/routes/dashboard/axchat/index.tsx`, `lib/axchat/api.ts`, `server/src/axchat/routes.ts`
+- 2026-02-16T20:08:33+03:00 — Commit: `b1f5632` — `docs(0028): add execution roadmap and QA baseline` — Файлы: `docs/iterations/axchat-echo-axiom/spec.md`, `ops/agent_ops/logs/0028_axchat-echo-axiom.md`
 
 ---
 
