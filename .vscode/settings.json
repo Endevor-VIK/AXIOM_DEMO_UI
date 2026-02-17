@@ -90,7 +90,7 @@
     "file:///e:/ENDEAVOR/AXIOM_SYSTEM/.vscode/inject.js"
   ],
   "vscode_custom_css.policy": true,
-  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.tsdk": "node_modules/typescript/lib",
   "json.schemas": [
     {
       "fileMatch": ["/.devcontainer/devcontainer.json", "/devcontainer.json"],

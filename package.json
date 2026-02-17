@@ -17,6 +17,7 @@
     "export": "tsx tools/export.ts",
     "preview:export": "vite preview --strictPort --port 5174 --outDir export/site",
     "typecheck": "tsc --noEmit",
+    "typecheck:server": "tsc -p server/tsconfig.json --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
     "test:e2e": "playwright test",

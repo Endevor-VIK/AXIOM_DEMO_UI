@@ -32,6 +32,8 @@ export const config = {
   seedTest: truthy(process.env.AX_SEED_TEST),
   testEmail: process.env.AX_TEST_EMAIL || 'test@local',
   testPassword: process.env.AX_TEST_PASSWORD || 'test12345',
+  testerEmail: process.env.AX_TESTER_EMAIL || 'Staxov_test',
+  testerPassword: process.env.AX_TESTER_PASSWORD || '864222801',
   axchatIndexPath:
     process.env.AXCHAT_INDEX_PATH ||
     path.resolve(process.cwd(), 'runtime', 'axchat', 'index.sqlite'),

@@ -144,11 +144,14 @@ ENV (backend):
 - `AX_SESSION_TTL_DAYS` (default `14`)
 - `AX_CREATOR_EMAIL`, `AX_CREATOR_PASSWORD` → seed creator
 - `AX_SEED_TEST=1`, `AX_TEST_EMAIL`, `AX_TEST_PASSWORD` → seed test
+- `AX_TESTER_EMAIL`, `AX_TESTER_PASSWORD` → дополнительный tester seed (role `test`)
 - `AX_DB_PATH` (default `runtime/auth.sqlite`)
 
 Seed accounts (local):
 - **Test (AI)**: включается через `AX_SEED_TEST=1` (в `run_local.py` по умолчанию в режиме full/api).  
   Если `AX_TEST_EMAIL/AX_TEST_PASSWORD` не заданы, используются дефолты `test@local` / `test12345`.
+- **Tester (manual QA)**: создаётся вместе с test-seed и получает роль `test`.  
+  Если `AX_TESTER_EMAIL/AX_TESTER_PASSWORD` не заданы, используются дефолты `Staxov_test` / `864222801`.
 - **Creator (полный доступ)**: задаётся **только локально** через `AX_CREATOR_EMAIL` и `AX_CREATOR_PASSWORD`.  
   Не фиксируй реальные креды в репозитории — держи их в переменных окружения.
 
