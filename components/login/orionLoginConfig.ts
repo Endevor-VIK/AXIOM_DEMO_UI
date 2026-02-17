@@ -618,7 +618,7 @@ export function resolveOrionLoginRuntimeConfig(): OrionLoginRuntimeConfig {
     ? normalizeQuality(new URLSearchParams(window.location.search).get("orionQuality"))
     : null;
   const envQuality = normalizeQuality(env.VITE_ORION_LOGIN_BG_QUALITY);
-  const quality = queryQuality ?? envQuality ?? resolveAutoQuality();
+  const quality = queryQuality ?? envQuality ?? "ultra";
 
   const seedRaw = Number.parseInt(String(env.VITE_ORION_LOGIN_BG_SEED ?? ""), 10);
   const seed = Number.isFinite(seedRaw) ? (seedRaw >>> 0) : BASELINE_CONFIG.seed;
