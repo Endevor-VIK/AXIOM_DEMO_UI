@@ -9,8 +9,8 @@ import {
   type AdminUserRecord,
   updateAdminUserRoles,
 } from '@/lib/admin/api'
-import { logout } from '@/lib/identity/authService'
-import { useSession } from '@/lib/identity/useSession'
+import { adminLogout } from '@/lib/admin/authService'
+import { useAdminSession } from '@/lib/admin/useAdminSession'
 
 import '@/styles/admin-console.css'
 
@@ -54,7 +54,7 @@ function formatDateTime(timestamp: number | null): string {
 
 export default function AdminPage() {
   const navigate = useNavigate()
-  const session = useSession()
+  const session = useAdminSession()
 
   const [users, setUsers] = useState<AdminUserRecord[]>([])
   const [busyUsers, setBusyUsers] = useState(false)
@@ -210,7 +210,7 @@ export default function AdminPage() {
   }
 
   async function onLogout() {
-    await logout()
+    await adminLogout()
     navigate('/admin/login', { replace: true })
   }
 

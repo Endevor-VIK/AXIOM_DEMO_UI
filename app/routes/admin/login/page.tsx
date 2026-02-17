@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-import { login, logout } from '@/lib/identity/authService'
-import { useSession } from '@/lib/identity/useSession'
+import { adminLogin, adminLogout } from '@/lib/admin/authService'
+import { useAdminSession } from '@/lib/admin/useAdminSession'
 
 import '@/styles/admin-console.css'
 
@@ -29,7 +29,7 @@ function mapError(error: unknown): string {
 export default function AdminLoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const session = useSession()
+  const session = useAdminSession()
 
   const redirectTo = useMemo(() => resolveAdminRedirect(location.state), [location.state])
   const [username, setUsername] = useState('')
@@ -64,10 +64,10 @@ export default function AdminLoginPage() {
     setError(null)
 
     try {
-      const nextSession = await login({ email, password })
+      const nextSession = await adminLogin({ email, password })
       const roles = nextSession.user?.roles ?? []
       if (!roles.includes('creator')) {
-        await logout()
+        await adminLogout()
         throw new Error('forbidden')
       }
       navigate(redirectTo, { replace: true })

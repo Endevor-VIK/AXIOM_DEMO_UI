@@ -24,6 +24,7 @@ export const config = {
     process.env.AX_DB_PATH ||
     path.resolve(process.cwd(), 'runtime', 'auth.sqlite'),
   cookieName: process.env.AX_COOKIE_NAME || 'ax_session',
+  adminCookieName: process.env.AX_ADMIN_COOKIE_NAME || 'ax_admin_session',
   cookieSecure: truthy(process.env.AX_COOKIE_SECURE) || process.env.NODE_ENV === 'production',
   allowRegister: truthy(process.env.AX_ALLOW_REGISTER),
   sessionTtlDays: Number(process.env.AX_SESSION_TTL_DAYS || 14),

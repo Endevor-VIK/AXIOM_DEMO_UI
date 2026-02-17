@@ -1,10 +1,10 @@
 import React, { type PropsWithChildren } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
-import { useSession } from '@/lib/identity/useSession'
+import { useAdminSession } from '@/lib/admin/useAdminSession'
 
 export default function AdminGate({ children }: PropsWithChildren) {
-  const session = useSession()
+  const session = useAdminSession()
   const location = useLocation()
 
   if (session.isLoading) {
@@ -17,7 +17,7 @@ export default function AdminGate({ children }: PropsWithChildren) {
 
   const roles = session.user?.roles ?? []
   if (!roles.includes('creator')) {
-    return <Navigate to='/dashboard' replace />
+    return <Navigate to='/admin/login' replace state={{ from: location.pathname }} />
   }
 
   return <>{children}</>

@@ -5,6 +5,7 @@ import path from 'node:path'
 
 import { config } from './config'
 import { registerAuthRoutes } from './auth/routes'
+import { registerAdminAuthRoutes } from './admin/authRoutes'
 import { registerAdminRoutes } from './admin/routes'
 import { registerAxchatRoutes } from './axchat/routes'
 import { getDb } from './db/db'
@@ -19,6 +20,10 @@ export async function buildApp() {
   app.register(async (instance) => {
     await registerAuthRoutes(instance)
   }, { prefix: '/api/auth' })
+
+  app.register(async (instance) => {
+    await registerAdminAuthRoutes(instance)
+  }, { prefix: '/api/admin-auth' })
 
   app.register(async (instance) => {
     await registerAdminRoutes(instance)

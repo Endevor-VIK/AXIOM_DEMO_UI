@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 
-import { requireRole } from '../auth/guards'
+import { requireAdminRole } from './guards'
 import {
   createUser,
   deleteUserById,
@@ -19,11 +19,11 @@ type AdminUserPayload = {
 }
 
 export async function registerAdminRoutes(app: FastifyInstance) {
-  app.get('/users', { preHandler: requireRole('creator') }, async (_request, reply) => {
+  app.get('/users', { preHandler: requireAdminRole('creator') }, async (_request, reply) => {
     reply.send({ users: listUsers() })
   })
 
-  app.post('/users', { preHandler: requireRole('creator') }, async (request, reply) => {
+  app.post('/users', { preHandler: requireAdminRole('creator') }, async (request, reply) => {
     const body = request.body as AdminUserPayload
     const email = (body?.email || '').trim().toLowerCase()
     const password = body?.password || ''
@@ -42,7 +42,7 @@ export async function registerAdminRoutes(app: FastifyInstance) {
     reply.send({ user: { id: user.id, email: user.email, roles: getUserRoles(user.id) } })
   })
 
-  app.patch('/users/:id', { preHandler: requireRole('creator') }, async (request, reply) => {
+  app.patch('/users/:id', { preHandler: requireAdminRole('creator') }, async (request, reply) => {
     const body = request.body as AdminUserPayload
     const roles = Array.isArray(body?.roles) ? body.roles : null
     if (!roles) {
@@ -54,7 +54,7 @@ export async function registerAdminRoutes(app: FastifyInstance) {
     reply.send({ ok: true })
   })
 
-  app.delete('/users/:id', { preHandler: requireRole('creator') }, async (request, reply) => {
+  app.delete('/users/:id', { preHandler: requireAdminRole('creator') }, async (request, reply) => {
     const userId = ((request.params as any).id as string | undefined)?.trim()
     if (!userId) {
       reply.code(400).send({ error: 'missing_user_id' })

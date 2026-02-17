@@ -57,4 +57,5 @@ AXS_HEADER_META:
 | 0036 | 2026-02-17T16:56:42+03:00 | Fix IDE Node types for server config.ts         | main                        | —                                          | ops/agent_ops/logs/0036_server-tsconfig-node-types.md | DONE |
 | 0037 | 2026-02-17T17:06:54+03:00 | Full custom admin console + run_local admin mode | main                       | —                                          | ops/agent_ops/logs/0037_admin-console-bootstrap-run-local.md | DONE |
 | 0038 | 2026-02-17T18:06:25+03:00 | Auth reliability + backend-down checks (site/admin) | main                     | —                                          | ops/agent_ops/logs/0038_auth-reliability-admin-backend-down-tests.md | DONE |
+| 0039 | 2026-02-17T19:49:53+03:00 | Admin auth/session isolation fix (`/admin` vs site auth) | main                   | —                                          | ops/agent_ops/logs/0039_admin-auth-session-isolation-fix.md | ACTIVE |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).
