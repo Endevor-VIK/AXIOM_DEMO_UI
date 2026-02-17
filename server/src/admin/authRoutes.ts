@@ -16,6 +16,12 @@ const RATE_WINDOW_MS = 60_000
 const RATE_MAX = 6
 const rateMap = new Map<string, { count: number; resetAt: number }>()
 
+function applyNoStore(reply: { header: (name: string, value: string) => unknown }) {
+  reply.header('Cache-Control', 'no-store, no-cache, must-revalidate, private')
+  reply.header('Pragma', 'no-cache')
+  reply.header('Expires', '0')
+}
+
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
   const entry = rateMap.get(ip)
@@ -45,6 +51,7 @@ function toUserResponse(user: { id: string; email: string }, roles: string[]) {
 
 export async function registerAdminAuthRoutes(app: FastifyInstance) {
   app.post('/login', async (request, reply) => {
+    applyNoStore(reply)
     const audit = buildAuditContext(request)
     if (!checkRateLimit(request.ip)) {
       recordAuditEvent({
@@ -140,6 +147,7 @@ export async function registerAdminAuthRoutes(app: FastifyInstance) {
   })
 
   app.post('/logout', async (request, reply) => {
+    applyNoStore(reply)
     const audit = buildAuditContext(request)
     const sessionId = request.cookies?.[config.adminCookieName]
     let actorUserId: string | null = null
@@ -158,11 +166,16 @@ export async function registerAdminAuthRoutes(app: FastifyInstance) {
       subjectUserId: actorUserId,
     })
     reply
-      .clearCookie(config.adminCookieName, { path: '/' })
+      .clearCookie(config.adminCookieName, {
+        path: '/',
+        sameSite: 'lax',
+        secure: config.cookieSecure,
+      })
       .send({ ok: true })
   })
 
   app.get('/me', async (request, reply) => {
+    applyNoStore(reply)
     const sessionId = request.cookies?.[config.adminCookieName]
     if (!sessionId) {
       reply.code(401).send({ error: 'unauthorized' })

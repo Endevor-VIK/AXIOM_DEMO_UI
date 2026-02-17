@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { adminLogin, adminLogout } from '@/lib/admin/authService'
+import { isAdminForceReauthRequired } from '@/lib/admin/reauth'
 import { useAdminSession } from '@/lib/admin/useAdminSession'
 
 import '@/styles/admin-console.css'
@@ -30,6 +31,7 @@ export default function AdminLoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const session = useAdminSession()
+  const forceReauth = isAdminForceReauthRequired()
 
   const redirectTo = useMemo(() => resolveAdminRedirect(location.state), [location.state])
   const [username, setUsername] = useState('')
@@ -38,7 +40,18 @@ export default function AdminLoginPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    setUsername('')
+    setPassword('')
+  }, [])
+
+  useEffect(() => {
+    if (!forceReauth) return
+    adminLogout().catch(() => undefined)
+  }, [forceReauth])
+
+  useEffect(() => {
     if (session.isLoading) return
+    if (forceReauth) return
     if (!session.isAuthenticated) return
 
     const roles = session.user?.roles ?? []
@@ -48,7 +61,7 @@ export default function AdminLoginPage() {
     }
 
     setError('Current session does not include required admin role. Access denied.')
-  }, [navigate, redirectTo, session.isAuthenticated, session.isLoading, session.user?.roles])
+  }, [forceReauth, navigate, redirectTo, session.isAuthenticated, session.isLoading, session.user?.roles])
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -88,10 +101,16 @@ export default function AdminLoginPage() {
         </p>
 
         <form className='ax-admin-login__form' onSubmit={onSubmit} autoComplete='off'>
+          <input className='ax-admin-ghost-input' type='text' name='username' autoComplete='username' tabIndex={-1} />
+          <input className='ax-admin-ghost-input' type='password' name='password' autoComplete='current-password' tabIndex={-1} />
           <label>
             Username
             <input
-              autoComplete='off'
+              autoComplete='new-password'
+              autoCapitalize='off'
+              autoCorrect='off'
+              spellCheck={false}
+              name='ax_admin_user'
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               placeholder='Username'
@@ -102,6 +121,10 @@ export default function AdminLoginPage() {
             <input
               type='password'
               autoComplete='new-password'
+              autoCapitalize='off'
+              autoCorrect='off'
+              spellCheck={false}
+              name='ax_admin_pass'
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder='Password'

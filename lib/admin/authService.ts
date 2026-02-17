@@ -1,4 +1,9 @@
 import type { Session, User } from '@/lib/identity/types'
+import {
+  clearAdminForceReauthRequired,
+  isAdminForceReauthRequired,
+  markAdminForceReauthRequired,
+} from './reauth'
 
 type AdminCredentials = {
   email: string
@@ -15,6 +20,7 @@ type ApiUser = {
 
 const listeners = new Set<(session: Session) => void>()
 let cachedSession: Session = { isAuthenticated: false, isLoading: true, user: null }
+let refreshInFlight: Promise<Session> | null = null
 
 function notify(session: Session) {
   listeners.forEach((listener) => {
@@ -41,12 +47,18 @@ function toUser(payload: ApiUser): User {
 }
 
 async function fetchAdminAuthJson(path: string, options: RequestInit = {}) {
+  const hasBody = options.body !== undefined && options.body !== null
   const response = await fetch(path, {
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
+    cache: 'no-store',
+    headers: hasBody
+      ? {
+          'Content-Type': 'application/json',
+          ...(options.headers || {}),
+        }
+      : {
+          ...(options.headers || {}),
+        },
     ...options,
   })
 
@@ -76,15 +88,30 @@ export function subscribeAdminSession(listener: (session: Session) => void) {
 }
 
 export async function refreshAdminSession(): Promise<Session> {
-  try {
-    const data = await fetchAdminAuthJson('/api/admin-auth/me', { method: 'GET' })
-    const user = toUser(data.user as ApiUser)
-    cachedSession = { isAuthenticated: true, isLoading: false, user }
-  } catch {
+  if (isAdminForceReauthRequired()) {
     cachedSession = { isAuthenticated: false, isLoading: false, user: null }
+    notify(cachedSession)
+    return cachedSession
   }
-  notify(cachedSession)
-  return cachedSession
+  if (refreshInFlight) {
+    return refreshInFlight
+  }
+  refreshInFlight = (async () => {
+    try {
+      const data = await fetchAdminAuthJson('/api/admin-auth/me', { method: 'GET' })
+      const user = toUser(data.user as ApiUser)
+      cachedSession = { isAuthenticated: true, isLoading: false, user }
+    } catch {
+      cachedSession = { isAuthenticated: false, isLoading: false, user: null }
+    }
+    notify(cachedSession)
+    return cachedSession
+  })()
+  try {
+    return await refreshInFlight
+  } finally {
+    refreshInFlight = null
+  }
 }
 
 export async function adminLogin(credentials: AdminCredentials): Promise<Session> {
@@ -92,6 +119,7 @@ export async function adminLogin(credentials: AdminCredentials): Promise<Session
     method: 'POST',
     body: JSON.stringify(credentials),
   })
+  clearAdminForceReauthRequired()
   const user = toUser(data.user as ApiUser)
   cachedSession = { isAuthenticated: true, isLoading: false, user }
   notify(cachedSession)
@@ -99,19 +127,17 @@ export async function adminLogin(credentials: AdminCredentials): Promise<Session
 }
 
 export async function adminLogout(): Promise<Session> {
+  markAdminForceReauthRequired()
+  refreshInFlight = null
   try {
-    await fetchAdminAuthJson('/api/admin-auth/logout', { method: 'POST' })
+    await fetchAdminAuthJson('/api/admin-auth/logout', {
+      method: 'POST',
+      keepalive: true,
+    })
   } catch {
     // ignore transport errors during logout
   }
   cachedSession = { isAuthenticated: false, isLoading: false, user: null }
-  if (typeof window !== 'undefined') {
-    try {
-      window.sessionStorage.removeItem('ax_admin_session_v1')
-    } catch {
-      // ignore browser storage errors
-    }
-  }
   notify(cachedSession)
   return cachedSession
 }

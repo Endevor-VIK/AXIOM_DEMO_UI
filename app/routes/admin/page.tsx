@@ -38,6 +38,14 @@ type CredentialsDraft = {
   password: string
 }
 
+type SectionKey =
+  | 'users'
+  | 'services'
+  | 'console'
+  | 'userHistory'
+  | 'ops'
+  | 'content'
+
 const EMPTY_HISTORY: AdminUserHistory = {
   sessions: [],
   events: [],
@@ -99,10 +107,13 @@ function describeEvent(event: AdminAuditEventRecord): string {
 function AccountTable(props: {
   title: string
   users: AdminUserRecord[]
+  sectionKey: SectionKey
+  collapsed: boolean
   roleDrafts: Record<string, string>
   busyAction: boolean
   currentUserId: string | undefined
   emptyText: string
+  onToggle: (key: SectionKey) => void
   onRoleDraftChange: (userId: string, value: string) => void
   onSaveRoles: (userId: string) => void
   onDeleteUser: (user: AdminUserRecord) => void
@@ -111,10 +122,13 @@ function AccountTable(props: {
   const {
     title,
     users,
+    sectionKey,
+    collapsed,
     roleDrafts,
     busyAction,
     currentUserId,
     emptyText,
+    onToggle,
     onRoleDraftChange,
     onSaveRoles,
     onDeleteUser,
@@ -123,67 +137,74 @@ function AccountTable(props: {
 
   return (
     <article className='ax-admin-card'>
-      <h2>{title}</h2>
-      <div className='ax-admin-table-wrap'>
-        <table className='ax-admin-table'>
-          <thead>
-            <tr>
-              <th>Логин</th>
-              <th>Роли</th>
-              <th>Создан</th>
-              <th>Действия</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => {
-              const hasCreatorRole = user.roles.includes('creator')
-              const disableDelete = hasCreatorRole || user.id === currentUserId
-              return (
-                <tr key={user.id}>
-                  <td>{user.email}</td>
-                  <td>
-                    <input
-                      value={roleDrafts[user.id] ?? user.roles.join(', ')}
-                      onChange={(event) => onRoleDraftChange(user.id, event.target.value)}
-                    />
-                  </td>
-                  <td>{formatDateTime(user.createdAt)}</td>
-                  <td className='ax-admin-table__actions'>
-                    <button
-                      type='button'
-                      className='ax-btn ghost'
-                      onClick={() => onSaveRoles(user.id)}
-                      disabled={busyAction}
-                    >
-                      Сохранить роли
-                    </button>
-                    <button
-                      type='button'
-                      className='ax-btn ghost'
-                      onClick={() => onSelectUser(user.id)}
-                    >
-                      История
-                    </button>
-                    <button
-                      type='button'
-                      className='ax-btn ghost'
-                      onClick={() => onDeleteUser(user)}
-                      disabled={busyAction || disableDelete}
-                    >
-                      Удалить
-                    </button>
-                  </td>
-                </tr>
-              )
-            })}
-            {!users.length ? (
-              <tr>
-                <td colSpan={4}>{emptyText}</td>
-              </tr>
-            ) : null}
-          </tbody>
-        </table>
+      <div className='ax-admin-card__head'>
+        <h2>{title}</h2>
+        <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => onToggle(sectionKey)}>
+          {collapsed ? 'Развернуть' : 'Свернуть'}
+        </button>
       </div>
+      {collapsed ? null : (
+        <div className='ax-admin-table-wrap'>
+          <table className='ax-admin-table'>
+            <thead>
+              <tr>
+                <th>Логин</th>
+                <th>Роли</th>
+                <th>Создан</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => {
+                const hasCreatorRole = user.roles.includes('creator')
+                const disableDelete = hasCreatorRole || user.id === currentUserId
+                return (
+                  <tr key={user.id}>
+                    <td>{user.email}</td>
+                    <td>
+                      <input
+                        value={roleDrafts[user.id] ?? user.roles.join(', ')}
+                        onChange={(event) => onRoleDraftChange(user.id, event.target.value)}
+                      />
+                    </td>
+                    <td>{formatDateTime(user.createdAt)}</td>
+                    <td className='ax-admin-table__actions'>
+                      <button
+                        type='button'
+                        className='ax-btn ghost'
+                        onClick={() => onSaveRoles(user.id)}
+                        disabled={busyAction}
+                      >
+                        Сохранить роли
+                      </button>
+                      <button
+                        type='button'
+                        className='ax-btn ghost'
+                        onClick={() => onSelectUser(user.id)}
+                      >
+                        История
+                      </button>
+                      <button
+                        type='button'
+                        className='ax-btn ghost'
+                        onClick={() => onDeleteUser(user)}
+                        disabled={busyAction || disableDelete}
+                      >
+                        Удалить
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+              {!users.length ? (
+                <tr>
+                  <td colSpan={4}>{emptyText}</td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
+      )}
     </article>
   )
 }
@@ -212,6 +233,15 @@ export default function AdminPage() {
   const [history, setHistory] = useState<AdminUserHistory>(EMPTY_HISTORY)
   const [historyLoading, setHistoryLoading] = useState(false)
   const [events, setEvents] = useState<AdminAuditEventRecord[]>([])
+  const [autoRefresh, setAutoRefresh] = useState(false)
+  const [collapsedSections, setCollapsedSections] = useState<Record<SectionKey, boolean>>({
+    users: true,
+    services: true,
+    console: true,
+    userHistory: true,
+    ops: true,
+    content: true,
+  })
 
   const [health, setHealth] = useState<HealthState>({
     status: 'loading',
@@ -226,6 +256,10 @@ export default function AdminPage() {
       const next = [{ id: Date.now(), at: Date.now(), text }, ...prev]
       return next.slice(0, 30)
     })
+  }, [])
+
+  const toggleSection = useCallback((key: SectionKey) => {
+    setCollapsedSections((prev) => ({ ...prev, [key]: !prev[key] }))
   }, [])
 
   const userAccounts = useMemo(
@@ -333,12 +367,17 @@ export default function AdminPage() {
     refreshUsers().catch(() => undefined)
     refreshHealth().catch(() => undefined)
     refreshEvents().catch(() => undefined)
+  }, [refreshEvents, refreshHealth, refreshUsers])
+
+  useEffect(() => {
+    if (!autoRefresh) return
     const timer = window.setInterval(() => {
+      if (document.hidden) return
       refreshHealth().catch(() => undefined)
       refreshEvents().catch(() => undefined)
-    }, 3000)
+    }, 10_000)
     return () => window.clearInterval(timer)
-  }, [refreshEvents, refreshHealth, refreshUsers])
+  }, [autoRefresh, refreshEvents, refreshHealth])
 
   useEffect(() => {
     if (!selectedUserId) return
@@ -474,15 +513,13 @@ export default function AdminPage() {
   }
 
   async function onLogout() {
+    if (busyAction) return
     setBusyAction(true)
     try {
-      await Promise.race([
-        adminLogout(),
-        new Promise((resolve) => window.setTimeout(resolve, 1200)),
-      ])
+      await adminLogout()
     } finally {
-      navigate('/admin/login', { replace: true })
-      window.location.replace('/admin/login')
+      setBusyAction(false)
+      navigate('/admin/login', { replace: true, state: { from: '/admin' } })
     }
   }
 
@@ -528,6 +565,9 @@ export default function AdminPage() {
           <button type='button' className='ax-btn ghost' onClick={() => refreshEvents()} disabled={busyAction}>
             Обновить консоль
           </button>
+          <button type='button' className='ax-btn ghost' onClick={() => setAutoRefresh((prev) => !prev)} disabled={busyAction}>
+            Автообновление: {autoRefresh ? 'ON' : 'OFF'}
+          </button>
           <button type='button' className='ax-btn ghost' onClick={onLogout} disabled={busyAction}>
             Выйти
           </button>
@@ -538,7 +578,9 @@ export default function AdminPage() {
 
       <section className='ax-admin__grid'>
         <article className='ax-admin-card'>
-          <h2>Новый аккаунт</h2>
+          <div className='ax-admin-card__head'>
+            <h2>Новый аккаунт</h2>
+          </div>
           <form className='ax-admin-create' onSubmit={onCreateUser}>
             <input
               value={createEmail}
@@ -563,44 +605,51 @@ export default function AdminPage() {
         </article>
 
         <article className='ax-admin-card'>
-          <h2>Смена логина/пароля</h2>
-          <form className='ax-admin-credentials' onSubmit={onUpdateCredentials}>
-            <select
-              value={credentialsDraft.userId}
-              onChange={(event) => setCredentialsDraft((prev) => ({ ...prev, userId: event.target.value, password: '' }))}
-            >
-              <option value=''>Выберите аккаунт</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>{user.email}</option>
-              ))}
-            </select>
-            <input
-              value={credentialsDraft.email}
-              onChange={(event) => setCredentialsDraft((prev) => ({ ...prev, email: event.target.value }))}
-              placeholder='Новый логин'
-            />
-            <input
-              type='password'
-              value={credentialsDraft.password}
-              onChange={(event) => setCredentialsDraft((prev) => ({ ...prev, password: event.target.value }))}
-              placeholder='Новый пароль (опционально)'
-            />
-            <button type='submit' className='ax-btn ax-btn--danger' disabled={busyAction}>
-              Применить
-            </button>
-          </form>
-          <p className='ax-admin-card__hint'>
-            После смены логина/пароля сессии пользователя будут принудительно завершены.
-          </p>
+          <div className='ax-admin-card__head'>
+            <h2>Смена логина/пароля</h2>
+          </div>
+          <>
+            <form className='ax-admin-credentials' onSubmit={onUpdateCredentials}>
+              <select
+                value={credentialsDraft.userId}
+                onChange={(event) => setCredentialsDraft((prev) => ({ ...prev, userId: event.target.value, password: '' }))}
+              >
+                <option value=''>Выберите аккаунт</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>{user.email}</option>
+                ))}
+              </select>
+              <input
+                value={credentialsDraft.email}
+                onChange={(event) => setCredentialsDraft((prev) => ({ ...prev, email: event.target.value }))}
+                placeholder='Новый логин'
+              />
+              <input
+                type='password'
+                value={credentialsDraft.password}
+                onChange={(event) => setCredentialsDraft((prev) => ({ ...prev, password: event.target.value }))}
+                placeholder='Новый пароль (опционально)'
+              />
+              <button type='submit' className='ax-btn ax-btn--danger' disabled={busyAction}>
+                Применить
+              </button>
+            </form>
+            <p className='ax-admin-card__hint'>
+              После смены логина/пароля сессии пользователя будут принудительно завершены.
+            </p>
+          </>
         </article>
 
         <AccountTable
           title='Пользователи и роли'
+          sectionKey='users'
+          collapsed={collapsedSections.users}
           users={userAccounts}
           roleDrafts={roleDrafts}
           busyAction={busyAction}
           currentUserId={session.user?.id}
           emptyText={busyUsers ? 'Загрузка...' : 'Пользователей нет.'}
+          onToggle={toggleSection}
           onRoleDraftChange={(userId, value) => setRoleDrafts((prev) => ({ ...prev, [userId]: value }))}
           onSaveRoles={onSaveRoles}
           onDeleteUser={onDeleteUser}
@@ -609,11 +658,14 @@ export default function AdminPage() {
 
         <AccountTable
           title='Системные службы / сервисные аккаунты'
+          sectionKey='services'
+          collapsed={collapsedSections.services}
           users={systemAccounts}
           roleDrafts={roleDrafts}
           busyAction={busyAction}
           currentUserId={session.user?.id}
           emptyText='Сервисных аккаунтов нет.'
+          onToggle={toggleSection}
           onRoleDraftChange={(userId, value) => setRoleDrafts((prev) => ({ ...prev, [userId]: value }))}
           onSaveRoles={onSaveRoles}
           onDeleteUser={onDeleteUser}
@@ -621,55 +673,90 @@ export default function AdminPage() {
         />
 
         <article className='ax-admin-card'>
-          <h2>Live Console (API)</h2>
-          <p>
-            Статус API: <b data-state={health.status}>{health.message}</b>
-          </p>
-          <p>Последняя проверка: {formatDateTime(health.checkedAt)}</p>
-          <ul className='ax-admin-history ax-admin-history--console'>
-            {renderEvents(events)}
-          </ul>
-        </article>
-
-        <article className='ax-admin-card'>
-          <h2>История пользователя</h2>
-          <p className='ax-admin-card__hint'>
-            Пользователь: <b>{selectedUser?.email || 'не выбран'}</b>
-          </p>
-          {historyLoading ? <p>Загрузка истории...</p> : null}
-          <h3 className='ax-admin-card__sub'>Сессии и подключения</h3>
-          <ul className='ax-admin-history'>
-            {renderSessions(history.sessions)}
-          </ul>
-          <h3 className='ax-admin-card__sub'>Действия</h3>
-          <ul className='ax-admin-history'>
-            {renderEvents(history.events)}
-          </ul>
-        </article>
-
-        <article className='ax-admin-card'>
-          <h2>История операций (локально)</h2>
-          <ul className='ax-admin-history'>
-            {opsLog.length ? (
-              opsLog.map((entry) => (
-                <li key={entry.id}>
-                  <span>{formatDateTime(entry.at)}</span>
-                  <span>{entry.text}</span>
-                </li>
-              ))
-            ) : (
-              <li>Операций пока нет.</li>
-            )}
-          </ul>
-        </article>
-
-        <article className='ax-admin-card'>
-          <h2>Контент и сайт</h2>
-          <div className='ax-admin-links'>
-            <Link to='/dashboard/content'>Открыть Content Hub</Link>
-            <Link to='/dashboard/news'>Открыть News</Link>
-            <Link to='/settings'>Открыть Settings</Link>
+          <div className='ax-admin-card__head'>
+            <h2>Live Console (API)</h2>
+            <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => toggleSection('console')}>
+              {collapsedSections.console ? 'Развернуть' : 'Свернуть'}
+            </button>
           </div>
+          {collapsedSections.console ? null : (
+            <>
+              <p>
+                Статус API: <b data-state={health.status}>{health.message}</b>
+              </p>
+              <p>Последняя проверка: {formatDateTime(health.checkedAt)}</p>
+              <p className='ax-admin-card__hint'>
+                {autoRefresh ? 'Автообновление включено (каждые 10 сек).' : 'Автообновление выключено. Нажмите «Обновить консоль».'}
+              </p>
+              <ul className='ax-admin-history ax-admin-history--console'>
+                {renderEvents(events)}
+              </ul>
+            </>
+          )}
+        </article>
+
+        <article className='ax-admin-card'>
+          <div className='ax-admin-card__head'>
+            <h2>История пользователя</h2>
+            <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => toggleSection('userHistory')}>
+              {collapsedSections.userHistory ? 'Развернуть' : 'Свернуть'}
+            </button>
+          </div>
+          {collapsedSections.userHistory ? null : (
+            <>
+              <p className='ax-admin-card__hint'>
+                Пользователь: <b>{selectedUser?.email || 'не выбран'}</b>
+              </p>
+              {historyLoading ? <p>Загрузка истории...</p> : null}
+              <h3 className='ax-admin-card__sub'>Сессии и подключения</h3>
+              <ul className='ax-admin-history'>
+                {renderSessions(history.sessions)}
+              </ul>
+              <h3 className='ax-admin-card__sub'>Действия</h3>
+              <ul className='ax-admin-history'>
+                {renderEvents(history.events)}
+              </ul>
+            </>
+          )}
+        </article>
+
+        <article className='ax-admin-card'>
+          <div className='ax-admin-card__head'>
+            <h2>История операций (локально)</h2>
+            <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => toggleSection('ops')}>
+              {collapsedSections.ops ? 'Развернуть' : 'Свернуть'}
+            </button>
+          </div>
+          {collapsedSections.ops ? null : (
+            <ul className='ax-admin-history'>
+              {opsLog.length ? (
+                opsLog.map((entry) => (
+                  <li key={entry.id}>
+                    <span>{formatDateTime(entry.at)}</span>
+                    <span>{entry.text}</span>
+                  </li>
+                ))
+              ) : (
+                <li>Операций пока нет.</li>
+              )}
+            </ul>
+          )}
+        </article>
+
+        <article className='ax-admin-card'>
+          <div className='ax-admin-card__head'>
+            <h2>Контент и сайт</h2>
+            <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => toggleSection('content')}>
+              {collapsedSections.content ? 'Развернуть' : 'Свернуть'}
+            </button>
+          </div>
+          {collapsedSections.content ? null : (
+            <div className='ax-admin-links'>
+              <Link to='/dashboard/content'>Открыть Content Hub</Link>
+              <Link to='/dashboard/news'>Открыть News</Link>
+              <Link to='/settings'>Открыть Settings</Link>
+            </div>
+          )}
         </article>
       </section>
     </main>

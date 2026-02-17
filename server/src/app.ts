@@ -22,7 +22,7 @@ function shouldCaptureApiRequest(url: string): boolean {
 }
 
 export async function buildApp() {
-  const app = Fastify({ logger: true })
+  const app = Fastify({ logger: { level: config.apiLogLevel } })
   app.register(cookie)
 
   app.get('/api/health', async () => ({ ok: true }))

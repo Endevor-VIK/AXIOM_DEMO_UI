@@ -1,4 +1,5 @@
 import type { Session, User } from '@/lib/identity/types'
+import { markAdminForceReauthRequired } from '@/lib/admin/reauth'
 
 import type { AuthCredentials, AuthProvider } from './types'
 
@@ -12,6 +13,7 @@ type ApiUser = {
 
 const listeners = new Set<(session: Session) => void>()
 let cachedSession: Session = { isAuthenticated: false, isLoading: true, user: null }
+let refreshInFlight: Promise<Session> | null = null
 
 function notify(session: Session) {
   listeners.forEach((listener) => {
@@ -38,12 +40,18 @@ function toUser(payload: ApiUser): User {
 }
 
 async function fetchJson(path: string, options: RequestInit = {}) {
+  const hasBody = options.body !== undefined && options.body !== null
   const res = await fetch(path, {
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
+    cache: 'no-store',
+    headers: hasBody
+      ? {
+          'Content-Type': 'application/json',
+          ...(options.headers || {}),
+        }
+      : {
+          ...(options.headers || {}),
+        },
     ...options,
   })
   if (!res.ok) {
@@ -70,15 +78,23 @@ export function createServerAuth(): AuthProvider {
       return () => listeners.delete(listener)
     },
     async refreshSession() {
+      if (refreshInFlight) return refreshInFlight
+      refreshInFlight = (async () => {
+        try {
+          const data = await fetchJson('/api/auth/me', { method: 'GET' })
+          const user = toUser(data.user as ApiUser)
+          cachedSession = { isAuthenticated: true, isLoading: false, user }
+        } catch {
+          cachedSession = { isAuthenticated: false, isLoading: false, user: null }
+        }
+        notify(cachedSession)
+        return cachedSession
+      })()
       try {
-        const data = await fetchJson('/api/auth/me', { method: 'GET' })
-        const user = toUser(data.user as ApiUser)
-        cachedSession = { isAuthenticated: true, isLoading: false, user }
-      } catch {
-        cachedSession = { isAuthenticated: false, isLoading: false, user: null }
+        return await refreshInFlight
+      } finally {
+        refreshInFlight = null
       }
-      notify(cachedSession)
-      return cachedSession
     },
     async login(credentials: AuthCredentials) {
       const data = await fetchJson('/api/auth/login', {
@@ -101,8 +117,18 @@ export function createServerAuth(): AuthProvider {
       return cachedSession
     },
     async logout() {
+      refreshInFlight = null
+      markAdminForceReauthRequired()
       try {
         await fetchJson('/api/auth/logout', { method: 'POST' })
+      } catch {
+        // ignore
+      }
+      try {
+        await fetchJson('/api/admin-auth/logout', {
+          method: 'POST',
+          keepalive: true,
+        })
       } catch {
         // ignore
       }

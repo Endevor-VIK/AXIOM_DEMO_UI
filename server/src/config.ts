@@ -15,10 +15,18 @@ const AXCHAT_SOURCE_DIRS = csv(process.env.AXCHAT_SOURCE_DIRS)
 const AXCHAT_PUBLIC_SOURCE_DIRS = csv(process.env.AXCHAT_PUBLIC_SOURCE_DIRS)
 const AXCHAT_CREATOR_SOURCE_DIRS = csv(process.env.AXCHAT_CREATOR_SOURCE_DIRS)
 const AXCHAT_ADMIN_SOURCE_DIRS = csv(process.env.AXCHAT_ADMIN_SOURCE_DIRS)
+const ALLOWED_LOG_LEVELS = new Set(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+
+function resolveLogLevel(raw?: string): string {
+  const value = (raw || '').trim().toLowerCase()
+  if (ALLOWED_LOG_LEVELS.has(value)) return value
+  return 'info'
+}
 
 export const config = {
   port: Number(process.env.AX_API_PORT || 8787),
   host: process.env.AX_API_HOST || '127.0.0.1',
+  apiLogLevel: resolveLogLevel(process.env.AX_API_LOG_LEVEL),
   deployTarget: process.env.AX_DEPLOY_TARGET === 'ghpages' ? 'ghpages' : 'local',
   dbPath:
     process.env.AX_DB_PATH ||

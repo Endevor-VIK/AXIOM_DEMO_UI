@@ -2,6 +2,7 @@ import React, { type PropsWithChildren } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
 import { useAdminSession } from '@/lib/admin/useAdminSession'
+import { isAdminForceReauthRequired } from '@/lib/admin/reauth'
 
 export default function AdminGate({ children }: PropsWithChildren) {
   const session = useAdminSession()
@@ -9,6 +10,10 @@ export default function AdminGate({ children }: PropsWithChildren) {
 
   if (session.isLoading) {
     return <div className='ax-page ax-loading'>ADMIN AUTH CHECK…</div>
+  }
+
+  if (isAdminForceReauthRequired()) {
+    return <Navigate to='/admin/login' replace state={{ from: location.pathname }} />
   }
 
   if (!session.isAuthenticated) {

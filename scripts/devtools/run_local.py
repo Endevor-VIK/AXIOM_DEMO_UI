@@ -209,6 +209,7 @@ def main() -> int:
         env.setdefault('AX_CREATOR_EMAIL', 'creator')
         env.setdefault('AX_CREATOR_PASSWORD', 'axiom')
         env.setdefault('AX_CREATOR_FORCE_RESET', '1')
+        env.setdefault('AX_API_LOG_LEVEL', 'info')
 
     api_host = env.get('AX_API_HOST') or '127.0.0.1'
     api_probe_host = host if api_host == '0.0.0.0' else api_host
@@ -233,6 +234,11 @@ def main() -> int:
             "[dev] Admin creds (local default) → "
             f"login: {env.get('AX_CREATOR_EMAIL', 'creator')} "
             f"password: {env.get('AX_CREATOR_PASSWORD', 'axiom')}",
+            flush=True,
+        )
+        print(
+            f"[dev] API log level → {env.get('AX_API_LOG_LEVEL', 'info')} "
+            "(set AX_API_LOG_LEVEL=warn to reduce request logs, info/debug for detailed trace)",
             flush=True,
         )
     if mode == 'ui':
