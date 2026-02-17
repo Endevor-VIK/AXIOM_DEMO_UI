@@ -4,7 +4,7 @@
 
 Поток выполнения:
 - Переиспользует уже работающий Vite (по умолчанию), иначе запускает run_local.py и ждёт готовности.
-- Затем стартует run_tunnel_dev.py с нужными флагами (hash-файл/путь по умолчанию).
+- Затем стартует run_tunnel_dev.py с нужными флагами (по умолчанию без BasicAuth).
 - По Ctrl+C корректно гасит туннель, потом dev-сервер.
 - Если запустить без аргументов — откроется меню с типовыми действиями.
 """
@@ -26,7 +26,6 @@ from typing import Callable, Optional
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 RUN_LOCAL = os.path.join(SCRIPT_DIR, "run_local.py")
 RUN_TUNNEL = os.path.join(SCRIPT_DIR, "run_tunnel_dev.py")
-DEFAULT_HASH_PATH = os.path.join(SCRIPT_DIR, "data", "auth.bcrypt")
 DEFAULT_LT_HOST = os.environ.get("AXIOM_TUNNEL_LT_HOST", "https://loca.lt")
 LT_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.(?:loca\.lt|localtunnel\.me)")
 
@@ -108,6 +107,8 @@ def build_tunnel_cmd(args: argparse.Namespace) -> list[str]:
         cmd += ["--vite-url", args.vite_url]
     if args.proxy_port:
         cmd += ["--proxy-port", str(args.proxy_port)]
+    if args.basic_auth is not None:
+        cmd += ["--basic-auth", "true" if args.basic_auth else "false"]
     if args.auth_user:
         cmd += ["--auth-user", args.auth_user]
     if args.auth_pass:
@@ -208,11 +209,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--vite-port", type=int, default=5173, help="Порт Vite (по умолчанию 5173)")
     parser.add_argument("--vite-url", help="Полный URL Vite; если указан, переопределяет host/port.")
     parser.add_argument("--proxy-port", type=int, default=8080, help="Порт прокси для туннеля (по умолчанию 8080)")
-    parser.add_argument("--auth-user", default="axiom", help="Имя пользователя BasicAuth (по умолчанию axiom)")
-    parser.add_argument("--auth-pass", help="Пароль в открытом виде (опционально; предпочтителен ENV/хэш).")
-    parser.add_argument("--auth-pass-env", default="AXIOM_TUNNEL_PASS", help="Имя ENV с паролем (по умолчанию AXIOM_TUNNEL_PASS)")
-    parser.add_argument("--auth-hash-file", help=f"Путь к файлу bcrypt (по умолчанию {DEFAULT_HASH_PATH}).")
-    parser.add_argument("--write-hash-file", action="store_true", help="Сохранять сгенерированный bcrypt в файл при хэшировании пароля.")
+    parser.add_argument("--basic-auth", type=parse_bool, nargs="?", const=True, default=False, help="Включить BasicAuth на прокси (по умолчанию false)")
+    parser.add_argument("--auth-user", default="axiom", help="Имя пользователя BasicAuth (если --basic-auth=true)")
+    parser.add_argument("--auth-pass", help="Пароль BasicAuth в открытом виде (если --basic-auth=true)")
+    parser.add_argument("--auth-pass-env", default="AXIOM_TUNNEL_PASS", help="Имя ENV с паролем BasicAuth (если --basic-auth=true)")
+    parser.add_argument("--auth-hash-file", help="Путь к файлу bcrypt (если --basic-auth=true)")
+    parser.add_argument("--write-hash-file", action="store_true", help="Сохранять сгенерированный bcrypt в файл (если --basic-auth=true)")
     parser.add_argument("--subdomain", help="Опциональный сабдомен localtunnel (может быть занят).")
     parser.add_argument(
         "--lt-host",
@@ -244,10 +246,11 @@ def run_with_args(args: argparse.Namespace) -> int:
                 sys.stdout.write(
                     "\n------ Tunnel ready (auto) ------\n"
                     f"Vite: {vite_url}\n"
-                    f"Proxy (BasicAuth): http://127.0.0.1:{args.proxy_port} (401 expected)\n"
+                    f"Proxy: http://127.0.0.1:{args.proxy_port} "
+                    f"({'BasicAuth 401 expected' if args.basic_auth else 'no auth'})\n"
                     f"Tunnel: {tunnel_url}\n"
-                    f"Auth user: {args.auth_user}\n"
-                    "Отдай публичный URL пользователю; для входа нужен логин/пароль.\n"
+                    f"{'Auth user: ' + args.auth_user if args.basic_auth else 'BasicAuth: disabled'}\n"
+                    "Отдай публичный URL пользователю.\n"
                 )
                 sys.stdout.flush()
 
@@ -301,8 +304,8 @@ def run_with_args(args: argparse.Namespace) -> int:
 def interactive_menu(default_args: argparse.Namespace) -> None:
     sys.stdout.write(
         "\n[run_tunnel_dev_auto — меню]\n"
-        "1) Старт с параметрами по умолчанию (reuse Vite, verify=true, hash файл по умолчанию)\n"
-        "2) Старт с кастомными портами/путём хэша\n"
+        "1) Быстрый старт без BasicAuth (reuse Vite, verify=true)\n"
+        "2) Кастомный старт (порты/режим BasicAuth)\n"
         "0) Выход\n"
         "Выберите действие: "
     )
@@ -320,13 +323,22 @@ def interactive_menu(default_args: argparse.Namespace) -> None:
         args.vite_host = prompt_default("Vite host", args.vite_host)
         args.vite_port = prompt_int("Vite port", args.vite_port)
         args.proxy_port = prompt_int("Proxy port", args.proxy_port)
-        args.auth_hash_file = prompt_default("Путь к bcrypt-файлу", args.auth_hash_file or DEFAULT_HASH_PATH)
+        args.basic_auth = prompt_bool("Включить BasicAuth (браузерный логин/пароль)", args.basic_auth)
+        if args.basic_auth:
+            hash_path = prompt_default(
+                "Путь к bcrypt-файлу (опционально; Enter = не использовать)",
+                args.auth_hash_file or "",
+            )
+            args.auth_hash_file = hash_path.strip() or None
+        else:
+            args.auth_hash_file = None
         args.subdomain = prompt_default("Сабдомен localtunnel (опционально)", args.subdomain or "") or None
         args.verify = prompt_bool("Проверять Vite перед стартом (verify)", True)
         args.reuse_if_running = prompt_bool("Переиспользовать уже запущенный Vite", True)
         args.quiet = not prompt_bool("Подробный вывод (Y = подробно, N = тише)", True)
     else:
-        args.auth_hash_file = args.auth_hash_file or DEFAULT_HASH_PATH
+        args.basic_auth = False
+        args.auth_hash_file = None
 
     rc = run_with_args(args)
     if rc != 0:

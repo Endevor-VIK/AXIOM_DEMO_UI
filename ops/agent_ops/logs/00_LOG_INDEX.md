@@ -61,4 +61,5 @@ AXS_HEADER_META:
 | 0040 | 2026-02-17T20:19:12+03:00 | Admin control center: user/system split + credentials + history + live console + logout reliability | main | — | ops/agent_ops/logs/0040_admin-control-center-user-history.md | DONE |
 | 0041 | 2026-02-17T20:31:36+03:00 | Admin history/logout hardening (safe audit + reliable redirect) | main | — | ops/agent_ops/logs/0041_admin-history-logout-hardening.md | DONE |
 | 0042 | 2026-02-17T21:43:57+03:00 | Admin force re-auth after logout + section defaults + dev log visibility | main | — | ops/agent_ops/logs/0042_admin-logout-force-reauth-sections.md | DONE |
+| 0043 | 2026-02-17T23:55:06+03:00 | Tunnel no-auth default (remove browser login prompt) | main | — | ops/agent_ops/logs/0043_tunnel-no-auth-default.md | DONE |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).

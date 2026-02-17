@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Запуск защищённого туннеля для Vite (Caddy BasicAuth + localtunnel).
+Запуск туннеля для Vite (Caddy reverse proxy + localtunnel).
 
 - Проверяет доступность Vite (опционально).
-- Поднимает Caddy reverse proxy с BasicAuth (bcrypt через `caddy hash-password`).
-- Открывает localtunnel к защищённому прокси.
+- Поднимает Caddy reverse proxy (BasicAuth опционально).
+- Открывает localtunnel к прокси.
 - Корректно гасит процессы и временный Caddyfile по Ctrl+C.
 """
 
@@ -29,10 +29,9 @@ from collections import deque
 from typing import Callable, Deque, Optional
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-LOCAL_HASH_PATH = os.path.join(SCRIPT_DIR, "data", "auth.bcrypt")
-FALLBACK_HASH_PATH = os.path.expanduser("~/.axiom_tunnel_dev/auth.bcrypt")
-DEFAULT_HASH_PATH = os.path.expanduser(os.environ.get("AXIOM_TUNNEL_HASH_FILE", LOCAL_HASH_PATH))
+DEFAULT_HASH_WRITE_PATH = os.path.join(SCRIPT_DIR, "data", "auth.bcrypt")
 DEFAULT_LT_HOST = os.environ.get("AXIOM_TUNNEL_LT_HOST", "https://loca.lt")
+DEFAULT_AUTH_PASS = os.environ.get("AXIOM_TUNNEL_DEFAULT_PASS", "axiom")
 
 LT_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.(?:loca\.lt|localtunnel\.me)")
 
@@ -73,11 +72,13 @@ def normalize_url(url: str) -> str:
     return url
 
 
-def wait_for_http_ok(url: str, timeout: int) -> bool:
+def wait_for_http_ok(url: str, timeout: int, proc: subprocess.Popen | None = None) -> bool:
     """Ждать ответа HTTP 2xx/3xx."""
     deadline = time.time() + timeout
     last_error: Optional[Exception] = None
     while time.time() < deadline:
+        if proc is not None and proc.poll() is not None:
+            return False
         try:
             req = urllib.request.Request(url, method="GET")
             with urllib.request.urlopen(req, timeout=5) as resp:
@@ -146,18 +147,28 @@ def caddy_hash_password(plaintext: str) -> str:
     raise RuntimeError(f"Could not parse bcrypt hash from caddy output:\n{output}")
 
 
-def build_temp_caddyfile(auth_user: str, bcrypt: str, upstream_url: str, proxy_port: int) -> str:
-    """Write temporary Caddyfile for BasicAuth reverse proxy."""
+def build_temp_caddyfile(
+    upstream_url: str,
+    proxy_port: int,
+    auth_user: str | None = None,
+    bcrypt: str | None = None,
+) -> str:
+    """Write temporary Caddyfile for reverse proxy (BasicAuth optional)."""
     parsed = urllib.parse.urlparse(upstream_url)
     upstream_hostport = parsed.netloc or upstream_url.replace("http://", "").replace("https://", "")
+    basicauth_block = ""
+    if auth_user and bcrypt:
+        basicauth_block = (
+            "  basicauth /* {\n"
+            f"    {auth_user} {bcrypt}\n"
+            "  }\n"
+        )
     content = (
         "{\n"
         "  admin off\n"
         "}\n\n"
         f":{proxy_port} {{\n"
-        f"  basicauth /* {{\n"
-        f"    {auth_user} {bcrypt}\n"
-        f"  }}\n"
+        f"{basicauth_block}"
         f"  reverse_proxy {upstream_url} {{\n"
         f"    header_up Host {upstream_hostport}\n"
         f"  }}\n"
@@ -242,8 +253,17 @@ def get_password(args: argparse.Namespace) -> str:
     env_value = os.environ.get(args.auth_pass_env)
     if env_value:
         return env_value
+    default_pass = (args.default_auth_pass or "").strip()
+    if default_pass:
+        if not args.quiet:
+            sys.stdout.write(
+                "Auth password not provided; using quick-start default from --default-auth-pass.\n"
+            )
+            sys.stdout.flush()
+        return default_pass
     raise RuntimeError(
-        f"Auth password is required. Pass via --auth-pass or set env {args.auth_pass_env}."
+        f"Auth password is required. Pass via --auth-pass, set env {args.auth_pass_env}, "
+        "or set --default-auth-pass."
     )
 
 
@@ -253,21 +273,7 @@ def resolve_hash_write_path(args: argparse.Namespace) -> str:
     env_path = os.environ.get("AXIOM_TUNNEL_HASH_FILE")
     if env_path:
         return os.path.expanduser(env_path)
-    return DEFAULT_HASH_PATH
-
-
-def find_existing_hash_path(args: argparse.Namespace) -> Optional[str]:
-    candidates = []
-    if args.auth_hash_file:
-        candidates.append(os.path.expanduser(args.auth_hash_file))
-    env_path = os.environ.get("AXIOM_TUNNEL_HASH_FILE")
-    if env_path:
-        candidates.append(os.path.expanduser(env_path))
-    candidates.extend([DEFAULT_HASH_PATH, FALLBACK_HASH_PATH])
-    for path in candidates:
-        if path and os.path.exists(path):
-            return path
-    return None
+    return DEFAULT_HASH_WRITE_PATH
 
 
 def resolve_bcrypt(args: argparse.Namespace) -> tuple[str, str]:
@@ -275,11 +281,10 @@ def resolve_bcrypt(args: argparse.Namespace) -> tuple[str, str]:
     Return (bcrypt_hash, display_mask).
 
     If --auth-hash-file is provided, read bcrypt from there and mask as 'bcrypt-file'.
-    Otherwise, derive bcrypt via caddy hash-password using provided/plain password.
+    Otherwise, derive bcrypt via caddy hash-password using plaintext password.
     """
-    existing_path = find_existing_hash_path(args)
-    if existing_path:
-        bcrypt = read_bcrypt_from_file(existing_path)
+    if args.auth_hash_file:
+        bcrypt = read_bcrypt_from_file(os.path.expanduser(args.auth_hash_file))
         return bcrypt, "bcrypt-file"
 
     password = get_password(args)
@@ -332,8 +337,17 @@ def run(args: argparse.Namespace) -> int:
     if not is_port_free(args.proxy_port):
         raise RuntimeError(f"Port {args.proxy_port} is busy. Choose another via --proxy-port.")
 
-    bcrypt, masked_pass = resolve_bcrypt(args)
-    caddyfile_path = build_temp_caddyfile(args.auth_user, bcrypt, vite_origin, args.proxy_port)
+    auth_enabled = bool(args.basic_auth)
+    bcrypt: str | None = None
+    masked_pass = "disabled"
+    if auth_enabled:
+        bcrypt, masked_pass = resolve_bcrypt(args)
+    caddyfile_path = build_temp_caddyfile(
+        vite_origin,
+        args.proxy_port,
+        args.auth_user if auth_enabled else None,
+        bcrypt if auth_enabled else None,
+    )
     caddy_buf: Deque[str] = deque(maxlen=80)
     caddy_proc: subprocess.Popen | None = None
     lt_proc: subprocess.Popen | None = None
@@ -354,12 +368,20 @@ def run(args: argparse.Namespace) -> int:
             daemon=True,
         ).start()
 
-        if not wait_for_status(proxy_url, expected_status=401, timeout=args.timeout, proc=caddy_proc):
-            raise RuntimeError(
-                f"Caddy proxy did not respond with 401 at {proxy_url}. "
-                "Check port availability or auth config."
-            )
-        sys.stdout.write(f"Proxy (BasicAuth): {proxy_url} (401 expected)\n")
+        if auth_enabled:
+            if not wait_for_status(proxy_url, expected_status=401, timeout=args.timeout, proc=caddy_proc):
+                raise RuntimeError(
+                    f"Caddy proxy did not respond with 401 at {proxy_url}. "
+                    "Check port availability or auth config."
+                )
+            sys.stdout.write(f"Proxy (BasicAuth): {proxy_url} (401 expected)\n")
+        else:
+            if not wait_for_http_ok(proxy_url, args.timeout, proc=caddy_proc):
+                raise RuntimeError(
+                    f"Caddy proxy did not respond with 2xx/3xx at {proxy_url}. "
+                    "Check port availability or upstream Vite."
+                )
+            sys.stdout.write(f"Proxy: {proxy_url} (no auth)\n")
         sys.stdout.flush()
 
         lt_cmd = build_localtunnel_cmd(args)
@@ -383,16 +405,20 @@ def run(args: argparse.Namespace) -> int:
                 output = (
                     "------ Tunnel ready ------\n"
                     f"Vite: {vite_origin} (OK)\n"
-                    f"Proxy (BasicAuth): {proxy_url} (401 expected)\n"
+                    f"Proxy: {proxy_url} ({'BasicAuth 401 expected' if auth_enabled else 'no auth'})\n"
                     f"Tunnel: {tunnel_url}\n"
                 )
                 if tunnel_password:
                     output += f"Tunnel password: {tunnel_password}\n"
-                output += (
-                    f"Auth user: {args.auth_user}\n"
-                    f"Auth pass: {masked_pass} (masked)\n"
-                    "Press Ctrl+C to stop\n"
-                )
+                    output += "Note: loca.lt password gate is separate from Caddy/auth settings.\n"
+                if auth_enabled:
+                    output += (
+                        f"Auth user: {args.auth_user}\n"
+                        f"Auth pass: {masked_pass} (masked)\n"
+                    )
+                else:
+                    output += "BasicAuth: disabled\n"
+                output += "Press Ctrl+C to stop\n"
                 sys.stdout.write(output)
                 sys.stdout.flush()
                 summary_printed = True
@@ -425,12 +451,16 @@ def run(args: argparse.Namespace) -> int:
             )
 
         if not summary_printed:
-            sys.stdout.write(
-                f"Tunnel: {tunnel_url}\n"
-                f"Auth user: {args.auth_user}\n"
-                f"Auth pass: {masked_pass} (masked)\n"
-                "Press Ctrl+C to stop\n"
-            )
+            output = f"Tunnel: {tunnel_url}\n"
+            if auth_enabled:
+                output += (
+                    f"Auth user: {args.auth_user}\n"
+                    f"Auth pass: {masked_pass} (masked)\n"
+                )
+            else:
+                output += "BasicAuth: disabled\n"
+            output += "Press Ctrl+C to stop\n"
+            sys.stdout.write(output)
             sys.stdout.flush()
 
         while True:
@@ -454,26 +484,43 @@ def run(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Защищённый туннель для Vite (Caddy + localtunnel).")
+    parser = argparse.ArgumentParser(description="Туннель для Vite (Caddy + localtunnel).")
     parser.add_argument("--vite-host", default="127.0.0.1", help="Хост Vite (по умолчанию 127.0.0.1)")
     parser.add_argument("--vite-port", type=int, default=5173, help="Порт Vite (по умолчанию 5173)")
     parser.add_argument("--vite-url", help="Полный URL Vite (переопределяет host/port).")
-    parser.add_argument("--proxy-port", type=int, default=8080, help="Порт локального BasicAuth-прокси (по умолчанию 8080)")
-    parser.add_argument("--auth-user", default="axiom", help="Имя пользователя BasicAuth (по умолчанию axiom)")
-    parser.add_argument("--auth-pass", help="Пароль BasicAuth (опционально, предпочтительно через ENV).")
+    parser.add_argument("--proxy-port", type=int, default=8080, help="Порт локального прокси (по умолчанию 8080)")
+    parser.add_argument(
+        "--basic-auth",
+        type=parse_bool,
+        nargs="?",
+        const=True,
+        default=False,
+        help="Включить BasicAuth на Caddy-прокси (по умолчанию false).",
+    )
+    parser.add_argument("--auth-user", default="axiom", help="Имя пользователя BasicAuth (если --basic-auth=true).")
+    parser.add_argument("--auth-pass", help="Пароль BasicAuth (если --basic-auth=true).")
     parser.add_argument(
         "--auth-pass-env",
         default="AXIOM_TUNNEL_PASS",
-        help="Имя переменной окружения для пароля (по умолчанию AXIOM_TUNNEL_PASS)",
+        help="Имя переменной окружения для пароля (если --basic-auth=true).",
+    )
+    parser.add_argument(
+        "--default-auth-pass",
+        default=DEFAULT_AUTH_PASS,
+        help=(
+            "Fallback пароль для quick-start, если --auth-pass и ENV не заданы "
+            "(по умолчанию AXIOM_TUNNEL_DEFAULT_PASS или 'axiom'). "
+            "Передайте пустую строку, чтобы отключить fallback."
+        ),
     )
     parser.add_argument(
         "--auth-hash-file",
-        help="Путь к файлу с bcrypt (пропускает ввод пароля/ENV).",
+        help="Путь к файлу с bcrypt (если --basic-auth=true).",
     )
     parser.add_argument(
         "--write-hash-file",
         action="store_true",
-        help="Если хэш считан из пароля, сохранить bcrypt в файл (или путь по умолчанию).",
+        help="Если --basic-auth=true и хэш получен из пароля, сохранить bcrypt в файл.",
     )
     parser.add_argument(
         "--subdomain",
