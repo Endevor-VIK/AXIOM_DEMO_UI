@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0039_ADMIN_AUTH_SESSION_ISOLATION_FIX_MD
   title: "GLOBAL LOG — 0039_admin-auth-session-isolation-fix"
-  status: ACTIVE
+  status: DONE
   mode: Doc
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
@@ -22,7 +22,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: Исправить баг общей сессии между `/admin` и основным сайтом, чтобы admin login/logout не авторизовал `site auth`
 - SPEC: —
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -51,4 +51,4 @@ AXS_HEADER_META:
 
 ## Step E — Git
 
-- 2026-02-17T19:49:53+03:00 — Действие: Коммит не выполнялся в рамках текущего запроса; изменения подготовлены в рабочем дереве. → Результат: PENDING
+- 2026-02-17T19:53:20+03:00 — Commit: `9ab8d7c` — `fix(admin-auth): isolate admin session from site auth` — Файлы: `app/routes/admin/login/page.tsx`, `app/routes/admin/page.tsx`, `components/AdminGate.tsx`, `lib/admin/authService.ts`, `lib/admin/useAdminSession.ts`, `server/src/admin/authRoutes.ts`, `server/src/admin/guards.ts`, `server/src/admin/routes.ts`, `server/src/app.ts`, `server/src/config.ts`, `tests/adminAuthIsolation.spec.ts`, `ops/agent_ops/logs/0039_admin-auth-session-isolation-fix.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`.
