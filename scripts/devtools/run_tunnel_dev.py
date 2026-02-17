@@ -33,8 +33,13 @@ DEFAULT_HASH_WRITE_PATH = os.path.join(SCRIPT_DIR, "data", "auth.bcrypt")
 DEFAULT_LT_HOST = os.environ.get("AXIOM_TUNNEL_LT_HOST", "https://loca.lt")
 DEFAULT_AUTH_PASS = os.environ.get("AXIOM_TUNNEL_DEFAULT_PASS", "axiom")
 DEFAULT_LT_HOSTS = [DEFAULT_LT_HOST, "https://localtunnel.me"]
+DEFAULT_TUNNEL_PROVIDER = os.environ.get("AXIOM_TUNNEL_PROVIDER", "auto").strip().lower() or "auto"
+DEFAULT_CLOUDFLARED_BIN = os.environ.get("AXIOM_CLOUDFLARED_BIN", "cloudflared")
+DEFAULT_PINGGY_HOST = os.environ.get("AXIOM_TUNNEL_PINGGY_HOST", "a.pinggy.io")
+DEFAULT_PINGGY_PORT = int(os.environ.get("AXIOM_TUNNEL_PINGGY_PORT", "443"))
 
 LT_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.(?:loca\.lt|localtunnel\.me)")
+URL_RE = re.compile(r"https://[^\s\"'>)]+")
 
 
 def parse_bool(value: str) -> bool:
@@ -128,6 +133,31 @@ def fetch_tunnel_password() -> Optional[str]:
             return data or None
     except Exception:
         return None
+
+
+def extract_cloudflared_tunnel_url(line: str) -> Optional[str]:
+    for raw_url in URL_RE.findall(line):
+        candidate = raw_url.rstrip(".,;!?)")
+        parsed = urllib.parse.urlparse(candidate)
+        host = (parsed.hostname or "").lower()
+        if not host.endswith("trycloudflare.com"):
+            continue
+        if host == "api.trycloudflare.com":
+            continue
+        if parsed.path not in {"", "/"}:
+            continue
+        return f"https://{host}"
+    return None
+
+
+def extract_pinggy_tunnel_url(line: str) -> Optional[str]:
+    for raw_url in URL_RE.findall(line):
+        candidate = raw_url.rstrip(".,;!?)")
+        parsed = urllib.parse.urlparse(candidate)
+        host = (parsed.hostname or "").lower()
+        if host.endswith(".pinggy.io") or host.endswith(".pinggy.link"):
+            return f"https://{host}"
+    return None
 
 
 def caddy_hash_password(plaintext: str) -> str:
@@ -328,6 +358,15 @@ def resolve_lt_hosts(args: argparse.Namespace) -> list[str]:
     return result
 
 
+def resolve_tunnel_providers(args: argparse.Namespace) -> list[str]:
+    raw = (args.tunnel_provider or "auto").strip().lower()
+    if raw == "auto":
+        return ["localtunnel", "cloudflared"]
+    if raw in {"localtunnel", "cloudflared"}:
+        return [raw]
+    raise RuntimeError(f"Unsupported tunnel provider: {raw}")
+
+
 def build_localtunnel_cmd(args: argparse.Namespace, lt_host: str | None) -> list[str]:
     if args.localtunnel_bin:
         cmd = [args.localtunnel_bin]
@@ -345,10 +384,30 @@ def build_localtunnel_cmd(args: argparse.Namespace, lt_host: str | None) -> list
     return cmd
 
 
+def build_cloudflared_cmd(args: argparse.Namespace, proxy_url: str) -> list[str]:
+    bin_name = args.cloudflared_bin or DEFAULT_CLOUDFLARED_BIN
+    return [bin_name, "tunnel", "--url", proxy_url, "--no-autoupdate"]
+
+
 def run(args: argparse.Namespace) -> int:
     require_command("caddy", "Install from https://caddyserver.com/docs/install")
-    if not (is_command_available("lt") or is_command_available("localtunnel") or is_command_available("npx") or args.localtunnel_bin):
-        raise RuntimeError("localtunnel requires 'npx' or a localtunnel binary (lt/localtunnel).")
+    providers = resolve_tunnel_providers(args)
+    if "localtunnel" in providers and not (
+        is_command_available("lt")
+        or is_command_available("localtunnel")
+        or is_command_available("npx")
+        or args.localtunnel_bin
+    ):
+        if providers == ["localtunnel"]:
+            raise RuntimeError("localtunnel requires 'npx' or a localtunnel binary (lt/localtunnel).")
+        providers = [p for p in providers if p != "localtunnel"]
+    if "cloudflared" in providers:
+        if not is_command_available(args.cloudflared_bin or DEFAULT_CLOUDFLARED_BIN):
+            if providers == ["cloudflared"]:
+                raise RuntimeError("cloudflared binary not found. Install cloudflared or choose --tunnel-provider localtunnel.")
+            providers = [p for p in providers if p != "cloudflared"]
+    if not providers:
+        raise RuntimeError("No tunnel provider available. Install localtunnel (npx/lt) or cloudflared.")
 
     vite_origin = normalize_url(args.vite_url) if args.vite_url else f"http://{args.vite_host}:{args.vite_port}"
     proxy_url = f"http://127.0.0.1:{args.proxy_port}"
@@ -377,8 +436,7 @@ def run(args: argparse.Namespace) -> int:
     )
     caddy_buf: Deque[str] = deque(maxlen=80)
     caddy_proc: subprocess.Popen | None = None
-    lt_proc: subprocess.Popen | None = None
-    lt_hosts = resolve_lt_hosts(args)
+    tunnel_proc: subprocess.Popen | None = None
 
     try:
         caddy_cmd = ["caddy", "run", "--config", caddyfile_path, "--adapter", "caddyfile"]
@@ -412,95 +470,168 @@ def run(args: argparse.Namespace) -> int:
         sys.stdout.flush()
 
         tunnel_url: Optional[str] = None
+        tunnel_provider: Optional[str] = None
         tunnel_host: Optional[str] = None
         summary_printed = False
-        lt_failures: list[str] = []
-        per_host_timeout = max(15, min(args.timeout, 45))
+        provider_failures: list[str] = []
+        per_host_timeout = max(15, min(args.timeout, 60))
+        cloudflared_timeout = max(20, min(args.timeout, 90))
 
-        for idx, candidate_host in enumerate(lt_hosts, start=1):
-            lt_buf: Deque[str] = deque(maxlen=120)
-            lt_cmd = build_localtunnel_cmd(args, candidate_host)
-            if not args.quiet:
-                sys.stdout.write(
-                    f"Starting localtunnel host {candidate_host} ({idx}/{len(lt_hosts)})...\n"
-                )
-                sys.stdout.flush()
-
-            lt_proc = subprocess.Popen(
-                lt_cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                bufsize=1,
+        def emit_ready(current_provider: str, current_host: str | None, url: str) -> None:
+            nonlocal summary_printed
+            tunnel_password = (
+                fetch_tunnel_password()
+                if current_provider == "localtunnel" and current_host and "loca.lt" in current_host
+                else None
             )
-
-            def handle_lt_line(line: str, current_host: str = candidate_host) -> None:
-                nonlocal tunnel_url, tunnel_host, summary_printed
-                found = LT_URL_RE.search(line)
-                if tunnel_url is None and found:
-                    tunnel_url = found.group(0)
-                    tunnel_host = current_host
-                    tunnel_password = fetch_tunnel_password() if "loca.lt" in current_host else None
-                    output = (
-                        "------ Tunnel ready ------\n"
-                        f"Vite: {vite_origin} (OK)\n"
-                        f"Proxy: {proxy_url} ({'BasicAuth 401 expected' if auth_enabled else 'no auth'})\n"
-                        f"Tunnel host: {current_host}\n"
-                        f"Tunnel: {tunnel_url}\n"
-                    )
-                    if tunnel_password:
-                        output += f"Tunnel password: {tunnel_password}\n"
-                        output += "Note: loca.lt password gate is separate from Caddy/auth settings.\n"
-                    if auth_enabled:
-                        output += (
-                            f"Auth user: {args.auth_user}\n"
-                            f"Auth pass: {masked_pass} (masked)\n"
-                        )
-                    else:
-                        output += "BasicAuth: disabled\n"
-                    output += "Press Ctrl+C to stop\n"
-                    sys.stdout.write(output)
-                    sys.stdout.flush()
-                    summary_printed = True
-
-            threading.Thread(
-                target=stream_output,
-                args=(lt_proc, "localtunnel", lt_buf, args.quiet, handle_lt_line),
-                daemon=True,
-            ).start()
-
-            tunnel_deadline = time.time() + per_host_timeout
-            while tunnel_url is None and time.time() < tunnel_deadline:
-                if lt_proc.poll() is not None:
-                    break
-                time.sleep(0.5)
-
-            if tunnel_url is not None:
-                break
-
-            error_tail = "\n".join(list(lt_buf)[-10:]).strip()
-            if error_tail:
-                lt_failures.append(f"{candidate_host}:\n{error_tail}")
-            else:
-                lt_failures.append(
-                    f"{candidate_host}: no localtunnel output (timeout >{per_host_timeout}s)"
+            output = (
+                "------ Tunnel ready ------\n"
+                f"Vite: {vite_origin} (OK)\n"
+                f"Proxy: {proxy_url} ({'BasicAuth 401 expected' if auth_enabled else 'no auth'})\n"
+                f"Tunnel provider: {current_provider}\n"
+            )
+            if current_host:
+                output += f"Tunnel host: {current_host}\n"
+            output += f"Tunnel: {url}\n"
+            if tunnel_password:
+                output += f"Tunnel password: {tunnel_password}\n"
+                output += "Note: loca.lt password gate is separate from Caddy/auth settings.\n"
+            if auth_enabled:
+                output += (
+                    f"Auth user: {args.auth_user}\n"
+                    f"Auth pass: {masked_pass} (masked)\n"
                 )
-            stop_process(lt_proc, "localtunnel", args.quiet)
-            lt_proc = None
+            else:
+                output += "BasicAuth: disabled\n"
+            output += "Press Ctrl+C to stop\n"
+            sys.stdout.write(output)
+            sys.stdout.flush()
+            summary_printed = True
+
+        for provider in providers:
+            if provider == "localtunnel":
+                lt_hosts = resolve_lt_hosts(args)
+                lt_failures: list[str] = []
+                for idx, candidate_host in enumerate(lt_hosts, start=1):
+                    lt_buf: Deque[str] = deque(maxlen=120)
+                    lt_cmd = build_localtunnel_cmd(args, candidate_host)
+                    if not args.quiet:
+                        sys.stdout.write(
+                            f"Starting localtunnel host {candidate_host} ({idx}/{len(lt_hosts)})...\n"
+                        )
+                        sys.stdout.flush()
+
+                    tunnel_proc = subprocess.Popen(
+                        lt_cmd,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        bufsize=1,
+                    )
+
+                    def handle_lt_line(line: str, current_host: str = candidate_host) -> None:
+                        nonlocal tunnel_url, tunnel_provider, tunnel_host
+                        found = LT_URL_RE.search(line)
+                        if tunnel_url is None and found:
+                            tunnel_url = found.group(0)
+                            tunnel_provider = "localtunnel"
+                            tunnel_host = current_host
+                            emit_ready("localtunnel", current_host, tunnel_url)
+
+                    threading.Thread(
+                        target=stream_output,
+                        args=(tunnel_proc, "localtunnel", lt_buf, args.quiet, handle_lt_line),
+                        daemon=True,
+                    ).start()
+
+                    deadline = time.time() + per_host_timeout
+                    while tunnel_url is None and time.time() < deadline:
+                        if tunnel_proc.poll() is not None:
+                            break
+                        time.sleep(0.5)
+
+                    if tunnel_url is not None:
+                        break
+
+                    error_tail = "\n".join(list(lt_buf)[-10:]).strip()
+                    if error_tail:
+                        lt_failures.append(f"{candidate_host}:\n{error_tail}")
+                    else:
+                        lt_failures.append(
+                            f"{candidate_host}: no localtunnel output (timeout >{per_host_timeout}s)"
+                        )
+                    stop_process(tunnel_proc, "localtunnel", args.quiet)
+                    tunnel_proc = None
+
+                if tunnel_url is not None:
+                    break
+                details = "\n\n".join(lt_failures[-3:]) if lt_failures else "no host attempts recorded"
+                provider_failures.append(f"localtunnel attempts:\n{details}")
+                continue
+
+            if provider == "cloudflared":
+                cf_buf: Deque[str] = deque(maxlen=120)
+                cf_cmd = build_cloudflared_cmd(args, proxy_url)
+                if not args.quiet:
+                    sys.stdout.write("Starting cloudflared quick tunnel...\n")
+                    sys.stdout.flush()
+
+                tunnel_proc = subprocess.Popen(
+                    cf_cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1,
+                )
+
+                def handle_cf_line(line: str) -> None:
+                    nonlocal tunnel_url, tunnel_provider, tunnel_host
+                    extracted = extract_cloudflared_tunnel_url(line)
+                    if tunnel_url is None and extracted:
+                        tunnel_url = extracted
+                        tunnel_provider = "cloudflared"
+                        tunnel_host = "trycloudflare.com"
+                        emit_ready("cloudflared", tunnel_host, tunnel_url)
+
+                threading.Thread(
+                    target=stream_output,
+                    args=(tunnel_proc, "cloudflared", cf_buf, args.quiet, handle_cf_line),
+                    daemon=True,
+                ).start()
+
+                deadline = time.time() + cloudflared_timeout
+                while tunnel_url is None and time.time() < deadline:
+                    if tunnel_proc.poll() is not None:
+                        break
+                    time.sleep(0.5)
+
+                if tunnel_url is not None:
+                    break
+
+                error_tail = "\n".join(list(cf_buf)[-10:]).strip()
+                if error_tail:
+                    provider_failures.append(f"cloudflared:\n{error_tail}")
+                else:
+                    provider_failures.append(
+                        f"cloudflared: no output (timeout >{cloudflared_timeout}s)"
+                    )
+                stop_process(tunnel_proc, "cloudflared", args.quiet)
+                tunnel_proc = None
+                continue
 
         if tunnel_url is None:
-            details = "\n\n".join(lt_failures[-3:]) if lt_failures else "no host attempts recorded"
+            details = "\n\n".join(provider_failures[-4:]) if provider_failures else "no provider attempts recorded"
             raise RuntimeError(
-                "Failed to obtain tunnel URL from all configured localtunnel hosts. "
-                "Проверьте VPN/сеть или задайте конкретный host через --lt-host. "
+                "Failed to obtain tunnel URL from configured providers. "
+                "Проверьте VPN/сеть или задайте provider/host через --tunnel-provider и --lt-host. "
                 f"Attempts:\n{details}"
             )
 
         if not summary_printed:
-            output = (
-                f"Tunnel host: {tunnel_host or 'unknown'}\n"
-                f"Tunnel: {tunnel_url}\n"
-            )
+            output = f"Tunnel provider: {tunnel_provider or 'unknown'}\n"
+            if tunnel_host:
+                output += f"Tunnel host: {tunnel_host}\n"
+            output += f"Tunnel: {tunnel_url}\n"
             if auth_enabled:
                 output += (
                     f"Auth user: {args.auth_user}\n"
@@ -513,7 +644,7 @@ def run(args: argparse.Namespace) -> int:
             sys.stdout.flush()
 
         while True:
-            if (lt_proc and lt_proc.poll() is not None) or (caddy_proc and caddy_proc.poll() is not None):
+            if (tunnel_proc and tunnel_proc.poll() is not None) or (caddy_proc and caddy_proc.poll() is not None):
                 break
             time.sleep(0.5)
 
@@ -521,7 +652,7 @@ def run(args: argparse.Namespace) -> int:
         sys.stdout.write("\nCtrl+C received, shutting down...\n")
         sys.stdout.flush()
     finally:
-        stop_process(lt_proc, "localtunnel", args.quiet)
+        stop_process(tunnel_proc, "tunnel", args.quiet)
         stop_process(caddy_proc, "caddy", args.quiet)
         if os.path.exists(caddyfile_path):
             try:
@@ -582,6 +713,16 @@ def build_parser() -> argparse.ArgumentParser:
             "Host localtunnel: один host или список через запятую. "
             "Значение 'auto' (по умолчанию) включает fallback-цепочку host-ов."
         ),
+    )
+    parser.add_argument(
+        "--tunnel-provider",
+        default=DEFAULT_TUNNEL_PROVIDER,
+        choices=["auto", "localtunnel", "cloudflared"],
+        help="Провайдер туннеля: auto|localtunnel|cloudflared (по умолчанию auto).",
+    )
+    parser.add_argument(
+        "--cloudflared-bin",
+        help=f"Путь к cloudflared (по умолчанию {DEFAULT_CLOUDFLARED_BIN}).",
     )
     parser.add_argument(
         "--localtunnel-bin",

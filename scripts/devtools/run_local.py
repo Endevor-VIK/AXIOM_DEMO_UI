@@ -172,6 +172,21 @@ def wait_for_http(url: str, attempts: int = 40) -> bool:
     return False
 
 
+def print_playwright_hints(port: int) -> None:
+    print(
+        "[dev] Playwright (existing server): "
+        f"PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT={port} "
+        "npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts",
+        flush=True,
+    )
+    print(
+        "[dev] Playwright (auto-detect): "
+        f"PLAYWRIGHT_USE_EXISTING_SERVER=auto PLAYWRIGHT_PORT={port} "
+        "npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts",
+        flush=True,
+    )
+
+
 def main() -> int:
     root = repo_root()
     port = int(os.environ.get('PORT') or 5173)
@@ -192,11 +207,6 @@ def main() -> int:
     if host != '0.0.0.0':
         env.setdefault('HMR_HOST', host)
 
-    if mode in {'ui', 'full'}:
-        ensure_export_snapshot(root)
-        if not validate_export_snapshot(root):
-            return 2
-
     api_port = int(env.get('AX_API_PORT') or env.get('API_PORT') or 8787)
     if mode in {'api', 'full', 'admin'}:
         if is_wsl():
@@ -214,6 +224,47 @@ def main() -> int:
     api_host = env.get('AX_API_HOST') or '127.0.0.1'
     api_probe_host = host if api_host == '0.0.0.0' else api_host
     api_url = f"http://{api_probe_host}:{api_port}/api/health"
+    launch_mode = mode
+
+    needs_ui = mode in {'ui', 'full', 'admin'}
+    needs_api = mode in {'api', 'full', 'admin'}
+    ui_ready = wait_for_http(url, attempts=2) if needs_ui else False
+    api_ready = wait_for_http(api_url, attempts=2) if needs_api else False
+
+    if mode == 'ui':
+        if ui_ready:
+            print(f"[dev] UI already running → {url}", flush=True)
+            print_playwright_hints(port)
+            return 0
+    elif mode == 'api':
+        if api_ready:
+            print(f"[dev] API already running → {api_url}", flush=True)
+            return 0
+    else:
+        if ui_ready and api_ready:
+            print(f"[dev] UI already running → {url}", flush=True)
+            print(f"[dev] API already running → {api_url}", flush=True)
+            print_playwright_hints(port)
+            return 0
+        if ui_ready and not api_ready:
+            launch_mode = 'api'
+            print(
+                f"[dev] UI already running → {url}; starting API only on {api_url}",
+                flush=True,
+            )
+        elif api_ready and not ui_ready:
+            launch_mode = 'ui'
+            print(
+                f"[dev] API already running → {api_url}; starting UI only on {url}",
+                flush=True,
+            )
+        else:
+            launch_mode = 'full'
+
+    if launch_mode in {'ui', 'full'}:
+        ensure_export_snapshot(root)
+        if not validate_export_snapshot(root):
+            return 2
 
     # In WSL, explicitly mirror to Windows localhost if possible
     if is_wsl() and not env.get('SKIP_WSL_PORTPROXY'):
@@ -225,7 +276,7 @@ def main() -> int:
     # Choose platform-appropriate npm executable
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
 
-    script = {'ui': 'dev', 'full': 'dev:full', 'api': 'dev:api', 'admin': 'dev:full'}[mode]
+    script = {'ui': 'dev', 'full': 'dev:full', 'api': 'dev:api'}[launch_mode]
 
     if mode in {'full', 'admin'}:
         print(f"[dev] Admin login → {admin_login_url}", flush=True)
@@ -261,7 +312,7 @@ def main() -> int:
 
     target_url = api_url if mode == 'api' else url
     print(
-        f"Dev server ({mode}) starting (PID {proc.pid}). Waiting for {target_url} ...",
+        f"Dev server ({launch_mode}) starting (PID {proc.pid}). Waiting for {target_url} ...",
         flush=True,
     )
 
@@ -285,18 +336,7 @@ def main() -> int:
                     print(f"[dev] API ready → {api_url}", flush=True)
                 else:
                     print(f"[dev] API not ready yet → {api_url}", flush=True)
-            print(
-                "[dev] Playwright (existing server): "
-                f"PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_PORT={port} "
-                "npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts",
-                flush=True,
-            )
-            print(
-                "[dev] Playwright (auto-detect): "
-                f"PLAYWRIGHT_USE_EXISTING_SERVER=auto PLAYWRIGHT_PORT={port} "
-                "npm run test:e2e -- --project=chromium tests/e2e/content.spec.ts",
-                flush=True,
-            )
+            print_playwright_hints(port)
             # continue streaming logs
 
         # Stream any available lines without blocking too long

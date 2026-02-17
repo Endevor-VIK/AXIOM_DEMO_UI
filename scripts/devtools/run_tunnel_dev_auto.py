@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import deque
 import os
 import re
 import signal
@@ -21,7 +22,7 @@ import threading
 import time
 import urllib.error
 import urllib.request
-from typing import Callable, Optional
+from typing import Callable, Deque, Optional
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 RUN_LOCAL = os.path.join(SCRIPT_DIR, "run_local.py")
@@ -123,6 +124,10 @@ def build_tunnel_cmd(args: argparse.Namespace) -> list[str]:
         cmd += ["--subdomain", args.subdomain]
     if args.lt_host and args.lt_host.strip().lower() != "auto":
         cmd += ["--lt-host", args.lt_host]
+    if args.tunnel_provider and args.tunnel_provider.strip().lower() != "auto":
+        cmd += ["--tunnel-provider", args.tunnel_provider]
+    if args.cloudflared_bin:
+        cmd += ["--cloudflared-bin", args.cloudflared_bin]
     if args.localtunnel_bin:
         cmd += ["--localtunnel-bin", args.localtunnel_bin]
     if args.verify is not None:
@@ -221,6 +226,13 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_LT_HOST,
         help="Host localtunnel или 'auto' для fallback-цепочки (по умолчанию auto).",
     )
+    parser.add_argument(
+        "--tunnel-provider",
+        default="auto",
+        choices=["auto", "localtunnel", "cloudflared"],
+        help="Провайдер туннеля: auto|localtunnel|cloudflared (по умолчанию auto).",
+    )
+    parser.add_argument("--cloudflared-bin", help="Явный путь к cloudflared (если нужен).")
     parser.add_argument("--localtunnel-bin", help="Явный путь к бинарнику localtunnel (если не хотим npx).")
     parser.add_argument("--verify", type=parse_bool, nargs="?", const=True, default=True, help="Проверять Vite перед туннелем (по умолчанию true)")
     parser.add_argument("--timeout", type=int, default=90, help="Таймаут ожидания готовности Vite (сек, по умолчанию 90)")
@@ -236,9 +248,11 @@ def run_with_args(args: argparse.Namespace) -> int:
     dev_proc: Optional[subprocess.Popen] = None
     tunnel_proc: Optional[subprocess.Popen] = None
     tunnel_url: str | None = None
+    tunnel_tail: Deque[str] = deque(maxlen=40)
 
     def handle_tunnel_line(line: str) -> None:
         nonlocal tunnel_url
+        tunnel_tail.append(line)
         found = LT_URL_RE.search(line)
         if found and tunnel_url is None:
             tunnel_url = found.group(0)
@@ -283,9 +297,11 @@ def run_with_args(args: argparse.Namespace) -> int:
         while True:
             if tunnel_proc.poll() is not None:
                 if tunnel_proc.returncode not in (0, None):
+                    tail = "\n".join(list(tunnel_tail)[-12:]).strip()
                     raise RuntimeError(
                         f"Tunnel exited with code {tunnel_proc.returncode}. "
-                        "Проверьте порт прокси (--proxy-port) или настройки localtunnel."
+                        "Проверьте сеть/VPN и настройки tunnel provider."
+                        + (f"\nПоследние строки tunnel:\n{tail}" if tail else "")
                     )
                 break
             time.sleep(0.5)
@@ -342,7 +358,9 @@ def interactive_menu(default_args: argparse.Namespace) -> None:
 
     rc = run_with_args(args)
     if rc != 0:
-        sys.stdout.write("\nСтарт не удался. Частая причина: порт прокси занят (попробуйте 8081 или другой).\n")
+        sys.stdout.write(
+            "\nСтарт не удался. Проверьте сеть/VPN, выбранный tunnel provider и вывод [tunnel] выше.\n"
+        )
         sys.stdout.flush()
 
 
