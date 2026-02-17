@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0040_ADMIN_CONTROL_CENTER_USER_HISTORY_MD
   title: "GLOBAL LOG — 0040_admin-control-center-user-history"
-  status: ACTIVE
+  status: DONE
   mode: Doc
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
@@ -22,7 +22,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: Улучшить админку: разделить user/system аккаунты, добавить смену логина/пароля, историю пользователя (сессии/действия/источник), live console API и стабилизировать logout из админки
 - SPEC: —
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -59,4 +59,4 @@ AXS_HEADER_META:
 
 ## Step E — Git
 
-- 2026-02-17T20:19:12+03:00 — Действие: Коммит не выполнялся на момент записи; изменения подготовлены в рабочем дереве. → Результат: PENDING
+- 2026-02-17T20:20:11+03:00 — Commit: `935e66b` — `feat(admin): add control center with user history and live console` — Файлы: `app/routes/admin/page.tsx`, `lib/admin/api.ts`, `lib/admin/authService.ts`, `server/src/admin/authRoutes.ts`, `server/src/admin/routes.ts`, `server/src/app.ts`, `server/src/auth/routes.ts`, `server/src/auth/sessions.ts`, `server/src/db/db.ts`, `server/src/db/users.ts`, `server/src/audit/context.ts`, `server/src/db/audit.ts`, `styles/admin-console.css`, `tests/adminAuthIsolation.spec.ts`, `ops/agent_ops/logs/0040_admin-control-center-user-history.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`.
