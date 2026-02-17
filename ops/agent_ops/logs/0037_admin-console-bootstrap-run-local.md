@@ -53,4 +53,4 @@ AXS_HEADER_META:
 
 ## Step E — Git
 
-- 2026-02-17T17:12:51+03:00 — Действие: Коммит не выполнялся (изменения подготовлены в рабочем дереве submodule). → Результат: OK
+- 2026-02-17T19:14:21+03:00 — Commit: `8e05222` — `feat(admin): add custom console, auth hardening, and backend-down e2e` — Файлы: `app/main.tsx`, `app/routes/admin/*`, `components/AdminGate.tsx`, `lib/admin/api.ts`, `styles/admin-console.css`, `server/src/admin/routes.ts`, `server/src/db/users.ts`, `scripts/devtools/run_local.py`, `README.md`, `ops/agent_ops/logs/0037_admin-console-bootstrap-run-local.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`.
