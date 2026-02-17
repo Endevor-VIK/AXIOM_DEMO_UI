@@ -361,12 +361,14 @@ type BootSequenceProps = {
   reduced: boolean;
   lineStates: Record<(typeof BOOT_LINES)[number]["key"], BootLineState>;
   progress: number;
+  stalled: boolean;
 };
 
-function BootSequence({ phase, reduced, lineStates, progress }: BootSequenceProps) {
+function BootSequence({ phase, reduced, lineStates, progress, stalled }: BootSequenceProps) {
   if (phase === "ready") return null;
   const duration = reduced ? 0.6 : 2.8;
   const safeProgress = Math.max(0, Math.min(1, progress));
+  const progressPercent = Math.round(safeProgress * 100);
 
   return (
     <div
@@ -402,7 +404,7 @@ function BootSequence({ phase, reduced, lineStates, progress }: BootSequenceProp
           ))}
         </div>
         <div className="ax-boot__progress">
-          <span className="ax-boot__progress-label">sync / handshake</span>
+          <span className="ax-boot__progress-label">sync / handshake • {progressPercent}%</span>
           <span className="ax-boot__progress-bar">
             <span
               className="ax-boot__progress-fill"
@@ -411,7 +413,7 @@ function BootSequence({ phase, reduced, lineStates, progress }: BootSequenceProp
           </span>
         </div>
         <div className="ax-boot__footer">
-          <span>access gate ready</span>
+          <span>{stalled ? "orion stream delayed • waiting full sync" : "access gate syncing"}</span>
           <span className="ax-boot__cursor" />
         </div>
       </div>
@@ -430,6 +432,7 @@ export default function LoginPage() {
   const [bootMinPassed, setBootMinPassed] = useState(false);
   const [orionReady, setOrionReady] = useState(false);
   const [orionError, setOrionError] = useState(false);
+  const [orionProgress, setOrionProgress] = useState(0);
   const [bootTimeoutReached, setBootTimeoutReached] = useState(false);
   const [authState, setAuthState] = useState<BootLineState>("loading");
   const [dataState, setDataState] = useState<BootLineState>("loading");
@@ -449,6 +452,7 @@ export default function LoginPage() {
     setBootMinPassed(false);
     setOrionReady(reduced);
     setOrionError(false);
+    setOrionProgress(reduced ? 1 : 0);
     setBootTimeoutReached(false);
     setAuthState("loading");
     setDataState("loading");
@@ -488,12 +492,13 @@ export default function LoginPage() {
     };
   }, [reduced, location.key]);
 
-  const orionState: BootLineState = orionReady ? "ready" : ((orionError || bootTimeoutReached) ? "error" : "loading");
+  const orionState: BootLineState = orionReady ? "ready" : (orionError ? "error" : "loading");
   const authDone = isBootTaskDone(authState);
   const dataDone = isBootTaskDone(dataState);
   const bootCanReveal = bootMinPassed
-    && (orionReady || orionError || bootTimeoutReached)
-    && ((authDone && dataDone) || bootTimeoutReached);
+    && (orionReady || orionError)
+    && authDone
+    && dataDone;
 
   useEffect(() => {
     if (!bootCanReveal || bootWatchdogRef.current == null) return;
@@ -509,10 +514,14 @@ export default function LoginPage() {
   } as Record<(typeof BOOT_LINES)[number]["key"], BootLineState>), [authState, dataState, orionState, bootCanReveal, bootPhase]);
 
   const bootProgress = useMemo(() => {
-    const done = BOOT_LINES.reduce((acc, line) => acc + (isBootTaskDone(lineStates[line.key]) ? 1 : 0), 0);
-    if (done === 0 && bootPhase === "booting") return 0.08;
-    return done / BOOT_LINES.length;
-  }, [lineStates, bootPhase]);
+    const authProgress = authDone ? 1 : 0;
+    const dataProgress = dataDone ? 1 : 0;
+    const orionTaskProgress = orionReady ? 1 : (orionError ? 1 : Math.max(0, Math.min(0.99, orionProgress)));
+    const opsProgress = bootCanReveal || bootPhase !== "booting" ? 1 : 0;
+    const total = (authProgress + dataProgress + orionTaskProgress + opsProgress) / BOOT_LINES.length;
+    if (total <= 0 && bootPhase === "booting") return 0.08;
+    return Math.max(0.08, Math.min(1, total));
+  }, [authDone, bootCanReveal, bootPhase, dataDone, orionError, orionProgress, orionReady]);
   useEffect(() => {
     if (!bootCanReveal || bootPhase !== "booting") return;
     bootRevealAtRef.current = performance.now();
@@ -571,10 +580,16 @@ export default function LoginPage() {
 
   const handleOrionReady = useCallback(() => {
     setOrionReady(true);
+    setOrionProgress(1);
   }, []);
 
   const handleOrionError = useCallback(() => {
     setOrionError(true);
+  }, []);
+
+  const handleOrionProgress = useCallback((next: number) => {
+    const clamped = Math.max(0, Math.min(1, next));
+    setOrionProgress((prev) => (clamped > prev ? clamped : prev));
   }, []);
 
   useEffect(() => {
@@ -664,6 +679,7 @@ export default function LoginPage() {
           reducedMotion={reduced}
           onReady={handleOrionReady}
           onError={handleOrionError}
+          onProgress={handleOrionProgress}
         />
       </div>
       <div className="ax-login__frame" aria-hidden />
@@ -673,6 +689,7 @@ export default function LoginPage() {
         reduced={reduced}
         lineStates={lineStates}
         progress={bootProgress}
+        stalled={bootTimeoutReached && !orionReady && !orionError}
       />
 
       <div className="ax-container">

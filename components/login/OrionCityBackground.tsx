@@ -7,6 +7,7 @@ type OrionCityBackgroundProps = {
   reducedMotion: boolean;
   onReady?: () => void;
   onError?: () => void;
+  onProgress?: (progress: number) => void;
 };
 
 type BuildingSpec = {
@@ -354,6 +355,7 @@ export function OrionCityBackground({
   reducedMotion,
   onReady,
   onError,
+  onProgress,
 }: OrionCityBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [ready, setReady] = useState(false);
@@ -376,11 +378,22 @@ export function OrionCityBackground({
     let raf = 0;
     let cleanup = () => {};
     let sentReady = false;
+    let sentProgress = 0;
+
+    const reportProgress = (value: number) => {
+      if (disposed) return;
+      const next = Math.max(0, Math.min(1, value));
+      if (next + 0.0001 < sentProgress) return;
+      if (next < 1 && next - sentProgress < 0.005) return;
+      sentProgress = next;
+      onProgress?.(next);
+    };
 
     const markReady = () => {
       if (disposed || sentReady) return;
       sentReady = true;
       setReady(true);
+      reportProgress(1);
       onReady?.();
     };
 
@@ -397,6 +410,7 @@ export function OrionCityBackground({
       const { EXRLoader } = await import("three/examples/jsm/loaders/EXRLoader.js");
 
       if (disposed) return;
+      reportProgress(0.06);
 
       const renderer = new THREE.WebGLRenderer({
         canvas,
@@ -468,6 +482,7 @@ export function OrionCityBackground({
       const fxaaPass = runtimeConfig.post.fxaaEnabled ? new ShaderPass(FXAAShader) : null;
       if (fxaaPass) composer.addPass(fxaaPass);
       const fxaaUniforms = fxaaPass ? (fxaaPass.material as any).uniforms : null;
+      reportProgress(0.12);
 
       const amb = new THREE.AmbientLight(0xffffff, 0.42);
       const hemi = new THREE.HemisphereLight(0x8bcfff, 0x120a11, 0.5);
@@ -481,20 +496,35 @@ export function OrionCityBackground({
 
       const world = new THREE.Group();
       scene.add(world);
+      reportProgress(0.16);
 
-      const dracoLoader = new DRACOLoader();
+      const loadingManager = new THREE.LoadingManager();
+      const managerStart = 0.18;
+      const managerEnd = 0.9;
+      const reportManagerProgress = (value: number) => {
+        const clamped = Math.max(0, Math.min(1, value));
+        reportProgress(managerStart + ((managerEnd - managerStart) * clamped));
+      };
+      loadingManager.onStart = () => reportManagerProgress(0);
+      loadingManager.onProgress = (_url: string, loaded: number, total: number) => {
+        if (total <= 0) return;
+        reportManagerProgress(loaded / total);
+      };
+      loadingManager.onLoad = () => reportManagerProgress(1);
+
+      const dracoLoader = new DRACOLoader(loadingManager);
       dracoLoader.setDecoderPath(publicUrl("draco/gltf/"));
       dracoLoader.setDecoderConfig({ type: "js" });
 
-      const ktx2Loader = new KTX2Loader();
+      const ktx2Loader = new KTX2Loader(loadingManager);
       ktx2Loader.setTranscoderPath(publicUrl("basis/"));
       ktx2Loader.detectSupport(renderer);
 
-      const gltfLoader = new GLTFLoader();
+      const gltfLoader = new GLTFLoader(loadingManager);
       gltfLoader.setDRACOLoader(dracoLoader);
       gltfLoader.setKTX2Loader(ktx2Loader);
 
-      const exrLoader = new EXRLoader();
+      const exrLoader = new EXRLoader(loadingManager);
       const maxAnisotropy = Math.max(1, renderer.capabilities.getMaxAnisotropy());
       const textureAniso = Math.min(runtimeConfig.textures.anisotropy, maxAnisotropy);
       const rnd = createSeededRandom(runtimeConfig.seed);
@@ -558,6 +588,7 @@ export function OrionCityBackground({
         ktx2Loader.dispose();
         return;
       }
+      reportProgress(0.94);
       world.add(level);
       world.updateMatrixWorld(true);
 
@@ -1596,6 +1627,7 @@ export function OrionCityBackground({
         composer.render();
         raf = requestAnimationFrame(render);
       };
+      reportProgress(0.98);
       resize();
       composer.render();
       markReady();
@@ -1651,7 +1683,7 @@ export function OrionCityBackground({
       disposed = true;
       cleanup();
     };
-  }, [enabled, reducedMotion, onError, onReady]);
+  }, [enabled, reducedMotion, onError, onProgress, onReady]);
 
   if (!enabled || reducedMotion) return null;
   return (
