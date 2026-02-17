@@ -1,6 +1,13 @@
 import { config } from '../config'
 import { hashPassword } from '../auth/password'
-import { addUserRole, createUser, findUserByEmail, getUserRoles, setUserRoles } from './users'
+import {
+  addUserRole,
+  createUser,
+  findUserByEmail,
+  getUserRoles,
+  setUserRoles,
+  updateUserPassword,
+} from './users'
 
 async function ensureTestUser(emailRaw: string, passwordRaw: string) {
   const email = emailRaw.trim().toLowerCase()
@@ -28,6 +35,10 @@ export async function seedUsers() {
         const user = createUser(email, passwordHash)
         setUserRoles(user.id, ['creator'])
       } else {
+        if (config.creatorForceReset) {
+          const passwordHash = await hashPassword(config.creatorPassword)
+          updateUserPassword(existing.id, passwordHash)
+        }
         const roles = getUserRoles(existing.id)
         if (!roles.includes('creator')) {
           addUserRole(existing.id, 'creator')

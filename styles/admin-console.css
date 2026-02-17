@@ -1,0 +1,220 @@
+.ax-admin-login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(232, 44, 61, 0.24), transparent 45%),
+    radial-gradient(circle at 85% 10%, rgba(223, 92, 50, 0.16), transparent 40%),
+    #090a0f;
+  color: var(--ax-text, #f2f4fa);
+}
+
+.ax-admin-login__card {
+  width: min(520px, 100%);
+  border: 1px solid rgba(232, 44, 61, 0.3);
+  background: rgba(9, 11, 18, 0.92);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+.ax-admin-login__eyebrow,
+.ax-admin__eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 176, 176, 0.85);
+}
+
+.ax-admin-login h1,
+.ax-admin h1 {
+  margin: 0;
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1.1;
+}
+
+.ax-admin-login__note,
+.ax-admin__note {
+  margin: 12px 0 0;
+  color: rgba(240, 243, 255, 0.84);
+}
+
+.ax-admin-login__form {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.ax-admin-login__form label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.ax-admin-login input,
+.ax-admin-create input,
+.ax-admin-table input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.ax-admin-login input:focus,
+.ax-admin-create input:focus,
+.ax-admin-table input:focus {
+  outline: none;
+  border-color: rgba(236, 76, 76, 0.9);
+  box-shadow: 0 0 0 2px rgba(236, 76, 76, 0.26);
+}
+
+.ax-admin-login__error,
+.ax-admin__error {
+  border: 1px solid rgba(255, 70, 70, 0.45);
+  background: rgba(255, 70, 70, 0.11);
+  color: #ffd7d7;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.ax-admin-login__links {
+  margin-top: 16px;
+  display: flex;
+  gap: 14px;
+}
+
+.ax-admin-login__links a,
+.ax-admin-links a {
+  color: #ff9ea7;
+  text-decoration: none;
+}
+
+.ax-admin-login__links a:hover,
+.ax-admin-links a:hover {
+  text-decoration: underline;
+}
+
+.ax-admin {
+  min-height: 100vh;
+  padding: 22px;
+  background: linear-gradient(180deg, #0a0b10 0%, #090a0f 100%);
+  color: var(--ax-text, #f2f4fa);
+}
+
+.ax-admin__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.ax-admin__header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.ax-admin__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.ax-admin-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(15, 17, 25, 0.9);
+  padding: 14px;
+}
+
+.ax-admin-card h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.ax-admin-card__hint {
+  margin: 10px 0 0;
+  color: rgba(226, 230, 248, 0.72);
+}
+
+.ax-admin-create {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.ax-admin-create .ax-btn {
+  width: 100%;
+}
+
+.ax-admin-table-wrap {
+  overflow: auto;
+}
+
+.ax-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.ax-admin-table th,
+.ax-admin-table td {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.ax-admin-table thead th {
+  border-top: none;
+  color: rgba(240, 243, 255, 0.7);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ax-admin-table__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ax-admin-history {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.ax-admin-history li {
+  display: grid;
+  gap: 2px;
+}
+
+.ax-admin-history li span:first-child {
+  color: rgba(240, 243, 255, 0.7);
+  font-size: 12px;
+}
+
+.ax-admin-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1024px) {
+  .ax-admin__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ax-admin-create {
+    grid-template-columns: 1fr;
+  }
+}

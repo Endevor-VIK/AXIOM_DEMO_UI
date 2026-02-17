@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "dev:api": "tsx server/src/index.ts",
+    "dev:admin": "npm run dev:full",
     "dev:full": "concurrently -n ui,api -c red,cyan \"VITE_AX_DEPLOY_TARGET=local npm run dev\" \"npm run dev:api\"",
     "build": "npm run build:content && vite build",
     "start": "AX_SERVE_STATIC=1 tsx server/src/index.ts",

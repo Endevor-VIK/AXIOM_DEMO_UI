@@ -91,3 +91,18 @@ export function setUserRoles(userId: string, roles: string[]): void {
   })
   tx()
 }
+
+export function deleteUserById(userId: string): boolean {
+  const result = getDb()
+    .prepare('DELETE FROM users WHERE id = ?')
+    .run(userId)
+  return result.changes > 0
+}
+
+export function updateUserPassword(userId: string, passwordHash: string): boolean {
+  const now = Date.now()
+  const result = getDb()
+    .prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?')
+    .run(passwordHash, now, userId)
+  return result.changes > 0
+}

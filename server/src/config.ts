@@ -29,6 +29,7 @@ export const config = {
   sessionTtlDays: Number(process.env.AX_SESSION_TTL_DAYS || 14),
   creatorEmail: process.env.AX_CREATOR_EMAIL || '',
   creatorPassword: process.env.AX_CREATOR_PASSWORD || '',
+  creatorForceReset: truthy(process.env.AX_CREATOR_FORCE_RESET),
   seedTest: truthy(process.env.AX_SEED_TEST),
   testEmail: process.env.AX_TEST_EMAIL || 'test@local',
   testPassword: process.env.AX_TEST_PASSWORD || 'test12345',

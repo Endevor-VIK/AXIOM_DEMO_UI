@@ -124,6 +124,10 @@ Playwright с уже запущенным dev‑сервером:
 E2E auth:
 - Для стабильности тесты мокают `/api/auth/*` и не требуют запущенного backend.
 - Если нужна проверка реального backend auth, отключи `stubAuthApi` в `tests/e2e/*`.
+- Проверка сценария “backend упал”:
+  `PORT=5192 AX_API_PORT=65530 DEV_MODE=ui python3 scripts/devtools/run_local.py`
+  и отдельно:
+  `PLAYWRIGHT_USE_EXISTING_SERVER=1 PLAYWRIGHT_BASE_URL=http://127.0.0.1:5192 npm run test:e2e -- --project=chromium tests/e2e/auth-backend-down.spec.ts`
 
 ---
 
@@ -143,17 +147,24 @@ ENV (backend):
 - `AX_ALLOW_REGISTER=1` чтобы включить регистрацию
 - `AX_SESSION_TTL_DAYS` (default `14`)
 - `AX_CREATOR_EMAIL`, `AX_CREATOR_PASSWORD` → seed creator
+- `AX_CREATOR_FORCE_RESET=1` → при seed обновляет пароль существующего creator
 - `AX_SEED_TEST=1`, `AX_TEST_EMAIL`, `AX_TEST_PASSWORD` → seed test
 - `AX_TESTER_EMAIL`, `AX_TESTER_PASSWORD` → дополнительный tester seed (role `test`)
 - `AX_DB_PATH` (default `runtime/auth.sqlite`)
 
 Seed accounts (local):
-- **Test (AI)**: включается через `AX_SEED_TEST=1` (в `run_local.py` по умолчанию в режиме full/api).  
+- **Test (AI)**: включается через `AX_SEED_TEST=1` (в `run_local.py` по умолчанию в режиме full/api/admin).  
   Если `AX_TEST_EMAIL/AX_TEST_PASSWORD` не заданы, используются дефолты `test@local` / `test12345`.
 - **Tester (manual QA)**: создаётся вместе с test-seed и получает роль `test`.  
   Если `AX_TESTER_EMAIL/AX_TESTER_PASSWORD` не заданы, используются дефолты `Staxov_test` / `864222801`.
 - **Creator (полный доступ)**: задаётся **только локально** через `AX_CREATOR_EMAIL` и `AX_CREATOR_PASSWORD`.  
   Не фиксируй реальные креды в репозитории — держи их в переменных окружения.
+
+Admin console (local):
+- `python3 scripts/devtools/run_local.py` (или `DEV_MODE=admin python3 scripts/devtools/run_local.py`)
+- URL входа: `http://127.0.0.1:5173/admin/login`
+- URL панели: `http://127.0.0.1:5173/admin`
+- Локальные дефолтные креды при запуске через `run_local.py` (`full/api/admin`): `creator` / `axiom`
 
 ---
 

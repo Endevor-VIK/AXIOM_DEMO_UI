@@ -9,13 +9,16 @@ import '../styles/red-protocol-overrides.css'
 
 import Layout from '@/app/routes/_layout'
 import LoginPage from '@/app/routes/login/page'
+import AdminLoginPage from '@/app/routes/admin/login/page'
 
 import AuthGate from '@/components/AuthGate'
+import AdminGate from '@/components/AdminGate'
 import ScaleViewport from '@/components/ScaleViewport'
 import TerminalBoot from '@/components/TerminalBoot'
 import { initAnalyticsBridge } from '@/lib/analytics/init'
 import { initScaleManager } from '@/lib/ui/scaleManager'
 
+const AdminPage = React.lazy(() => import('@/app/routes/admin/page'))
 const DashboardPage = React.lazy(() => import('@/app/routes/dashboard/page'))
 const RoadmapPage = React.lazy(() => import('@/app/routes/dashboard/roadmap/page'))
 const AuditPage = React.lazy(() => import('@/app/routes/dashboard/audit/page'))
@@ -48,6 +51,15 @@ function withRouteSuspense(element: React.ReactElement) {
 const routes = [
   { path: '/', element: <TerminalBoot /> },
   { path: '/login', element: <LoginPage /> },
+  { path: '/admin/login', element: <AdminLoginPage /> },
+  {
+    path: '/admin',
+    element: (
+      <AdminGate>
+        {withRouteSuspense(<AdminPage />)}
+      </AdminGate>
+    ),
+  },
   {
     element: (
       <AuthGate>

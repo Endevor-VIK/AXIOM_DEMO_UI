@@ -3,18 +3,21 @@
 Лёгкий раннер Vite с ожиданием готовности.
 
 Usage:
-  python scripts/devtools/run_local.py
+  python3 scripts/devtools/run_local.py
 
 Переменные окружения:
   PORT                 Порт dev-сервера (по умолчанию 5173)
   HOST                 Хост для проб (по умолчанию 127.0.0.1)
-  DEV_MODE             ui | full | api (по умолчанию full)
+  DEV_MODE             ui | full | api | admin (по умолчанию full)
   DEV_HOST             Хост для Vite (авто 0.0.0.0 в WSL)
   HMR_HOST             Хост для Vite HMR (по умолчанию HOST)
   AX_API_PORT          Порт API (по умолчанию 8787)
   AX_API_HOST          Хост API (по умолчанию 127.0.0.1, в WSL 0.0.0.0)
-  AX_ALLOW_REGISTER    Регистрация (по умолчанию 1 в режиме full/api)
-  AX_SEED_TEST         Seed test-аккаунта (по умолчанию 1 в режиме full/api)
+  AX_ALLOW_REGISTER    Регистрация (по умолчанию 1 в режиме full/api/admin)
+  AX_SEED_TEST         Seed test-аккаунта (по умолчанию 1 в режиме full/api/admin)
+  AX_CREATOR_EMAIL     Логин creator (по умолчанию creator в режиме full/api/admin)
+  AX_CREATOR_PASSWORD  Пароль creator (по умолчанию axiom в режиме full/api/admin)
+  AX_CREATOR_FORCE_RESET Принудительно синхронизировать пароль creator (по умолчанию 1 в режиме full/api/admin)
   SKIP_WSL_PORTPROXY   Выключить auto netsh portproxy в WSL
 
 Примечания:
@@ -174,13 +177,15 @@ def main() -> int:
     port = int(os.environ.get('PORT') or 5173)
     host = os.environ.get('HOST') or '127.0.0.1'
     mode = (os.environ.get('DEV_MODE') or 'full').strip().lower()
-    if mode not in {'ui', 'full', 'api'}:
+    if mode not in {'ui', 'full', 'api', 'admin'}:
         sys.stderr.write(
-            f"[dev] Invalid DEV_MODE={mode!r}. Expected ui | full | api.\n"
+            f"[dev] Invalid DEV_MODE={mode!r}. Expected ui | full | api | admin.\n"
         )
         return 2
 
     url = f"http://{host}:{port}/"
+    admin_login_url = f"{url}admin/login"
+    admin_panel_url = f"{url}admin"
 
     env = os.environ.copy()
     env.setdefault('AXS_EXPORT_ROOT', '/app/content')
@@ -193,7 +198,7 @@ def main() -> int:
             return 2
 
     api_port = int(env.get('AX_API_PORT') or env.get('API_PORT') or 8787)
-    if mode in {'api', 'full'}:
+    if mode in {'api', 'full', 'admin'}:
         if is_wsl():
             env.setdefault('AX_API_HOST', '0.0.0.0')
         else:
@@ -201,6 +206,9 @@ def main() -> int:
         env.setdefault('AX_API_PORT', str(api_port))
         env.setdefault('AX_ALLOW_REGISTER', '1')
         env.setdefault('AX_SEED_TEST', '1')
+        env.setdefault('AX_CREATOR_EMAIL', 'creator')
+        env.setdefault('AX_CREATOR_PASSWORD', 'axiom')
+        env.setdefault('AX_CREATOR_FORCE_RESET', '1')
 
     api_host = env.get('AX_API_HOST') or '127.0.0.1'
     api_probe_host = host if api_host == '0.0.0.0' else api_host
@@ -216,7 +224,23 @@ def main() -> int:
     # Choose platform-appropriate npm executable
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
 
-    script = {'ui': 'dev', 'full': 'dev:full', 'api': 'dev:api'}[mode]
+    script = {'ui': 'dev', 'full': 'dev:full', 'api': 'dev:api', 'admin': 'dev:full'}[mode]
+
+    if mode in {'full', 'admin'}:
+        print(f"[dev] Admin login → {admin_login_url}", flush=True)
+        print(f"[dev] Admin panel → {admin_panel_url}", flush=True)
+        print(
+            "[dev] Admin creds (local default) → "
+            f"login: {env.get('AX_CREATOR_EMAIL', 'creator')} "
+            f"password: {env.get('AX_CREATOR_PASSWORD', 'axiom')}",
+            flush=True,
+        )
+    if mode == 'ui':
+        print(
+            "[dev] UI-only mode: backend auth/API is not started here. "
+            "Login/Admin auth requests may fail.",
+            flush=True,
+        )
 
     # Start dev server
     proc = subprocess.Popen(
@@ -250,7 +274,7 @@ def main() -> int:
             ready = True
             elapsed = time.time() - start
             print(f"Ready in {elapsed:.1f}s → {target_url}", flush=True)
-            if mode in {'api', 'full'}:
+            if mode in {'api', 'full', 'admin'}:
                 if wait_for_http(api_url, attempts=1):
                     print(f"[dev] API ready → {api_url}", flush=True)
                 else:

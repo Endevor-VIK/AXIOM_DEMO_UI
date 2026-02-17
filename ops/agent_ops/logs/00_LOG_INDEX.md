@@ -55,4 +55,6 @@ AXS_HEADER_META:
 | 0034 | 2026-02-11T04:12:44+03:00 | Content Hub View Modes Stabilization v2         | main                        | docs/iterations/0034_content-hub-viewmodes-stabilization-v2/SPEC.md | ops/agent_ops/logs/0034_content-hub-viewmodes-stabilization-v2.md | ACTIVE |
 | 0035 | 2026-02-17T16:40:28+03:00 | Seed tester account Staxov_test (role test)     | main                        | —                                          | ops/agent_ops/logs/0035_tester-account-staxov-seed.md | DONE |
 | 0036 | 2026-02-17T16:56:42+03:00 | Fix IDE Node types for server config.ts         | main                        | —                                          | ops/agent_ops/logs/0036_server-tsconfig-node-types.md | DONE |
+| 0037 | 2026-02-17T17:06:54+03:00 | Full custom admin console + run_local admin mode | main                       | —                                          | ops/agent_ops/logs/0037_admin-console-bootstrap-run-local.md | DONE |
+| 0038 | 2026-02-17T18:06:25+03:00 | Auth reliability + backend-down checks (site/admin) | main                     | —                                          | ops/agent_ops/logs/0038_auth-reliability-admin-backend-down-tests.md | DONE |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).
