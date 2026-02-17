@@ -16,6 +16,7 @@ AXS_HEADER_META:
 
 Вспомогательный раннер: поднимает Caddy reverse-proxy и localtunnel поверх уже запущенного Vite dev сервера.
 По умолчанию BasicAuth отключён (вход по публичному URL без браузерного диалога user/pass).
+По умолчанию включён adaptive режим host-ов localtunnel (`auto`): если один host недоступен (часто под VPN), скрипт пробует следующий.
 
 ## Предпосылки
 - Vite запущен отдельно (например, `python3 scripts/devtools/run_local.py` или `npm run dev`) на `http://127.0.0.1:5173` по умолчанию.
@@ -67,6 +68,8 @@ AXS_HEADER_META:
   `python3 scripts/devtools/run_tunnel_dev.py --subdomain axiom-dev`
 - Переопределить host localtunnel:  
   `python3 scripts/devtools/run_tunnel_dev.py --lt-host https://localtunnel.me`
+- Задать fallback-цепочку host-ов вручную:  
+  `python3 scripts/devtools/run_tunnel_dev.py --lt-host https://loca.lt,https://localtunnel.me`
 
 ## Флаги (шпаргалка)
 - `--basic-auth` по умолчанию `false`. Пока он `false`, браузерный user/pass диалог отключён.
@@ -75,7 +78,7 @@ AXS_HEADER_META:
 - `--reuse-if-running` (в авто-обёртке) — если Vite уже отвечает, не запускает run_local.py (по умолчанию включён).
 - `--proxy-port` по умолчанию `8080` (Caddy reverse proxy).
 - `--subdomain` — запросить конкретный сабдомен localtunnel (может быть занят).
-- `--lt-host` — host localtunnel (по умолчанию `https://loca.lt`, можно переопределить через `AXIOM_TUNNEL_LT_HOST`).
+- `--lt-host` — один host или список через запятую. По умолчанию `auto` (adaptive fallback). Для системного списка можно задать `AXIOM_TUNNEL_LT_HOSTS`.
 
 ## Troubleshooting
 - **Vite не отвечает**: убедитесь, что dev сервер запущен на нужном host/port; проверьте `curl http://127.0.0.1:5173/`. Можно указать `--vite-url`. В крайнем случае `--verify false` (не рекомендуется).
@@ -83,6 +86,7 @@ AXS_HEADER_META:
 - **Порт 8080 занят**: выберите другой (`--proxy-port 8081`) или освободите порт.
 - **Нет caddy**: установите caddy (https://caddyserver.com/docs/install). Проверьте `caddy version`.
 - **Нет public URL**: localtunnel может задерживаться или быть недоступен; скрипт затаймаутит и покажет последние строки. Повторите позже или попробуйте другой `--lt-host`.
+- **VPN включён и tunnel не поднимается**: оставьте `--lt-host auto` (default) или задайте несколько host-ов через запятую, чтобы скрипт автоматически переключался.
 - **Видите форму username/password в браузере**: значит где-то включён `--basic-auth=true`. Для режима без панели логина запускайте без этого флага.
 - **Запрос Tunnel password от loca.lt**: это отдельный gate сервиса localtunnel (не Caddy BasicAuth).
 

@@ -26,7 +26,7 @@ from typing import Callable, Optional
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 RUN_LOCAL = os.path.join(SCRIPT_DIR, "run_local.py")
 RUN_TUNNEL = os.path.join(SCRIPT_DIR, "run_tunnel_dev.py")
-DEFAULT_LT_HOST = os.environ.get("AXIOM_TUNNEL_LT_HOST", "https://loca.lt")
+DEFAULT_LT_HOST = os.environ.get("AXIOM_TUNNEL_LT_HOST", "auto")
 LT_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.(?:loca\.lt|localtunnel\.me)")
 
 
@@ -121,7 +121,7 @@ def build_tunnel_cmd(args: argparse.Namespace) -> list[str]:
         cmd.append("--write-hash-file")
     if args.subdomain:
         cmd += ["--subdomain", args.subdomain]
-    if args.lt_host:
+    if args.lt_host and args.lt_host.strip().lower() != "auto":
         cmd += ["--lt-host", args.lt_host]
     if args.localtunnel_bin:
         cmd += ["--localtunnel-bin", args.localtunnel_bin]
@@ -219,7 +219,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--lt-host",
         default=DEFAULT_LT_HOST,
-        help="Переопределить host localtunnel (по умолчанию https://loca.lt).",
+        help="Host localtunnel или 'auto' для fallback-цепочки (по умолчанию auto).",
     )
     parser.add_argument("--localtunnel-bin", help="Явный путь к бинарнику localtunnel (если не хотим npx).")
     parser.add_argument("--verify", type=parse_bool, nargs="?", const=True, default=True, help="Проверять Vite перед туннелем (по умолчанию true)")

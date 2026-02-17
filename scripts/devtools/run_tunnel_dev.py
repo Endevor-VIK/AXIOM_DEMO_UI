@@ -32,6 +32,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_HASH_WRITE_PATH = os.path.join(SCRIPT_DIR, "data", "auth.bcrypt")
 DEFAULT_LT_HOST = os.environ.get("AXIOM_TUNNEL_LT_HOST", "https://loca.lt")
 DEFAULT_AUTH_PASS = os.environ.get("AXIOM_TUNNEL_DEFAULT_PASS", "axiom")
+DEFAULT_LT_HOSTS = [DEFAULT_LT_HOST, "https://localtunnel.me"]
 
 LT_URL_RE = re.compile(r"https://[A-Za-z0-9-]+\.(?:loca\.lt|localtunnel\.me)")
 
@@ -300,7 +301,34 @@ def resolve_bcrypt(args: argparse.Namespace) -> tuple[str, str]:
     return bcrypt, masked
 
 
-def build_localtunnel_cmd(args: argparse.Namespace) -> list[str]:
+def parse_csv_hosts(raw: str) -> list[str]:
+    return [part.strip() for part in raw.split(",") if part.strip()]
+
+
+def resolve_lt_hosts(args: argparse.Namespace) -> list[str]:
+    requested = parse_csv_hosts(args.lt_host or "")
+    normalized = [host for host in requested if host.lower() != "auto"]
+
+    if not normalized:
+        env_hosts = parse_csv_hosts(os.environ.get("AXIOM_TUNNEL_LT_HOSTS", ""))
+        normalized = env_hosts if env_hosts else list(DEFAULT_LT_HOSTS)
+        normalized = [host for host in normalized if host.lower() != "auto"]
+    if not normalized:
+        normalized = ["https://loca.lt", "https://localtunnel.me"]
+
+    # Keep stable order and drop duplicates.
+    seen: set[str] = set()
+    result: list[str] = []
+    for host in normalized:
+        key = host.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(host)
+    return result
+
+
+def build_localtunnel_cmd(args: argparse.Namespace, lt_host: str | None) -> list[str]:
     if args.localtunnel_bin:
         cmd = [args.localtunnel_bin]
     elif is_command_available("lt"):
@@ -312,9 +340,8 @@ def build_localtunnel_cmd(args: argparse.Namespace) -> list[str]:
     cmd += ["--port", str(args.proxy_port)]
     if args.subdomain:
         cmd += ["--subdomain", args.subdomain]
-    host = args.lt_host or DEFAULT_LT_HOST
-    if host:
-        cmd += ["--host", host]
+    if lt_host:
+        cmd += ["--host", lt_host]
     return cmd
 
 
@@ -351,7 +378,7 @@ def run(args: argparse.Namespace) -> int:
     caddy_buf: Deque[str] = deque(maxlen=80)
     caddy_proc: subprocess.Popen | None = None
     lt_proc: subprocess.Popen | None = None
-    lt_buf: Deque[str] = deque(maxlen=120)
+    lt_hosts = resolve_lt_hosts(args)
 
     try:
         caddy_cmd = ["caddy", "run", "--config", caddyfile_path, "--adapter", "caddyfile"]
@@ -384,74 +411,96 @@ def run(args: argparse.Namespace) -> int:
             sys.stdout.write(f"Proxy: {proxy_url} (no auth)\n")
         sys.stdout.flush()
 
-        lt_cmd = build_localtunnel_cmd(args)
-        lt_proc = subprocess.Popen(
-            lt_cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1,
-        )
-
         tunnel_url: Optional[str] = None
+        tunnel_host: Optional[str] = None
         summary_printed = False
+        lt_failures: list[str] = []
+        per_host_timeout = max(15, min(args.timeout, 45))
 
-        def handle_lt_line(line: str) -> None:
-            nonlocal tunnel_url, summary_printed
-            found = LT_URL_RE.search(line)
-            if tunnel_url is None and found:
-                tunnel_url = found.group(0)
-                tunnel_password = fetch_tunnel_password()
-                output = (
-                    "------ Tunnel ready ------\n"
-                    f"Vite: {vite_origin} (OK)\n"
-                    f"Proxy: {proxy_url} ({'BasicAuth 401 expected' if auth_enabled else 'no auth'})\n"
-                    f"Tunnel: {tunnel_url}\n"
+        for idx, candidate_host in enumerate(lt_hosts, start=1):
+            lt_buf: Deque[str] = deque(maxlen=120)
+            lt_cmd = build_localtunnel_cmd(args, candidate_host)
+            if not args.quiet:
+                sys.stdout.write(
+                    f"Starting localtunnel host {candidate_host} ({idx}/{len(lt_hosts)})...\n"
                 )
-                if tunnel_password:
-                    output += f"Tunnel password: {tunnel_password}\n"
-                    output += "Note: loca.lt password gate is separate from Caddy/auth settings.\n"
-                if auth_enabled:
-                    output += (
-                        f"Auth user: {args.auth_user}\n"
-                        f"Auth pass: {masked_pass} (masked)\n"
-                    )
-                else:
-                    output += "BasicAuth: disabled\n"
-                output += "Press Ctrl+C to stop\n"
-                sys.stdout.write(output)
                 sys.stdout.flush()
-                summary_printed = True
 
-        threading.Thread(
-            target=stream_output,
-            args=(lt_proc, "localtunnel", lt_buf, args.quiet, handle_lt_line),
-            daemon=True,
-        ).start()
+            lt_proc = subprocess.Popen(
+                lt_cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+            )
 
-        tunnel_deadline = time.time() + max(args.timeout, 30)
-        while tunnel_url is None and time.time() < tunnel_deadline:
-            if lt_proc.poll() is not None:
+            def handle_lt_line(line: str, current_host: str = candidate_host) -> None:
+                nonlocal tunnel_url, tunnel_host, summary_printed
+                found = LT_URL_RE.search(line)
+                if tunnel_url is None and found:
+                    tunnel_url = found.group(0)
+                    tunnel_host = current_host
+                    tunnel_password = fetch_tunnel_password() if "loca.lt" in current_host else None
+                    output = (
+                        "------ Tunnel ready ------\n"
+                        f"Vite: {vite_origin} (OK)\n"
+                        f"Proxy: {proxy_url} ({'BasicAuth 401 expected' if auth_enabled else 'no auth'})\n"
+                        f"Tunnel host: {current_host}\n"
+                        f"Tunnel: {tunnel_url}\n"
+                    )
+                    if tunnel_password:
+                        output += f"Tunnel password: {tunnel_password}\n"
+                        output += "Note: loca.lt password gate is separate from Caddy/auth settings.\n"
+                    if auth_enabled:
+                        output += (
+                            f"Auth user: {args.auth_user}\n"
+                            f"Auth pass: {masked_pass} (masked)\n"
+                        )
+                    else:
+                        output += "BasicAuth: disabled\n"
+                    output += "Press Ctrl+C to stop\n"
+                    sys.stdout.write(output)
+                    sys.stdout.flush()
+                    summary_printed = True
+
+            threading.Thread(
+                target=stream_output,
+                args=(lt_proc, "localtunnel", lt_buf, args.quiet, handle_lt_line),
+                daemon=True,
+            ).start()
+
+            tunnel_deadline = time.time() + per_host_timeout
+            while tunnel_url is None and time.time() < tunnel_deadline:
+                if lt_proc.poll() is not None:
+                    break
+                time.sleep(0.5)
+
+            if tunnel_url is not None:
                 break
-            time.sleep(0.5)
+
+            error_tail = "\n".join(list(lt_buf)[-10:]).strip()
+            if error_tail:
+                lt_failures.append(f"{candidate_host}:\n{error_tail}")
+            else:
+                lt_failures.append(
+                    f"{candidate_host}: no localtunnel output (timeout >{per_host_timeout}s)"
+                )
+            stop_process(lt_proc, "localtunnel", args.quiet)
+            lt_proc = None
 
         if tunnel_url is None:
-            error_tail = "\n".join(list(lt_buf)[-10:])
-            if not error_tail.strip():
-                raise RuntimeError(
-                    "Timed out waiting for tunnel URL from localtunnel "
-                    f"(>{max(args.timeout, 30)}s). Localtunnel did not output any lines. "
-                    "Это обычно значит, что npx не смог скачать пакет или нет доступа к host localtunnel. "
-                    "Попробуйте запустить вручную: `npx --yes localtunnel --port <proxy> --host https://loca.lt` "
-                    "или укажите `--lt-host https://localtunnel.me`."
-                )
+            details = "\n\n".join(lt_failures[-3:]) if lt_failures else "no host attempts recorded"
             raise RuntimeError(
-                "Timed out waiting for tunnel URL from localtunnel "
-                f"(>{max(args.timeout, 30)}s). Last lines:\n{error_tail}"
+                "Failed to obtain tunnel URL from all configured localtunnel hosts. "
+                "Проверьте VPN/сеть или задайте конкретный host через --lt-host. "
+                f"Attempts:\n{details}"
             )
 
         if not summary_printed:
-            output = f"Tunnel: {tunnel_url}\n"
+            output = (
+                f"Tunnel host: {tunnel_host or 'unknown'}\n"
+                f"Tunnel: {tunnel_url}\n"
+            )
             if auth_enabled:
                 output += (
                     f"Auth user: {args.auth_user}\n"
@@ -528,8 +577,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--lt-host",
-        default=None,
-        help="Переопределить host localtunnel (по умолчанию https://loca.lt).",
+        default="auto",
+        help=(
+            "Host localtunnel: один host или список через запятую. "
+            "Значение 'auto' (по умолчанию) включает fallback-цепочку host-ов."
+        ),
     )
     parser.add_argument(
         "--localtunnel-bin",
