@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0041_ADMIN_HISTORY_LOGOUT_HARDENING_MD
   title: "GLOBAL LOG — 0041_admin-history-logout-hardening"
-  status: ACTIVE
+  status: DONE
   mode: Doc
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
@@ -22,7 +22,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: Доработать стабильность админ logout и заполнение истории/консоли при ошибках audit backend
 - SPEC: —
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -56,4 +56,4 @@ AXS_HEADER_META:
 
 ## Step E — Git
 
-- 2026-02-17T20:31:36+03:00 — Действие: Коммит не выполнен на момент записи; изменения подготовлены в рабочем дереве. → Результат: PENDING
+- 2026-02-17T20:34:42+03:00 — Commit: `2c5f92d` — `fix(admin): harden logout and audit history reliability` — Файлы: `app/routes/admin/page.tsx`, `server/src/app.ts`, `server/src/db/audit.ts`, `ops/agent_ops/logs/0041_admin-history-logout-hardening.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`.
