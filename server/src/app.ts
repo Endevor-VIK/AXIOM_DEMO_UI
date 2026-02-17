@@ -45,17 +45,21 @@ export async function buildApp() {
 
   app.addHook('onResponse', async (request, reply) => {
     if (!shouldCaptureApiRequest(request.url)) return
-    const authUser = (request as any).authUser as { id?: string } | undefined
-    recordAuditEvent({
-      scope: 'api-console',
-      eventType: 'api.request',
-      status: String(reply.statusCode),
-      message: `${request.method} ${request.url}`,
-      ...buildAuditContext(request),
-      actorUserId: authUser?.id ?? null,
-      subjectUserId: authUser?.id ?? null,
-      payload: { method: request.method, url: request.url, statusCode: reply.statusCode },
-    })
+    try {
+      const authUser = (request as any).authUser as { id?: string } | undefined
+      recordAuditEvent({
+        scope: 'api-console',
+        eventType: 'api.request',
+        status: String(reply.statusCode),
+        message: `${request.method} ${request.url}`,
+        ...buildAuditContext(request),
+        actorUserId: authUser?.id ?? null,
+        subjectUserId: authUser?.id ?? null,
+        payload: { method: request.method, url: request.url, statusCode: reply.statusCode },
+      })
+    } catch {
+      // ignore audit hook failures to avoid affecting primary request flow
+    }
   })
 
   if (process.env.AX_SERVE_STATIC === '1' || process.env.NODE_ENV === 'production') {

@@ -59,4 +59,5 @@ AXS_HEADER_META:
 | 0038 | 2026-02-17T18:06:25+03:00 | Auth reliability + backend-down checks (site/admin) | main                     | —                                          | ops/agent_ops/logs/0038_auth-reliability-admin-backend-down-tests.md | DONE |
 | 0039 | 2026-02-17T19:49:53+03:00 | Admin auth/session isolation fix (`/admin` vs site auth) | main                   | —                                          | ops/agent_ops/logs/0039_admin-auth-session-isolation-fix.md | DONE |
 | 0040 | 2026-02-17T20:19:12+03:00 | Admin control center: user/system split + credentials + history + live console + logout reliability | main | — | ops/agent_ops/logs/0040_admin-control-center-user-history.md | DONE |
+| 0041 | 2026-02-17T20:31:36+03:00 | Admin history/logout hardening (safe audit + reliable redirect) | main | — | ops/agent_ops/logs/0041_admin-history-logout-hardening.md | ACTIVE |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).

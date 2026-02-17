@@ -76,7 +76,7 @@ function mapError(error: unknown): string {
   if (message === 'email_in_use') return 'Этот логин уже занят другим аккаунтом.'
   if (message === 'forbidden') return 'Доступ запрещён.'
   if (message === 'unauthorized') return 'Сессия истекла. Перезайдите в админку.'
-  return 'Операция завершилась с ошибкой.'
+  return `Операция завершилась с ошибкой: ${message || 'unknown_error'}.`
 }
 
 function formatDateTime(timestamp: number | null): string {
@@ -261,12 +261,16 @@ export default function AdminPage() {
       })
       setSelectedUserId((prev) => {
         if (prev && nextUsers.some((user) => user.id === prev)) return prev
+        const currentId = session.user?.id
+        if (currentId && nextUsers.some((user) => user.id === currentId)) return currentId
         const first = nextUsers.find((user) => !isSystemAccount(user)) || nextUsers[0]
         return first?.id || ''
       })
       setCredentialsDraft((prev) => {
         if (prev.userId && nextUsers.some((user) => user.id === prev.userId)) return prev
-        const first = nextUsers.find((user) => !isSystemAccount(user)) || nextUsers[0]
+        const currentId = session.user?.id
+        const current = currentId ? nextUsers.find((user) => user.id === currentId) : null
+        const first = current || nextUsers.find((user) => !isSystemAccount(user)) || nextUsers[0]
         return {
           userId: first?.id || '',
           email: first?.email || '',
@@ -280,7 +284,7 @@ export default function AdminPage() {
     } finally {
       setBusyUsers(false)
     }
-  }, [pushOperation])
+  }, [pushOperation, session.user?.id])
 
   const refreshHealth = useCallback(async () => {
     try {
@@ -472,7 +476,10 @@ export default function AdminPage() {
   async function onLogout() {
     setBusyAction(true)
     try {
-      await adminLogout()
+      await Promise.race([
+        adminLogout(),
+        new Promise((resolve) => window.setTimeout(resolve, 1200)),
+      ])
     } finally {
       navigate('/admin/login', { replace: true })
       window.location.replace('/admin/login')

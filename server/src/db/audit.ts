@@ -1,6 +1,7 @@
 import { getDb } from './db'
 
 const MAX_AUDIT_EVENTS = 5000
+let schemaEnsured = false
 
 export type AuditEventRecord = {
   id: number
@@ -85,57 +86,107 @@ function toEvent(row: AuditRow): AuditEventRecord {
 }
 
 function cleanupAuditEvents() {
-  const db = getDb()
-  const boundary = db
-    .prepare('SELECT id FROM audit_events ORDER BY id DESC LIMIT 1 OFFSET ?')
-    .get(MAX_AUDIT_EVENTS) as { id: number } | undefined
-  if (!boundary?.id) return
-  db.prepare('DELETE FROM audit_events WHERE id <= ?').run(boundary.id)
+  try {
+    const db = getDb()
+    const boundary = db
+      .prepare('SELECT id FROM audit_events ORDER BY id DESC LIMIT 1 OFFSET ?')
+      .get(MAX_AUDIT_EVENTS) as { id: number } | undefined
+    if (!boundary?.id) return
+    db.prepare('DELETE FROM audit_events WHERE id <= ?').run(boundary.id)
+  } catch {
+    // no-op, audit cleanup must never break request flow
+  }
+}
+
+function ensureAuditSchema() {
+  if (schemaEnsured) return
+  try {
+    const db = getDb()
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS audit_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at INTEGER NOT NULL,
+        actor_user_id TEXT,
+        subject_user_id TEXT,
+        scope TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        status TEXT,
+        message TEXT,
+        ip TEXT,
+        ua TEXT,
+        device TEXT,
+        region TEXT,
+        network TEXT,
+        payload_json TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_audit_created_at ON audit_events(created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_audit_actor ON audit_events(actor_user_id);
+      CREATE INDEX IF NOT EXISTS idx_audit_subject ON audit_events(subject_user_id);
+    `)
+    schemaEnsured = true
+  } catch {
+    // no-op, retry lazily on next call
+  }
 }
 
 export function recordAuditEvent(input: InsertAuditEventInput): void {
-  const now = input.createdAt ?? Date.now()
-  getDb()
-    .prepare(
-      `INSERT INTO audit_events (
-        created_at, actor_user_id, subject_user_id, scope, event_type, status, message, ip, ua, device, region, network, payload_json
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    )
-    .run(
-      now,
-      input.actorUserId ?? null,
-      input.subjectUserId ?? null,
-      input.scope,
-      input.eventType,
-      input.status ?? null,
-      input.message ?? null,
-      input.ip ?? null,
-      input.ua ?? null,
-      input.device ?? 'unknown',
-      input.region ?? 'UNKNOWN',
-      input.network ?? 'unknown',
-      input.payload ? JSON.stringify(input.payload) : null,
-    )
-  cleanupAuditEvents()
+  try {
+    ensureAuditSchema()
+    const now = input.createdAt ?? Date.now()
+    getDb()
+      .prepare(
+        `INSERT INTO audit_events (
+          created_at, actor_user_id, subject_user_id, scope, event_type, status, message, ip, ua, device, region, network, payload_json
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .run(
+        now,
+        input.actorUserId ?? null,
+        input.subjectUserId ?? null,
+        input.scope,
+        input.eventType,
+        input.status ?? null,
+        input.message ?? null,
+        input.ip ?? null,
+        input.ua ?? null,
+        input.device ?? 'unknown',
+        input.region ?? 'UNKNOWN',
+        input.network ?? 'unknown',
+        input.payload ? JSON.stringify(input.payload) : null,
+      )
+    cleanupAuditEvents()
+  } catch {
+    // no-op, audit insert must never block main API
+  }
 }
 
 export function listAuditEvents(limit = 80): AuditEventRecord[] {
-  const safeLimit = Math.min(Math.max(1, Math.floor(limit)), 200)
-  const rows = getDb()
-    .prepare('SELECT * FROM audit_events ORDER BY created_at DESC, id DESC LIMIT ?')
-    .all(safeLimit) as AuditRow[]
-  return rows.map(toEvent)
+  try {
+    ensureAuditSchema()
+    const safeLimit = Math.min(Math.max(1, Math.floor(limit)), 200)
+    const rows = getDb()
+      .prepare('SELECT * FROM audit_events ORDER BY created_at DESC, id DESC LIMIT ?')
+      .all(safeLimit) as AuditRow[]
+    return rows.map(toEvent)
+  } catch {
+    return []
+  }
 }
 
 export function listAuditEventsByUser(userId: string, limit = 120): AuditEventRecord[] {
-  const safeLimit = Math.min(Math.max(1, Math.floor(limit)), 400)
-  const rows = getDb()
-    .prepare(
-      `SELECT * FROM audit_events
-       WHERE actor_user_id = ? OR subject_user_id = ?
-       ORDER BY created_at DESC, id DESC
-       LIMIT ?`,
-    )
-    .all(userId, userId, safeLimit) as AuditRow[]
-  return rows.map(toEvent)
+  try {
+    ensureAuditSchema()
+    const safeLimit = Math.min(Math.max(1, Math.floor(limit)), 400)
+    const rows = getDb()
+      .prepare(
+        `SELECT * FROM audit_events
+         WHERE actor_user_id = ? OR subject_user_id = ?
+         ORDER BY created_at DESC, id DESC
+         LIMIT ?`,
+      )
+      .all(userId, userId, safeLimit) as AuditRow[]
+    return rows.map(toEvent)
+  } catch {
+    return []
+  }
 }
