@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-16
+  last_updated: 2026-02-17
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -53,4 +53,6 @@ AXS_HEADER_META:
 | 0032 | 2026-02-10T22:46:00+03:00 | NEWS v2 (Dispatch + Signal Center, Feed rework) | main                        | docs/iterations/0012_news-v2-dispatch-signal-center/SPEC.md | ops/agent_ops/logs/0032_news-v2-dispatch-signal-center.md | ACTIVE |
 | 0033 | 2026-02-11T02:28:36+03:00 | NEWS: Signal Center Rework v1 (autoplay + density) | main                     | docs/iterations/0013_news-signal-center-rework-v1/SPEC.md | ops/agent_ops/logs/0033_news-signal-center-rework-v1.md | ACTIVE |
 | 0034 | 2026-02-11T04:12:44+03:00 | Content Hub View Modes Stabilization v2         | main                        | docs/iterations/0034_content-hub-viewmodes-stabilization-v2/SPEC.md | ops/agent_ops/logs/0034_content-hub-viewmodes-stabilization-v2.md | ACTIVE |
+| 0035 | 2026-02-17T16:40:28+03:00 | Seed tester account Staxov_test (role test)     | main                        | —                                          | ops/agent_ops/logs/0035_tester-account-staxov-seed.md | DONE |
+| 0036 | 2026-02-17T16:56:42+03:00 | Fix IDE Node types for server config.ts         | main                        | —                                          | ops/agent_ops/logs/0036_server-tsconfig-node-types.md | DONE |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).
