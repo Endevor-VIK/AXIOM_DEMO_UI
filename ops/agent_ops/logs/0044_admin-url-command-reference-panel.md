@@ -2,7 +2,7 @@
 AXS_HEADER_META:
   id: AXS.AXUI.OPS_AGENT_OPS_LOGS_0044_ADMIN_URL_COMMAND_REFERENCE_PANEL_MD
   title: "GLOBAL LOG — 0044_admin-url-command-reference-panel"
-  status: ACTIVE
+  status: DONE
   mode: Doc
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
@@ -22,7 +22,7 @@ AXS_HEADER_META:
 - Ветка: main
 - Задача: Добавить в админку панель-справочник URL-команд UI (`?debug=1` и др.) с детальным описанием по страницам
 - SPEC: —
-- Статус: ACTIVE
+- Статус: DONE
 
 ---
 
@@ -54,5 +54,4 @@ AXS_HEADER_META:
 
 ## Step E — Git
 
-- 2026-02-18T01:17:24+03:00 — Commit: _pending_ (изменения в рабочем дереве, коммит не выполнен).
-
+- 2026-02-18T01:19:23+03:00 — Commit: `115007e` — `feat(admin): add URL command reference panel` — Файлы: `app/routes/admin/page.tsx`, `styles/admin-console.css`, `lib/admin/urlCommandReference.ts`, `ops/agent_ops/logs/0044_admin-url-command-reference-panel.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`.
