@@ -16,6 +16,7 @@ import {
   updateAdminUserRoles,
 } from '@/lib/admin/api'
 import { adminLogout } from '@/lib/admin/authService'
+import { ADMIN_URL_COMMANDS_REFERENCE } from '@/lib/admin/urlCommandReference'
 import { useAdminSession } from '@/lib/admin/useAdminSession'
 
 import '@/styles/admin-console.css'
@@ -45,6 +46,7 @@ type SectionKey =
   | 'userHistory'
   | 'ops'
   | 'content'
+  | 'commands'
 
 const EMPTY_HISTORY: AdminUserHistory = {
   sessions: [],
@@ -241,6 +243,7 @@ export default function AdminPage() {
     userHistory: true,
     ops: true,
     content: true,
+    commands: true,
   })
 
   const [health, setHealth] = useState<HealthState>({
@@ -756,6 +759,50 @@ export default function AdminPage() {
               <Link to='/dashboard/news'>Открыть News</Link>
               <Link to='/settings'>Открыть Settings</Link>
             </div>
+          )}
+        </article>
+
+        <article className='ax-admin-card'>
+          <div className='ax-admin-card__head'>
+            <h2>Командная панель (URL справочник)</h2>
+            <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => toggleSection('commands')}>
+              {collapsedSections.commands ? 'Развернуть' : 'Свернуть'}
+            </button>
+          </div>
+          {collapsedSections.commands ? null : (
+            <>
+              <p className='ax-admin-card__hint'>
+                Справочник параметров query string для UI. Формат: <code>?key=value</code> или
+                <code>&amp;key=value</code> при комбинировании.
+              </p>
+              <div className='ax-admin-table-wrap'>
+                <table className='ax-admin-table ax-admin-table--commands'>
+                  <thead>
+                    <tr>
+                      <th>Команда</th>
+                      <th>Где работает</th>
+                      <th>Значения</th>
+                      <th>Что делает</th>
+                      <th>Пример</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ADMIN_URL_COMMANDS_REFERENCE.map((entry) => (
+                      <tr key={entry.key}>
+                        <td className='ax-admin-command__key'>
+                          <code>?{entry.command}=...</code>
+                          {entry.status === 'legacy' ? <span className='ax-admin-command__badge'>legacy</span> : null}
+                        </td>
+                        <td>{entry.pages}</td>
+                        <td><code>{entry.values}</code></td>
+                        <td>{entry.description}</td>
+                        <td><code>{entry.example}</code></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </article>
       </section>

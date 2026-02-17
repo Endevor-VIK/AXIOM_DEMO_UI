@@ -236,6 +236,31 @@
   gap: 8px;
 }
 
+.ax-admin-table--commands td code,
+.ax-admin-table--commands th code,
+.ax-admin-card__hint code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: rgba(255, 212, 212, 0.95);
+}
+
+.ax-admin-command__key {
+  display: grid;
+  gap: 6px;
+}
+
+.ax-admin-command__badge {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid rgba(255, 120, 120, 0.42);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 177, 177, 0.92);
+}
+
 .ax-admin-history {
   margin: 0;
   padding-left: 18px;
