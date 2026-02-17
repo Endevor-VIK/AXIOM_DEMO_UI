@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import type * as ThreeTypes from "three";
+import { resolveOrionLoginRuntimeConfig } from "./orionLoginConfig";
 
 type OrionCityBackgroundProps = {
   enabled: boolean;
@@ -177,6 +178,177 @@ function createRadialFogTexture(THREE: typeof import("three")) {
   return tex;
 }
 
+function createBillboardTexture(THREE: typeof import("three"), idx: number, rnd: () => number) {
+  const width = 1024;
+  const height = 512;
+  const c = document.createElement("canvas");
+  c.width = width;
+  c.height = height;
+  const g = c.getContext("2d");
+  if (!g) return null;
+
+  const colorSets = [
+    ["#58f6ff", "#0f2a45", "#ff4e7a"],
+    ["#7dffd6", "#1d2f22", "#ffb347"],
+    ["#79c7ff", "#13233d", "#ff6f91"],
+    ["#60ffea", "#1d1542", "#ffc857"],
+    ["#8affff", "#1a2636", "#ff4d6d"],
+    ["#8dfcc9", "#132b2e", "#ffd166"],
+  ];
+  const palette = colorSets[idx % colorSets.length] ?? colorSets[0]!;
+  const base = palette[0] ?? "#58f6ff";
+  const dark = palette[1] ?? "#102030";
+  const accent = palette[2] ?? "#ff4e7a";
+
+  g.fillStyle = "#02050a";
+  g.fillRect(0, 0, width, height);
+
+  const bg = g.createLinearGradient(0, 0, width, height);
+  bg.addColorStop(0, `${dark}f2`);
+  bg.addColorStop(1, "#020409f2");
+  g.fillStyle = bg;
+  g.fillRect(0, 0, width, height);
+
+  g.strokeStyle = `${base}55`;
+  g.lineWidth = 2;
+  for (let x = 0; x < width; x += 48) {
+    g.beginPath();
+    g.moveTo(x, 0);
+    g.lineTo(x, height);
+    g.stroke();
+  }
+  for (let y = 0; y < height; y += 34) {
+    g.beginPath();
+    g.moveTo(0, y);
+    g.lineTo(width, y);
+    g.stroke();
+  }
+
+  g.globalCompositeOperation = "lighter";
+  for (let i = 0; i < 65; i++) {
+    const x = rnd() * width;
+    const y = rnd() * height;
+    const w = 4 + rnd() * 28;
+    const h = 2 + rnd() * 8;
+    g.fillStyle = i % 7 === 0 ? `${accent}cc` : `${base}aa`;
+    g.fillRect(x, y, w, h);
+  }
+
+  g.globalCompositeOperation = "source-over";
+  g.fillStyle = `${base}f0`;
+  g.font = "900 104px 'Bank Gothic Medium BT', 'Rajdhani', sans-serif";
+  g.textAlign = "left";
+  g.textBaseline = "middle";
+
+  const labels = ["AXIOM", "ORION", "NEON", "NEXUS", "VECTOR", "AERO"];
+  const label = labels[idx % labels.length] ?? "AXIOM";
+  g.fillText(label, 62, 170);
+
+  g.font = "700 38px 'Bank Gothic Medium BT', 'Rajdhani', sans-serif";
+  g.fillStyle = `${accent}f0`;
+  g.fillText("CITY COMMERCIAL GRID", 64, 248);
+
+  g.font = "600 24px 'IBM Plex Mono', monospace";
+  g.fillStyle = "#d8f9ff";
+  g.fillText(`BLOCK ${100 + idx * 7} // LIVE`, 66, 304);
+
+  g.globalCompositeOperation = "screen";
+  const scan = g.createLinearGradient(0, 0, 0, height);
+  scan.addColorStop(0, "rgba(255,255,255,0.0)");
+  scan.addColorStop(0.5, "rgba(255,255,255,0.14)");
+  scan.addColorStop(1, "rgba(255,255,255,0.0)");
+  g.fillStyle = scan;
+  g.fillRect(0, height * 0.32, width, height * 0.2);
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function createSafeZoneShaderPassShader() {
+  return {
+    uniforms: {
+      tDiffuse: { value: null },
+      uGamma: { value: 1.0 },
+      uMidtoneLift: { value: 0.0 },
+      uSafeCenter: { value: { x: 0.5, y: 0.56 } },
+      uSafeRadius: { value: { x: 0.24, y: 0.26 } },
+      uSafeSoftness: { value: 0.34 },
+      uSafeDarken: { value: 0.16 },
+      uLiftOutside: { value: 0.04 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D tDiffuse;
+      uniform float uGamma;
+      uniform float uMidtoneLift;
+      uniform vec2 uSafeCenter;
+      uniform vec2 uSafeRadius;
+      uniform float uSafeSoftness;
+      uniform float uSafeDarken;
+      uniform float uLiftOutside;
+      varying vec2 vUv;
+
+      void main() {
+        vec4 src = texture2D(tDiffuse, vUv);
+        vec3 col = src.rgb;
+        col = pow(max(col, vec3(0.0)), vec3(1.0 / max(uGamma, 0.001)));
+        col += vec3(uMidtoneLift);
+
+        vec2 p = (vUv - uSafeCenter) / max(uSafeRadius, vec2(0.0001));
+        float d = length(p);
+        float inner = smoothstep(0.0, 1.0, d);
+        float centerMask = 1.0 - smoothstep(1.0, 1.0 + uSafeSoftness, d);
+        col += vec3(uLiftOutside * inner);
+        col *= (1.0 - centerMask * uSafeDarken);
+        gl_FragColor = vec4(col, src.a);
+      }
+    `,
+  };
+}
+
+function createSharpenShaderPassShader() {
+  return {
+    uniforms: {
+      tDiffuse: { value: null },
+      amount: { value: 0.0 },
+      resolution: { value: { x: 1920, y: 1080 } },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D tDiffuse;
+      uniform float amount;
+      uniform vec2 resolution;
+      varying vec2 vUv;
+
+      void main() {
+        vec2 texel = 1.0 / max(resolution, vec2(1.0));
+        vec3 c = texture2D(tDiffuse, vUv).rgb;
+        vec3 blur = vec3(0.0);
+        blur += texture2D(tDiffuse, vUv + vec2(texel.x, 0.0)).rgb;
+        blur += texture2D(tDiffuse, vUv + vec2(-texel.x, 0.0)).rgb;
+        blur += texture2D(tDiffuse, vUv + vec2(0.0, texel.y)).rgb;
+        blur += texture2D(tDiffuse, vUv + vec2(0.0, -texel.y)).rgb;
+        blur = (blur + c * 4.0) / 8.0;
+        vec3 sharp = c + (c - blur) * amount;
+        gl_FragColor = vec4(max(sharp, vec3(0.0)), 1.0);
+      }
+    `,
+  };
+}
+
 export function OrionCityBackground({
   enabled,
   reducedMotion,
@@ -198,6 +370,7 @@ export function OrionCityBackground({
       onError?.();
       return undefined;
     }
+    const runtimeConfig = resolveOrionLoginRuntimeConfig();
 
     let disposed = false;
     let raf = 0;
@@ -236,24 +409,65 @@ export function OrionCityBackground({
       (renderer as any).outputColorSpace = (THREE as any).SRGBColorSpace ?? (THREE as any).sRGBEncoding;
       (renderer as any).physicallyCorrectLights = true;
       renderer.setClearColor(0x000000, 0);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, runtimeConfig.post.pixelRatioCap));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.2;
+      renderer.toneMappingExposure = runtimeConfig.lighting.exposure;
 
       const scene = new THREE.Scene();
       scene.fog = new THREE.FogExp2(0x070d18, 0.00062);
+      if (scene.fog instanceof THREE.FogExp2) {
+        scene.fog.density = runtimeConfig.lighting.fogDensity;
+      }
 
-      const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 3200);
+      const camera = new THREE.PerspectiveCamera(60, 1, 1.5, 3200);
       camera.position.set(0, 200, 632);
       scene.add(camera);
 
-      const composer = new EffectComposer(renderer);
+      const composerRenderTarget = new THREE.WebGLRenderTarget(1, 1, {
+        depthBuffer: true,
+        stencilBuffer: false,
+      });
+      if ((renderer.capabilities as any).isWebGL2) {
+        (composerRenderTarget as any).samples = Math.max(1, Math.min(8, runtimeConfig.post.msaaSamples));
+      }
+      const composer = new EffectComposer(renderer, composerRenderTarget);
       composer.addPass(new RenderPass(scene, camera));
-      const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.9, 0.84, 0.2);
+      const bloom = new UnrealBloomPass(
+        new THREE.Vector2(1, 1),
+        runtimeConfig.post.bloomStrength,
+        runtimeConfig.post.bloomRadius,
+        runtimeConfig.post.bloomThreshold,
+      );
       composer.addPass(bloom);
-      const fxaaPass = new ShaderPass(FXAAShader);
-      composer.addPass(fxaaPass);
-      const fxaaUniforms = (fxaaPass.material as any).uniforms;
+
+      const safeZonePass = runtimeConfig.post.safeZoneEnabled
+        ? new ShaderPass(createSafeZoneShaderPassShader() as any)
+        : null;
+      if (safeZonePass) {
+        const safeZoneUniforms = (safeZonePass.material as any).uniforms;
+        safeZoneUniforms.uGamma.value = runtimeConfig.lighting.gamma;
+        safeZoneUniforms.uMidtoneLift.value = runtimeConfig.lighting.midtoneLift;
+        safeZoneUniforms.uSafeCenter.value.x = runtimeConfig.lighting.safeZone.centerX;
+        safeZoneUniforms.uSafeCenter.value.y = runtimeConfig.lighting.safeZone.centerY;
+        safeZoneUniforms.uSafeRadius.value.x = runtimeConfig.lighting.safeZone.radiusX;
+        safeZoneUniforms.uSafeRadius.value.y = runtimeConfig.lighting.safeZone.radiusY;
+        safeZoneUniforms.uSafeSoftness.value = runtimeConfig.lighting.safeZone.softness;
+        safeZoneUniforms.uSafeDarken.value = runtimeConfig.lighting.safeZone.darken;
+        safeZoneUniforms.uLiftOutside.value = runtimeConfig.lighting.safeZone.liftOutside;
+        composer.addPass(safeZonePass);
+      }
+
+      const sharpenPass = runtimeConfig.post.sharpenAmount > 0.001
+        ? new ShaderPass(createSharpenShaderPassShader() as any)
+        : null;
+      const sharpenUniforms = sharpenPass ? (sharpenPass.material as any).uniforms : null;
+      if (sharpenPass && sharpenUniforms) {
+        sharpenUniforms.amount.value = runtimeConfig.post.sharpenAmount;
+        composer.addPass(sharpenPass);
+      }
+      const fxaaPass = runtimeConfig.post.fxaaEnabled ? new ShaderPass(FXAAShader) : null;
+      if (fxaaPass) composer.addPass(fxaaPass);
+      const fxaaUniforms = fxaaPass ? (fxaaPass.material as any).uniforms : null;
 
       const amb = new THREE.AmbientLight(0xffffff, 0.42);
       const hemi = new THREE.HemisphereLight(0x8bcfff, 0x120a11, 0.5);
@@ -282,14 +496,15 @@ export function OrionCityBackground({
 
       const exrLoader = new EXRLoader();
       const maxAnisotropy = Math.max(1, renderer.capabilities.getMaxAnisotropy());
-      const rnd = createSeededRandom(0x0badc0de);
+      const textureAniso = Math.min(runtimeConfig.textures.anisotropy, maxAnisotropy);
+      const rnd = createSeededRandom(runtimeConfig.seed);
       const rand = (min: number, max: number) => min + rnd() * (max - min);
 
       const loadedTextures = new Set<ThreeTypes.Texture>();
       const loadKtx = async (name: string, isColor = false) => {
         const tex = await ktx2Loader.loadAsync(publicUrl(`assets/orion/original/high/${name}`));
         tex.flipY = false;
-        tex.anisotropy = Math.min(16, maxAnisotropy);
+        tex.anisotropy = textureAniso;
         tex.minFilter = THREE.LinearMipmapLinearFilter;
         tex.magFilter = THREE.LinearFilter;
         tex.needsUpdate = true;
@@ -327,7 +542,7 @@ export function OrionCityBackground({
       ]);
 
       skyHdr.mapping = THREE.EquirectangularReflectionMapping;
-      skyHdr.anisotropy = Math.min(12, maxAnisotropy);
+      skyHdr.anisotropy = Math.min(Math.max(2, textureAniso), maxAnisotropy);
       loadedTextures.add(skyHdr as unknown as ThreeTypes.Texture);
       scene.environment = skyHdr;
 
@@ -474,7 +689,7 @@ export function OrionCityBackground({
 
       const gridTex = createNeonGridTexture(THREE, rnd);
       if (gridTex) {
-        gridTex.anisotropy = Math.min(10, maxAnisotropy);
+        gridTex.anisotropy = Math.min(textureAniso, maxAnisotropy);
         gridTex.minFilter = THREE.LinearMipmapLinearFilter;
         gridTex.magFilter = THREE.LinearFilter;
         loadedTextures.add(gridTex);
@@ -502,7 +717,7 @@ export function OrionCityBackground({
 
       const floorGlowTex = createRadialFogTexture(THREE);
       if (floorGlowTex) {
-        floorGlowTex.anisotropy = Math.min(4, maxAnisotropy);
+        floorGlowTex.anisotropy = Math.min(Math.max(2, Math.floor(textureAniso / 2)), maxAnisotropy);
         loadedTextures.add(floorGlowTex);
       }
 
@@ -523,7 +738,6 @@ export function OrionCityBackground({
       floorGlow.position.set(centerX, cityGroundY - 0.2, centerZ - 120);
       world.add(floorGlow);
 
-      const laneCount = 5;
       const laneGeo = new THREE.PlaneGeometry(16, 1700);
       const laneMat = registerMaterial(new THREE.MeshBasicMaterial({
         color: 0x41ffe6,
@@ -533,24 +747,42 @@ export function OrionCityBackground({
         blending: THREE.AdditiveBlending,
       }));
       const laneGroup = new THREE.Group();
-      for (let i = 0; i < laneCount; i++) {
-        const lane = new THREE.Mesh(laneGeo, laneMat);
-        const t = i - (laneCount - 1) * 0.5;
-        lane.position.set(centerX + (t * 84), cityGroundY - 0.15, centerZ - 320);
-        lane.rotation.x = -Math.PI / 2;
-        laneGroup.add(lane);
+      if (runtimeConfig.traffic.mode === "legacy") {
+        const laneCount = Math.max(1, runtimeConfig.traffic.legacyLaneCount);
+        const laneSpacing = runtimeConfig.traffic.legacyLaneSpacing;
+        for (let i = 0; i < laneCount; i++) {
+          const lane = new THREE.Mesh(laneGeo, laneMat);
+          const t = i - (laneCount - 1) * 0.5;
+          lane.position.set(centerX + (t * laneSpacing), cityGroundY - 0.15, centerZ - 320);
+          lane.rotation.x = -Math.PI / 2;
+          laneGroup.add(lane);
+        }
+      } else {
+        const laneOffsets = runtimeConfig.traffic.laneOffsets.length > 0
+          ? runtimeConfig.traffic.laneOffsets
+          : [-18, 0, 18];
+        for (const laneOffset of laneOffsets) {
+          const lane = new THREE.Mesh(laneGeo, laneMat);
+          lane.position.set(centerX + laneOffset * 3.8, cityGroundY - 0.15, centerZ - 320);
+          lane.rotation.x = -Math.PI / 2;
+          laneGroup.add(lane);
+        }
       }
       world.add(laneGroup);
+
+      const readabilityBoost = runtimeConfig.lighting.readabilityBoost;
+      const materialCfg = runtimeConfig.materials;
 
       const set1Mat = registerMaterial(new THREE.MeshStandardMaterial({
         map: set1Diffuse,
         emissiveMap: set1Emission,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 1.95,
+        emissiveIntensity: 1.95 * readabilityBoost,
         roughnessMap: set1RM,
         metalnessMap: set1RM,
-        metalness: 0.6,
-        roughness: 0.45,
+        metalness: materialCfg.building.metalness,
+        roughness: materialCfg.building.roughness,
+        envMapIntensity: materialCfg.building.envMapIntensity,
         side: THREE.DoubleSide,
       }));
 
@@ -558,15 +790,19 @@ export function OrionCityBackground({
         map: set2Diffuse,
         emissiveMap: set2Emission,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 1.95,
+        emissiveIntensity: 1.95 * readabilityBoost,
         roughnessMap: set2RM,
         metalnessMap: set2RM,
-        metalness: 0.6,
-        roughness: 0.45,
-        alphaTest: 0.5,
+        metalness: materialCfg.building.metalness,
+        roughness: materialCfg.building.roughness,
+        envMapIntensity: materialCfg.building.envMapIntensity,
+        alphaTest: materialCfg.building.alphaTest,
         transparent: false,
         side: THREE.DoubleSide,
       }));
+      if ("alphaToCoverage" in (set2Mat as any)) {
+        (set2Mat as any).alphaToCoverage = materialCfg.building.alphaToCoverage;
+      }
 
       const building4CustomMat = registerMaterial(new THREE.MeshStandardMaterial({
         map: building4Cars,
@@ -574,9 +810,10 @@ export function OrionCityBackground({
         roughnessMap: set1RM,
         metalnessMap: set1RM,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 2.5,
-        metalness: 0.68,
-        roughness: 0.42,
+        emissiveIntensity: 2.5 * readabilityBoost,
+        metalness: materialCfg.building.metalness,
+        roughness: materialCfg.building.roughness,
+        envMapIntensity: materialCfg.building.envMapIntensity,
         side: THREE.DoubleSide,
       }));
 
@@ -585,21 +822,24 @@ export function OrionCityBackground({
         emissiveMap: mainDiffuse,
         alphaMap: mainAlpha,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 0.85,
-        metalness: 0.05,
-        roughness: 0.88,
-        alphaTest: 0.5,
+        emissiveIntensity: materialCfg.main.emissiveBase * readabilityBoost,
+        metalness: materialCfg.main.metalness,
+        roughness: materialCfg.main.roughness,
+        alphaTest: materialCfg.main.alphaTest,
         transparent: false,
         side: THREE.DoubleSide,
       }));
+      if ("alphaToCoverage" in (mainMat as any)) {
+        (mainMat as any).alphaToCoverage = materialCfg.building.alphaToCoverage;
+      }
 
       const animatedSolidMat = registerMaterial(new THREE.MeshStandardMaterial({
         map: building4Cars,
         emissiveMap: building4Cars,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 0.92,
-        metalness: 0.3,
-        roughness: 0.6,
+        emissiveIntensity: materialCfg.animatedSolid.emissiveBase * readabilityBoost,
+        metalness: materialCfg.animatedSolid.metalness,
+        roughness: materialCfg.animatedSolid.roughness,
         side: THREE.DoubleSide,
       }));
 
@@ -607,11 +847,14 @@ export function OrionCityBackground({
         map: building4Decals,
         emissiveMap: building4Decals,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 0.22,
-        alphaTest: 0.1,
+        emissiveIntensity: materialCfg.animatedTransparent.emissiveBase * readabilityBoost,
+        alphaTest: materialCfg.animatedTransparent.alphaTest,
         transparent: false,
         side: THREE.DoubleSide,
       }));
+      if ("alphaToCoverage" in (animatedTransparentMat as any)) {
+        (animatedTransparentMat as any).alphaToCoverage = materialCfg.building.alphaToCoverage;
+      }
 
       // Apply Orion material overrides from original runtime (main + animated atlas meshes).
       level.traverse((o: ThreeTypes.Object3D) => {
@@ -624,7 +867,12 @@ export function OrionCityBackground({
         } else if (nm === "Animated-Textures-Solid") {
           mesh.material = animatedSolidMat;
         } else if (nm === "Animated-Textures-Transparent") {
-          mesh.material = animatedTransparentMat;
+          if (materialCfg.animatedTransparent.enabled) {
+            mesh.visible = true;
+            mesh.material = animatedTransparentMat;
+          } else {
+            mesh.visible = false;
+          }
         }
 
         mesh.castShadow = false;
@@ -726,7 +974,7 @@ export function OrionCityBackground({
         targetHeight: number;
         stretchX?: number;
         stretchZ?: number;
-          scaleMul?: number;
+        scaleMul?: number;
         allowInCorridor?: boolean;
       }) => {
         if (!cfg.allowInCorridor && inViewCorridor(cfg.x, cfg.z)) return;
@@ -866,7 +1114,9 @@ export function OrionCityBackground({
         });
       }
 
-      // Air traffic.
+      // Air traffic: keep legacy motion for default mode, pooled traffic for V2.
+      const trafficCfg = runtimeConfig.traffic;
+      const useLegacyTraffic = trafficCfg.mode === "legacy";
       const carTemplates = [
         level.getObjectByName("flying-car-traffic-1"),
         level.getObjectByName("flying-car-traffic-2"),
@@ -889,6 +1139,7 @@ export function OrionCityBackground({
 
       type TrafficCar = {
         m: ThreeTypes.Object3D;
+        active: boolean;
         start: ThreeTypes.Vector3;
         end: ThreeTypes.Vector3;
         u: number;
@@ -897,11 +1148,17 @@ export function OrionCityBackground({
         bob: number;
       };
 
+      type TrafficPath = {
+        start: ThreeTypes.Vector3;
+        end: ThreeTypes.Vector3;
+      };
+
       const traffic = new THREE.Group();
       world.add(traffic);
       const cars: TrafficCar[] = [];
+      const trafficPaths: TrafficPath[] = [];
 
-      const paths: { start: ThreeTypes.Vector3; end: ThreeTypes.Vector3 }[] = [];
+      const basePaths: TrafficPath[] = [];
       for (let i = 1; i <= 6; i++) {
         const s = level.getObjectByName(`air-traffic-${i}-start`);
         const e = level.getObjectByName(`air-traffic-${i}-end`);
@@ -910,68 +1167,278 @@ export function OrionCityBackground({
         const end = new THREE.Vector3();
         s.getWorldPosition(start);
         e.getWorldPosition(end);
-        paths.push({ start, end });
+        basePaths.push({ start, end });
       }
 
-      for (let i = 0; i < Math.min(paths.length, 6); i++) {
-        const path = paths[i]!;
-        const tpl = carTemplates[i % Math.max(1, carTemplates.length)];
-        if (!tpl) continue;
+      const maxTrafficActive = Math.max(0, Math.min(trafficCfg.maxActive, 48));
+      let activeTrafficCount = 0;
+      let trafficSpawnTimer = 0;
+      const despawnTrafficCar = (car: TrafficCar) => {
+        if (!car.active) return;
+        car.active = false;
+        car.m.visible = false;
+        activeTrafficCount = Math.max(0, activeTrafficCount - 1);
+      };
+      const spawnTrafficCar = () => {
+        if (!trafficCfg.enabled || trafficPaths.length === 0) return;
+        if (activeTrafficCount >= maxTrafficActive) return;
+        const car = cars.find((item) => !item.active);
+        if (!car) return;
+        const path = trafficPaths[Math.floor(rnd() * trafficPaths.length)];
+        if (!path) return;
 
-        const m = tpl.clone(true);
-        m.traverse((o: ThreeTypes.Object3D) => {
-          o.visible = true;
-          const mesh = o as any;
-          if (mesh.isMesh) {
-            mesh.material = carMat;
-            mesh.castShadow = false;
-            mesh.receiveShadow = false;
+        car.active = true;
+        activeTrafficCount += 1;
+        car.start.copy(path.start);
+        car.end.copy(path.end);
+        car.u = rnd() * 0.12;
+        car.rate = rand(trafficCfg.speedMin, trafficCfg.speedMax);
+        car.phase = rnd() * Math.PI * 2;
+        car.bob = rand(trafficCfg.bobMin, trafficCfg.bobMax);
+        car.m.visible = true;
+      };
+
+      if (useLegacyTraffic) {
+        for (let i = 0; i < Math.min(basePaths.length, 6); i++) {
+          const path = basePaths[i]!;
+          const tpl = carTemplates[i % Math.max(1, carTemplates.length)];
+          if (!tpl) continue;
+
+          const m = tpl.clone(true);
+          m.traverse((o: ThreeTypes.Object3D) => {
+            o.visible = true;
+            const mesh = o as any;
+            if (mesh.isMesh) {
+              mesh.material = carMat;
+              mesh.castShadow = false;
+              mesh.receiveShadow = false;
+            }
+          });
+          m.visible = true;
+          m.scale.setScalar(0.9 + rnd() * 0.32);
+          traffic.add(m);
+          cars.push({
+            m,
+            active: true,
+            start: path.start.clone(),
+            end: path.end.clone(),
+            u: rnd(),
+            rate: 0.033 + rnd() * 0.035,
+            phase: rnd() * Math.PI * 2,
+            bob: 0.7 + rnd() * 1.3,
+          });
+        }
+      } else {
+        for (const path of basePaths) {
+          const dir = new THREE.Vector3().subVectors(path.end, path.start).normalize();
+          const right = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0, 1, 0)).normalize();
+          for (const laneOffset of trafficCfg.laneOffsets) {
+            const start = path.start.clone().addScaledVector(right, laneOffset);
+            const end = path.end.clone().addScaledVector(right, laneOffset);
+            trafficPaths.push({ start, end });
           }
-        });
+        }
 
-        m.scale.setScalar(0.9 + rnd() * 0.32);
-        traffic.add(m);
-        cars.push({
-          m,
-          start: path.start.clone(),
-          end: path.end.clone(),
-          u: rnd(),
-          rate: 0.033 + rnd() * 0.035,
-          phase: rnd() * Math.PI * 2,
-          bob: 0.7 + rnd() * 1.3,
-        });
+        for (let i = 0; i < maxTrafficActive; i++) {
+          const tpl = carTemplates[i % Math.max(1, carTemplates.length)];
+          if (!tpl) continue;
+          const m = tpl.clone(true);
+          m.traverse((o: ThreeTypes.Object3D) => {
+            o.visible = true;
+            const mesh = o as any;
+            if (mesh.isMesh) {
+              mesh.material = carMat;
+              mesh.castShadow = false;
+              mesh.receiveShadow = false;
+            }
+          });
+          m.visible = false;
+          m.scale.setScalar(0.86 + rnd() * 0.38);
+          traffic.add(m);
+          cars.push({
+            m,
+            active: false,
+            start: new THREE.Vector3(),
+            end: new THREE.Vector3(),
+            u: 0,
+            rate: 0.03,
+            phase: rnd() * Math.PI * 2,
+            bob: 0.8,
+          });
+        }
+
+        trafficSpawnTimer = rand(trafficCfg.spawnMin, trafficCfg.spawnMax);
+        const warmStartCount = Math.min(maxTrafficActive, Math.max(2, Math.floor(maxTrafficActive * 0.35)));
+        for (let i = 0; i < warmStartCount; i++) spawnTrafficCar();
       }
 
-      // Rain.
-      const rainCount = 1500;
-      const rainPos = new Float32Array(rainCount * 2 * 3);
-      const rainSpd = new Float32Array(rainCount);
-      for (let i = 0; i < rainCount; i++) {
-        const x = (rnd() - 0.5) * 360;
-        const y = 10 + rnd() * 280;
-        const z = -30 - rnd() * 540;
-        const len = 0.9 + rnd() * 4.4;
-        rainPos[(i * 6) + 0] = x;
-        rainPos[(i * 6) + 1] = y;
-        rainPos[(i * 6) + 2] = z;
-        rainPos[(i * 6) + 3] = x;
-        rainPos[(i * 6) + 4] = y - len;
-        rainPos[(i * 6) + 5] = z;
-        rainSpd[i] = 34 + rnd() * 72;
+      // Billboards / ads.
+      type BillboardActor = {
+        mesh: ThreeTypes.Mesh;
+        material: ThreeTypes.MeshStandardMaterial;
+        baseY: number;
+        baseIntensity: number;
+        animated: boolean;
+        phase: number;
+      };
+      const billboards: BillboardActor[] = [];
+      const billboardCfg = runtimeConfig.billboards;
+      if (billboardCfg.enabled && billboardCfg.count > 0) {
+        const billboardGroup = new THREE.Group();
+        world.add(billboardGroup);
+
+        const anchors = [
+          { x: centerX - 620, y: cityGroundY + 188, z: centerZ - 230, yaw: 0.48, w: 168, h: 76 },
+          { x: centerX + 624, y: cityGroundY + 182, z: centerZ - 218, yaw: -0.47, w: 162, h: 74 },
+          { x: centerX - 700, y: cityGroundY + 246, z: centerZ - 402, yaw: 0.54, w: 154, h: 70 },
+          { x: centerX + 708, y: cityGroundY + 238, z: centerZ - 388, yaw: -0.52, w: 152, h: 68 },
+          { x: centerX - 768, y: cityGroundY + 304, z: centerZ - 618, yaw: 0.61, w: 146, h: 64 },
+          { x: centerX + 780, y: cityGroundY + 296, z: centerZ - 596, yaw: -0.59, w: 144, h: 64 },
+        ];
+        const targetCount = Math.min(billboardCfg.count, anchors.length);
+
+        for (let i = 0; i < targetCount; i++) {
+          const a = anchors[i];
+          if (!a) continue;
+          const tex = createBillboardTexture(THREE, i, rnd);
+          if (!tex) continue;
+          tex.flipY = false;
+          tex.anisotropy = textureAniso;
+          tex.minFilter = THREE.LinearMipmapLinearFilter;
+          tex.magFilter = THREE.LinearFilter;
+          tex.needsUpdate = true;
+          loadedTextures.add(tex);
+
+          const mat = registerMaterial(new THREE.MeshStandardMaterial({
+            map: tex,
+            emissiveMap: tex,
+            color: 0xffffff,
+            emissive: new THREE.Color(0xffffff),
+            emissiveIntensity: 1.12 + rnd() * 0.22,
+            roughness: 0.52,
+            metalness: 0.22,
+            transparent: true,
+            alphaTest: 0.06,
+            side: THREE.DoubleSide,
+          }));
+          const mesh = new THREE.Mesh(new THREE.PlaneGeometry(a.w, a.h), mat);
+          mesh.position.set(a.x, a.y, a.z);
+          mesh.rotation.y = a.yaw;
+          mesh.castShadow = false;
+          mesh.receiveShadow = false;
+          billboardGroup.add(mesh);
+
+          billboards.push({
+            mesh,
+            material: mat,
+            baseY: a.y,
+            baseIntensity: mat.emissiveIntensity,
+            animated: i < billboardCfg.animatedCount,
+            phase: rnd() * Math.PI * 2,
+          });
+        }
       }
-      const rainGeo = new THREE.BufferGeometry();
-      rainGeo.setAttribute("position", new THREE.BufferAttribute(rainPos, 3));
-      const rainMat = registerMaterial(new THREE.LineBasicMaterial({
-        color: 0xbce7ff,
-        transparent: true,
-        opacity: 0.28,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }));
-      const rain = new THREE.LineSegments(rainGeo, rainMat);
-      const rainAnchor = new THREE.Group();
-      rainAnchor.add(rain);
-      world.add(rainAnchor);
+
+      // Rain (1-2 layers by preset).
+      type RainLayer = {
+        geo: ThreeTypes.BufferGeometry;
+        spd: Float32Array;
+        count: number;
+        anchor: ThreeTypes.Group;
+        spreadX: number;
+        spreadZ: number;
+        resetTop: number;
+        lenMax: number;
+      };
+      const rainLayers: RainLayer[] = [];
+      const rainCfg = runtimeConfig.rain;
+      if (rainCfg.mode === "legacy") {
+        const rainCount = Math.max(200, rainCfg.countPerLayer);
+        const rainPos = new Float32Array(rainCount * 2 * 3);
+        const rainSpd = new Float32Array(rainCount);
+        for (let i = 0; i < rainCount; i++) {
+          const x = (rnd() - 0.5) * rainCfg.legacySpreadX;
+          const y = 10 + rnd() * 280;
+          const z = -30 - rnd() * rainCfg.legacySpreadZ;
+          const len = 0.9 + rnd() * rainCfg.legacyLenMax;
+          rainPos[(i * 6) + 0] = x;
+          rainPos[(i * 6) + 1] = y;
+          rainPos[(i * 6) + 2] = z;
+          rainPos[(i * 6) + 3] = x;
+          rainPos[(i * 6) + 4] = y - len;
+          rainPos[(i * 6) + 5] = z;
+          rainSpd[i] = 34 + rnd() * 72;
+        }
+        const rainGeo = new THREE.BufferGeometry();
+        rainGeo.setAttribute("position", new THREE.BufferAttribute(rainPos, 3));
+        const rainMat = registerMaterial(new THREE.LineBasicMaterial({
+          color: 0xbce7ff,
+          transparent: true,
+          opacity: 0.28,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        }));
+        const rain = new THREE.LineSegments(rainGeo, rainMat);
+        const rainAnchor = new THREE.Group();
+        rainAnchor.add(rain);
+        world.add(rainAnchor);
+        rainLayers.push({
+          geo: rainGeo,
+          spd: rainSpd,
+          count: rainCount,
+          anchor: rainAnchor,
+          spreadX: rainCfg.legacySpreadX,
+          spreadZ: rainCfg.legacySpreadZ,
+          resetTop: rainCfg.legacyResetTop,
+          lenMax: rainCfg.legacyLenMax,
+        });
+      } else {
+        const rainLayerCount = Math.max(0, Math.min(2, rainCfg.layers));
+        for (let layer = 0; layer < rainLayerCount; layer++) {
+          const rainCount = Math.max(200, Math.floor(rainCfg.countPerLayer * (layer === 0 ? 1 : 0.72)));
+          const spreadX = 360 + layer * 130;
+          const spreadZ = 540 + layer * 180;
+          const resetTop = 260 + layer * 80;
+          const rainPos = new Float32Array(rainCount * 2 * 3);
+          const rainSpd = new Float32Array(rainCount);
+          for (let i = 0; i < rainCount; i++) {
+            const x = (rnd() - 0.5) * spreadX;
+            const y = 10 + rnd() * resetTop;
+            const z = -30 - rnd() * spreadZ;
+            const len = 0.9 + rnd() * (4.2 + layer * 1.2);
+            rainPos[(i * 6) + 0] = x;
+            rainPos[(i * 6) + 1] = y;
+            rainPos[(i * 6) + 2] = z;
+            rainPos[(i * 6) + 3] = x;
+            rainPos[(i * 6) + 4] = y - len;
+            rainPos[(i * 6) + 5] = z;
+            rainSpd[i] = (34 + rnd() * 72) * (1 + layer * 0.24);
+          }
+          const rainGeo = new THREE.BufferGeometry();
+          rainGeo.setAttribute("position", new THREE.BufferAttribute(rainPos, 3));
+          const rainMat = registerMaterial(new THREE.LineBasicMaterial({
+            color: 0xbce7ff,
+            transparent: true,
+            opacity: layer === 0 ? 0.28 : 0.17,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          }));
+          const rain = new THREE.LineSegments(rainGeo, rainMat);
+          const rainAnchor = new THREE.Group();
+          rainAnchor.add(rain);
+          world.add(rainAnchor);
+          rainLayers.push({
+            geo: rainGeo,
+            spd: rainSpd,
+            count: rainCount,
+            anchor: rainAnchor,
+            spreadX,
+            spreadZ,
+            resetTop,
+            lenMax: 4.8,
+          });
+        }
+      }
 
       const size = new THREE.Vector2();
       function resize() {
@@ -985,7 +1452,13 @@ export function OrionCityBackground({
         camera.updateProjectionMatrix();
         bloom.setSize(w, h);
         const pxRatio = renderer.getPixelRatio();
-        fxaaUniforms.resolution.value.set(1 / (w * pxRatio), 1 / (h * pxRatio));
+        if (fxaaUniforms?.resolution?.value) {
+          fxaaUniforms.resolution.value.set(1 / (w * pxRatio), 1 / (h * pxRatio));
+        }
+        if (sharpenUniforms?.resolution?.value) {
+          sharpenUniforms.resolution.value.x = w;
+          sharpenUniforms.resolution.value.y = h;
+        }
       }
 
       const pointer = { tx: 0, ty: 0, x: 0, y: 0 };
@@ -1016,29 +1489,31 @@ export function OrionCityBackground({
         last = now;
         const t = now * 0.001;
 
-        pointer.x += (pointer.tx - pointer.x) * 0.074;
-        pointer.y += (pointer.ty - pointer.y) * 0.074;
+        pointer.x += (pointer.tx - pointer.x) * 0.045;
+        pointer.y += (pointer.ty - pointer.y) * 0.045;
 
-        const panX = pointer.x * 17.2;
-        const panY = pointer.y * 10.4;
+        const panX = pointer.x * 8.0;
+        const panY = pointer.y * 4.8;
         camera.position.set(
-          baseCam.x + (panX * 0.51),
-          baseCam.y - (panY * 0.42),
-          baseCam.z + (Math.abs(panX) * 0.09),
+          baseCam.x + (panX * 0.32),
+          baseCam.y - (panY * 0.26),
+          baseCam.z,
         );
         camera.position.y = THREE.MathUtils.clamp(camera.position.y, cityGroundY + 140, cityGroundY + 236);
         lookTmp.set(
-          lookTarget.x + (panX * 1.82),
-          lookTarget.y - (panY * 1.56),
-          lookTarget.z + (panX * 0.24),
+          lookTarget.x + (panX * 0.96),
+          lookTarget.y - (panY * 0.84),
+          lookTarget.z,
         );
         lookTmp.y = THREE.MathUtils.clamp(lookTmp.y, cityCenterPos.y + 90, cityCenterPos.y + 182);
         camera.lookAt(lookTmp);
-        rainAnchor.position.copy(camera.position);
+        for (const rainLayer of rainLayers) {
+          rainLayer.anchor.position.copy(camera.position);
+        }
 
         const pulse = 0.5 + 0.5 * Math.sin(t * 0.22);
-        floorGlowMat.opacity = 0.12 + pulse * 0.1;
-        laneMat.opacity = 0.1 + pulse * 0.12;
+        floorGlowMat.opacity = runtimeConfig.post.floorGlowBase + pulse * runtimeConfig.post.floorGlowAmp;
+        laneMat.opacity = runtimeConfig.post.laneGlowBase + pulse * runtimeConfig.post.laneGlowAmp;
         skyGlowMat.opacity = 0.05 + (0.5 + 0.5 * Math.sin(t * 0.17)) * 0.06;
 
         if (scene.fog instanceof THREE.FogExp2) {
@@ -1049,11 +1524,29 @@ export function OrionCityBackground({
           ));
         }
 
+        if (!useLegacyTraffic && trafficCfg.enabled) {
+          trafficSpawnTimer -= dt;
+          while (trafficSpawnTimer <= 0) {
+            spawnTrafficCar();
+            trafficSpawnTimer += rand(trafficCfg.spawnMin, trafficCfg.spawnMax);
+          }
+        }
+
         for (const c of cars) {
-          c.u = (c.u + dt * c.rate) % 1;
+          if (!c.active) continue;
+          if (!useLegacyTraffic) c.u += dt * c.rate;
+          else c.u = (c.u + dt * c.rate) % 1;
           c.phase += dt * 1.1;
+          if (!useLegacyTraffic && c.u >= 1.02) {
+            despawnTrafficCar(c);
+            continue;
+          }
           tmpPos.lerpVectors(c.start, c.end, c.u);
-          tmpNext.lerpVectors(c.start, c.end, (c.u + 0.01) % 1);
+          tmpNext.lerpVectors(
+            c.start,
+            c.end,
+            !useLegacyTraffic ? Math.min(1, c.u + 0.01) : (c.u + 0.01) % 1,
+          );
           tmpDir.subVectors(tmpNext, tmpPos);
           const len = tmpDir.length();
           if (len > 1e-6) {
@@ -1065,27 +1558,40 @@ export function OrionCityBackground({
           c.m.position.set(tmpPos.x, tmpPos.y + Math.sin(c.phase) * c.bob, tmpPos.z);
         }
 
-        const pos = rainGeo.getAttribute("position") as unknown as ThreeTypes.BufferAttribute;
-        for (let i = 0; i < rainCount; i++) {
-          const headY = pos.getY((i * 2) + 0);
-          const spd = rainSpd[i] ?? 0;
-          const nextY = headY - (spd * dt);
-          if (nextY < -30) {
-            const x = (rnd() - 0.5) * 360;
-            const y = 120 + rnd() * 220;
-            const z = -30 - rnd() * 540;
-            const len = 0.9 + rnd() * 4.4;
-            pos.setXYZ((i * 2) + 0, x, y, z);
-            pos.setXYZ((i * 2) + 1, x, y - len, z);
-          } else {
-            pos.setY((i * 2) + 0, nextY);
-            pos.setY((i * 2) + 1, pos.getY((i * 2) + 1) - (spd * dt));
+        for (const b of billboards) {
+          const animated = b.animated;
+          const flicker = billboardCfg.flicker ? (0.82 + 0.18 * Math.sin((t * 4.6) + b.phase)) : 1;
+          const glitchPulse = billboardCfg.glitch && animated && Math.sin((t * 12.0) + b.phase) > 0.96 ? 0.45 : 0;
+          b.material.emissiveIntensity = b.baseIntensity * flicker + glitchPulse;
+          if (animated) {
+            b.mesh.position.y = b.baseY + Math.sin((t * 0.85) + b.phase) * 1.3;
+            b.mesh.rotation.z = Math.sin((t * 0.65) + b.phase) * 0.015;
           }
         }
-        pos.needsUpdate = true;
 
-        bloom.strength = 0.92;
-        bloom.radius = 0.84;
+        for (const layer of rainLayers) {
+          const pos = layer.geo.getAttribute("position") as unknown as ThreeTypes.BufferAttribute;
+          for (let i = 0; i < layer.count; i++) {
+            const headY = pos.getY((i * 2) + 0);
+            const spd = layer.spd[i] ?? 0;
+            const nextY = headY - (spd * dt);
+            if (nextY < -30) {
+              const x = (rnd() - 0.5) * layer.spreadX;
+              const y = 120 + rnd() * layer.resetTop;
+              const z = -30 - rnd() * layer.spreadZ;
+              const len = 0.9 + rnd() * layer.lenMax;
+              pos.setXYZ((i * 2) + 0, x, y, z);
+              pos.setXYZ((i * 2) + 1, x, y - len, z);
+            } else {
+              pos.setY((i * 2) + 0, nextY);
+              pos.setY((i * 2) + 1, pos.getY((i * 2) + 1) - (spd * dt));
+            }
+          }
+          pos.needsUpdate = true;
+        }
+
+        bloom.strength = runtimeConfig.post.bloomStrength;
+        bloom.radius = runtimeConfig.post.bloomRadius;
 
         composer.render();
         raf = requestAnimationFrame(render);
@@ -1099,7 +1605,10 @@ export function OrionCityBackground({
         window.removeEventListener("pointermove", onMove);
         cancelAnimationFrame(raf);
 
+        (safeZonePass as any)?.material?.dispose?.();
+        (sharpenPass as any)?.material?.dispose?.();
         (composer as any).dispose?.();
+        composerRenderTarget.dispose();
         dracoLoader.dispose();
         ktx2Loader.dispose();
         renderer.dispose();
