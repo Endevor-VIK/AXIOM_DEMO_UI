@@ -106,3 +106,11 @@ export function updateUserPassword(userId: string, passwordHash: string): boolea
     .run(passwordHash, now, userId)
   return result.changes > 0
 }
+
+export function updateUserEmail(userId: string, email: string): boolean {
+  const now = Date.now()
+  const result = getDb()
+    .prepare('UPDATE users SET email = ?, updated_at = ? WHERE id = ?')
+    .run(email, now, userId)
+  return result.changes > 0
+}

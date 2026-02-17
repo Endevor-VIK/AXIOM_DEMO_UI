@@ -165,4 +165,93 @@ describe('Admin auth session isolation', () => {
     })
     expect(adminAfterAdminLogout.statusCode).toBe(401)
   })
+
+  it('supports credentials update and user history endpoints for admin panel', async () => {
+    if (!app) throw new Error('app_not_initialized')
+
+    const adminLogin = await app.inject({
+      method: 'POST',
+      url: '/api/admin-auth/login',
+      payload: { email: 'creator', password: 'axiom' },
+    })
+    expect(adminLogin.statusCode).toBe(200)
+    const adminCookie = extractCookie(adminLogin.headers['set-cookie'], 'ax_admin_session')
+    expect(adminCookie).toBeTruthy()
+
+    const createUser = await app.inject({
+      method: 'POST',
+      url: '/api/admin/users',
+      headers: { cookie: adminCookie },
+      payload: {
+        email: 'ops_user',
+        password: 'start123',
+        roles: ['user'],
+      },
+    })
+    expect(createUser.statusCode).toBe(200)
+    const createdPayload = createUser.json() as { user: { id: string; email: string } }
+    const targetUserId = createdPayload.user.id
+    expect(targetUserId).toBeTruthy()
+
+    const credentialsUpdate = await app.inject({
+      method: 'PATCH',
+      url: `/api/admin/users/${targetUserId}/credentials`,
+      headers: { cookie: adminCookie },
+      payload: {
+        email: 'ops_user_renamed',
+        password: 'changed456',
+      },
+    })
+    expect(credentialsUpdate.statusCode).toBe(200)
+    const updatedPayload = credentialsUpdate.json() as {
+      ok: boolean
+      emailChanged: boolean
+      passwordChanged: boolean
+      user: { id: string; email: string }
+    }
+    expect(updatedPayload.ok).toBe(true)
+    expect(updatedPayload.emailChanged).toBe(true)
+    expect(updatedPayload.passwordChanged).toBe(true)
+    expect(updatedPayload.user.email).toBe('ops_user_renamed')
+
+    const oldLogin = await app.inject({
+      method: 'POST',
+      url: '/api/auth/login',
+      payload: { email: 'ops_user', password: 'start123' },
+    })
+    expect(oldLogin.statusCode).toBe(401)
+
+    const newLogin = await app.inject({
+      method: 'POST',
+      url: '/api/auth/login',
+      payload: { email: 'ops_user_renamed', password: 'changed456' },
+    })
+    expect(newLogin.statusCode).toBe(200)
+
+    const history = await app.inject({
+      method: 'GET',
+      url: `/api/admin/users/${targetUserId}/history?limit=120`,
+      headers: { cookie: adminCookie },
+    })
+    expect(history.statusCode).toBe(200)
+    const historyPayload = history.json() as {
+      sessions: Array<{ id: string; device: string; network: string; region: string }>
+      events: Array<{ eventType: string }>
+    }
+    expect(historyPayload.sessions.length).toBeGreaterThan(0)
+    expect(historyPayload.sessions[0]?.device).toBeTruthy()
+    expect(historyPayload.sessions[0]?.network).toBeTruthy()
+    expect(historyPayload.sessions[0]?.region).toBeTruthy()
+    expect(historyPayload.events.some((event) => event.eventType === 'user.credentials.update')).toBe(true)
+
+    const events = await app.inject({
+      method: 'GET',
+      url: '/api/admin/events?limit=100',
+      headers: { cookie: adminCookie },
+    })
+    expect(events.statusCode).toBe(200)
+    const eventsPayload = events.json() as { events: Array<{ scope: string; eventType: string }> }
+    expect(eventsPayload.events.some((event) => event.scope === 'api-console' && event.eventType === 'api.request')).toBe(true)
+    expect(eventsPayload.events.some((event) => event.eventType === 'user.credentials.update')).toBe(true)
+  })
 })

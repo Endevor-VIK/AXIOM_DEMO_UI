@@ -6,6 +6,40 @@ export type AdminUserRecord = {
   updatedAt: number
 }
 
+export type AdminAuditEventRecord = {
+  id: number
+  createdAt: number
+  actorUserId: string | null
+  subjectUserId: string | null
+  scope: string
+  eventType: string
+  status: string | null
+  message: string | null
+  ip: string | null
+  ua: string | null
+  device: string
+  region: string
+  network: string
+  payload: Record<string, unknown> | null
+}
+
+export type AdminSessionSnapshot = {
+  id: string
+  createdAt: number
+  expiresAt: number
+  revokedAt: number | null
+  ip: string | null
+  ua: string | null
+  device: string
+  region: string
+  network: string
+}
+
+export type AdminUserHistory = {
+  sessions: AdminSessionSnapshot[]
+  events: AdminAuditEventRecord[]
+}
+
 type AdminUsersResponse = {
   users: AdminUserRecord[]
 }
@@ -15,11 +49,23 @@ type AdminUserResponse = {
     id: string
     email: string
     roles: string[]
-  }
+  } | null
+  ok?: boolean
+  emailChanged?: boolean
+  passwordChanged?: boolean
 }
 
 type HealthResponse = {
   ok: boolean
+}
+
+type AdminEventsResponse = {
+  events: AdminAuditEventRecord[]
+}
+
+type AdminHistoryResponse = {
+  sessions: AdminSessionSnapshot[]
+  events: AdminAuditEventRecord[]
 }
 
 async function fetchAdminJson<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -71,6 +117,29 @@ export async function updateAdminUserRoles(userId: string, roles: string[]): Pro
   })
 }
 
+export async function updateAdminUserCredentials(input: {
+  userId: string
+  email?: string
+  password?: string
+}): Promise<{
+  user: { id: string; email: string; roles: string[] } | null
+  emailChanged: boolean
+  passwordChanged: boolean
+}> {
+  const payload = await fetchAdminJson<AdminUserResponse>(`/api/admin/users/${encodeURIComponent(input.userId)}/credentials`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      ...(input.email !== undefined ? { email: input.email } : {}),
+      ...(input.password !== undefined ? { password: input.password } : {}),
+    }),
+  })
+  return {
+    user: payload.user ?? null,
+    emailChanged: Boolean(payload.emailChanged),
+    passwordChanged: Boolean(payload.passwordChanged),
+  }
+}
+
 export async function deleteAdminUser(userId: string): Promise<void> {
   await fetchAdminJson<{ ok: boolean }>(`/api/admin/users/${encodeURIComponent(userId)}`, {
     method: 'DELETE',
@@ -79,4 +148,22 @@ export async function deleteAdminUser(userId: string): Promise<void> {
 
 export async function fetchAdminHealth(): Promise<HealthResponse> {
   return fetchAdminJson<HealthResponse>('/api/health', { method: 'GET' })
+}
+
+export async function listAdminEvents(limit = 80): Promise<AdminAuditEventRecord[]> {
+  const payload = await fetchAdminJson<AdminEventsResponse>(`/api/admin/events?limit=${encodeURIComponent(limit)}`, {
+    method: 'GET',
+  })
+  return payload.events
+}
+
+export async function fetchAdminUserHistory(userId: string, limit = 120): Promise<AdminUserHistory> {
+  const payload = await fetchAdminJson<AdminHistoryResponse>(
+    `/api/admin/users/${encodeURIComponent(userId)}/history?limit=${encodeURIComponent(limit)}`,
+    { method: 'GET' },
+  )
+  return {
+    sessions: payload.sessions,
+    events: payload.events,
+  }
 }

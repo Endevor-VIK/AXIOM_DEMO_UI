@@ -50,6 +50,20 @@ export function revokeSession(id: string): void {
     .run(Date.now(), id)
 }
 
+export function revokeSessionsByUserId(userId: string): void {
+  getDb()
+    .prepare('UPDATE sessions SET revoked_at = ? WHERE user_id = ? AND revoked_at IS NULL')
+    .run(Date.now(), userId)
+}
+
+export function listSessionsByUserId(userId: string, limit = 60): SessionRecord[] {
+  const safeLimit = Math.min(Math.max(1, Math.floor(limit)), 200)
+  const rows = getDb()
+    .prepare('SELECT * FROM sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT ?')
+    .all(userId, safeLimit)
+  return (rows as SessionRecord[]) || []
+}
+
 export function isSessionValid(session: SessionRecord): boolean {
   if (session.revoked_at) return false
   if (session.expires_at <= Date.now()) return false

@@ -55,7 +55,9 @@
 
 .ax-admin-login input,
 .ax-admin-create input,
-.ax-admin-table input {
+.ax-admin-table input,
+.ax-admin-credentials input,
+.ax-admin-credentials select {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.06);
@@ -67,7 +69,9 @@
 
 .ax-admin-login input:focus,
 .ax-admin-create input:focus,
-.ax-admin-table input:focus {
+.ax-admin-table input:focus,
+.ax-admin-credentials input:focus,
+.ax-admin-credentials select:focus {
   outline: none;
   border-color: rgba(236, 76, 76, 0.9);
   box-shadow: 0 0 0 2px rgba(236, 76, 76, 0.26);
@@ -139,6 +143,12 @@
   font-size: 18px;
 }
 
+.ax-admin-card__sub {
+  margin: 14px 0 8px;
+  font-size: 14px;
+  color: rgba(240, 243, 255, 0.8);
+}
+
 .ax-admin-card__hint {
   margin: 10px 0 0;
   color: rgba(226, 230, 248, 0.72);
@@ -152,6 +162,16 @@
 }
 
 .ax-admin-create .ax-btn {
+  width: 100%;
+}
+
+.ax-admin-credentials {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ax-admin-credentials .ax-btn {
   width: 100%;
 }
 
@@ -198,9 +218,18 @@
   gap: 2px;
 }
 
+.ax-admin-history__row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+}
+
 .ax-admin-history li span:first-child {
   color: rgba(240, 243, 255, 0.7);
   font-size: 12px;
+}
+
+.ax-admin-history--console li {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .ax-admin-links {
@@ -215,6 +244,10 @@
   }
 
   .ax-admin-create {
+    grid-template-columns: 1fr;
+  }
+
+  .ax-admin-credentials {
     grid-template-columns: 1fr;
   }
 }

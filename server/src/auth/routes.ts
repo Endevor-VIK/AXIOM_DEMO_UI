@@ -3,6 +3,8 @@ import type { FastifyInstance } from 'fastify'
 import { config } from '../config'
 import { hashPassword, verifyPassword } from './password'
 import { createSession, getSession, isSessionValid, revokeSession } from './sessions'
+import { buildAuditContext } from '../audit/context'
+import { recordAuditEvent } from '../db/audit'
 import {
   addUserRole,
   createUser,
@@ -45,7 +47,15 @@ function toUserResponse(user: { id: string; email: string }, roles: string[]) {
 
 export async function registerAuthRoutes(app: FastifyInstance) {
   app.post('/register', async (request, reply) => {
+    const audit = buildAuditContext(request)
     if (!config.allowRegister) {
+      recordAuditEvent({
+        scope: 'site-auth',
+        eventType: 'register.blocked',
+        status: '403',
+        message: 'registration_disabled',
+        ...audit,
+      })
       reply.code(403).send({ error: 'registration_disabled' })
       return
     }
@@ -53,10 +63,26 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     const email = (body?.email || '').trim().toLowerCase()
     const password = body?.password || ''
     if (!email || !password) {
+      recordAuditEvent({
+        scope: 'site-auth',
+        eventType: 'register.failed',
+        status: '400',
+        message: 'missing_credentials',
+        ...audit,
+        payload: email ? { email } : null,
+      })
       reply.code(400).send({ error: 'missing_credentials' })
       return
     }
     if (findUserByEmail(email)) {
+      recordAuditEvent({
+        scope: 'site-auth',
+        eventType: 'register.failed',
+        status: '409',
+        message: 'user_exists',
+        ...audit,
+        payload: { email },
+      })
       reply.code(409).send({ error: 'user_exists' })
       return
     }
@@ -65,6 +91,16 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     addUserRole(user.id, 'user')
     const roles = getUserRoles(user.id)
     const session = createSession(user.id, request.ip, request.headers['user-agent'])
+    recordAuditEvent({
+      scope: 'site-auth',
+      eventType: 'register.success',
+      status: '200',
+      message: 'register_success',
+      ...audit,
+      actorUserId: user.id,
+      subjectUserId: user.id,
+      payload: { email, roles },
+    })
     reply
       .setCookie(config.cookieName, session.id, {
         httpOnly: true,
@@ -76,7 +112,15 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   })
 
   app.post('/login', async (request, reply) => {
+    const audit = buildAuditContext(request)
     if (!checkRateLimit(request.ip)) {
+      recordAuditEvent({
+        scope: 'site-auth',
+        eventType: 'login.blocked',
+        status: '429',
+        message: 'rate_limited',
+        ...audit,
+      })
       reply.code(429).send({ error: 'rate_limited' })
       return
     }
@@ -84,21 +128,56 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     const email = (body?.email || '').trim().toLowerCase()
     const password = body?.password || ''
     if (!email || !password) {
+      recordAuditEvent({
+        scope: 'site-auth',
+        eventType: 'login.failed',
+        status: '400',
+        message: 'missing_credentials',
+        ...audit,
+        payload: email ? { email } : null,
+      })
       reply.code(400).send({ error: 'missing_credentials' })
       return
     }
     const user = findUserByEmail(email)
     if (!user) {
+      recordAuditEvent({
+        scope: 'site-auth',
+        eventType: 'login.failed',
+        status: '401',
+        message: 'invalid_credentials',
+        ...audit,
+        payload: { email },
+      })
       reply.code(401).send({ error: 'invalid_credentials' })
       return
     }
     const ok = await verifyPassword(user.password_hash, password)
     if (!ok) {
+      recordAuditEvent({
+        scope: 'site-auth',
+        eventType: 'login.failed',
+        status: '401',
+        message: 'invalid_credentials',
+        ...audit,
+        subjectUserId: user.id,
+        payload: { email },
+      })
       reply.code(401).send({ error: 'invalid_credentials' })
       return
     }
     const roles = getUserRoles(user.id)
     const session = createSession(user.id, request.ip, request.headers['user-agent'])
+    recordAuditEvent({
+      scope: 'site-auth',
+      eventType: 'login.success',
+      status: '200',
+      message: 'login_success',
+      ...audit,
+      actorUserId: user.id,
+      subjectUserId: user.id,
+      payload: { email, roles },
+    })
     reply
       .setCookie(config.cookieName, session.id, {
         httpOnly: true,
@@ -110,10 +189,23 @@ export async function registerAuthRoutes(app: FastifyInstance) {
   })
 
   app.post('/logout', async (request, reply) => {
+    const audit = buildAuditContext(request)
     const sessionId = request.cookies?.[config.cookieName]
+    let actorUserId: string | null = null
     if (sessionId) {
+      const session = getSession(sessionId)
+      actorUserId = session?.user_id ?? null
       revokeSession(sessionId)
     }
+    recordAuditEvent({
+      scope: 'site-auth',
+      eventType: 'logout',
+      status: '200',
+      message: 'logout',
+      ...audit,
+      actorUserId,
+      subjectUserId: actorUserId,
+    })
     reply
       .clearCookie(config.cookieName, { path: '/' })
       .send({ ok: true })

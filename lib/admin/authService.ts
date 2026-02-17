@@ -105,6 +105,13 @@ export async function adminLogout(): Promise<Session> {
     // ignore transport errors during logout
   }
   cachedSession = { isAuthenticated: false, isLoading: false, user: null }
+  if (typeof window !== 'undefined') {
+    try {
+      window.sessionStorage.removeItem('ax_admin_session_v1')
+    } catch {
+      // ignore browser storage errors
+    }
+  }
   notify(cachedSession)
   return cachedSession
 }
