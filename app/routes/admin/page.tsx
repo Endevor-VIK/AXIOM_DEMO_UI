@@ -47,7 +47,7 @@ type CredentialsDraft = {
   password: string
 }
 
-type SectionKey =
+type WorkspaceSectionId =
   | 'users'
   | 'services'
   | 'console'
@@ -55,6 +55,18 @@ type SectionKey =
   | 'ops'
   | 'content'
   | 'commands'
+
+type WorkspaceTab = {
+  id: string
+  sectionId: WorkspaceSectionId
+  pinned: boolean
+}
+
+type WorkspacePane = {
+  id: string
+  tabs: WorkspaceTab[]
+  activeTabId: string | null
+}
 
 type StreamTabKey = 'axchat' | 'telemetry' | 'api' | 'errors'
 type StreamConnectionState = 'connecting' | 'connected' | 'reconnecting' | 'offline'
@@ -73,6 +85,24 @@ const EMPTY_HISTORY: AdminUserHistory = {
 }
 
 const SYSTEM_ROLES = new Set(['service', 'system', 'bot', 'scanner', 'agent'])
+const WORKSPACE_SECTION_TITLES: Record<WorkspaceSectionId, string> = {
+  users: 'Пользователи и роли',
+  services: 'Системные службы / сервисные аккаунты',
+  console: 'Live Console (API)',
+  userHistory: 'История пользователя',
+  ops: 'История операций (локально)',
+  content: 'Контент и сайт',
+  commands: 'Командная панель (URL справочник)',
+}
+const WORKSPACE_SECTION_ORDER: WorkspaceSectionId[] = [
+  'users',
+  'services',
+  'console',
+  'userHistory',
+  'ops',
+  'content',
+  'commands',
+]
 
 function parseRolesInput(value: string): string[] {
   const roles = value
@@ -174,31 +204,27 @@ function describeStreamConnection(state: StreamConnectionState): string {
   return 'OFFLINE'
 }
 
+function workspaceSectionTitle(sectionId: WorkspaceSectionId): string {
+  return WORKSPACE_SECTION_TITLES[sectionId]
+}
+
 function AccountTable(props: {
-  title: string
   users: AdminUserRecord[]
-  sectionKey: SectionKey
-  collapsed: boolean
   roleDrafts: Record<string, string>
   busyAction: boolean
   currentUserId: string | undefined
   emptyText: string
-  onToggle: (key: SectionKey) => void
   onRoleDraftChange: (userId: string, value: string) => void
   onSaveRoles: (userId: string) => void
   onDeleteUser: (user: AdminUserRecord) => void
   onSelectUser: (userId: string) => void
 }) {
   const {
-    title,
     users,
-    sectionKey,
-    collapsed,
     roleDrafts,
     busyAction,
     currentUserId,
     emptyText,
-    onToggle,
     onRoleDraftChange,
     onSaveRoles,
     onDeleteUser,
@@ -206,76 +232,66 @@ function AccountTable(props: {
   } = props
 
   return (
-    <article className='ax-admin-card'>
-      <div className='ax-admin-card__head'>
-        <h2>{title}</h2>
-        <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => onToggle(sectionKey)}>
-          {collapsed ? 'Развернуть' : 'Свернуть'}
-        </button>
-      </div>
-      {collapsed ? null : (
-        <div className='ax-admin-table-wrap'>
-          <table className='ax-admin-table'>
-            <thead>
-              <tr>
-                <th>Логин</th>
-                <th>Роли</th>
-                <th>Создан</th>
-                <th>Действия</th>
+    <div className='ax-admin-table-wrap'>
+      <table className='ax-admin-table'>
+        <thead>
+          <tr>
+            <th>Логин</th>
+            <th>Роли</th>
+            <th>Создан</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => {
+            const hasCreatorRole = user.roles.includes('creator')
+            const disableDelete = hasCreatorRole || user.id === currentUserId
+            return (
+              <tr key={user.id}>
+                <td>{user.email}</td>
+                <td>
+                  <input
+                    value={roleDrafts[user.id] ?? user.roles.join(', ')}
+                    onChange={(event) => onRoleDraftChange(user.id, event.target.value)}
+                  />
+                </td>
+                <td>{formatDateTime(user.createdAt)}</td>
+                <td className='ax-admin-table__actions'>
+                  <button
+                    type='button'
+                    className='ax-btn ghost'
+                    onClick={() => onSaveRoles(user.id)}
+                    disabled={busyAction}
+                  >
+                    Сохранить роли
+                  </button>
+                  <button
+                    type='button'
+                    className='ax-btn ghost'
+                    onClick={() => onSelectUser(user.id)}
+                  >
+                    История
+                  </button>
+                  <button
+                    type='button'
+                    className='ax-btn ghost'
+                    onClick={() => onDeleteUser(user)}
+                    disabled={busyAction || disableDelete}
+                  >
+                    Удалить
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => {
-                const hasCreatorRole = user.roles.includes('creator')
-                const disableDelete = hasCreatorRole || user.id === currentUserId
-                return (
-                  <tr key={user.id}>
-                    <td>{user.email}</td>
-                    <td>
-                      <input
-                        value={roleDrafts[user.id] ?? user.roles.join(', ')}
-                        onChange={(event) => onRoleDraftChange(user.id, event.target.value)}
-                      />
-                    </td>
-                    <td>{formatDateTime(user.createdAt)}</td>
-                    <td className='ax-admin-table__actions'>
-                      <button
-                        type='button'
-                        className='ax-btn ghost'
-                        onClick={() => onSaveRoles(user.id)}
-                        disabled={busyAction}
-                      >
-                        Сохранить роли
-                      </button>
-                      <button
-                        type='button'
-                        className='ax-btn ghost'
-                        onClick={() => onSelectUser(user.id)}
-                      >
-                        История
-                      </button>
-                      <button
-                        type='button'
-                        className='ax-btn ghost'
-                        onClick={() => onDeleteUser(user)}
-                        disabled={busyAction || disableDelete}
-                      >
-                        Удалить
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-              {!users.length ? (
-                <tr>
-                  <td colSpan={4}>{emptyText}</td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </article>
+            )
+          })}
+          {!users.length ? (
+            <tr>
+              <td colSpan={4}>{emptyText}</td>
+            </tr>
+          ) : null}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
@@ -391,15 +407,17 @@ export default function AdminPage() {
     api: [],
     errors: [],
   })
-  const [collapsedSections, setCollapsedSections] = useState<Record<SectionKey, boolean>>({
-    users: false,
-    services: true,
-    console: true,
-    userHistory: true,
-    ops: true,
-    content: true,
-    commands: true,
-  })
+  const [workspacePanes, setWorkspacePanes] = useState<WorkspacePane[]>([
+    {
+      id: 'pane-1',
+      tabs: [
+        { id: 'tab-1', sectionId: 'users', pinned: true },
+        { id: 'tab-2', sectionId: 'console', pinned: false },
+      ],
+      activeTabId: 'tab-1',
+    },
+  ])
+  const [activeWorkspacePaneId, setActiveWorkspacePaneId] = useState('pane-1')
 
   const [health, setHealth] = useState<HealthState>({
     status: 'loading',
@@ -411,6 +429,8 @@ export default function AdminPage() {
   const streamViewportRef = useRef<HTMLDivElement | null>(null)
   const streamReconnectTimerRef = useRef<number | null>(null)
   const streamReconnectAttemptRef = useRef(0)
+  const workspaceTabCounterRef = useRef(3)
+  const workspacePaneCounterRef = useRef(2)
 
   const pushOperation = useCallback((text: string) => {
     setOpsLog((prev) => {
@@ -430,9 +450,113 @@ export default function AdminPage() {
     })
   }, [])
 
-  const toggleSection = useCallback((key: SectionKey) => {
-    setCollapsedSections((prev) => ({ ...prev, [key]: !prev[key] }))
+  const createWorkspaceTab = useCallback((sectionId: WorkspaceSectionId, pinned = false): WorkspaceTab => {
+    const id = `tab-${workspaceTabCounterRef.current}`
+    workspaceTabCounterRef.current += 1
+    return { id, sectionId, pinned }
   }, [])
+
+  const openWorkspaceSection = useCallback((sectionId: WorkspaceSectionId, targetPaneId?: string) => {
+    const paneId = targetPaneId || activeWorkspacePaneId
+    setWorkspacePanes((prev) => prev.map((pane) => {
+      if (pane.id !== paneId) return pane
+      const existing = pane.tabs.find((tab) => tab.sectionId === sectionId)
+      if (existing) {
+        return { ...pane, activeTabId: existing.id }
+      }
+      const nextTab = createWorkspaceTab(sectionId)
+      return {
+        ...pane,
+        tabs: [...pane.tabs, nextTab],
+        activeTabId: nextTab.id,
+      }
+    }))
+    setActiveWorkspacePaneId(paneId)
+  }, [activeWorkspacePaneId, createWorkspaceTab])
+
+  const openWorkspaceSectionInNewPane = useCallback((sectionId: WorkspaceSectionId) => {
+    const paneId = `pane-${workspacePaneCounterRef.current}`
+    workspacePaneCounterRef.current += 1
+    const nextTab = createWorkspaceTab(sectionId)
+    setWorkspacePanes((prev) => [
+      ...prev,
+      {
+        id: paneId,
+        tabs: [nextTab],
+        activeTabId: nextTab.id,
+      },
+    ])
+    setActiveWorkspacePaneId(paneId)
+  }, [createWorkspaceTab])
+
+  const setWorkspaceActiveTab = useCallback((paneId: string, tabId: string) => {
+    setWorkspacePanes((prev) => prev.map((pane) => {
+      if (pane.id !== paneId) return pane
+      return {
+        ...pane,
+        activeTabId: tabId,
+      }
+    }))
+    setActiveWorkspacePaneId(paneId)
+  }, [])
+
+  const toggleWorkspaceTabPin = useCallback((paneId: string, tabId: string) => {
+    setWorkspacePanes((prev) => prev.map((pane) => {
+      if (pane.id !== paneId) return pane
+      return {
+        ...pane,
+        tabs: pane.tabs.map((tab) => (tab.id === tabId ? { ...tab, pinned: !tab.pinned } : tab)),
+      }
+    }))
+  }, [])
+
+  const closeWorkspaceTab = useCallback((paneId: string, tabId: string) => {
+    setWorkspacePanes((prev) => prev.map((pane) => {
+      if (pane.id !== paneId) return pane
+      const targetTab = pane.tabs.find((tab) => tab.id === tabId)
+      if (!targetTab || targetTab.pinned) return pane
+      const nextTabs = pane.tabs.filter((tab) => tab.id !== tabId)
+      let nextActive = pane.activeTabId
+      if (pane.activeTabId === tabId) {
+        nextActive = nextTabs[nextTabs.length - 1]?.id || null
+      }
+      return {
+        ...pane,
+        tabs: nextTabs,
+        activeTabId: nextActive,
+      }
+    }))
+  }, [])
+
+  const splitWorkspacePane = useCallback((paneId: string) => {
+    const sourcePane = workspacePanes.find((pane) => pane.id === paneId)
+    if (!sourcePane) return
+    const activeTab = sourcePane.tabs.find((tab) => tab.id === sourcePane.activeTabId) || sourcePane.tabs[0] || null
+    const nextPaneId = `pane-${workspacePaneCounterRef.current}`
+    workspacePaneCounterRef.current += 1
+    const nextTab = activeTab ? createWorkspaceTab(activeTab.sectionId, activeTab.pinned) : null
+    setWorkspacePanes((prev) => [
+      ...prev,
+      {
+        id: nextPaneId,
+        tabs: nextTab ? [nextTab] : [],
+        activeTabId: nextTab?.id || null,
+      },
+    ])
+    setActiveWorkspacePaneId(nextPaneId)
+  }, [createWorkspaceTab, workspacePanes])
+
+  const closeWorkspacePane = useCallback((paneId: string) => {
+    setWorkspacePanes((prev) => {
+      if (prev.length <= 1) return prev
+      const next = prev.filter((pane) => pane.id !== paneId)
+      if (!next.length) return prev
+      if (activeWorkspacePaneId === paneId) {
+        setActiveWorkspacePaneId(next[0]!.id)
+      }
+      return next
+    })
+  }, [activeWorkspacePaneId])
 
   const userAccounts = useMemo(
     () => users.filter((user) => !isSystemAccount(user)),
@@ -452,6 +576,27 @@ export default function AdminPage() {
     () => users.find((user) => user.id === selectedUserId) ?? null,
     [selectedUserId, users],
   )
+
+  const activeWorkspacePane = useMemo(
+    () => workspacePanes.find((pane) => pane.id === activeWorkspacePaneId) || workspacePanes[0] || null,
+    [activeWorkspacePaneId, workspacePanes],
+  )
+
+  const openedWorkspaceSections = useMemo(() => {
+    const set = new Set<WorkspaceSectionId>()
+    for (const pane of workspacePanes) {
+      for (const tab of pane.tabs) {
+        set.add(tab.sectionId)
+      }
+    }
+    return set
+  }, [workspacePanes])
+
+  useEffect(() => {
+    if (!workspacePanes.length) return
+    if (workspacePanes.some((pane) => pane.id === activeWorkspacePaneId)) return
+    setActiveWorkspacePaneId(workspacePanes[0]!.id)
+  }, [activeWorkspacePaneId, workspacePanes])
 
   const fallbackLiveUsers = useMemo<AdminLiveUser[]>(() => {
     const now = Date.now()
@@ -843,6 +988,11 @@ export default function AdminPage() {
     setCredentialsSelectOpen(false)
   }
 
+  function onSelectUserForHistory(userId: string) {
+    setSelectedUserId(userId)
+    openWorkspaceSection('userHistory')
+  }
+
   function onReconnectLive() {
     if (streamReconnectTimerRef.current) {
       window.clearTimeout(streamReconnectTimerRef.current)
@@ -1010,6 +1160,149 @@ export default function AdminPage() {
         <span>{shortUserAgent(entry.ua)}</span>
       </li>
     ))
+  }
+
+  function renderWorkspaceSection(sectionId: WorkspaceSectionId) {
+    if (sectionId === 'users') {
+      return (
+        <>
+          <p className='ax-admin-card__hint'>
+            Управление ролями и доступом пользовательских аккаунтов.
+          </p>
+          <AccountTable
+            users={userAccounts}
+            roleDrafts={roleDrafts}
+            busyAction={busyAction}
+            currentUserId={session.user?.id}
+            emptyText={busyUsers ? 'Загрузка...' : 'Пользователей нет.'}
+            onRoleDraftChange={(userId, value) => setRoleDrafts((prev) => ({ ...prev, [userId]: value }))}
+            onSaveRoles={onSaveRoles}
+            onDeleteUser={onDeleteUser}
+            onSelectUser={onSelectUserForHistory}
+          />
+        </>
+      )
+    }
+
+    if (sectionId === 'services') {
+      return (
+        <>
+          <p className='ax-admin-card__hint'>
+            Сервисные и системные аккаунты. Выделены отдельно от пользовательского пула.
+          </p>
+          <AccountTable
+            users={systemAccounts}
+            roleDrafts={roleDrafts}
+            busyAction={busyAction}
+            currentUserId={session.user?.id}
+            emptyText='Сервисных аккаунтов нет.'
+            onRoleDraftChange={(userId, value) => setRoleDrafts((prev) => ({ ...prev, [userId]: value }))}
+            onSaveRoles={onSaveRoles}
+            onDeleteUser={onDeleteUser}
+            onSelectUser={onSelectUserForHistory}
+          />
+        </>
+      )
+    }
+
+    if (sectionId === 'console') {
+      return (
+        <>
+          <p>
+            Статус API: <b data-state={health.status}>{health.message}</b>
+          </p>
+          <p>Последняя проверка: {formatDateTime(health.checkedAt)}</p>
+          <p className='ax-admin-card__hint'>
+            Live polling активен (каждые 10 сек). Для потоков используй блок Live Streams (Pause/Reconnect).
+          </p>
+          <ul className='ax-admin-history ax-admin-history--console'>
+            {renderEvents(events)}
+          </ul>
+        </>
+      )
+    }
+
+    if (sectionId === 'userHistory') {
+      return (
+        <>
+          <p className='ax-admin-card__hint'>
+            Пользователь: <b>{selectedUser?.email || 'не выбран'}</b>
+          </p>
+          {historyLoading ? <p>Загрузка истории...</p> : null}
+          <h3 className='ax-admin-card__sub'>Сессии и подключения</h3>
+          <ul className='ax-admin-history'>
+            {renderSessions(history.sessions)}
+          </ul>
+          <h3 className='ax-admin-card__sub'>Действия</h3>
+          <ul className='ax-admin-history'>
+            {renderEvents(history.events)}
+          </ul>
+        </>
+      )
+    }
+
+    if (sectionId === 'ops') {
+      return (
+        <ul className='ax-admin-history'>
+          {opsLog.length ? (
+            opsLog.map((entry) => (
+              <li key={entry.id}>
+                <span>{formatDateTime(entry.at)}</span>
+                <span>{entry.text}</span>
+              </li>
+            ))
+          ) : (
+            <li>Операций пока нет.</li>
+          )}
+        </ul>
+      )
+    }
+
+    if (sectionId === 'content') {
+      return (
+        <div className='ax-admin-links'>
+          <Link to='/dashboard/content'>Открыть Content Hub</Link>
+          <Link to='/dashboard/news'>Открыть News</Link>
+          <Link to='/settings'>Открыть Settings</Link>
+        </div>
+      )
+    }
+
+    return (
+      <>
+        <p className='ax-admin-card__hint'>
+          Справочник параметров query string для UI. Формат: <code>?key=value</code> или
+          <code>&amp;key=value</code> при комбинировании.
+        </p>
+        <div className='ax-admin-table-wrap'>
+          <table className='ax-admin-table ax-admin-table--commands'>
+            <thead>
+              <tr>
+                <th>Команда</th>
+                <th>Где работает</th>
+                <th>Значения</th>
+                <th>Что делает</th>
+                <th>Пример</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ADMIN_URL_COMMANDS_REFERENCE.map((entry) => (
+                <tr key={entry.key}>
+                  <td className='ax-admin-command__key'>
+                    <code>?{entry.command}=...</code>
+                    {entry.status === 'legacy' ? <span className='ax-admin-command__badge'>legacy</span> : null}
+                  </td>
+                  <td>{entry.pages}</td>
+                  <td><code>{entry.values}</code></td>
+                  <td>{entry.description}</td>
+                  <td><code>{entry.example}</code></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    )
   }
 
   return (
@@ -1182,7 +1475,7 @@ export default function AdminPage() {
         </article>
       </section>
 
-      <section className='ax-admin__grid'>
+      <section className='ax-admin__ops-grid'>
         <article className='ax-admin-card'>
           <div className='ax-admin-card__head'>
             <h2>Новый аккаунт</h2>
@@ -1253,169 +1546,162 @@ export default function AdminPage() {
             </p>
           </>
         </article>
+      </section>
 
-        <AccountTable
-          title='Пользователи и роли'
-          sectionKey='users'
-          collapsed={collapsedSections.users}
-          users={userAccounts}
-          roleDrafts={roleDrafts}
-          busyAction={busyAction}
-          currentUserId={session.user?.id}
-          emptyText={busyUsers ? 'Загрузка...' : 'Пользователей нет.'}
-          onToggle={toggleSection}
-          onRoleDraftChange={(userId, value) => setRoleDrafts((prev) => ({ ...prev, [userId]: value }))}
-          onSaveRoles={onSaveRoles}
-          onDeleteUser={onDeleteUser}
-          onSelectUser={setSelectedUserId}
-        />
+      <section className='ax-admin-workbench'>
+        <aside className='ax-admin-workbench__sidebar'>
+          <div className='ax-admin-workbench__sidebar-head'>
+            <h2>Workspace</h2>
+            <span>{workspacePanes.length} pane(s)</span>
+          </div>
+          <ul className='ax-admin-workbench__sections'>
+            {WORKSPACE_SECTION_ORDER.map((sectionId) => {
+              const isActive = Boolean(activeWorkspacePane?.tabs.some((tab) => tab.sectionId === sectionId))
+              const isOpen = openedWorkspaceSections.has(sectionId)
+              return (
+                <li key={sectionId}>
+                  <button
+                    type='button'
+                    className={`ax-admin-workbench__section-btn${isActive ? ' is-active' : ''}`}
+                    onClick={() => openWorkspaceSection(sectionId)}
+                  >
+                    <span>{workspaceSectionTitle(sectionId)}</span>
+                    {isOpen ? <span className='ax-admin-workbench__section-tag'>OPEN</span> : null}
+                  </button>
+                  <button
+                    type='button'
+                    className='ax-btn ghost ax-btn--mini'
+                    onClick={() => openWorkspaceSectionInNewPane(sectionId)}
+                    title='Открыть в новой области'
+                  >
+                    +
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </aside>
 
-        <AccountTable
-          title='Системные службы / сервисные аккаунты'
-          sectionKey='services'
-          collapsed={collapsedSections.services}
-          users={systemAccounts}
-          roleDrafts={roleDrafts}
-          busyAction={busyAction}
-          currentUserId={session.user?.id}
-          emptyText='Сервисных аккаунтов нет.'
-          onToggle={toggleSection}
-          onRoleDraftChange={(userId, value) => setRoleDrafts((prev) => ({ ...prev, [userId]: value }))}
-          onSaveRoles={onSaveRoles}
-          onDeleteUser={onDeleteUser}
-          onSelectUser={setSelectedUserId}
-        />
-
-        <article className='ax-admin-card'>
-          <div className='ax-admin-card__head'>
-            <h2>Live Console (API)</h2>
-            <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => toggleSection('console')}>
-              {collapsedSections.console ? 'Развернуть' : 'Свернуть'}
+        <div className='ax-admin-workbench__workspace'>
+          <div className='ax-admin-workbench__toolbar'>
+            <p>
+              Активная область: <b>{activeWorkspacePane ? workspacePanes.findIndex((pane) => pane.id === activeWorkspacePane.id) + 1 : 1}</b>
+            </p>
+            <button
+              type='button'
+              className='ax-btn ghost ax-btn--mini'
+              onClick={() => {
+                if (!activeWorkspacePane) return
+                splitWorkspacePane(activeWorkspacePane.id)
+              }}
+            >
+              Split active
             </button>
           </div>
-          {collapsedSections.console ? null : (
-            <>
-              <p>
-                Статус API: <b data-state={health.status}>{health.message}</b>
-              </p>
-              <p>Последняя проверка: {formatDateTime(health.checkedAt)}</p>
-              <p className='ax-admin-card__hint'>
-                Live polling активен (каждые 10 сек). Для потоков используй блок Live Streams (Pause/Reconnect).
-              </p>
-              <ul className='ax-admin-history ax-admin-history--console'>
-                {renderEvents(events)}
-              </ul>
-            </>
-          )}
-        </article>
 
-        <article className='ax-admin-card'>
-          <div className='ax-admin-card__head'>
-            <h2>История пользователя</h2>
-            <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => toggleSection('userHistory')}>
-              {collapsedSections.userHistory ? 'Развернуть' : 'Свернуть'}
-            </button>
-          </div>
-          {collapsedSections.userHistory ? null : (
-            <>
-              <p className='ax-admin-card__hint'>
-                Пользователь: <b>{selectedUser?.email || 'не выбран'}</b>
-              </p>
-              {historyLoading ? <p>Загрузка истории...</p> : null}
-              <h3 className='ax-admin-card__sub'>Сессии и подключения</h3>
-              <ul className='ax-admin-history'>
-                {renderSessions(history.sessions)}
-              </ul>
-              <h3 className='ax-admin-card__sub'>Действия</h3>
-              <ul className='ax-admin-history'>
-                {renderEvents(history.events)}
-              </ul>
-            </>
-          )}
-        </article>
+          <div className='ax-admin-workspace-grid'>
+            {workspacePanes.map((pane, paneIndex) => {
+              const activeTab = pane.tabs.find((tab) => tab.id === pane.activeTabId) || pane.tabs[0] || null
+              return (
+                <article
+                  key={pane.id}
+                  className={`ax-admin-pane${pane.id === activeWorkspacePaneId ? ' is-active' : ''}`}
+                  onClick={() => setActiveWorkspacePaneId(pane.id)}
+                >
+                  <div className='ax-admin-pane__head'>
+                    <h3>Workspace {paneIndex + 1}</h3>
+                    <div className='ax-admin-pane__head-actions'>
+                      <button
+                        type='button'
+                        className='ax-btn ghost ax-btn--mini'
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          splitWorkspacePane(pane.id)
+                        }}
+                      >
+                        Split
+                      </button>
+                      <button
+                        type='button'
+                        className='ax-btn ghost ax-btn--mini'
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          closeWorkspacePane(pane.id)
+                        }}
+                        disabled={workspacePanes.length <= 1}
+                      >
+                        Close pane
+                      </button>
+                    </div>
+                  </div>
 
-        <article className='ax-admin-card'>
-          <div className='ax-admin-card__head'>
-            <h2>История операций (локально)</h2>
-            <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => toggleSection('ops')}>
-              {collapsedSections.ops ? 'Развернуть' : 'Свернуть'}
-            </button>
-          </div>
-          {collapsedSections.ops ? null : (
-            <ul className='ax-admin-history'>
-              {opsLog.length ? (
-                opsLog.map((entry) => (
-                  <li key={entry.id}>
-                    <span>{formatDateTime(entry.at)}</span>
-                    <span>{entry.text}</span>
-                  </li>
-                ))
-              ) : (
-                <li>Операций пока нет.</li>
-              )}
-            </ul>
-          )}
-        </article>
+                  <div className='ax-admin-pane__tabs'>
+                    {pane.tabs.length ? (
+                      pane.tabs.map((tab) => (
+                        <div key={tab.id} className={`ax-admin-pane-tab${activeTab?.id === tab.id ? ' is-active' : ''}`}>
+                          <button
+                            type='button'
+                            className='ax-admin-pane-tab__open'
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              setWorkspaceActiveTab(pane.id, tab.id)
+                            }}
+                          >
+                            {workspaceSectionTitle(tab.sectionId)}
+                          </button>
+                          <button
+                            type='button'
+                            className='ax-admin-pane-tab__pin'
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              toggleWorkspaceTabPin(pane.id, tab.id)
+                            }}
+                          >
+                            {tab.pinned ? 'Unpin' : 'Pin'}
+                          </button>
+                          <button
+                            type='button'
+                            className='ax-admin-pane-tab__close'
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              closeWorkspaceTab(pane.id, tab.id)
+                            }}
+                            disabled={tab.pinned}
+                            title={tab.pinned ? 'Сними pin чтобы закрыть вкладку' : 'Закрыть вкладку'}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className='ax-admin-card__hint'>Нет вкладок. Открой раздел слева.</p>
+                    )}
+                  </div>
 
-        <article className='ax-admin-card'>
-          <div className='ax-admin-card__head'>
-            <h2>Контент и сайт</h2>
-            <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => toggleSection('content')}>
-              {collapsedSections.content ? 'Развернуть' : 'Свернуть'}
-            </button>
+                  <div className='ax-admin-pane__body'>
+                    {activeTab ? (
+                      renderWorkspaceSection(activeTab.sectionId)
+                    ) : (
+                      <div className='ax-admin-pane__empty'>
+                        <p>В этой области пока ничего не открыто.</p>
+                        <button
+                          type='button'
+                          className='ax-btn ghost'
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            openWorkspaceSection('users', pane.id)
+                          }}
+                        >
+                          Открыть "Пользователи и роли"
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </article>
+              )
+            })}
           </div>
-          {collapsedSections.content ? null : (
-            <div className='ax-admin-links'>
-              <Link to='/dashboard/content'>Открыть Content Hub</Link>
-              <Link to='/dashboard/news'>Открыть News</Link>
-              <Link to='/settings'>Открыть Settings</Link>
-            </div>
-          )}
-        </article>
-
-        <article className='ax-admin-card'>
-          <div className='ax-admin-card__head'>
-            <h2>Командная панель (URL справочник)</h2>
-            <button type='button' className='ax-btn ghost ax-btn--mini' onClick={() => toggleSection('commands')}>
-              {collapsedSections.commands ? 'Развернуть' : 'Свернуть'}
-            </button>
-          </div>
-          {collapsedSections.commands ? null : (
-            <>
-              <p className='ax-admin-card__hint'>
-                Справочник параметров query string для UI. Формат: <code>?key=value</code> или
-                <code>&amp;key=value</code> при комбинировании.
-              </p>
-              <div className='ax-admin-table-wrap'>
-                <table className='ax-admin-table ax-admin-table--commands'>
-                  <thead>
-                    <tr>
-                      <th>Команда</th>
-                      <th>Где работает</th>
-                      <th>Значения</th>
-                      <th>Что делает</th>
-                      <th>Пример</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ADMIN_URL_COMMANDS_REFERENCE.map((entry) => (
-                      <tr key={entry.key}>
-                        <td className='ax-admin-command__key'>
-                          <code>?{entry.command}=...</code>
-                          {entry.status === 'legacy' ? <span className='ax-admin-command__badge'>legacy</span> : null}
-                        </td>
-                        <td>{entry.pages}</td>
-                        <td><code>{entry.values}</code></td>
-                        <td>{entry.description}</td>
-                        <td><code>{entry.example}</code></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-        </article>
+        </div>
       </section>
     </main>
   )

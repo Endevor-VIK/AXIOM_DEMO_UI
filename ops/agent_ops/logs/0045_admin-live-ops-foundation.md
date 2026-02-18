@@ -71,6 +71,13 @@ AXS_HEADER_META:
   - нативный `select` заменён на custom themed searchable picker (скролл/темная тема/метаданные createdAt),
   - default `Пользователи и роли` раскрыт для более быстрого операционного сценария.
   → Результат: OK
+- 2026-02-18T17:58:00+03:00 — Действие: Реализован workspace-режим для операторских разделов (по запросу CREATOR):
+  - левая панель разделов (section explorer) + открытие в активной/новой области,
+  - центральный workbench с tabbar, быстрым переключением, `pin/unpin`, `close tab`,
+  - split workspace на 2+ pane (`Split active`, `Split`, `Close pane`),
+  - в workspace перенесены секции: users/services/live-console/user-history/ops/content/commands,
+  - кнопка `История` в таблице пользователей теперь открывает вкладку `История пользователя`.
+  → Результат: OK
 
 ## Step C — Documentation
 
@@ -92,8 +99,14 @@ AXS_HEADER_META:
   - `npm run test:run -- tests/adminAuthIsolation.spec.ts tests/adminLiveOps.spec.ts` → PASS,
   - `npm run typecheck` → FAIL (только pre-existing ошибки в `components/login/orionLoginConfig.ts` и `server/src/axchat/indexer.ts`, без новых ошибок в admin live changeset).
   → Результат: PASS с известными ограничениями.
+- 2026-02-18T18:00:00+03:00 — Действие: Валидация workspace-рефактора:
+  - `npm run build` → PASS,
+  - `npm run test:run -- tests/adminAuthIsolation.spec.ts tests/adminLiveOps.spec.ts` → PASS,
+  - `npm run typecheck` → FAIL только из-за pre-existing в `components/login/OrionCityBackground.tsx`, `components/login/orionLoginConfig.ts`, `server/src/axchat/indexer.ts` (вне текущего scope).
+  → Результат: PASS с известными ограничениями.
 
 ## Step E — Git
 
 - 2026-02-18T16:48:40+03:00 — Действие: Подготовлен atomic commit (только файлы 0062; без чужих `components/login/*` изменений). → Результат: OK
 - 2026-02-18T17:23:00+03:00 — Действие: Выполнен commit `fbaa03e` (`feat(admin): build live ops foundation for console`) с backend live-ops foundation + UX-fixes admin live панели. → Результат: OK
+- 2026-02-18T18:02:00+03:00 — Действие: Подготовлен второй atomic commit (workspace UX для admin sections, только свои файлы). → Результат: IN_PROGRESS
