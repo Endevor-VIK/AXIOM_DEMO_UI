@@ -52,6 +52,34 @@ export function resolveNetwork(ip: string | null): string {
   return 'public'
 }
 
+export function maskIp(ip: string | null): string | null {
+  if (!ip) return null
+  const normalized = ip.trim()
+  if (!normalized) return null
+  if (normalized === '::1' || normalized === '127.0.0.1') return normalized
+
+  const v4 = normalized.split('.')
+  if (v4.length === 4 && v4.every((part) => /^\\d+$/.test(part))) {
+    return `${v4[0]}.${v4[1]}.x.x`
+  }
+
+  if (normalized.includes(':')) {
+    const chunks = normalized.split(':').filter(Boolean)
+    if (!chunks.length) return 'xxxx::'
+    return `${chunks.slice(0, 2).join(':')}::`
+  }
+
+  return normalized
+}
+
+export function maskUserAgent(ua: string | null): string | null {
+  if (!ua) return null
+  const trimmed = ua.trim()
+  if (!trimmed) return null
+  if (trimmed.length <= 160) return trimmed
+  return `${trimmed.slice(0, 160)}…`
+}
+
 export function resolveDevice(ua: string | null): string {
   if (!ua) return 'unknown'
   const normalized = ua.toLowerCase()
@@ -65,13 +93,15 @@ export function resolveDevice(ua: string | null): string {
 }
 
 export function buildAuditContext(request: FastifyRequest): AuditContext {
-  const ip = readForwardedIp(request.headers) || request.ip || null
-  const ua = takeFirst(request.headers['user-agent']).trim() || null
+  const rawIp = readForwardedIp(request.headers) || request.ip || null
+  const rawUa = takeFirst(request.headers['user-agent']).trim() || null
+  const ip = maskIp(rawIp)
+  const ua = maskUserAgent(rawUa)
   return {
     ip,
     ua,
     device: resolveDevice(ua),
     region: resolveRegion(request.headers),
-    network: resolveNetwork(ip),
+    network: resolveNetwork(rawIp),
   }
 }

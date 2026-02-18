@@ -40,6 +40,67 @@ export type AdminUserHistory = {
   events: AdminAuditEventRecord[]
 }
 
+export type AdminPresenceStatus = 'ONLINE' | 'IDLE' | 'OFFLINE'
+
+export type AdminLiveUser = {
+  userId: string
+  login: string
+  role: string
+  status: AdminPresenceStatus
+  lastSeen: number
+  path: string
+  visible: boolean
+  idleMs: number
+  ipMasked: string | null
+  ua: string | null
+  sessions: number
+  currentContentId: string | null
+  currentContentType: string | null
+  readProgress: number | null
+  dwellMs: number | null
+}
+
+export type AdminLiveSnapshot = {
+  serverTime: number
+  usersOnline: AdminLiveUser[]
+  counters: {
+    online: number
+    idle: number
+    offline: number
+    errorsLast5m: number
+    axchatLast5m: number
+  }
+  streamsMeta?: {
+    sse?: {
+      connectedCount?: number
+    }
+  }
+}
+
+export type AdminTimelineEvent = {
+  id: string
+  ts: number
+  userId: string
+  sessionId: string
+  requestId: string
+  correlationId: string
+  type: string
+  payload: Record<string, unknown>
+}
+
+export type AdminAxchatEntry = {
+  ts: number
+  userId: string
+  login: string | null
+  sessionId: string | null
+  conversationId: string | null
+  requestId: string | null
+  type: 'axchat.message' | 'axchat.error'
+  role: 'user' | 'ai' | 'system'
+  text: string
+  meta?: Record<string, unknown>
+}
+
 type AdminUsersResponse = {
   users: AdminUserRecord[]
 }
@@ -68,6 +129,18 @@ type AdminHistoryResponse = {
   events: AdminAuditEventRecord[]
 }
 
+type AdminLiveSnapshotResponse = AdminLiveSnapshot
+
+type AdminTimelineResponse = {
+  items: AdminTimelineEvent[]
+  nextCursor: string | null
+}
+
+type AdminAxchatResponse = {
+  items: AdminAxchatEntry[]
+  nextCursor: string | null
+}
+
 async function fetchAdminJson<T>(path: string, options: RequestInit = {}): Promise<T> {
   const hasBody = options.body !== undefined && options.body !== null
   const response = await fetch(path, {
@@ -94,7 +167,10 @@ async function fetchAdminJson<T>(path: string, options: RequestInit = {}): Promi
     } catch {
       // ignore JSON parse failure
     }
-    throw new Error(message)
+    const error = new Error(message) as Error & { status?: number; code?: string }
+    error.status = response.status
+    error.code = message
+    throw error
   }
 
   return response.json() as Promise<T>
@@ -172,4 +248,56 @@ export async function fetchAdminUserHistory(userId: string, limit = 120): Promis
     sessions: payload.sessions,
     events: payload.events,
   }
+}
+
+export async function fetchAdminSnapshot(): Promise<AdminLiveSnapshot> {
+  return fetchAdminJson<AdminLiveSnapshotResponse>('/api/admin/snapshot', { method: 'GET' })
+}
+
+export async function fetchAdminUserTimeline(input: {
+  userId: string
+  limit?: number
+  types?: string[]
+  cursor?: string
+}): Promise<AdminTimelineResponse> {
+  const params = new URLSearchParams()
+  if (input.limit) params.set('limit', String(input.limit))
+  if (input.types?.length) params.set('types', input.types.join(','))
+  if (input.cursor) params.set('cursor', input.cursor)
+
+  const suffix = params.toString() ? `?${params.toString()}` : ''
+  return fetchAdminJson<AdminTimelineResponse>(
+    `/api/admin/users/${encodeURIComponent(input.userId)}/timeline${suffix}`,
+    { method: 'GET' },
+  )
+}
+
+export async function fetchAdminUserAxchat(input: {
+  userId: string
+  limit?: number
+  from?: number
+  to?: number
+  q?: string
+  cursor?: string
+}): Promise<AdminAxchatResponse> {
+  const params = new URLSearchParams()
+  if (input.limit) params.set('limit', String(input.limit))
+  if (input.from) params.set('from', String(input.from))
+  if (input.to) params.set('to', String(input.to))
+  if (input.q) params.set('q', input.q)
+  if (input.cursor) params.set('cursor', input.cursor)
+  const suffix = params.toString() ? `?${params.toString()}` : ''
+
+  return fetchAdminJson<AdminAxchatResponse>(
+    `/api/admin/users/${encodeURIComponent(input.userId)}/axchat${suffix}`,
+    { method: 'GET' },
+  )
+}
+
+export function createAdminStream(input: { userId?: string; types?: string[] } = {}) {
+  const params = new URLSearchParams()
+  if (input.userId) params.set('userId', input.userId)
+  if (input.types?.length) params.set('types', input.types.join(','))
+  const suffix = params.toString() ? `?${params.toString()}` : ''
+  return new EventSource(`/api/admin/stream${suffix}`, { withCredentials: true })
 }

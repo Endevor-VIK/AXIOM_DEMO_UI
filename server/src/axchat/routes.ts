@@ -1,6 +1,10 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify'
 import { requireAnyRole, requireAuth, type AuthedUser } from '../auth/guards'
+import { buildAuditContext } from '../audit/context'
+import { publishAdminStream } from '../admin/streamHub'
 import { config } from '../config'
+import { writeAxchatLog } from '../logging/jsonlStore'
+import { ingestAxchatActivity } from '../telemetry/sessionRegistry'
 import {
   buildAxchatIndex,
   readAxchatFile,
@@ -351,12 +355,14 @@ function buildReindexReply(scope: AxchatScope) {
 
 function mapRefsForScope(refs: AxchatRef[], scope: AxchatScope): AxchatRef[] {
   if (scope.revealPaths) return refs
-  return refs.map((ref, index) => ({
-    ...ref,
-    path: `Публичная карточка #${index + 1}`,
-    route: '',
-    anchor: undefined,
-  }))
+  return refs.map((ref, index) => {
+    const { anchor: _anchor, ...rest } = ref
+    return {
+      ...rest,
+      path: `Публичная карточка #${index + 1}`,
+      route: '',
+    }
+  })
 }
 
 function maybeHeartbeatLine() {
@@ -536,19 +542,138 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
         reply.code(403).send({ error: 'axchat_disabled' })
         return
       }
+      const start = Date.now()
       const body = request.body as {
         message?: string
         mode?: 'qa' | 'search'
         history?: Array<{ role?: string; content?: string }>
+        conversationId?: string
+        path?: string
       }
+      const authUser = getAuthUser(request)
+      if (!authUser) {
+        reply.code(401).send({ error: 'unauthorized' })
+        return
+      }
+      const scope = resolveScope(authUser)
+      const sessionId = request.cookies?.[config.cookieName] || 'unknown'
+      const requestId = String(request.id || '')
+      const conversationId = sanitizeMessage(body?.conversationId) || sessionId
+      const clientPath = sanitizeMessage(body?.path) || sanitizeMessage(String(request.headers.referer || '')) || ''
+      const auditContext = buildAuditContext(request)
+
+      const logAxchat = (input: {
+        type: 'axchat.message' | 'axchat.error'
+        role: 'user' | 'ai' | 'system'
+        text: string
+        meta?: Record<string, unknown>
+      }) => {
+        const tsServer = Date.now()
+        const text = (input.text || '').trim().slice(0, 4000)
+        const meta = {
+          ...input.meta,
+          path: clientPath || undefined,
+          ipMasked: auditContext.ip,
+          ua: auditContext.ua,
+        }
+        writeAxchatLog(authUser.id, {
+          ts: tsServer,
+          userId: authUser.id,
+          login: authUser.email,
+          sessionId,
+          conversationId,
+          requestId,
+          type: input.type,
+          role: input.role,
+          text,
+          meta,
+        }, tsServer)
+        ingestAxchatActivity({
+          userId: authUser.id,
+          sessionId,
+          requestId,
+          conversationId,
+          role: input.role,
+          type: input.type,
+          text,
+          tsServer,
+        })
+        publishAdminStream('axchat.log', {
+          ts: tsServer,
+          userId: authUser.id,
+          sessionId,
+          requestId,
+          conversationId,
+          type: input.type,
+          role: input.role,
+          text,
+          meta,
+        })
+        if (input.type === 'axchat.error') {
+          publishAdminStream('error', {
+            ts: tsServer,
+            source: 'axchat',
+            level: 'error',
+            userId: authUser.id,
+            sessionId,
+            requestId,
+            message: text,
+          })
+        }
+      }
+
+      const sendQueryError = (
+        statusCode: number,
+        error: string,
+        extra: Record<string, unknown> = {},
+      ) => {
+        logAxchat({
+          type: 'axchat.error',
+          role: 'system',
+          text: error,
+          meta: {
+            status: statusCode,
+            latencyMs: Date.now() - start,
+            ...extra,
+          },
+        })
+        reply.code(statusCode).send({ error, ...extra })
+      }
+
+      const sendQueryPayload = (payload: {
+        answer_markdown: string
+        refs: AxchatRef[]
+        notes?: Record<string, unknown>
+      }) => {
+        logAxchat({
+          type: 'axchat.message',
+          role: 'ai',
+          text: payload.answer_markdown || '',
+          meta: {
+            status: 'ok',
+            latencyMs: Date.now() - start,
+            model: config.axchatModel,
+            ...(payload.notes || {}),
+          },
+        })
+        reply.send(payload)
+      }
+
       const message = sanitizeMessage(body?.message)
       if (!message) {
-        reply.code(400).send({ error: 'invalid_message' })
+        sendQueryError(400, 'invalid_message')
         return
       }
 
-      const start = Date.now()
-      const scope = resolveScope(getAuthUser(request))
+      logAxchat({
+        type: 'axchat.message',
+        role: 'user',
+        text: message,
+        meta: {
+          status: 'received',
+          model: config.axchatModel,
+        },
+      })
 
       const command = parseCommand(message)
       if (command) {
@@ -570,7 +695,7 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
                   : command === '/reindex'
                     ? buildReindexReply(scope)
                     : buildScopeReply(scope)
-        reply.send({
+        sendQueryPayload({
           answer_markdown: answer,
           refs: [],
           notes: { latency_ms: Date.now() - start, model: config.axchatModel, scope: scope.role },
@@ -579,7 +704,7 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
       }
 
       if (isSmallTalk(message)) {
-        reply.send({
+        sendQueryPayload({
           answer_markdown: appendHeartbeatLine(smallTalkReply()),
           refs: [],
           notes: { latency_ms: Date.now() - start, model: config.axchatModel, scope: scope.role },
@@ -589,7 +714,7 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
 
       const mode = resolveMode(body?.mode, message)
       if (mode === 'qa' && isBroadQuestion(message)) {
-        reply.send({
+        sendQueryPayload({
           answer_markdown:
             'Уточни цель: тебе нужен краткий факт (QA) или обзор с подборкой материалов (SEARCH)?',
           refs: [],
@@ -616,7 +741,7 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
       const safeRefs = mapRefsForScope(refs, scope)
 
       if (mode === 'search') {
-        reply.send({
+        sendQueryPayload({
           answer_markdown: withNextStep(
             'Поиск завершён. Отобраны источники из текущего индекса.',
             'открой нужную карточку в Sources или уточни формулировку запроса',
@@ -641,7 +766,7 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
                 allowedSources: scope.allowedSources,
               })
             : []
-        reply.send({
+        sendQueryPayload({
           answer_markdown: withNextStep(
             'В текущем индексе нет данных по этому запросу.\nМогу: (1) уточнить формулировку, (2) показать близкие материалы, (3) предложить Reindex, если ты добавлял файлы.',
             scope.canReindex
@@ -672,18 +797,17 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
         const tags = await fetchOllamaTags()
         const available = extractModelNames(tags)
         if (!tags) {
-          reply.code(503).send({ error: 'ollama_offline' })
+          sendQueryError(503, 'ollama_offline')
           return
         }
         if (!available.includes(config.axchatModel)) {
-          reply.code(409).send({
-            error: 'model_missing',
+          sendQueryError(409, 'model_missing', {
             model: config.axchatModel,
             available: available.slice(0, 12),
           })
           return
         }
-        reply.code(503).send({ error: 'model_offline' })
+        sendQueryError(503, 'model_offline')
         return
       }
       if (!isLikelyRussian(answer)) {
@@ -693,7 +817,7 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
       answer = withNextStep(answer, 'если нужен широкий срез, переключи режим на SEARCH')
       answer = appendHeartbeatLine(answer)
 
-      reply.send({
+      sendQueryPayload({
         answer_markdown: answer,
         refs: safeRefs,
         notes: {
@@ -758,7 +882,7 @@ export async function registerAxchatRoutes(app: FastifyInstance) {
         reply.code(403).send({ error: 'forbidden' })
         return
       }
-      const topLevel = safe.split('/')[0]
+      const topLevel = safe.split('/')[0] || ''
       if (!scope.allowedSources.includes(topLevel)) {
         reply.code(403).send({ error: 'forbidden' })
         return

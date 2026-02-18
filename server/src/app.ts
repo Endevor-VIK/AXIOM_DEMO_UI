@@ -9,7 +9,11 @@ import { config } from './config'
 import { registerAuthRoutes } from './auth/routes'
 import { registerAdminAuthRoutes } from './admin/authRoutes'
 import { registerAdminRoutes } from './admin/routes'
+import { registerAdminLiveRoutes } from './admin/liveRoutes'
+import { publishAdminStream } from './admin/streamHub'
 import { registerAxchatRoutes } from './axchat/routes'
+import { writeAdminAuditLog, writeApiLog } from './logging/jsonlStore'
+import { registerTelemetryRoutes } from './telemetry/routes'
 import { getDb } from './db/db'
 import { seedUsers } from './db/seed'
 
@@ -18,6 +22,19 @@ function shouldCaptureApiRequest(url: string): boolean {
   if (url.startsWith('/api/health')) return false
   if (url.startsWith('/api/admin/events')) return false
   if (/^\/api\/admin\/users\/[^/]+\/history/.test(url)) return false
+  if (url.startsWith('/api/admin/stream')) return false
+  if (url.startsWith('/api/admin/snapshot')) return false
+  if (/^\/api\/admin\/users\/[^/]+\/timeline/.test(url)) return false
+  if (/^\/api\/admin\/users\/[^/]+\/axchat/.test(url)) return false
+  if (url.startsWith('/api/admin/logs/')) return false
+  return true
+}
+
+function shouldCaptureAdminRequest(url: string): boolean {
+  if (!url.startsWith('/api/admin')) return false
+  if (url.startsWith('/api/admin/stream')) return false
+  if (url.startsWith('/api/admin/snapshot')) return false
+  if (url.startsWith('/api/admin/events')) return false
   return true
 }
 
@@ -40,22 +57,76 @@ export async function buildApp() {
   }, { prefix: '/api/admin' })
 
   app.register(async (instance) => {
+    await registerAdminLiveRoutes(instance)
+  }, { prefix: '/api/admin' })
+
+  app.register(async (instance) => {
+    await registerTelemetryRoutes(instance)
+  }, { prefix: '/api/telemetry' })
+
+  app.register(async (instance) => {
     await registerAxchatRoutes(instance)
   }, { prefix: '/api/axchat' })
 
   app.addHook('onResponse', async (request, reply) => {
+    const requestId = String(request.id || '')
+    const correlationHeader = request.headers['x-correlation-id']
+    const correlationId = typeof correlationHeader === 'string' && correlationHeader.trim()
+      ? correlationHeader.trim()
+      : requestId
+    const auditContext = buildAuditContext(request)
+    const authUser = (request as any).authUser as { id?: string; email?: string } | undefined
+    const basePayload = {
+      ts: Date.now(),
+      requestId,
+      correlationId,
+      method: request.method,
+      url: request.url,
+      statusCode: reply.statusCode,
+      userId: authUser?.id || null,
+      login: authUser?.email || null,
+      ipMasked: auditContext.ip,
+    }
+
+    if (shouldCaptureApiRequest(request.url)) {
+      writeApiLog(basePayload)
+      publishAdminStream('api.log', {
+        ...basePayload,
+        status: String(reply.statusCode),
+      })
+      if (reply.statusCode >= 400) {
+        publishAdminStream('error', {
+          ...basePayload,
+          source: 'api',
+          level: 'error',
+        })
+      }
+    }
+
+    if (shouldCaptureAdminRequest(request.url)) {
+      writeAdminAuditLog({
+        ...basePayload,
+        scope: 'admin.request',
+      })
+    }
+
     if (!shouldCaptureApiRequest(request.url)) return
     try {
-      const authUser = (request as any).authUser as { id?: string } | undefined
       recordAuditEvent({
         scope: 'api-console',
         eventType: 'api.request',
         status: String(reply.statusCode),
         message: `${request.method} ${request.url}`,
-        ...buildAuditContext(request),
+        ...auditContext,
         actorUserId: authUser?.id ?? null,
         subjectUserId: authUser?.id ?? null,
-        payload: { method: request.method, url: request.url, statusCode: reply.statusCode },
+        payload: {
+          method: request.method,
+          url: request.url,
+          statusCode: reply.statusCode,
+          requestId,
+          correlationId,
+        },
       })
     } catch {
       // ignore audit hook failures to avoid affecting primary request flow

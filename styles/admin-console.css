@@ -98,6 +98,15 @@
   padding: 10px 12px;
 }
 
+.ax-admin__info {
+  border: 1px solid rgba(255, 190, 118, 0.4);
+  background: rgba(255, 190, 118, 0.1);
+  color: rgba(255, 230, 184, 0.95);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+
 .ax-admin-login__links {
   margin-top: 16px;
   display: flex;
@@ -141,6 +150,90 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   margin-top: 12px;
+}
+
+.ax-admin-live {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 14px;
+  margin-top: 12px;
+  margin-bottom: 14px;
+}
+
+.ax-admin-live__col {
+  min-height: 280px;
+}
+
+.ax-admin-live__search {
+  margin: 10px 0;
+}
+
+.ax-admin-live-users {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  max-height: 340px;
+  overflow: auto;
+}
+
+.ax-admin-live-user {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  padding: 8px 10px;
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ax-admin-live-user.is-active {
+  border-color: rgba(236, 76, 76, 0.8);
+  box-shadow: 0 0 0 1px rgba(236, 76, 76, 0.25);
+}
+
+.ax-admin-live-user span:last-child {
+  color: rgba(240, 243, 255, 0.72);
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.ax-admin-live__status {
+  display: inline-flex;
+  border: 1px solid rgba(255, 120, 120, 0.42);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 177, 177, 0.92);
+}
+
+.ax-admin-live-tabs,
+.ax-admin-live-stream-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.ax-admin-live-stream {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 8px;
+  max-height: 320px;
+  overflow: auto;
+  background: rgba(7, 8, 13, 0.7);
+}
+
+.ax-admin-history--compact {
+  max-height: 260px;
+  overflow: auto;
+  padding-right: 4px;
 }
 
 .ax-admin-card {
@@ -197,8 +290,97 @@
 
 .ax-admin-credentials {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
+}
+
+.ax-admin-user-select {
+  position: relative;
+}
+
+.ax-admin-user-select__trigger {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+  font: inherit;
+}
+
+.ax-admin-user-select__trigger span:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ax-admin-user-select__trigger.is-empty {
+  color: rgba(240, 243, 255, 0.7);
+}
+
+.ax-admin-user-select__trigger:focus-visible,
+.ax-admin-user-select__trigger.is-open {
+  outline: none;
+  border-color: rgba(236, 76, 76, 0.9);
+  box-shadow: 0 0 0 2px rgba(236, 76, 76, 0.26);
+}
+
+.ax-admin-user-select__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  border: 1px solid rgba(236, 76, 76, 0.45);
+  border-radius: 10px;
+  background: rgba(10, 12, 20, 0.98);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  max-height: 260px;
+  overflow: auto;
+}
+
+.ax-admin-user-select__option {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #fff;
+  padding: 10px 12px;
+  text-align: left;
+  display: grid;
+  gap: 3px;
+  font: inherit;
+}
+
+.ax-admin-user-select__option:hover,
+.ax-admin-user-select__option:focus-visible {
+  background: rgba(236, 76, 76, 0.14);
+  outline: none;
+}
+
+.ax-admin-user-select__option.is-active {
+  background: rgba(236, 76, 76, 0.2);
+}
+
+.ax-admin-user-select__option:last-child {
+  border-bottom: none;
+}
+
+.ax-admin-user-select__meta,
+.ax-admin-user-select__empty {
+  color: rgba(240, 243, 255, 0.7);
+  font-size: 12px;
+}
+
+.ax-admin-user-select__empty {
+  margin: 0;
+  padding: 10px 12px;
 }
 
 .ax-admin-credentials .ax-btn {
@@ -294,6 +476,10 @@
 }
 
 @media (max-width: 1024px) {
+  .ax-admin-live {
+    grid-template-columns: 1fr;
+  }
+
   .ax-admin__grid {
     grid-template-columns: 1fr;
   }

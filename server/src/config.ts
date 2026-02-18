@@ -1,6 +1,11 @@
 import path from 'node:path'
 
 const truthy = (value?: string) => value === '1' || value === 'true' || value === 'on'
+const positiveNumber = (value: string | undefined, fallback: number) => {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback
+  return parsed
+}
 const csv = (value?: string) =>
   (value || '')
     .split(',')
@@ -64,6 +69,9 @@ export const config = {
   axchatTopK: Number(process.env.AXCHAT_TOP_K || 4),
   axchatChunkSize: Number(process.env.AXCHAT_CHUNK_SIZE || 1000),
   axchatChunkOverlap: Number(process.env.AXCHAT_CHUNK_OVERLAP || 120),
+  adminPresenceOnlineMs: positiveNumber(process.env.AX_ADMIN_PRESENCE_ONLINE_MS, 15_000),
+  adminPresenceIdleMs: positiveNumber(process.env.AX_ADMIN_PRESENCE_IDLE_MS, 60_000),
+  adminPresenceOfflineMs: positiveNumber(process.env.AX_ADMIN_PRESENCE_OFFLINE_MS, 90_000),
 }
 
 export const SESSION_TTL_MS = config.sessionTtlDays * 24 * 60 * 60 * 1000

@@ -8,6 +8,7 @@ import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import HeadlinesTicker from '../../components/news/HeadlinesTicker'
 import { useNewsManifest } from '../../lib/useNewsManifest'
 import StatusLine from '@/components/StatusLine'
+import TelemetryBridge from '@/components/TelemetryBridge'
 import UserMenuDropdown from '@/components/UserMenuDropdown'
 import { logout } from '@/lib/identity/authService'
 import { resolvePrimaryRole } from '@/lib/identity/roles'
@@ -106,6 +107,7 @@ export default function Layout() {
 
   return (
     <div className={`ax-page${isAxchatRoute ? ' ax-page--axchat' : ''}`}>
+      <TelemetryBridge />
       <header className='ax-header ax-topbar'>
         <div className='ax-container'>
           <div className='ax-topbar__inner'>
