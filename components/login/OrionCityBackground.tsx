@@ -24,7 +24,14 @@ type BuildingAsset = {
 };
 
 const BUILDING_USE_SET2 = new Set(["building1.glb", "building2.glb", "building5.glb"]);
-const BUILDING_USE_ORIGINAL = new Set<string>();
+const BUILDING_USE_ORIGINAL = new Set<string>([
+  "building3.glb",
+  "building6.glb",
+  "building7.glb",
+  "building8.glb",
+  "building9.glb",
+  "building10.glb",
+]);
 
 const CUSTOM_BUILDING_SPECS: BuildingSpec[] = [
   {
@@ -180,8 +187,8 @@ function createRadialFogTexture(THREE: typeof import("three")) {
 }
 
 function createBillboardTexture(THREE: typeof import("three"), idx: number, rnd: () => number) {
-  const width = 1024;
-  const height = 512;
+  const width = 768;
+  const height = 1536;
   const c = document.createElement("canvas");
   c.width = width;
   c.height = height;
@@ -189,69 +196,121 @@ function createBillboardTexture(THREE: typeof import("three"), idx: number, rnd:
   if (!g) return null;
 
   const colorSets = [
-    ["#58f6ff", "#0f2a45", "#ff4e7a"],
-    ["#7dffd6", "#1d2f22", "#ffb347"],
-    ["#79c7ff", "#13233d", "#ff6f91"],
-    ["#60ffea", "#1d1542", "#ffc857"],
-    ["#8affff", "#1a2636", "#ff4d6d"],
-    ["#8dfcc9", "#132b2e", "#ffd166"],
+    ["#66f6ff", "#091425", "#ff5b8c", "#72c7ff"],
+    ["#84ffd9", "#101d29", "#ffbd58", "#a8f5ff"],
+    ["#81c7ff", "#111531", "#ff75ab", "#6dfff2"],
+    ["#6effee", "#151235", "#ffd26d", "#85cbff"],
+    ["#8dffff", "#141d30", "#ff5e82", "#cbfdff"],
+    ["#9effd9", "#0d1f2b", "#ffd486", "#89cbff"],
   ];
   const palette = colorSets[idx % colorSets.length] ?? colorSets[0]!;
   const base = palette[0] ?? "#58f6ff";
   const dark = palette[1] ?? "#102030";
   const accent = palette[2] ?? "#ff4e7a";
+  const alt = palette[3] ?? "#76d2ff";
 
-  g.fillStyle = "#02050a";
+  g.fillStyle = "#020409";
   g.fillRect(0, 0, width, height);
 
-  const bg = g.createLinearGradient(0, 0, width, height);
+  const bg = g.createLinearGradient(0, 0, 0, height);
   bg.addColorStop(0, `${dark}f2`);
-  bg.addColorStop(1, "#020409f2");
+  bg.addColorStop(0.4, "#08101df2");
+  bg.addColorStop(1, "#04060bf5");
   g.fillStyle = bg;
   g.fillRect(0, 0, width, height);
 
-  g.strokeStyle = `${base}55`;
+  const halo = g.createRadialGradient(width * 0.5, height * 0.45, 10, width * 0.5, height * 0.45, height * 0.5);
+  halo.addColorStop(0, `${accent}36`);
+  halo.addColorStop(0.55, `${base}1a`);
+  halo.addColorStop(1, "rgba(0,0,0,0)");
+  g.fillStyle = halo;
+  g.fillRect(0, 0, width, height);
+
+  g.strokeStyle = `${base}50`;
   g.lineWidth = 2;
-  for (let x = 0; x < width; x += 48) {
+  g.strokeRect(20, 20, width - 40, height - 40);
+  g.strokeStyle = `${alt}44`;
+  g.lineWidth = 1;
+  for (let x = 28; x < width; x += 36) {
     g.beginPath();
-    g.moveTo(x, 0);
-    g.lineTo(x, height);
+    g.moveTo(x, 24);
+    g.lineTo(x, height - 24);
     g.stroke();
   }
-  for (let y = 0; y < height; y += 34) {
+  for (let y = 28; y < height; y += 52) {
     g.beginPath();
-    g.moveTo(0, y);
-    g.lineTo(width, y);
+    g.moveTo(24, y);
+    g.lineTo(width - 24, y);
     g.stroke();
   }
 
+  g.fillStyle = `${base}20`;
+  g.fillRect(width * 0.18, 110, width * 0.64, height - 220);
+  g.strokeStyle = `${accent}c0`;
+  g.lineWidth = 5;
+  g.beginPath();
+  g.moveTo(width * 0.5, 80);
+  g.lineTo(width * 0.5, height - 80);
+  g.stroke();
+
   g.globalCompositeOperation = "lighter";
-  for (let i = 0; i < 65; i++) {
+  for (let i = 0; i < 180; i++) {
     const x = rnd() * width;
     const y = rnd() * height;
-    const w = 4 + rnd() * 28;
-    const h = 2 + rnd() * 8;
+    const w = 6 + rnd() * 42;
+    const h = 2 + rnd() * 10;
     g.fillStyle = i % 7 === 0 ? `${accent}cc` : `${base}aa`;
     g.fillRect(x, y, w, h);
   }
 
+  for (let i = 0; i < 30; i++) {
+    const x = width * (0.22 + rnd() * 0.56);
+    const y = 140 + rnd() * (height - 280);
+    const w = 10 + rnd() * 26;
+    const h = 24 + rnd() * 100;
+    g.fillStyle = i % 3 === 0 ? `${accent}d8` : `${alt}d0`;
+    g.fillRect(x, y, w, h);
+  }
+
   g.globalCompositeOperation = "source-over";
-  g.fillStyle = `${base}f0`;
-  g.font = "900 104px 'Bank Gothic Medium BT', 'Rajdhani', sans-serif";
+  const panelGrad = g.createLinearGradient(width * 0.2, 0, width * 0.8, height);
+  panelGrad.addColorStop(0, `${alt}1f`);
+  panelGrad.addColorStop(0.5, `${accent}24`);
+  panelGrad.addColorStop(1, `${base}18`);
+  g.fillStyle = panelGrad;
+  g.fillRect(width * 0.2, 110, width * 0.6, height - 220);
+
+  g.fillStyle = `${base}f2`;
+  g.font = "900 120px 'Rajdhani', 'Bank Gothic Medium BT', sans-serif";
   g.textAlign = "left";
   g.textBaseline = "middle";
 
-  const labels = ["AXIOM", "ORION", "NEON", "NEXUS", "VECTOR", "AERO"];
+  const labels = ["ORION", "AXIOM", "NEON", "NEXUS", "VECTOR", "AERO"];
   const label = labels[idx % labels.length] ?? "AXIOM";
-  g.fillText(label, 62, 170);
+  g.fillText(label, 72, 182);
 
-  g.font = "700 38px 'Bank Gothic Medium BT', 'Rajdhani', sans-serif";
-  g.fillStyle = `${accent}f0`;
-  g.fillText("CITY COMMERCIAL GRID", 64, 248);
+  g.font = "700 42px 'Rajdhani', 'Bank Gothic Medium BT', sans-serif";
+  g.fillStyle = `${accent}f2`;
+  g.fillText("CITY SIGNAL GRID", 76, 258);
 
-  g.font = "600 24px 'IBM Plex Mono', monospace";
+  g.font = "700 30px 'IBM Plex Mono', monospace";
   g.fillStyle = "#d8f9ff";
-  g.fillText(`BLOCK ${100 + idx * 7} // LIVE`, 66, 304);
+  g.fillText(`DISTRICT ${100 + (idx * 7)}`, 76, 324);
+  g.fillText(`CHANNEL ${20 + idx} // LIVE`, 76, 368);
+  g.fillText("NEON PROTOCOL", 76, 412);
+
+  g.fillStyle = `${alt}f0`;
+  g.font = "800 210px 'Rajdhani', sans-serif";
+  g.fillText(`${(idx + 1) % 10}`, width * 0.3, height * 0.72);
+  g.font = "700 34px 'IBM Plex Mono', monospace";
+  g.fillStyle = `${accent}e8`;
+  g.fillText(`NODE 0${idx + 1} // AD STREAM`, 76, height - 128);
+
+  g.textAlign = "right";
+  g.fillStyle = `${base}e6`;
+  g.font = "700 32px 'IBM Plex Mono', monospace";
+  g.fillText("VERTICAL FEED", width - 52, 92);
+  g.textAlign = "left";
 
   g.globalCompositeOperation = "screen";
   const scan = g.createLinearGradient(0, 0, 0, height);
@@ -259,7 +318,13 @@ function createBillboardTexture(THREE: typeof import("three"), idx: number, rnd:
   scan.addColorStop(0.5, "rgba(255,255,255,0.14)");
   scan.addColorStop(1, "rgba(255,255,255,0.0)");
   g.fillStyle = scan;
-  g.fillRect(0, height * 0.32, width, height * 0.2);
+  g.fillRect(0, height * 0.22, width, height * 0.56);
+
+  g.globalCompositeOperation = "overlay";
+  g.fillStyle = "rgba(255,255,255,0.08)";
+  for (let y = 0; y < height; y += 5) {
+    g.fillRect(0, y, width, 1);
+  }
 
   const tex = new THREE.CanvasTexture(c);
   tex.needsUpdate = true;
@@ -306,9 +371,63 @@ function createSafeZoneShaderPassShader() {
         float d = length(p);
         float inner = smoothstep(0.0, 1.0, d);
         float centerMask = 1.0 - smoothstep(1.0, 1.0 + uSafeSoftness, d);
-        col += vec3(uLiftOutside * inner);
+        float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+        float midMask = smoothstep(0.05, 0.50, lum) * (1.0 - smoothstep(0.62, 0.94, lum));
+        col += vec3(uLiftOutside * inner * midMask);
         col *= (1.0 - centerMask * uSafeDarken);
         gl_FragColor = vec4(col, src.a);
+      }
+    `,
+  };
+}
+
+function createSoftCityLightShaderPassShader() {
+  return {
+    uniforms: {
+      tDiffuse: { value: null },
+      strength: { value: 0.0 },
+      contrast: { value: 0.0 },
+      saturation: { value: 0.0 },
+      highlightClamp: { value: 0.1 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D tDiffuse;
+      uniform float strength;
+      uniform float contrast;
+      uniform float saturation;
+      uniform float highlightClamp;
+      varying vec2 vUv;
+
+      void main() {
+        vec4 src = texture2D(tDiffuse, vUv);
+        vec3 col = src.rgb;
+        float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+        float shadowMask = 1.0 - smoothstep(0.08, 0.42, lum);
+        float midMask = smoothstep(0.10, 0.52, lum) * (1.0 - smoothstep(0.60, 0.90, lum));
+        float edge = distance(vUv, vec2(0.5, 0.55));
+        float edgeVignette = 1.0 - smoothstep(0.28, 0.95, edge);
+        vec3 coolShadow = vec3(0.070, 0.102, 0.138);
+        vec3 neonTint = mix(vec3(0.050, 0.100, 0.135), vec3(0.100, 0.072, 0.145), vUv.x);
+
+        col += coolShadow * (shadowMask * 0.72 * strength * edgeVignette);
+        col += neonTint * (midMask * 0.36 * strength);
+        col = (col - 0.5) * (1.0 + contrast) + 0.5;
+
+        float gray = dot(col, vec3(0.299, 0.587, 0.114));
+        col = mix(vec3(gray), col, 1.0 + saturation * 0.8);
+
+        float peak = max(col.r, max(col.g, col.b));
+        float hiMask = smoothstep(0.70, 1.00, peak);
+        col -= vec3(hiMask * highlightClamp * strength);
+
+        gl_FragColor = vec4(clamp(col, 0.0, 1.0), src.a);
       }
     `,
   };
@@ -471,6 +590,18 @@ export function OrionCityBackground({
         composer.addPass(safeZonePass);
       }
 
+      const softLightPass = runtimeConfig.post.softLightEnabled
+        ? new ShaderPass(createSoftCityLightShaderPassShader() as any)
+        : null;
+      if (softLightPass) {
+        const softUniforms = (softLightPass.material as any).uniforms;
+        softUniforms.strength.value = runtimeConfig.post.softLightStrength;
+        softUniforms.contrast.value = runtimeConfig.post.softLightContrast;
+        softUniforms.saturation.value = runtimeConfig.post.softLightSaturation;
+        softUniforms.highlightClamp.value = runtimeConfig.post.softLightHighlightClamp;
+        composer.addPass(softLightPass);
+      }
+
       const sharpenPass = runtimeConfig.post.sharpenAmount > 0.001
         ? new ShaderPass(createSharpenShaderPassShader() as any)
         : null;
@@ -484,14 +615,15 @@ export function OrionCityBackground({
       const fxaaUniforms = fxaaPass ? (fxaaPass.material as any).uniforms : null;
       reportProgress(0.12);
 
-      const amb = new THREE.AmbientLight(0xffffff, 0.42);
-      const hemi = new THREE.HemisphereLight(0x8bcfff, 0x120a11, 0.5);
-      const key = new THREE.DirectionalLight(0xb5ddff, 0.62);
-      key.position.set(28, 44, 24);
-      const fill = new THREE.PointLight(0x44f7e0, 0.58, 340, 2);
-      fill.position.set(-62, 30, -96);
-      const rim = new THREE.PointLight(0xff517f, 0.38, 330, 2);
-      rim.position.set(70, 24, -128);
+      const qualityLightBoost = runtimeConfig.quality === "ultra" ? 1.08 : 1;
+      const amb = new THREE.AmbientLight(0xffffff, 0.52 * qualityLightBoost);
+      const hemi = new THREE.HemisphereLight(0x8bcfff, 0x120a11, 0.64 * qualityLightBoost);
+      const key = new THREE.DirectionalLight(0xb5ddff, 0.74 * qualityLightBoost);
+      key.position.set(32, 46, 20);
+      const fill = new THREE.PointLight(0x44f7e0, 0.7 * qualityLightBoost, 350, 2);
+      fill.position.set(-54, 34, -92);
+      const rim = new THREE.PointLight(0xff517f, 0.52 * qualityLightBoost, 340, 2);
+      rim.position.set(78, 26, -122);
       scene.add(amb, hemi, key, fill, rim);
 
       const world = new THREE.Group();
@@ -555,6 +687,7 @@ export function OrionCityBackground({
         set2Emission,
         set2RM,
         flyingCarTex,
+        arcadeAtlasTex,
         skyHdr,
       ] = await Promise.all([
         loadKtx("main-diffuse.ktx2", true),
@@ -568,6 +701,7 @@ export function OrionCityBackground({
         loadKtx("BG-Buildings-Set2_PBR_Emission-Fixed.ktx2", true),
         loadKtx("BG-Buildings-Set2_PBR_Roughness-Metalness.ktx2"),
         loadKtx("flying-car.ktx2", true),
+        loadKtx("Arcade.ktx2", true),
         exrLoader.loadAsync(publicUrl("assets/orion/original/sky-512-HDR.exr")),
       ]);
 
@@ -731,7 +865,7 @@ export function OrionCityBackground({
         map: gridTex ?? null,
         emissiveMap: gridTex ?? null,
         emissive: new THREE.Color(0x4affea),
-        emissiveIntensity: 0.18,
+        emissiveIntensity: 0.24,
         metalness: 0.9,
         roughness: 0.27,
         envMapIntensity: 0.42,
@@ -808,7 +942,7 @@ export function OrionCityBackground({
         map: set1Diffuse,
         emissiveMap: set1Emission,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 1.95 * readabilityBoost,
+        emissiveIntensity: 2.2 * readabilityBoost,
         roughnessMap: set1RM,
         metalnessMap: set1RM,
         metalness: materialCfg.building.metalness,
@@ -821,7 +955,7 @@ export function OrionCityBackground({
         map: set2Diffuse,
         emissiveMap: set2Emission,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 1.95 * readabilityBoost,
+        emissiveIntensity: 2.2 * readabilityBoost,
         roughnessMap: set2RM,
         metalnessMap: set2RM,
         metalness: materialCfg.building.metalness,
@@ -841,7 +975,7 @@ export function OrionCityBackground({
         roughnessMap: set1RM,
         metalnessMap: set1RM,
         emissive: new THREE.Color(0xffffff),
-        emissiveIntensity: 2.5 * readabilityBoost,
+        emissiveIntensity: 4.2 * readabilityBoost,
         metalness: materialCfg.building.metalness,
         roughness: materialCfg.building.roughness,
         envMapIntensity: materialCfg.building.envMapIntensity,
@@ -958,7 +1092,14 @@ export function OrionCityBackground({
               originalMaterial = src.clone();
               if ((originalMaterial as any).isMeshStandardMaterial) {
                 const mm = originalMaterial as any;
-                mm.emissiveIntensity = Math.min(1.1, Math.max(0.6, Number(mm.emissiveIntensity || 0.6)));
+                const baseEmissive = Number(mm.emissiveIntensity || (mm.emissiveMap ? 1.1 : 0.7));
+                if (mm.emissiveMap) {
+                  mm.emissive = new THREE.Color(0xffffff);
+                  mm.emissiveIntensity = Math.min(2.2, Math.max(1.1, baseEmissive * 1.2));
+                } else {
+                  mm.emissiveIntensity = Math.min(1.35, Math.max(0.7, baseEmissive));
+                }
+                mm.envMapIntensity = Math.max(Number(mm.envMapIntensity || 0), 0.12);
                 mm.side = THREE.DoubleSide;
               }
               if (originalMaterial) sceneMaterials.add(originalMaterial);
@@ -1305,68 +1446,161 @@ export function OrionCityBackground({
 
       // Billboards / ads.
       type BillboardActor = {
-        mesh: ThreeTypes.Mesh;
         material: ThreeTypes.MeshStandardMaterial;
-        baseY: number;
         baseIntensity: number;
-        animated: boolean;
         phase: number;
+        flickerScale: number;
       };
-      const billboards: BillboardActor[] = [];
+      const billboardActors: BillboardActor[] = [];
       const billboardCfg = runtimeConfig.billboards;
-      if (billboardCfg.enabled && billboardCfg.count > 0) {
-        const billboardGroup = new THREE.Group();
-        world.add(billboardGroup);
+      if (billboardCfg.enabled) {
+        // Original Orion arcade billboards (static atlas slices instead of video).
+        const sourceUV: Record<string, ThreeTypes.Vector2> = {
+          A: new THREE.Vector2(0, 0),
+          B: new THREE.Vector2(0.5, 0),
+          C: new THREE.Vector2(0, 0.5),
+          D: new THREE.Vector2(0.5, 0.5),
+        };
+        const sourceBrightness: Record<string, number> = {
+          A: 1,
+          B: 0.7,
+          C: 0.45,
+          D: 0.62,
+        };
+        const arcadeTemplate = level.getObjectByName("Arcade-Screen") as ThreeTypes.Mesh | null;
+        const arcadeAnchorA = level.getObjectByName("Arcade-Instance-A");
+        if (arcadeTemplate && (arcadeTemplate as any).isMesh && arcadeAnchorA) {
+          const sourceGroup = new THREE.Group();
+          world.add(sourceGroup);
+          const invAnchorA = new THREE.Matrix4().copy(arcadeAnchorA.matrixWorld).invert();
+          const templateLocalFromA = new THREE.Matrix4().multiplyMatrices(invAnchorA, arcadeTemplate.matrixWorld);
 
-        const anchors = [
-          { x: centerX - 620, y: cityGroundY + 188, z: centerZ - 230, yaw: 0.48, w: 168, h: 76 },
-          { x: centerX + 624, y: cityGroundY + 182, z: centerZ - 218, yaw: -0.47, w: 162, h: 74 },
-          { x: centerX - 700, y: cityGroundY + 246, z: centerZ - 402, yaw: 0.54, w: 154, h: 70 },
-          { x: centerX + 708, y: cityGroundY + 238, z: centerZ - 388, yaw: -0.52, w: 152, h: 68 },
-          { x: centerX - 768, y: cityGroundY + 304, z: centerZ - 618, yaw: 0.61, w: 146, h: 64 },
-          { x: centerX + 780, y: cityGroundY + 296, z: centerZ - 596, yaw: -0.59, w: 144, h: 64 },
-        ];
-        const targetCount = Math.min(billboardCfg.count, anchors.length);
+          for (const slot of ["A", "B", "C", "D"]) {
+            const anchor = level.getObjectByName(`Arcade-Instance-${slot}`);
+            const uv = sourceUV[slot];
+            if (!anchor || !uv) continue;
 
-        for (let i = 0; i < targetCount; i++) {
-          const a = anchors[i];
-          if (!a) continue;
-          const tex = createBillboardTexture(THREE, i, rnd);
-          if (!tex) continue;
-          tex.flipY = false;
-          tex.anisotropy = textureAniso;
-          tex.minFilter = THREE.LinearMipmapLinearFilter;
-          tex.magFilter = THREE.LinearFilter;
-          tex.needsUpdate = true;
-          loadedTextures.add(tex);
+            const map = arcadeAtlasTex.clone();
+            map.flipY = false;
+            map.anisotropy = textureAniso;
+            map.wrapS = THREE.ClampToEdgeWrapping;
+            map.wrapT = THREE.ClampToEdgeWrapping;
+            map.repeat.set(0.5, 0.5);
+            map.offset.copy(uv);
+            map.minFilter = THREE.LinearMipmapLinearFilter;
+            map.magFilter = THREE.LinearFilter;
+            map.needsUpdate = true;
+            loadedTextures.add(map);
 
-          const mat = registerMaterial(new THREE.MeshStandardMaterial({
-            map: tex,
-            emissiveMap: tex,
-            color: 0xffffff,
-            emissive: new THREE.Color(0xffffff),
-            emissiveIntensity: 1.12 + rnd() * 0.22,
-            roughness: 0.52,
-            metalness: 0.22,
-            transparent: true,
-            alphaTest: 0.06,
-            side: THREE.DoubleSide,
-          }));
-          const mesh = new THREE.Mesh(new THREE.PlaneGeometry(a.w, a.h), mat);
-          mesh.position.set(a.x, a.y, a.z);
-          mesh.rotation.y = a.yaw;
-          mesh.castShadow = false;
-          mesh.receiveShadow = false;
-          billboardGroup.add(mesh);
+            const brightness = sourceBrightness[slot] ?? 1;
+            const mat = registerMaterial(new THREE.MeshStandardMaterial({
+              map,
+              emissiveMap: map,
+              color: 0xffffff,
+              emissive: new THREE.Color(0xffffff),
+              emissiveIntensity: (0.56 + brightness * 0.24) * readabilityBoost,
+              roughness: 0.44,
+              metalness: 0.12,
+              transparent: true,
+              opacity: 0.9,
+              alphaTest: 0.06,
+              depthWrite: false,
+              side: THREE.DoubleSide,
+            }));
+            mat.polygonOffset = true;
+            mat.polygonOffsetFactor = -1;
+            mat.polygonOffsetUnits = -2;
 
-          billboards.push({
-            mesh,
-            material: mat,
-            baseY: a.y,
-            baseIntensity: mat.emissiveIntensity,
-            animated: i < billboardCfg.animatedCount,
-            phase: rnd() * Math.PI * 2,
-          });
+            let mesh: ThreeTypes.Mesh;
+            if (slot === "A") {
+              mesh = arcadeTemplate;
+              (mesh as any).material = mat;
+            } else {
+              mesh = arcadeTemplate.clone() as ThreeTypes.Mesh;
+              (mesh as any).material = mat;
+              mesh.name = `Arcade-${slot}-Screen`;
+              const screenWorld = new THREE.Matrix4().multiplyMatrices(anchor.matrixWorld, templateLocalFromA);
+              screenWorld.decompose(mesh.position, mesh.quaternion, mesh.scale);
+              sourceGroup.add(mesh);
+            }
+            mesh.castShadow = false;
+            mesh.receiveShadow = false;
+            mesh.renderOrder = 7;
+
+            billboardActors.push({
+              material: mat,
+              baseIntensity: mat.emissiveIntensity,
+              phase: rnd() * Math.PI * 2,
+              flickerScale: 0.018 + rnd() * 0.012,
+            });
+          }
+        }
+
+        if (billboardCfg.count > 0) {
+          const billboardGroup = new THREE.Group();
+          world.add(billboardGroup);
+
+          const anchors = [
+            { x: centerX - 640, y: cityGroundY + 194, z: centerZ - 214, yaw: 0.47, w: 42, h: 338, offset: 46 },
+            { x: centerX + 646, y: cityGroundY + 188, z: centerZ - 208, yaw: -0.46, w: 40, h: 330, offset: 46 },
+            { x: centerX - 716, y: cityGroundY + 258, z: centerZ - 372, yaw: 0.53, w: 36, h: 308, offset: 44 },
+            { x: centerX + 724, y: cityGroundY + 252, z: centerZ - 360, yaw: -0.51, w: 35, h: 300, offset: 44 },
+            { x: centerX - 792, y: cityGroundY + 322, z: centerZ - 566, yaw: 0.58, w: 32, h: 278, offset: 42 },
+            { x: centerX + 804, y: cityGroundY + 316, z: centerZ - 552, yaw: -0.57, w: 32, h: 274, offset: 42 },
+          ];
+          const targetCount = Math.min(billboardCfg.count, anchors.length);
+
+          for (let i = 0; i < targetCount; i++) {
+            const a = anchors[i];
+            if (!a) continue;
+            const tex = createBillboardTexture(THREE, i, rnd);
+            if (!tex) continue;
+            tex.flipY = false;
+            tex.anisotropy = textureAniso;
+            tex.minFilter = THREE.LinearMipmapLinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+            tex.needsUpdate = true;
+            loadedTextures.add(tex);
+
+            const mat = registerMaterial(new THREE.MeshStandardMaterial({
+              map: tex,
+              emissiveMap: tex,
+              color: 0xffffff,
+              emissive: new THREE.Color(0xffffff),
+              emissiveIntensity: 0.68 + rnd() * 0.18,
+              roughness: 0.48,
+              metalness: 0.09,
+              transparent: true,
+              opacity: 0.88,
+              alphaTest: 0.06,
+              depthWrite: false,
+              side: THREE.DoubleSide,
+            }));
+            mat.polygonOffset = true;
+            mat.polygonOffsetFactor = -1;
+            mat.polygonOffsetUnits = -1;
+
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(a.w, a.h), mat);
+            const nX = Math.sin(a.yaw);
+            const nZ = Math.cos(a.yaw);
+            mesh.position.set(
+              a.x + (nX * a.offset),
+              a.y,
+              a.z + (nZ * a.offset),
+            );
+            mesh.rotation.y = a.yaw;
+            mesh.castShadow = false;
+            mesh.receiveShadow = false;
+            mesh.renderOrder = 8;
+            billboardGroup.add(mesh);
+
+            billboardActors.push({
+              material: mat,
+              baseIntensity: mat.emissiveIntensity,
+              phase: rnd() * Math.PI * 2,
+              flickerScale: 0.024 + rnd() * 0.018,
+            });
+          }
         }
       }
 
@@ -1545,13 +1779,13 @@ export function OrionCityBackground({
         const pulse = 0.5 + 0.5 * Math.sin(t * 0.22);
         floorGlowMat.opacity = runtimeConfig.post.floorGlowBase + pulse * runtimeConfig.post.floorGlowAmp;
         laneMat.opacity = runtimeConfig.post.laneGlowBase + pulse * runtimeConfig.post.laneGlowAmp;
-        skyGlowMat.opacity = 0.05 + (0.5 + 0.5 * Math.sin(t * 0.17)) * 0.06;
+        skyGlowMat.opacity = 0.045 + (0.5 + 0.5 * Math.sin(t * 0.17)) * 0.045;
 
         if (scene.fog instanceof THREE.FogExp2) {
           scene.fog.color.copy(tmpColor.setRGB(
-            0.04 + pulse * 0.014,
-            0.058 + pulse * 0.018,
-            0.094 + pulse * 0.024,
+            0.05 + pulse * 0.016,
+            0.072 + pulse * 0.02,
+            0.112 + pulse * 0.028,
           ));
         }
 
@@ -1589,15 +1823,9 @@ export function OrionCityBackground({
           c.m.position.set(tmpPos.x, tmpPos.y + Math.sin(c.phase) * c.bob, tmpPos.z);
         }
 
-        for (const b of billboards) {
-          const animated = b.animated;
-          const flicker = billboardCfg.flicker ? (0.82 + 0.18 * Math.sin((t * 4.6) + b.phase)) : 1;
-          const glitchPulse = billboardCfg.glitch && animated && Math.sin((t * 12.0) + b.phase) > 0.96 ? 0.45 : 0;
-          b.material.emissiveIntensity = b.baseIntensity * flicker + glitchPulse;
-          if (animated) {
-            b.mesh.position.y = b.baseY + Math.sin((t * 0.85) + b.phase) * 1.3;
-            b.mesh.rotation.z = Math.sin((t * 0.65) + b.phase) * 0.015;
-          }
+        for (const b of billboardActors) {
+          const flicker = billboardCfg.flicker ? (1 + Math.sin((t * 1.9) + b.phase) * b.flickerScale) : 1;
+          b.material.emissiveIntensity = b.baseIntensity * flicker;
         }
 
         for (const layer of rainLayers) {
@@ -1638,6 +1866,7 @@ export function OrionCityBackground({
         cancelAnimationFrame(raf);
 
         (safeZonePass as any)?.material?.dispose?.();
+        (softLightPass as any)?.material?.dispose?.();
         (sharpenPass as any)?.material?.dispose?.();
         (composer as any).dispose?.();
         composerRenderTarget.dispose();
