@@ -677,9 +677,11 @@ export function OrionCityBackground({
           },
           buildings: {
             placed: 0,
+            finalPlaced: 0,
             rejectedInCorridor: 0,
             rejectedNearCenter: 0,
             rejectedOverlap: 0,
+            cleanedByOverlap: 0,
             ringAttempts: 0,
             distantAttempts: 0,
             overlapPairCount: 0,
@@ -1292,11 +1294,15 @@ export function OrionCityBackground({
       const buildingOccluders: ThreeTypes.Mesh[] = [];
       const buildingFootprints: Array<{
         name: string;
+        mesh: ThreeTypes.Mesh;
+        locked: boolean;
         x: number;
         z: number;
         halfX: number;
         halfZ: number;
       }> = [];
+      const hardOverlapRatio = runtimeConfig.quality === "ultra" ? 0.32 : 0.36;
+      const hardOverlapRadiusMul = runtimeConfig.quality === "ultra" ? 1.28 : 1.22;
 
       const placeBuilding = (cfg: {
         name: string;
@@ -1310,24 +1316,27 @@ export function OrionCityBackground({
         scaleMul?: number;
         allowInCorridor?: boolean;
         avoidHardOverlap?: boolean;
-      }) => {
+        lockFootprint?: boolean;
+        recordRejects?: boolean;
+      }): boolean => {
+        const recordRejects = cfg.recordRejects !== false;
         if (!cfg.allowInCorridor && inViewCorridor(cfg.x, cfg.z)) {
-          if (diagState) diagState.buildings.rejectedInCorridor += 1;
-          return;
+          if (diagState && recordRejects) diagState.buildings.rejectedInCorridor += 1;
+          return false;
         }
         if (!cfg.allowInCorridor) {
           const rel = new THREE.Vector2(cfg.x - baseCam.x, cfg.z - baseCam.z);
           const depth = rel.dot(viewDirXZ);
           const lateral = Math.abs(rel.dot(viewRightXZ));
           if (depth > -80 && depth < 840 && lateral < 760) {
-            if (diagState) diagState.buildings.rejectedInCorridor += 1;
-            return;
+            if (diagState && recordRejects) diagState.buildings.rejectedInCorridor += 1;
+            return false;
           }
         }
 
         const asset = buildingAssets.get(cfg.name);
         const bounds = assetBounds.get(cfg.name);
-        if (!asset || !bounds) return;
+        if (!asset || !bounds) return false;
 
         const material = pickBuildingMaterial(cfg.name, asset);
         const mesh = new THREE.Mesh(asset.geometry, material);
@@ -1361,15 +1370,15 @@ export function OrionCityBackground({
             const minArea = Math.min((halfX * 2) * (halfZ * 2), (b.halfX * 2) * (b.halfZ * 2));
             const ratio = overlapArea / Math.max(1, minArea);
             const dist = Math.hypot(cfg.x - b.x, cfg.z - b.z);
-            const overlapRadius = Math.max(halfX, halfZ, b.halfX, b.halfZ) * 1.08;
-            if (ratio > 0.58 && dist < overlapRadius) {
+            const overlapRadius = Math.max(halfX, halfZ, b.halfX, b.halfZ) * hardOverlapRadiusMul;
+            if (ratio > hardOverlapRatio && dist < overlapRadius) {
               hardOverlap = true;
               break;
             }
           }
           if (hardOverlap) {
-            if (diagState) diagState.buildings.rejectedOverlap += 1;
-            return;
+            if (diagState && recordRejects) diagState.buildings.rejectedOverlap += 1;
+            return false;
           }
         }
 
@@ -1383,12 +1392,48 @@ export function OrionCityBackground({
 
         buildingFootprints.push({
           name: cfg.name,
+          mesh,
+          locked: cfg.lockFootprint === true,
           x: mesh.position.x,
           z: mesh.position.z,
           halfX,
           halfZ,
         });
         if (diagState) diagState.buildings.placed += 1;
+        return true;
+      };
+      const placeBuildingWithRetries = (
+        cfg: {
+          name: string;
+          x: number;
+          z: number;
+          groundY: number;
+          yaw: number;
+          targetHeight: number;
+          stretchX?: number;
+          stretchZ?: number;
+          scaleMul?: number;
+          allowInCorridor?: boolean;
+          avoidHardOverlap?: boolean;
+          lockFootprint?: boolean;
+        },
+        retries: number,
+        jitterRadius: number,
+      ): boolean => {
+        const total = Math.max(1, retries);
+        for (let attempt = 0; attempt < total; attempt++) {
+          const isLast = attempt === total - 1;
+          const spread = attempt === 0 ? 0 : jitterRadius * ((attempt + 1) / total);
+          const placed = placeBuilding({
+            ...cfg,
+            x: cfg.x + (spread > 0 ? rand(-spread, spread) : 0),
+            z: cfg.z + (spread > 0 ? rand(-spread, spread) : 0),
+            yaw: cfg.yaw + (attempt === 0 ? 0 : rand(-0.18, 0.18)),
+            recordRejects: isLast,
+          });
+          if (placed) return true;
+        }
+        return false;
       };
 
       // Keep Orion custom landmark placements but align them to current city ground.
@@ -1405,6 +1450,7 @@ export function OrionCityBackground({
           scaleMul: rand(0.95, 1.1),
           allowInCorridor: false,
           avoidHardOverlap: false,
+          lockFootprint: true,
         });
       }
 
@@ -1423,6 +1469,23 @@ export function OrionCityBackground({
         { radius: 640, count: 42, minH: 280, maxH: 560, jitter: 66 },
         { radius: 840, count: 52, minH: 320, maxH: 700, jitter: 84 },
       ];
+      if (diagState) {
+        diagState.layout = {
+          profile: "ovp_p1_rings_v1",
+          hardOverlapRatio,
+          hardOverlapRadiusMul,
+          ringCount: rings.length,
+          rings: rings.map((r) => ({
+            radius: r.radius,
+            count: r.count,
+            minH: r.minH,
+            maxH: r.maxH,
+            jitter: r.jitter,
+          })),
+          foregroundRange: { min: -14, max: 14, step: 50 },
+          distantWallCount: 96,
+        };
+      }
 
       for (const ring of rings) {
         const offset = rand(0, Math.PI * 2);
@@ -1440,7 +1503,7 @@ export function OrionCityBackground({
           }
 
           const name = pickName();
-          placeBuilding({
+          placeBuildingWithRetries({
             name,
             x,
             z,
@@ -1451,7 +1514,7 @@ export function OrionCityBackground({
             stretchZ: rand(0.84, 1.24),
             scaleMul: rand(0.9, 1.24),
             allowInCorridor: false,
-          });
+          }, 4, 42);
         }
       }
 
@@ -1467,7 +1530,7 @@ export function OrionCityBackground({
           const x = centerX + (camDir.x * forward) + (right.x * lateral);
           const z = centerZ + (camDir.y * forward) + (right.y * lateral);
           if (Math.abs(x - centerX) < 300 && Math.abs(z - centerZ) < 380) continue;
-          placeBuilding({
+          placeBuildingWithRetries({
             name: (i % 3 === 0
               ? heavyPool[Math.floor(rnd() * heavyPool.length)]
               : lightPool[Math.floor(rnd() * lightPool.length)])!,
@@ -1480,7 +1543,7 @@ export function OrionCityBackground({
             stretchZ: rand(0.82, 1.24),
             scaleMul: rand(0.96, 1.28),
             allowInCorridor: false,
-          });
+          }, 5, 58);
         }
       }
 
@@ -1491,7 +1554,7 @@ export function OrionCityBackground({
         const radius = rand(950, 1400);
         const x = centerX + Math.cos(a) * radius;
         const z = centerZ + Math.sin(a) * radius;
-        placeBuilding({
+        placeBuildingWithRetries({
           name: pickName(),
           x,
           z,
@@ -1502,7 +1565,75 @@ export function OrionCityBackground({
           stretchZ: rand(0.9, 1.28),
           scaleMul: rand(1.12, 1.48),
           allowInCorridor: false,
-        });
+        }, 4, 90);
+      }
+
+      const cleanupOverlapThreshold = runtimeConfig.quality === "ultra" ? 0.27 : 0.32;
+      const cleanupMaxRemovals = runtimeConfig.quality === "ultra" ? 20 : 14;
+      let cleanedByOverlap = 0;
+      const removeFootprint = (target: {
+        mesh: ThreeTypes.Mesh;
+      }) => {
+        const idxOccluder = buildingOccluders.indexOf(target.mesh);
+        if (idxOccluder >= 0) buildingOccluders.splice(idxOccluder, 1);
+        world.remove(target.mesh);
+      };
+      while (cleanedByOverlap < cleanupMaxRemovals && buildingFootprints.length > 1) {
+        let worst:
+          | {
+            aIndex: number;
+            bIndex: number;
+            ratio: number;
+          }
+          | null = null;
+        for (let i = 0; i < buildingFootprints.length; i++) {
+          const a = buildingFootprints[i];
+          if (!a) continue;
+          for (let j = i + 1; j < buildingFootprints.length; j++) {
+            const b = buildingFootprints[j];
+            if (!b) continue;
+            const minX = Math.max(a.x - a.halfX, b.x - b.halfX);
+            const maxX = Math.min(a.x + a.halfX, b.x + b.halfX);
+            const minZ = Math.max(a.z - a.halfZ, b.z - b.halfZ);
+            const maxZ = Math.min(a.z + a.halfZ, b.z + b.halfZ);
+            const ox = maxX - minX;
+            const oz = maxZ - minZ;
+            if (ox <= 0 || oz <= 0) continue;
+            const overlapArea = ox * oz;
+            const aArea = (a.halfX * 2) * (a.halfZ * 2);
+            const bArea = (b.halfX * 2) * (b.halfZ * 2);
+            const ratio = overlapArea / Math.max(1, Math.min(aArea, bArea));
+            if (ratio < cleanupOverlapThreshold) continue;
+            if (!worst || ratio > worst.ratio) {
+              worst = { aIndex: i, bIndex: j, ratio };
+            }
+          }
+        }
+        if (!worst) break;
+        const a = buildingFootprints[worst.aIndex];
+        const b = buildingFootprints[worst.bIndex];
+        if (!a || !b) break;
+        if (a.locked && b.locked) break;
+
+        const score = (fp: typeof a) => {
+          if (fp.locked) return Number.NEGATIVE_INFINITY;
+          const area = (fp.halfX * 2) * (fp.halfZ * 2);
+          const centerDist = Math.hypot(fp.x - centerX, fp.z - centerZ);
+          return centerDist + (area * 0.0022);
+        };
+        const removeA = score(a) >= score(b);
+        const victimIndex = removeA ? worst.aIndex : worst.bIndex;
+        const victim = buildingFootprints[victimIndex];
+        if (!victim) break;
+        removeFootprint(victim);
+        buildingFootprints.splice(victimIndex, 1);
+        cleanedByOverlap += 1;
+      }
+      if (diagState) {
+        diagState.layout.cleanupOverlapThreshold = cleanupOverlapThreshold;
+        diagState.layout.cleanupMaxRemovals = cleanupMaxRemovals;
+        diagState.buildings.cleanedByOverlap = cleanedByOverlap;
+        diagState.buildings.finalPlaced = buildingFootprints.length;
       }
 
       if (diagState && buildingFootprints.length > 1) {
@@ -1738,13 +1869,13 @@ export function OrionCityBackground({
         billboardPlacements.push({
           mesh,
           layer: cfg.layer,
-          slot: cfg.slot,
           animated: cfg.animated,
           x: p.x,
           y: p.y,
           z: p.z,
           w: cfg.w,
           h: cfg.h,
+          ...(cfg.slot ? { slot: cfg.slot } : {}),
         });
         if (diagState) {
           if (cfg.layer === "source") diagState.billboards.sourceCount += 1;
@@ -2027,10 +2158,10 @@ export function OrionCityBackground({
             billboardGroup.add(mesh);
             registerBillboardPlacement(mesh, {
               layer: "custom",
-              slot: shouldAnimate ? animatedSlot : undefined,
               animated: shouldAnimate,
               w: a.w,
               h: a.h,
+              ...(shouldAnimate ? { slot: animatedSlot } : {}),
             });
             if (shouldAnimate) animatedPlaced += 1;
             placed += 1;
@@ -2091,8 +2222,8 @@ export function OrionCityBackground({
             const blockerDist = hits[0]?.distance ?? dist;
             occluded.push({
               layer: b.layer,
-              slot: b.slot,
               blockerDist: Number(blockerDist.toFixed(1)),
+              ...(b.slot ? { slot: b.slot } : {}),
             });
           }
         }

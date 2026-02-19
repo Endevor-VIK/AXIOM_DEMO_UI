@@ -105,6 +105,10 @@ AXS_HEADER_META:
   - Обновлено: `components/login/OrionCityBackground.tsx`
 - 2026-02-19T20:39:27+03:00 — Действие: в runtime preset `ultra` временно отключены animated billboard slots (`animatedCount=0`) до перекодирования `video-atlas` в совместимый codec-profile; при этом сохранены sky/backdrop и статические Orion/custom billboard-слои без сетевых фейлов. → Результат: OK
   - Обновлено: `components/login/orionLoginConfig.ts`
+- 2026-02-19T23:10:19+03:00 — Действие: старт реализации OVP `P0 -> P1` по подтверждению CREATOR: в Orion skyline добавлен baseline-layout профиль в diagnostics (`diag.layout`), ужесточён anti-overlap фильтр (hard ratio/radius), включён retry-placement для ring/foreground/distant слоёв для сохранения плотности при более строгой геометрической фильтрации. → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-19T23:10:19+03:00 — Действие: добавлен post-generation cleanup-pass footprint-коллизий с приоритетным удалением конфликтных не-lock зданий (сохранение landmark-ядра), расширены diag-метрики (`finalPlaced`, `cleanedByOverlap`, cleanup thresholds) для измеримого контроля P1. → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
 
 ## Step C — Documentation
 - 2026-02-10T19:50:03+03:00 — Действие: Документация не требуется → Результат: SKIP
@@ -195,6 +199,10 @@ AXS_HEADER_META:
 - 2026-02-19T20:46:38+03:00 — Действие: финальный smoke `/login?debug=1` после rollback `animatedCount` в preset: без failed requests, без billboard overlap, с сохранённой плотностью skyline и anti-overlap guard. → Результат: OK
   - Артефакты: `ops/artifacts/ui_scan/manual_2026-02-19T20-46-38_orion_diag/login.png`, `ops/artifacts/ui_scan/manual_2026-02-19T20-46-38_orion_diag/report.json`
   - Подтверждено: `failed_requests=[]`, `issues=[building_footprint_overlap,billboard_occluded]`, `rejectedOverlap=19`, `building overlapPairCount=23`, `customSkippedOverlap=4`, `billboard overlapPairCount=0`.
+- 2026-02-19T23:10:19+03:00 — Действие: QA-цикл OVP P1 (`npm run build` + серия Playwright smoke `/login?debug=1` с diag-export после каждого патча). → Результат: OK
+  - Артефакты: `ops/artifacts/ui_scan/manual_2026-02-19T22-28-46_orion_p1/report.json`, `ops/artifacts/ui_scan/manual_2026-02-19T22-38-12_orion_p1b/report.json`, `ops/artifacts/ui_scan/manual_2026-02-19T22-52-02_orion_p1c/report.json`, `ops/artifacts/ui_scan/manual_2026-02-19T22-59-46_orion_p1d/report.json`
+  - Метрики прогресса: `overlapPairCount: 29 -> 19 -> 15 -> 10`, `finalPlaced=113`, `cleanedByOverlap=7`, `failed_requests=[]`, `billboard overlapPairCount=0`.
+- 2026-02-19T23:10:19+03:00 — Действие: `npm run typecheck` после P1-патча. → Результат: FAIL (несвязанные с текущим патчем ошибки strict optional typing в `components/login/orionLoginConfig.ts` и `server/src/axchat/indexer.ts`; новых ошибок в `OrionCityBackground.tsx` после фикса slot-typing не осталось).
 
 ## Step E — Git
 - 2026-02-10T19:52:49+03:00 — Commit: `d761090` — `feat(login): add boot loader transition` — Файлы: `app/routes/login/page.tsx`, `styles/login-boot.css`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
