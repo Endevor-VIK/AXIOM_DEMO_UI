@@ -52,7 +52,7 @@ export default function Layout() {
     () => ({
       mode: modeLabel,
       section,
-      version: 'v0.2.3.1',
+      version: 'v0.2.4.0',
     }),
     [modeLabel, section],
   )

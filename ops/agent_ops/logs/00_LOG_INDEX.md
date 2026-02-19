@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-18
+  last_updated: 2026-02-19
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -64,4 +64,5 @@ AXS_HEADER_META:
 | 0043 | 2026-02-17T23:55:06+03:00 | Tunnel no-auth default (remove browser login prompt) | main | — | ops/agent_ops/logs/0043_tunnel-no-auth-default.md | DONE |
 | 0044 | 2026-02-18T01:17:24+03:00 | Admin URL command reference panel (`?debug=1` and related params) | main | — | ops/agent_ops/logs/0044_admin-url-command-reference-panel.md | DONE |
 | 0045 | 2026-02-18T15:57:11+03:00 | Admin Live Ops foundation (telemetry/snapshot/SSE/axchat audit) | main | docs/iterations/0062_admin-console-pro-live-ops/spec.md | ops/agent_ops/logs/0045_admin-live-ops-foundation.md | ACTIVE |
+| 0046 | 2026-02-19T14:54:00+03:00 | Поднять версию сайта до v0.2.4.0 + зафиксировать причины bump | main | — | ops/agent_ops/logs/0046_site-version-bump-v0-2-4-0.md | DONE |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).

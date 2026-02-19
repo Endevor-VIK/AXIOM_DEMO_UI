@@ -1,5 +1,22 @@
 [
   {
+    "id": "NEWS-2026-02-19-SITE-V0-2-4-0",
+    "date": "2026-02-19",
+    "title": "AXIOM WEB CORE UI: релиз v0.2.4.0",
+    "kind": "release",
+    "tags": [
+      "release",
+      "webcore",
+      "admin",
+      "telemetry",
+      "devtools",
+      "login"
+    ],
+    "summary": "Подняли версию сайта до v0.2.4.0: добавлены admin/live-ops контуры, усилена надёжность auth/logout, стабилизирован локальный запуск и обновлён Orion login background.",
+    "link": "/dashboard/news",
+    "file": "items/2026-02-19-site-v0-2-4-0.md"
+  },
+  {
     "id": "NEWS-2025-12-29-AUDIT-ROADMAP-REWORK",
     "date": "2025-12-29",
     "title": "AUDIT/ROADMAP: готовится полный реворк",
