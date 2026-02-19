@@ -109,6 +109,8 @@ AXS_HEADER_META:
   - Обновлено: `components/login/OrionCityBackground.tsx`
 - 2026-02-19T23:10:19+03:00 — Действие: добавлен post-generation cleanup-pass footprint-коллизий с приоритетным удалением конфликтных не-lock зданий (сохранение landmark-ядра), расширены diag-метрики (`finalPlaced`, `cleanedByOverlap`, cleanup thresholds) для измеримого контроля P1. → Результат: OK
   - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-19T23:59:20+03:00 — Действие: по запросу CREATOR добавлен URL-командный режим "только фон" для `/login` через query-параметры `bgOnly` и `orionBgOnly` (значения `1/true/yes/on/bg`). В этом режиме скрываются login-UI/boot/overlay/frame, отключается boot-telemetry и post-ready warmup, а Orion background принудительно остаётся включённым для визуальных тестов. → Результат: OK
+  - Обновлено: `app/routes/login/page.tsx`
 
 ## Step C — Documentation
 - 2026-02-10T19:50:03+03:00 — Действие: Документация не требуется → Результат: SKIP
@@ -203,6 +205,10 @@ AXS_HEADER_META:
   - Артефакты: `ops/artifacts/ui_scan/manual_2026-02-19T22-28-46_orion_p1/report.json`, `ops/artifacts/ui_scan/manual_2026-02-19T22-38-12_orion_p1b/report.json`, `ops/artifacts/ui_scan/manual_2026-02-19T22-52-02_orion_p1c/report.json`, `ops/artifacts/ui_scan/manual_2026-02-19T22-59-46_orion_p1d/report.json`
   - Метрики прогресса: `overlapPairCount: 29 -> 19 -> 15 -> 10`, `finalPlaced=113`, `cleanedByOverlap=7`, `failed_requests=[]`, `billboard overlapPairCount=0`.
 - 2026-02-19T23:10:19+03:00 — Действие: `npm run typecheck` после P1-патча. → Результат: FAIL (несвязанные с текущим патчем ошибки strict optional typing в `components/login/orionLoginConfig.ts` и `server/src/axchat/indexer.ts`; новых ошибок в `OrionCityBackground.tsx` после фикса slot-typing не осталось).
+- 2026-02-19T23:59:20+03:00 — Действие: `npm run build` после внедрения `bgOnly/orionBgOnly` режима `/login`. → Результат: PASS
+- 2026-02-19T23:59:20+03:00 — Действие: smoke-проверка режима `http://127.0.0.1:4173/login?debug=1&bgOnly=1` с Playwright (проверка отсутствия login-слоёв и наличия фона). → Результат: OK
+  - Артефакт: `ops/artifacts/ui_scan/manual_2026-02-19T23-45-19_login_bg_only/report.json`
+  - Подтверждено: `hasLoginCard=0`, `hasBoot=0`, `hasConsole=0`, `hasBottomHint=0`, `hasFrame=0`, `bgOnlyAttr=1`.
 
 ## Step E — Git
 - 2026-02-10T19:52:49+03:00 — Commit: `d761090` — `feat(login): add boot loader transition` — Файлы: `app/routes/login/page.tsx`, `styles/login-boot.css`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`

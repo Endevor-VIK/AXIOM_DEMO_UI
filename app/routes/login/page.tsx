@@ -66,6 +66,12 @@ function isBootTaskDone(state: BootLineState) {
   return state === "ready" || state === "error";
 }
 
+function parseQueryFlag(raw: string | null): boolean {
+  if (!raw) return false;
+  const value = raw.trim().toLowerCase();
+  return value === "1" || value === "true" || value === "yes" || value === "on" || value === "bg";
+}
+
 function bootStateLabel(state: BootLineState) {
   if (state === "ready") return "OK";
   if (state === "error") return "WARN";
@@ -426,6 +432,10 @@ function BootSequence({ phase, reduced, lineStates, progress, stalled }: BootSeq
 export default function LoginPage() {
   const nav = useNavigate();
   const location = useLocation();
+  const bgOnly = useMemo(() => {
+    const query = new URLSearchParams(location.search);
+    return parseQueryFlag(query.get("bgOnly")) || parseQueryFlag(query.get("orionBgOnly"));
+  }, [location.search]);
   const rootRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const [bootPhase, setBootPhase] = useState<BootPhase>("booting");
@@ -460,6 +470,13 @@ export default function LoginPage() {
     bootTelemetrySentRef.current = false;
     bootStartedAtRef.current = performance.now();
     bootRevealAtRef.current = null;
+    if (bgOnly) {
+      setBootPhase("ready");
+      setBootMinPassed(true);
+      setAuthState("ready");
+      setDataState("ready");
+      return undefined;
+    }
     const minBootMs = reduced ? BOOT_MIN_MS_REDUCED : BOOT_MIN_MS;
     const maxWaitMs = reduced ? BOOT_MAX_WAIT_MS_REDUCED : BOOT_MAX_WAIT_MS;
     const tMin = window.setTimeout(() => setBootMinPassed(true), minBootMs);
@@ -490,7 +507,7 @@ export default function LoginPage() {
       clearTimeout(tMax);
       if (bootWatchdogRef.current === tMax) bootWatchdogRef.current = null;
     };
-  }, [reduced, location.key]);
+  }, [reduced, location.key, bgOnly]);
 
   const orionState: BootLineState = orionReady ? "ready" : (orionError ? "error" : "loading");
   const authDone = isBootTaskDone(authState);
@@ -529,6 +546,7 @@ export default function LoginPage() {
   }, [bootCanReveal, bootPhase]);
 
   useEffect(() => {
+    if (bgOnly) return;
     if (bootPhase !== "ready" || bootTelemetrySentRef.current) return;
     bootTelemetrySentRef.current = true;
     const now = performance.now();
@@ -569,14 +587,16 @@ export default function LoginPage() {
     orionReady,
     orionState,
     reduced,
+    bgOnly,
   ]);
 
   useEffect(() => {
+    if (bgOnly) return undefined;
     if (bootPhase !== "reveal") return undefined;
     const revealMs = reduced ? BOOT_REVEAL_MS_REDUCED : BOOT_REVEAL_MS;
     const t = window.setTimeout(() => setBootPhase("ready"), revealMs);
     return () => clearTimeout(t);
-  }, [bootPhase, reduced]);
+  }, [bootPhase, reduced, bgOnly]);
 
   const handleOrionReady = useCallback(() => {
     setOrionReady(true);
@@ -593,6 +613,7 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
+    if (bgOnly) return;
     if (bootPhase !== "ready" || postWarmupRef.current) return;
     postWarmupRef.current = true;
     const warmupStartedAt = performance.now();
@@ -604,7 +625,7 @@ export default function LoginPage() {
         console.debug("[login-boot] warmup", { deployTarget, took, hadFailures });
       })
       .catch(() => undefined);
-  }, [bootPhase]);
+  }, [bootPhase, bgOnly]);
 
   const [mode, setMode] = useState<Mode>("login");
   const [userId, setUserId] = useState("");
@@ -667,6 +688,7 @@ export default function LoginPage() {
       data-orion={orionReady ? "ready" : "loading"}
       data-auth={authState}
       data-data={dataState}
+      data-bg-only={bgOnly ? "1" : undefined}
       data-boot-timeout={bootTimeoutReached ? "1" : undefined}
       data-boot-fallback={bootTimeoutReached
         ? "watchdog"
@@ -675,85 +697,89 @@ export default function LoginPage() {
       {/* фон и кибер-слой строго позади карточки */}
       <div className="ax-login__bg" aria-hidden>
         <OrionCityBackground
-          enabled={!reduced}
+          enabled={bgOnly ? true : !reduced}
           reducedMotion={reduced}
           onReady={handleOrionReady}
           onError={handleOrionError}
           onProgress={handleOrionProgress}
         />
       </div>
-      <div className="ax-login__frame" aria-hidden />
-      <CyberDeckOverlay root={rootRef} />
-      <BootSequence
-        phase={bootPhase}
-        reduced={reduced}
-        lineStates={lineStates}
-        progress={bootProgress}
-        stalled={bootTimeoutReached && !orionReady && !orionError}
-      />
+      {!bgOnly && (
+        <>
+          <div className="ax-login__frame" aria-hidden />
+          <CyberDeckOverlay root={rootRef} />
+          <BootSequence
+            phase={bootPhase}
+            reduced={reduced}
+            lineStates={lineStates}
+            progress={bootProgress}
+            stalled={bootTimeoutReached && !orionReady && !orionError}
+          />
 
-      <div className="ax-container">
-        <form
-          className={cardClasses.join(" ")}
-          onSubmit={handleSubmit}
-          aria-busy={busy}
-          aria-hidden={isBooting ? "true" : undefined}
-          style={isBooting ? { pointerEvents: "none" } : undefined}
-          noValidate
-        >
-          <div className="ax-login-head">
-            <div className="ax-login-emblem" aria-hidden><SealDisk /></div>
-            <h1 id="login-title" className="ax-blade-head">{title}</h1>
-            <div className="ax-hr ax-hr--viktor" aria-hidden />
-            <p className="ax-login-sub">{subtitle}</p>
-            <div className="ax-login-meta">
-              <span className="ax-chip" data-variant={chipVariant}>{chipLabel}</span>
-              <span className="ax-chip" data-variant="level">RED PROTOCOL</span>
+          <div className="ax-container">
+            <form
+              className={cardClasses.join(" ")}
+              onSubmit={handleSubmit}
+              aria-busy={busy}
+              aria-hidden={isBooting ? "true" : undefined}
+              style={isBooting ? { pointerEvents: "none" } : undefined}
+              noValidate
+            >
+              <div className="ax-login-head">
+                <div className="ax-login-emblem" aria-hidden><SealDisk /></div>
+                <h1 id="login-title" className="ax-blade-head">{title}</h1>
+                <div className="ax-hr ax-hr--viktor" aria-hidden />
+                <p className="ax-login-sub">{subtitle}</p>
+                <div className="ax-login-meta">
+                  <span className="ax-chip" data-variant={chipVariant}>{chipLabel}</span>
+                  <span className="ax-chip" data-variant="level">RED PROTOCOL</span>
+                </div>
+              </div>
+
+              <div className="ax-login-fields ax-stack-sm" aria-describedby={err ? idErr : caps ? idCaps : undefined}>
+                <label className="ax-visually-hidden" htmlFor={idUser}>User ID</label>
+                <input id={idUser} className={`ax-input${err ? " is-invalid" : ""}`} name="user" placeholder="USER ID"
+                  value={userId} onChange={(e) => setUserId(e.target.value)} autoComplete="username" aria-invalid={err ? "true" : undefined} disabled={busy} />
+                <label className="ax-visually-hidden" htmlFor={idKey}>Access Key</label>
+                <input id={idKey} className={`ax-input${err ? " is-invalid" : ""}`} name="key" placeholder="ACCESS KEY" type="password"
+                  value={password} onChange={(e) => setPassword(e.target.value)} onKeyUp={handleCaps}
+                  autoComplete={mode === "login" ? "current-password" : "new-password"} aria-invalid={err ? "true" : undefined} disabled={busy} />
+                {caps && !err && <div id={idCaps} className="ax-login-hint" role="status" aria-live="polite">Caps Lock is ON</div>}
+                {err && <div id={idErr} role="alert" aria-live="assertive" className="ax-login-error">{err}</div>}
+              </div>
+
+              <div className="ax-row ax-login-actions">
+                <button type="button" className="ax-btn ghost" onClick={handleToggleMode} disabled={busy}>
+                  {mode === "login" ? "REQUEST ACCESS" : "BACK TO LOGIN"}
+                </button>
+                <button type="submit" className="ax-btn primary" disabled={busy}>
+                  {busy ? "CHECKING…" : mode === "login" ? "ENTRANCE" : "REGISTER"}
+                </button>
+              </div>
+
+              <div className="ax-hr ax-hr--viktor slim" aria-hidden />
+              <small className="ax-login-foot"><span className="ax-foot-box">AXIOM DESIGN © 2025 • RED PROTOCOL</span></small>
+            </form>
+          </div>
+
+          {/* hover-reveal hint bar at the bottom (triggered by red pill) */}
+          <div className="ax-bottom-hint" role="note" aria-label="AXIOM bottom hint">
+            <button
+              type="button"
+              className="ax-bottom-hint__pill"
+              aria-label="Show hint"
+              // aria-expanded булев флаг потребует JS — оставляем без него
+            />
+            <div className="ax-bottom-hint__panel">
+              <span className="ax-bottom-hint__brand">AXIOM SIGNAL © 2025 • RED PROTOCOL</span>
+              <span className="ax-bottom-hint__sep"> </span>
+              <span className="ax-bottom-hint__text">
+                CHANNEL: LOGIN • STATUS: ONLINE • TIP: USE DEMO CREDS TO EXPLORE THE PANEL.
+              </span>
             </div>
           </div>
-
-          <div className="ax-login-fields ax-stack-sm" aria-describedby={err ? idErr : caps ? idCaps : undefined}>
-            <label className="ax-visually-hidden" htmlFor={idUser}>User ID</label>
-            <input id={idUser} className={`ax-input${err ? " is-invalid" : ""}`} name="user" placeholder="USER ID"
-              value={userId} onChange={(e) => setUserId(e.target.value)} autoComplete="username" aria-invalid={err ? "true" : undefined} disabled={busy} />
-            <label className="ax-visually-hidden" htmlFor={idKey}>Access Key</label>
-            <input id={idKey} className={`ax-input${err ? " is-invalid" : ""}`} name="key" placeholder="ACCESS KEY" type="password"
-              value={password} onChange={(e) => setPassword(e.target.value)} onKeyUp={handleCaps}
-              autoComplete={mode === "login" ? "current-password" : "new-password"} aria-invalid={err ? "true" : undefined} disabled={busy} />
-            {caps && !err && <div id={idCaps} className="ax-login-hint" role="status" aria-live="polite">Caps Lock is ON</div>}
-            {err && <div id={idErr} role="alert" aria-live="assertive" className="ax-login-error">{err}</div>}
-          </div>
-
-          <div className="ax-row ax-login-actions">
-            <button type="button" className="ax-btn ghost" onClick={handleToggleMode} disabled={busy}>
-              {mode === "login" ? "REQUEST ACCESS" : "BACK TO LOGIN"}
-            </button>
-            <button type="submit" className="ax-btn primary" disabled={busy}>
-              {busy ? "CHECKING…" : mode === "login" ? "ENTRANCE" : "REGISTER"}
-            </button>
-          </div>
-
-          <div className="ax-hr ax-hr--viktor slim" aria-hidden />
-          <small className="ax-login-foot"><span className="ax-foot-box">AXIOM DESIGN © 2025 • RED PROTOCOL</span></small>
-        </form>
-      </div>
-
-      {/* hover-reveal hint bar at the bottom (triggered by red pill) */}
-      <div className="ax-bottom-hint" role="note" aria-label="AXIOM bottom hint">
-        <button
-          type="button"
-          className="ax-bottom-hint__pill"
-          aria-label="Show hint"
-          // aria-expanded булев флаг потребует JS — оставляем без него
-        />
-        <div className="ax-bottom-hint__panel">
-          <span className="ax-bottom-hint__brand">AXIOM SIGNAL © 2025 • RED PROTOCOL</span>
-          <span className="ax-bottom-hint__sep"> </span>
-          <span className="ax-bottom-hint__text">
-            CHANNEL: LOGIN • STATUS: ONLINE • TIP: USE DEMO CREDS TO EXPLORE THE PANEL.
-          </span>
-        </div>
-      </div>
+        </>
+      )}
     </section>
   );
 }
