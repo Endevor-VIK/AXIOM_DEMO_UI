@@ -37,6 +37,7 @@ AXS_HEADER_META:
 - 2026-02-19T14:55:00+03:00 — Действие: Обновлена версия в status line: `app/routes/_layout.tsx` (`v0.2.3.1` -> `v0.2.4.0`). → Результат: OK
 - 2026-02-19T14:56:00+03:00 — Действие: Добавлен release entry в `public/data/news/manifest.json` для `NEWS-2026-02-19-SITE-V0-2-4-0`. → Результат: OK
 - 2026-02-19T14:57:00+03:00 — Действие: Создан файл `public/data/news/items/2026-02-19-site-v0-2-4-0.md` с объективными причинами повышения версии и ссылками на релевантные коммиты. → Результат: OK
+- 2026-02-19T15:12:00+03:00 — Действие: По запросу CREATOR расширен текст новости для Packet Reader: обновлён `summary` в `public/data/news/manifest.json` и детализация в `public/data/news/items/2026-02-19-site-v0-2-4-0.md`. → Результат: OK
 
 ## Step C — Documentation
 

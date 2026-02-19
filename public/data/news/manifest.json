@@ -12,7 +12,7 @@
       "devtools",
       "login"
     ],
-    "summary": "Подняли версию сайта до v0.2.4.0: добавлены admin/live-ops контуры, усилена надёжность auth/logout, стабилизирован локальный запуск и обновлён Orion login background.",
+    "summary": "Релиз v0.2.4.0 фиксирует крупный пакет улучшений: админка переведена на отдельный admin-auth контур (изоляция сессий и ролей), добавлены control center и URL command reference, усилены auth/logout сценарии (forced re-auth + стабильный audit/history), запущен Live Ops foundation (telemetry ingestion, snapshot/SSE, axchat JSONL audit, workspace tabs/multi-pane), а также стабилизированы локальный dev pipeline (run_local/tunnel fallback, no-auth default) и Orion login background.",
     "link": "/dashboard/news",
     "file": "items/2026-02-19-site-v0-2-4-0.md"
   },
