@@ -111,7 +111,7 @@ async function warmPrimaryRoutes(deployTarget: string) {
     import("@/app/routes/dashboard/content/CategoryRoute"),
     import("@/app/routes/dashboard/content/ReadRoute"),
     import("@/app/routes/dashboard/axchat/page"),
-    import("@/app/routes/dashboard/roadmap/page"),
+    import("@/app/routes/dashboard/chronicle/page"),
     import("@/app/routes/profile/page"),
     import("@/app/routes/settings/page"),
     import("@/app/routes/favorites/page"),

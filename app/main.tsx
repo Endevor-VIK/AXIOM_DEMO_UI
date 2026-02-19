@@ -20,7 +20,8 @@ import { initScaleManager } from '@/lib/ui/scaleManager'
 
 const AdminPage = React.lazy(() => import('@/app/routes/admin/page'))
 const DashboardPage = React.lazy(() => import('@/app/routes/dashboard/page'))
-const RoadmapPage = React.lazy(() => import('@/app/routes/dashboard/roadmap/page'))
+const ChroniclePage = React.lazy(() => import('@/app/routes/dashboard/chronicle/page'))
+const ChronicleChapterPage = React.lazy(() => import('@/app/routes/dashboard/chronicle/chapter'))
 const AuditPage = React.lazy(() => import('@/app/routes/dashboard/audit/page'))
 const AxchatPage = React.lazy(() => import('@/app/routes/dashboard/axchat/page'))
 const ContentLayout = React.lazy(() => import('@/app/routes/dashboard/content/_layout'))
@@ -71,7 +72,12 @@ const routes = [
         path: 'dashboard',
         children: [
           { index: true, element: withRouteSuspense(<DashboardPage />) },
-          { path: 'roadmap', element: withRouteSuspense(<RoadmapPage />) },
+          { path: 'chronicle', element: withRouteSuspense(<ChroniclePage />) },
+          {
+            path: 'chronicle/:chapterSlug',
+            element: withRouteSuspense(<ChronicleChapterPage />),
+          },
+          { path: 'roadmap', element: <Navigate to='/dashboard/chronicle' replace /> },
           { path: 'audit', element: withRouteSuspense(<AuditPage />) },
           { path: 'axchat', element: withRouteSuspense(<AxchatPage />) },
           {

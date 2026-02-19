@@ -10,7 +10,7 @@ export interface ContentFiltersProps {
 const SEARCH_DEBOUNCE_MS = 200
 
 const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
-  const { filters, availableTags, availableLanguages, features, loading } = useContentHub()
+  const { filters, availableTags, availableLanguages, loading } = useContentHub()
   const isDisabled = Boolean(disabled) || loading
   const [queryValue, setQueryValue] = useState(filters.query)
 
@@ -167,17 +167,6 @@ const ContentFilters: React.FC<ContentFiltersProps> = ({ disabled }) => {
           >
             Cards
           </button>
-          {features.orbitView ? (
-            <button
-              type='button'
-              className='ax-btn ghost'
-              data-active={filters.mode === 'orbit' ? 'true' : undefined}
-              onClick={() => filters.setMode('orbit')}
-              disabled={isDisabled}
-            >
-              Orbit
-            </button>
-          ) : null}
           <button
             type='button'
             className='ax-btn ghost'

@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Навигация по итерациям"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-16
+  last_updated: 2026-02-19
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -19,5 +19,6 @@ AXS_HEADER_META:
 - `ui-scale-normalization-v2.3.1/`
 - `axchat-echo-axiom/`
 - `0030_login-boot-loader-transition/`
+- `0047_story-chronicle-orbit-hub/`
 
 Правило: каждая итерация содержит `spec.md` и (если требуется) `*_LOG_LINK.md` рядом.

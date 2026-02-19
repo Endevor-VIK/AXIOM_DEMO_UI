@@ -8,7 +8,7 @@ import { resolveDeployTarget } from '@/lib/auth/deploy'
 const HELP_LINKS = [
   { label: 'Profile & Auth SoT', to: '/docs/identity_profile_auth/PROFILE_AUTH_SOT_v2.3.1.md' },
   { label: 'Profile/Auth Spec', to: '/docs/identity_profile_auth/AXIOM_PROFILE_AUTH_v2.3.1_SPEC.md' },
-  { label: 'Roadmap', to: '/dashboard/roadmap' },
+  { label: 'Chronicle', to: '/dashboard/chronicle' },
   { label: 'Content Hub', to: '/dashboard/content' },
 ]
 

@@ -112,7 +112,7 @@ export default function DashboardPage() {
           </div>
           <div className='ax-hr-blade' aria-hidden='true' />
           <div className='ax-dashboard__actions'>
-            <Link to='/dashboard/roadmap' className='ax-btn ghost ax-dashboard__action'>OPEN ROADMAP</Link>
+            <Link to='/dashboard/chronicle' className='ax-btn ghost ax-dashboard__action'>OPEN CHRONICLE</Link>
             {showAxchat ? (
               <Link to='/dashboard/axchat' className='ax-btn ghost ax-dashboard__action'>OPEN AXCHAT</Link>
             ) : null}

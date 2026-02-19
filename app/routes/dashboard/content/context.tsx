@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 
 import type {
   ContentAggregate,
@@ -7,7 +7,7 @@ import type {
   ContentStatus,
 } from '@/lib/vfs'
 
-export type ContentViewMode = 'browse' | 'cards' | 'orbit' | 'inspect'
+export type ContentViewMode = 'browse' | 'cards' | 'inspect'
 
 export interface ContentFiltersSnapshot {
   query: string
@@ -26,10 +26,6 @@ export interface ContentFiltersApi extends ContentFiltersSnapshot {
   reset(): void
 }
 
-export interface ContentFeatures {
-  orbitView: boolean
-}
-
 export interface ContentHubContextValue {
   aggregate: ContentAggregate | null
   loading: boolean
@@ -38,7 +34,6 @@ export interface ContentHubContextValue {
   categories: Record<'all' | ContentCategory, ContentCategorySummary>
   availableTags: string[]
   availableLanguages: string[]
-  features: ContentFeatures
   filters: ContentFiltersApi
   pinned: string[]
   togglePin(id: string): void

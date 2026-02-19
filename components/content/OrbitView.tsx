@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { ContentItem } from '@/lib/vfs'
 import { safeText } from '@/components/utils'
-import { pickContentImage } from '@/lib/content/pickContentImage'
 
 import { clampItemCount, rotationForIndex, snapIndex } from './orbitMath'
 import './orbit-view.css'
@@ -18,6 +17,20 @@ export interface OrbitViewProps {
 }
 
 const DEFAULT_MAX = 24
+const ORBIT_GLYPHS = ['◉', '◌', '⬢', '◈', '◎', '◍', '◒', '◬']
+
+function visualVariant(id: string, index: number): number {
+  let hash = 0
+  for (let i = 0; i < id.length; i += 1) {
+    hash = (hash << 5) - hash + id.charCodeAt(i)
+    hash |= 0
+  }
+  return Math.abs(hash + index) % 4
+}
+
+function glyphForIndex(index: number): string {
+  return ORBIT_GLYPHS[index % ORBIT_GLYPHS.length] ?? '◉'
+}
 
 function modIndex(value: number, count: number): number {
   if (count <= 0) return 0
@@ -154,7 +167,7 @@ export default function OrbitView({
       if (!draggingRef.current) return
       if (!capped.length || stepDeg === 0) return
       const deltaX = event.clientX - dragStartXRef.current
-      const sensitivity = 0.25 // deg per px
+      const sensitivity = 0.2 // deg per px
       const nextRotation = dragStartRotationRef.current + deltaX * sensitivity
       rotationRef.current = nextRotation
       applyRotation(nextRotation)
@@ -180,7 +193,7 @@ export default function OrbitView({
       event.preventDefault()
       const primary =
         Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
-      const wheelSensitivity = 0.18
+      const wheelSensitivity = 0.12
       rotationRef.current = rotationRef.current + primary * wheelSensitivity
       applyRotation(rotationRef.current)
       updateActiveIndex(snapIndex(rotationRef.current, stepDeg, capped.length))
@@ -191,7 +204,7 @@ export default function OrbitView({
       wheelSnapTimeoutRef.current = window.setTimeout(() => {
         const idx = snapIndex(rotationRef.current, stepDeg, capped.length)
         snapTo(idx)
-      }, 120)
+      }, 180)
     },
     [applyRotation, capped.length, reducedMotion, snapTo, stepDeg, updateActiveIndex],
   )
@@ -245,6 +258,7 @@ export default function OrbitView({
         <div className='ax-orbit-fallback__strip' role='listbox' aria-label='Items'>
           {capped.map((item) => {
             const isActive = item.id === activeId
+            const variant = visualVariant(item.id, 0)
             return (
               <button
                 key={item.id}
@@ -255,7 +269,11 @@ export default function OrbitView({
                 data-active={isActive ? 'true' : undefined}
                 onClick={() => onSelect(item.id)}
               >
-                <img src={pickContentImage(item)} alt={safeText(item.title)} loading='lazy' />
+                <span className='ax-orbit-fallback__visual' data-variant={variant}>
+                  <span className='ax-orbit-fallback__glyph' aria-hidden>
+                    {glyphForIndex(variant)}
+                  </span>
+                </span>
                 <span className='ax-orbit-fallback__title'>{safeText(item.title)}</span>
               </button>
             )
@@ -286,6 +304,7 @@ export default function OrbitView({
             const isActive = idx === activeIndex
             const theta = idx * stepDeg
             const transform = `translate(-50%, -50%) rotateY(${theta}deg) translateZ(${radius}px)`
+            const variant = visualVariant(item.id, idx)
             return (
               <div
                 key={item.id}
@@ -305,12 +324,12 @@ export default function OrbitView({
                   data-active={isActive ? 'true' : undefined}
                   onClick={() => onSelect(item.id)}
                 >
-                  <img
-                    src={pickContentImage(item)}
-                    alt={safeText(item.title)}
-                    className='ax-orbit__img'
-                    loading='lazy'
-                  />
+                  <span className='ax-orbit__visual' data-variant={variant}>
+                    <span className='ax-orbit__glyph' aria-hidden>
+                      {glyphForIndex(idx)}
+                    </span>
+                    <span className='ax-orbit__code'>{safeText(item.id).slice(-4).toUpperCase()}</span>
+                  </span>
                   <span className='ax-orbit__label'>
                     <span className='ax-orbit__title'>{safeText(item.title)}</span>
                     <span className='ax-orbit__meta'>

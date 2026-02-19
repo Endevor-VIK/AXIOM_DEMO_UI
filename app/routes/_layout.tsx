@@ -67,7 +67,7 @@ export default function Layout() {
   const navItems = useMemo<NavItem[]>(() => {
     const items: NavItem[] = [
       { to: '/dashboard', label: 'HOME', end: true },
-      { to: '/dashboard/roadmap', label: 'ROADMAP' },
+      { to: '/dashboard/chronicle', label: 'CHRONICLE' },
       { to: '/dashboard/axchat', label: 'AXCHAT' },
       { to: '/dashboard/content', label: 'CONTENT' },
       { to: '/dashboard/news', label: 'NEWS' },

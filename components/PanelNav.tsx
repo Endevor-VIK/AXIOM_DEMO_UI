@@ -16,7 +16,7 @@ export default function PanelNav({ onToggle }: PanelNavProps) {
   const navItems = useMemo(
     () => {
       const items = [
-        { to: '/dashboard/roadmap', label: 'ROADMAP' },
+        { to: '/dashboard/chronicle', label: 'CHRONICLE' },
         { to: '/dashboard/axchat', label: 'AXCHAT' },
         { to: '/dashboard/content', label: 'CONTENT' },
         { to: '/dashboard/news', label: 'NEWS' },

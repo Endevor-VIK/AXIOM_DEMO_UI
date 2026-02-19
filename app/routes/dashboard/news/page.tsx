@@ -200,8 +200,8 @@ function NewsDispatchPanel({
       </div>
 
       <div className='ax-news-pillar__links' aria-label='Quick routes'>
-        <Link className='ax-btn ghost' to='/dashboard/roadmap'>
-          ROADMAP
+        <Link className='ax-btn ghost' to='/dashboard/chronicle'>
+          CHRONICLE
         </Link>
         <Link className='ax-btn ghost' to='/dashboard/content'>
           CONTENT

@@ -73,15 +73,6 @@ function parseStatus(raw: string | null): ContentStatus | 'any' {
   return 'any'
 }
 
-function parseBoolFlag(value: unknown): boolean | null {
-  if (value == null) return null
-  const raw = String(value).trim().toLowerCase()
-  if (!raw) return null
-  if (raw === '1' || raw === 'true' || raw === 'yes' || raw === 'on') return true
-  if (raw === '0' || raw === 'false' || raw === 'no' || raw === 'off') return false
-  return null
-}
-
 const ContentLayout: React.FC = () => {
   const [aggregate, setAggregate] = useState<ContentAggregate | null>(null)
   const [loading, setLoading] = useState(true)
@@ -95,12 +86,6 @@ const ContentLayout: React.FC = () => {
     () => ensureTrailingSlash(((import.meta as any)?.env?.VITE_DATA_BASE as string) ?? 'data/'),
     []
   )
-
-  const orbitEnabled = useMemo(() => {
-    const raw = (import.meta as any)?.env?.VITE_FEATURE_ORBIT_VIEW
-    const forced = parseBoolFlag(raw)
-    return forced ?? Boolean(import.meta.env.DEV)
-  }, [])
 
   useEffect(() => {
     let alive = true
@@ -134,24 +119,20 @@ const ContentLayout: React.FC = () => {
     const legacyView = (searchParams.get('view') ?? '').trim().toLowerCase()
 
     let mode: ContentViewMode = DEFAULT_FILTERS.mode
-    if (modeParam === 'browse' || modeParam === 'cards' || modeParam === 'orbit' || modeParam === 'inspect') {
+    if (modeParam === 'browse' || modeParam === 'cards' || modeParam === 'inspect') {
       mode = modeParam as ContentViewMode
     } else if (legacyLayout === 'inspect') {
       mode = 'inspect'
     } else if (legacyView === 'orbit') {
-      mode = 'orbit'
+      mode = 'cards'
     } else if (legacyView === 'cards') {
       mode = 'cards'
     } else {
       mode = 'browse'
     }
 
-    if (mode === 'orbit' && !orbitEnabled) {
-      mode = DEFAULT_FILTERS.mode
-    }
-
     return { query, tag, status, lang, mode }
-  }, [orbitEnabled, searchParams])
+  }, [searchParams])
 
   const updateSearchParam = useCallback(
     (key: string, value: string | null) => {
@@ -177,10 +158,8 @@ const ContentLayout: React.FC = () => {
         // Migrate away from legacy params.
         next.delete('layout')
         next.delete('view')
-
-        const safeValue = value === 'orbit' && !orbitEnabled ? DEFAULT_FILTERS.mode : value
-        if (safeValue === DEFAULT_FILTERS.mode) next.delete('mode')
-        else next.set('mode', safeValue)
+        if (value === DEFAULT_FILTERS.mode) next.delete('mode')
+        else next.set('mode', value)
         setSearchParams(next, { replace: true })
       },
       reset: () => {
@@ -197,7 +176,7 @@ const ContentLayout: React.FC = () => {
         setSearchParams(next, { replace: true })
       },
     }),
-    [filters, orbitEnabled, searchParams, updateSearchParam, setSearchParams]
+    [filters, searchParams, updateSearchParam, setSearchParams]
   )
 
   const categoryCounts = useMemo<Record<ContentCategoryKey, number>>(() => {
@@ -325,9 +304,6 @@ const ContentLayout: React.FC = () => {
       categories, // было: categoryCounts — теперь корректный тип
       availableTags,
       availableLanguages,
-      features: {
-        orbitView: orbitEnabled,
-      },
       filters: filtersApi,
       pinned: pinnedContentIds,
       togglePin,
@@ -341,7 +317,6 @@ const ContentLayout: React.FC = () => {
       categories, // keep dependency on computed summaries
       availableTags,
       availableLanguages,
-      orbitEnabled,
       filtersApi,
       pinnedContentIds,
       togglePin,

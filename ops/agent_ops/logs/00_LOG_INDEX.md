@@ -65,4 +65,5 @@ AXS_HEADER_META:
 | 0044 | 2026-02-18T01:17:24+03:00 | Admin URL command reference panel (`?debug=1` and related params) | main | — | ops/agent_ops/logs/0044_admin-url-command-reference-panel.md | DONE |
 | 0045 | 2026-02-18T15:57:11+03:00 | Admin Live Ops foundation (telemetry/snapshot/SSE/axchat audit) | main | docs/iterations/0062_admin-console-pro-live-ops/spec.md | ops/agent_ops/logs/0045_admin-live-ops-foundation.md | ACTIVE |
 | 0046 | 2026-02-19T14:54:00+03:00 | Поднять версию сайта до v0.2.4.0 + зафиксировать причины bump | main | — | ops/agent_ops/logs/0046_site-version-bump-v0-2-4-0.md | DONE |
+| 0047 | 2026-02-19T16:11:10+03:00 | STORY HUB (ex-ROADMAP): подробный перспективный SPEC (Orbit перенос + standalone главы) | main | docs/iterations/0047_story-chronicle-orbit-hub/SPEC.md | ops/agent_ops/logs/0047_story-chronicle-orbit-hub.md | PAUSED (REWORK REQUIRED) |
 > Добавляй новые строки сверху или снизу, сохраняя сортировку по ID (4 цифры).

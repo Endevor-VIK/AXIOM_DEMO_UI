@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ContentList from '@/components/ContentList'
-import OrbitView from '@/components/content/OrbitView'
 import { trackContentView } from '@/lib/analytics'
 import type { ContentCategory, ContentItem, ContentStatus } from '@/lib/vfs'
 import '@/styles/content-hub-v2.css'
@@ -110,7 +109,6 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
   const isDesktopWide = useMediaQuery('(min-width: 1440px)')
   const isTablet = useMediaQuery('(min-width: 768px)')
   const isMobileWide = useMediaQuery('(min-width: 480px)')
-  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   const mode = filters.mode
 
   useEffect(() => {
@@ -344,43 +342,11 @@ const ContentCategoryView: React.FC<ContentCategoryViewProps> = ({ category }) =
     </>
   )
 
-  const orbitStage = (
-    <OrbitView
-      items={ordered}
-      activeId={selectedItem?.id ?? null}
-      onSelect={(id) => {
-        const target = ordered.find((entry) => entry.id === id)
-        if (target) handleSelect(target)
-      }}
-      reducedMotion={reducedMotion || !isDesktop}
-      maxItems={24}
-      onExit={() => filters.setMode('cards')}
-    />
-  )
-
   // Mobile / narrow layout: single stage, selection opens reader.
   if (!isDesktop) {
     return (
       <div className='ax-content-browse' data-mode={mode}>
-        {mode === 'orbit' ? orbitStage : mode === 'cards' ? cardsStage : listStage}
-      </div>
-    )
-  }
-
-  if (mode === 'orbit') {
-    return (
-      <div className='ax-content-orbit' data-mode='orbit'>
-        <div className='ax-content-orbit__actions' role='group' aria-label='Orbit actions'>
-          <button type='button' className='ax-btn ghost' onClick={() => filters.setMode('cards')}>
-            Back to Cards
-          </button>
-          <button type='button' className='ax-btn' onClick={() => filters.setMode('inspect')}>
-            Open Inspect
-          </button>
-        </div>
-        <div className='ax-content-stage' aria-label='Orbit stage'>
-          {orbitStage}
-        </div>
+        {mode === 'cards' ? cardsStage : listStage}
       </div>
     )
   }

@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "version": 1,
+    "generatedAt": "2026-02-19T17:05:00.000Z",
+    "source": "manual-seed-from-canon-v3"
+  },
+  "chapters": [
+    {
+      "id": "STR-PROLOGUE-000",
+      "slug": "prologue-world-after-black-sun",
+      "chapterCode": "PROLOGUE_00",
+      "title": "Мир после Черного Солнца",
+      "status": "draft",
+      "hook": "Мир пережил удар, но утратил память и контроль.",
+      "summary": "Литературное вступление в AXIOM: катастрофа, корпоративный порядок и трещины в реальности.",
+      "keyEvents": [
+        "Катастрофа Black Sun",
+        "Падение Aeternum",
+        "Формирование корпоративного контроля"
+      ],
+      "mainCharacters": [
+        "VIKTOR",
+        "LIZA",
+        "AXIOM"
+      ],
+      "locations": [
+        "ECHELON",
+        "UNDERCITY",
+        "NEXUS"
+      ],
+      "tone": "cold-tense",
+      "styleProfile": "prologue_ash_noir",
+      "targetRoute": "/dashboard/chronicle/prologue-world-after-black-sun",
+      "cover": "/assets/content/echelon-core.png",
+      "canonRefs": [
+        "canon/v3/04_STORY_STRUCTURE/04.02_PROLOGUE.md"
+      ],
+      "siteLinks": [
+        "/dashboard/content/lore",
+        "/dashboard/news"
+      ]
+    },
+    {
+      "id": "STR-INTRO-001",
+      "slug": "intro-deaf-station-first-signal",
+      "chapterCode": "INTRO_01",
+      "title": "Глухая станция: первый сигнал",
+      "status": "draft",
+      "hook": "Первый импульс из глубины запускает охоту за правдой.",
+      "summary": "Виктор и Лиза выходят на след архива Endeavor под Undercity и впервые вступают в прямой конфликт.",
+      "keyEvents": [
+        "Сигнал из заброшенного узла",
+        "Контакт с отрядом Endeavor",
+        "Доступ к закрытому контейнеру"
+      ],
+      "mainCharacters": [
+        "VIKTOR",
+        "LIZA",
+        "MR. X"
+      ],
+      "locations": [
+        "UNDERCITY",
+        "RUSTFIELD ZONE"
+      ],
+      "tone": "urban-paranoid",
+      "styleProfile": "intro_signal_glitch",
+      "targetRoute": "/dashboard/chronicle/intro-deaf-station-first-signal",
+      "cover": "/assets/content/echelon-undercity.png",
+      "canonRefs": [
+        "canon/v3/04_STORY_STRUCTURE/04.02_PROLOGUE.md",
+        "canon/v3/04_STORY_STRUCTURE/04.01_FIRST_CHAPTER.md"
+      ],
+      "siteLinks": [
+        "/dashboard/content/characters",
+        "/dashboard/content/events"
+      ]
+    },
+    {
+      "id": "STR-CHAPTER-010",
+      "slug": "chapter-01-shards-of-control",
+      "chapterCode": "CHAPTER_01",
+      "title": "Осколки контроля",
+      "status": "draft",
+      "hook": "Каждая новая улика ломает официальную версию катастрофы.",
+      "summary": "Глава про внутренний конфликт контроля и свободы: герои вскрывают связи AXIOM, Nexus и корпоративных протоколов.",
+      "keyEvents": [
+        "Расшифровка фрагментов архива",
+        "Идентификация протокола LIMBO",
+        "Первый след AXIO"
+      ],
+      "mainCharacters": [
+        "VIKTOR",
+        "LIZA",
+        "AXIO"
+      ],
+      "locations": [
+        "ECHELON MIDZONE",
+        "NEXUS PERIMETER"
+      ],
+      "tone": "forensic-thriller",
+      "styleProfile": "chapter01_control_shards",
+      "targetRoute": "/dashboard/chronicle/chapter-01-shards-of-control",
+      "cover": "/assets/content/nightmare-benchmark.png",
+      "canonRefs": [
+        "canon/v3/04_STORY_STRUCTURE/04.01_FIRST_CHAPTER.md"
+      ],
+      "siteLinks": [
+        "/dashboard/content/technologies",
+        "/dashboard/content/factions"
+      ]
+    },
+    {
+      "id": "STR-CHAPTER-020",
+      "slug": "chapter-02-protocol-omega",
+      "chapterCode": "CHAPTER_02",
+      "title": "Протокол Ω",
+      "status": "draft",
+      "hook": "Система фиксирует аномалию: сценарий выходит за пределы прогноза.",
+      "summary": "Teaser следующей фазы: рост переменных, эскалация протоколов и переход к автономным chapter-потокам.",
+      "keyEvents": [
+        "Срабатывание протокола Ω",
+        "Нарушение корпоративного периметра",
+        "Запуск Ghost-level доступа"
+      ],
+      "mainCharacters": [
+        "AXIOM",
+        "VIKTOR",
+        "LIZA"
+      ],
+      "locations": [
+        "ECHELON CORE",
+        "DEAD CITY EDGE"
+      ],
+      "tone": "escalation-noir",
+      "styleProfile": "chapter02_omega_teaser",
+      "targetRoute": "/dashboard/chronicle/chapter-02-protocol-omega",
+      "cover": "/assets/content/accelerator-core.png",
+      "canonRefs": [
+        "canon/v3/04_STORY_STRUCTURE/04.01_FIRST_CHAPTER.md",
+        "canon/v3/04_STORY_STRUCTURE/04.02_PROLOGUE.md"
+      ],
+      "siteLinks": [
+        "/dashboard/news",
+        "/dashboard/content/all"
+      ]
+    }
+  ]
+}
