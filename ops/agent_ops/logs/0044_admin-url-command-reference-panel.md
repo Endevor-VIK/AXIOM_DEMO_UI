@@ -58,3 +58,4 @@ AXS_HEADER_META:
 ## Step E — Git
 
 - 2026-02-18T01:19:23+03:00 — Commit: `115007e` — `feat(admin): add URL command reference panel` — Файлы: `app/routes/admin/page.tsx`, `styles/admin-console.css`, `lib/admin/urlCommandReference.ts`, `ops/agent_ops/logs/0044_admin-url-command-reference-panel.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`.
+- 2026-02-20T00:44:58+03:00 — Commit: `93ccd4d` — `feat(admin): add bg-only login commands to URL reference` — Файлы: `lib/admin/urlCommandReference.ts`, `ops/agent_ops/logs/0044_admin-url-command-reference-panel.md`.
