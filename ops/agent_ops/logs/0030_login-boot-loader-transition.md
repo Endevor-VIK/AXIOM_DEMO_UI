@@ -212,6 +212,7 @@ AXS_HEADER_META:
 - 2026-02-19T20:55:52+03:00 — Commit: `a4657cc` — `fix(login-bg): diagnose skyline overlaps and stabilize Orion layout` — Файлы: `components/login/OrionCityBackground.tsx`, `public/assets/orion/original/sky4k-75.avif`, `public/assets/orion/original/video-atlas.mp4`, `public/assets/orion/original/video-atlas-ultra.mp4`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 - 2026-02-19T20:58:18+03:00 — Commit: `f72b03a` — `chore(agent-ops): record Orion diagnostics commit details` — Файлы: `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 - 2026-02-19T21:50:05+03:00 — Commit: `0f1f56e` — `docs(0030): extend Orion visual parity specification` — Файлы: `docs/iterations/0030_login-boot-loader-transition/SPEC.md`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
+- 2026-02-19T21:54:36+03:00 — Commit: `3fa6623` — `chore(agent-ops): record 0030 Orion spec extension commit` — Файлы: `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 
 ---
 
