@@ -24,14 +24,7 @@ type BuildingAsset = {
 };
 
 const BUILDING_USE_SET2 = new Set(["building1.glb", "building2.glb", "building5.glb"]);
-const BUILDING_USE_ORIGINAL = new Set<string>([
-  "building3.glb",
-  "building6.glb",
-  "building7.glb",
-  "building8.glb",
-  "building9.glb",
-  "building10.glb",
-]);
+const BUILDING_USE_ORIGINAL = new Set<string>();
 
 const CUSTOM_BUILDING_SPECS: BuildingSpec[] = [
   {
@@ -1092,15 +1085,20 @@ export function OrionCityBackground({
               originalMaterial = src.clone();
               if ((originalMaterial as any).isMeshStandardMaterial) {
                 const mm = originalMaterial as any;
-                const baseEmissive = Number(mm.emissiveIntensity || (mm.emissiveMap ? 1.1 : 0.7));
-                if (mm.emissiveMap) {
-                  mm.emissive = new THREE.Color(0xffffff);
-                  mm.emissiveIntensity = Math.min(2.2, Math.max(1.1, baseEmissive * 1.2));
+                // Guard against fallback-gray buildings: keep original only when it has real texture input.
+                if (!mm.map && !mm.emissiveMap) {
+                  originalMaterial = undefined;
                 } else {
-                  mm.emissiveIntensity = Math.min(1.35, Math.max(0.7, baseEmissive));
+                  const baseEmissive = Number(mm.emissiveIntensity || (mm.emissiveMap ? 1.1 : 0.7));
+                  if (mm.emissiveMap) {
+                    mm.emissive = new THREE.Color(0xffffff);
+                    mm.emissiveIntensity = Math.min(2.2, Math.max(1.1, baseEmissive * 1.2));
+                  } else {
+                    mm.emissiveIntensity = Math.min(1.35, Math.max(0.7, baseEmissive));
+                  }
+                  mm.envMapIntensity = Math.max(Number(mm.envMapIntensity || 0), 0.12);
+                  mm.side = THREE.DoubleSide;
                 }
-                mm.envMapIntensity = Math.max(Number(mm.envMapIntensity || 0), 0.12);
-                mm.side = THREE.DoubleSide;
               }
               if (originalMaterial) sceneMaterials.add(originalMaterial);
             }
@@ -1498,12 +1496,12 @@ export function OrionCityBackground({
               emissiveMap: map,
               color: 0xffffff,
               emissive: new THREE.Color(0xffffff),
-              emissiveIntensity: (0.56 + brightness * 0.24) * readabilityBoost,
+              emissiveIntensity: (0.86 + brightness * 0.32) * readabilityBoost,
               roughness: 0.44,
               metalness: 0.12,
               transparent: true,
-              opacity: 0.9,
-              alphaTest: 0.06,
+              opacity: 0.96,
+              alphaTest: 0.04,
               depthWrite: false,
               side: THREE.DoubleSide,
             }));
@@ -1541,12 +1539,12 @@ export function OrionCityBackground({
           world.add(billboardGroup);
 
           const anchors = [
-            { x: centerX - 640, y: cityGroundY + 194, z: centerZ - 214, yaw: 0.47, w: 42, h: 338, offset: 46 },
-            { x: centerX + 646, y: cityGroundY + 188, z: centerZ - 208, yaw: -0.46, w: 40, h: 330, offset: 46 },
-            { x: centerX - 716, y: cityGroundY + 258, z: centerZ - 372, yaw: 0.53, w: 36, h: 308, offset: 44 },
-            { x: centerX + 724, y: cityGroundY + 252, z: centerZ - 360, yaw: -0.51, w: 35, h: 300, offset: 44 },
-            { x: centerX - 792, y: cityGroundY + 322, z: centerZ - 566, yaw: 0.58, w: 32, h: 278, offset: 42 },
-            { x: centerX + 804, y: cityGroundY + 316, z: centerZ - 552, yaw: -0.57, w: 32, h: 274, offset: 42 },
+            { x: centerX - 640, y: cityGroundY + 194, z: centerZ - 214, yaw: 0.47, w: 54, h: 338, offset: 58 },
+            { x: centerX + 646, y: cityGroundY + 188, z: centerZ - 208, yaw: -0.46, w: 52, h: 330, offset: 58 },
+            { x: centerX - 716, y: cityGroundY + 258, z: centerZ - 372, yaw: 0.53, w: 46, h: 308, offset: 54 },
+            { x: centerX + 724, y: cityGroundY + 252, z: centerZ - 360, yaw: -0.51, w: 44, h: 300, offset: 54 },
+            { x: centerX - 792, y: cityGroundY + 322, z: centerZ - 566, yaw: 0.58, w: 40, h: 278, offset: 50 },
+            { x: centerX + 804, y: cityGroundY + 316, z: centerZ - 552, yaw: -0.57, w: 40, h: 274, offset: 50 },
           ];
           const targetCount = Math.min(billboardCfg.count, anchors.length);
 
@@ -1567,12 +1565,12 @@ export function OrionCityBackground({
               emissiveMap: tex,
               color: 0xffffff,
               emissive: new THREE.Color(0xffffff),
-              emissiveIntensity: 0.68 + rnd() * 0.18,
+              emissiveIntensity: 0.94 + rnd() * 0.24,
               roughness: 0.48,
               metalness: 0.09,
               transparent: true,
-              opacity: 0.88,
-              alphaTest: 0.06,
+              opacity: 0.96,
+              alphaTest: 0.04,
               depthWrite: false,
               side: THREE.DoubleSide,
             }));
