@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-18
+  last_updated: 2026-02-20
   editable_by_agents: true
   change_policy: "Append-only"
 -->
@@ -42,6 +42,8 @@ AXS_HEADER_META:
 - 2026-02-18T01:14:00+03:00 — Действие: Создан источник данных `lib/admin/urlCommandReference.ts` с полным справочником параметров (команда, страницы, значения, описание, пример, legacy-метка). → Результат: OK
 - 2026-02-18T01:15:00+03:00 — Действие: В `app/routes/admin/page.tsx` добавлен новый блок `Командная панель (URL справочник)` с таблицей и поддержкой сворачивания/разворачивания. → Результат: OK
 - 2026-02-18T01:16:00+03:00 — Действие: В `styles/admin-console.css` добавлены стили для табличного вывода команд и бейджа `legacy`. → Результат: OK
+- 2026-02-20T00:37:22+03:00 — Действие: По запросу CREATOR расширен справочник URL-команд для login: добавлены параметры `bgOnly` и `orionBgOnly` (режим “только фон” для визуальных тестов Orion, без login-UI). → Результат: OK
+  - Обновлено: `lib/admin/urlCommandReference.ts`
 
 ## Step C — Documentation
 
@@ -51,6 +53,7 @@ AXS_HEADER_META:
 
 - 2026-02-18T01:16:34+03:00 — Действие: `npm run build -- --emptyOutDir`. → Результат: PASS.
 - 2026-02-18T01:16:42+03:00 — Действие: `npm run test:run -- tests/adminAuthIsolation.spec.ts`. → Результат: PASS (3/3).
+- 2026-02-20T00:37:22+03:00 — Действие: `npm run build` после обновления URL-справочника. → Результат: PASS.
 
 ## Step E — Git
 

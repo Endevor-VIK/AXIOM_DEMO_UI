@@ -37,6 +37,24 @@ export const ADMIN_URL_COMMANDS_REFERENCE: AdminUrlCommandReference[] = [
     example: '/login?orionQuality=low',
   },
   {
+    key: 'bgOnly',
+    command: 'bgOnly',
+    pages: '/login',
+    values: '1 | true | yes | on | bg',
+    description:
+      'Shows only Orion background for visual tests (hides login card, boot overlay and UI chrome).',
+    example: '/login?bgOnly=1',
+  },
+  {
+    key: 'orionBgOnly',
+    command: 'orionBgOnly',
+    pages: '/login',
+    values: '1 | true | yes | on | bg',
+    description:
+      'Alias of bgOnly. Forces background-only login mode for Orion scene checks.',
+    example: '/login?orionBgOnly=1',
+  },
+  {
     key: 'q',
     command: 'q',
     pages: '/dashboard/content/*',
@@ -130,4 +148,3 @@ export const ADMIN_URL_COMMANDS_REFERENCE: AdminUrlCommandReference[] = [
     status: 'legacy',
   },
 ]
-
