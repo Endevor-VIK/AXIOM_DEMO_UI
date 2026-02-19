@@ -36,6 +36,7 @@ AXS_HEADER_META:
 - 2026-02-16T20:03:44+03:00 — Действие: по запросу CREATOR подготовлен план S0-S5 для вывода 0030 на новый уровень и отдельный SPEC с quality gates; зафиксированы блокеры (typecheck + отсутствие выделенного e2e login gate) → Результат: OK
 - 2026-02-19T16:50:20+03:00 — Действие: Разобраны свежие кропы CREATOR по «грязным» фасадам; подтверждено, что `building7..10` используют собственные baked-материалы, а `building1/2/5/6` идут через shared-set. Критичный регресс: `building7.glb` был исключён из `BUILDING_USE_ORIGINAL`, что давало UV-мусор/грязные пятна на части инстансов. → Результат: OK
 - 2026-02-19T20:39:27+03:00 — Действие: выполнена детальная forensic-диагностика текущего Orion login-рендера по запросу CREATOR (`debug=1`, runtime telemetry + сетевой трейс + сравнение anchor-координат billboard-слоёв). Подтверждены причины артефактов: (1) почти полное совпадение custom/orion billboard-позиций (расстояние 4.8–10.4 world units), (2) изменённая в прошлых правках skyline-density логика, (3) `video-atlas.mp4` не декодируется в Chromium (`HTMLMediaError code 4`), из-за чего animated-slot не активируется. → Результат: OK
+- 2026-02-19T21:44:24+03:00 — Действие: по запросу CREATOR выполнен аналитический срез "текущее состояние vs референс" и подготовлен roadmap достижения профессионального cyberpunk-уровня на текущих Orion-ресурсах. Зафиксированы достижимая планка (85-90% без новых 3D-паков), gap-контур и фазный OVP-план (P0-P6) с количественными gate-порогами. → Результат: OK
 
 ## Step B — Implementation
 - 2026-02-10T19:50:03+03:00 — Действие: Добавлен boot-sequence overlay и переход в login, подключены стили → Результат: OK
@@ -110,6 +111,8 @@ AXS_HEADER_META:
 - 2026-02-16T20:03:44+03:00 — Действие: создан SPEC для 0030 и LOG LINK, обновлены индекс задач и портал iterations → Результат: OK
   - Добавлено: `docs/iterations/0030_login-boot-loader-transition/SPEC.md`, `docs/iterations/0030_login-boot-loader-transition/SPEC_LOG_LINK.md`
   - Обновлено: `ops/agent_ops/logs/00_LOG_INDEX.md`, `docs/iterations/README.md`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
+- 2026-02-19T21:44:24+03:00 — Действие: выполнено подробное продолжение SPEC для Orion-итерации: добавлены разделы OVP (`P0-P6`), ресурсный аудит, gap-анализ относительно референса, O-gates, риски и финальные критерии приёмки визуального parity-трека. → Результат: OK
+  - Обновлено: `docs/iterations/0030_login-boot-loader-transition/SPEC.md`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 
 ## Step D — QA
 - 2026-02-10T19:50:03+03:00 — Действие: Локально не запускал, нужна проверка CREATOR → Результат: SKIP
