@@ -24,7 +24,12 @@ type BuildingAsset = {
 };
 
 const BUILDING_USE_SET2 = new Set(["building1.glb", "building2.glb", "building5.glb"]);
-const BUILDING_USE_ORIGINAL = new Set<string>();
+const BUILDING_USE_ORIGINAL = new Set<string>([
+  "building7.glb",
+  "building8.glb",
+  "building9.glb",
+  "building10.glb",
+]);
 
 const CUSTOM_BUILDING_SPECS: BuildingSpec[] = [
   {
@@ -654,19 +659,134 @@ export function OrionCityBackground({
       const textureAniso = Math.min(runtimeConfig.textures.anisotropy, maxAnisotropy);
       const rnd = createSeededRandom(runtimeConfig.seed);
       const rand = (min: number, max: number) => min + rnd() * (max - min);
+      const query = typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search)
+        : null;
+      const diagEnabled = Boolean(query && (query.get("debug") === "1" || query.get("orionDiag") === "1"));
+      const diagState: any = diagEnabled
+        ? {
+          quality: runtimeConfig.quality,
+          seed: runtimeConfig.seed,
+          media: {
+            skyBackdropLoaded: false,
+            videoAtlas: {
+              requested: [] as string[],
+              loaded: null as string | null,
+              failed: [] as string[],
+            },
+          },
+          buildings: {
+            placed: 0,
+            rejectedInCorridor: 0,
+            rejectedNearCenter: 0,
+            rejectedOverlap: 0,
+            ringAttempts: 0,
+            distantAttempts: 0,
+            overlapPairCount: 0,
+            overlapPairs: [] as any[],
+          },
+          billboards: {
+            requestedCount: runtimeConfig.billboards.count,
+            animatedRequested: runtimeConfig.billboards.animatedCount,
+            sourceCount: 0,
+            orionCount: 0,
+            customCount: 0,
+            customSkippedOverlap: 0,
+            animatedPlaced: 0,
+            overlapPairCount: 0,
+            overlapPairs: [] as any[],
+            occludedByBuildings: 0,
+            occludedSamples: [] as any[],
+            videoSliceTypes: [] as any[],
+          },
+          issues: [] as string[],
+        }
+        : null;
 
       const loadedTextures = new Set<ThreeTypes.Texture>();
-      const loadKtx = async (name: string, isColor = false) => {
-        const tex = await ktx2Loader.loadAsync(publicUrl(`assets/orion/original/high/${name}`));
+      const managedVideos: HTMLVideoElement[] = [];
+      const srgbColorSpace = (THREE as any).SRGBColorSpace ?? (THREE as any).sRGBEncoding;
+      const tuneTexture = (tex: ThreeTypes.Texture | null | undefined, isColor = false) => {
+        if (!tex) return;
         tex.flipY = false;
         tex.anisotropy = textureAniso;
         tex.minFilter = THREE.LinearMipmapLinearFilter;
         tex.magFilter = THREE.LinearFilter;
+        if (isColor) (tex as any).colorSpace = srgbColorSpace;
         tex.needsUpdate = true;
-        if (isColor) (tex as any).colorSpace = (THREE as any).SRGBColorSpace ?? (tex as any).colorSpace;
         loadedTextures.add(tex);
+      };
+      const textureLoader = new THREE.TextureLoader(loadingManager);
+      const loadImageOptional = async (relativePath: string, isColor = false) => {
+        try {
+          const tex = await textureLoader.loadAsync(publicUrl(relativePath));
+          tuneTexture(tex, isColor);
+          return tex;
+        } catch {
+          return null;
+        }
+      };
+      const loadVideoAtlasOptional = async (relativePath: string) => {
+        if (diagState) diagState.media.videoAtlas.requested.push(relativePath);
+        try {
+          const video = document.createElement("video");
+          video.src = publicUrl(relativePath);
+          video.loop = true;
+          video.muted = true;
+          video.playsInline = true;
+          video.preload = "auto";
+          managedVideos.push(video);
+
+          await new Promise<void>((resolve, reject) => {
+            let done = false;
+            let failReason = "video atlas load failed";
+            const finish = (ok: boolean) => {
+              if (done) return;
+              done = true;
+              window.clearTimeout(timer);
+              video.removeEventListener("loadeddata", onLoadedData);
+              video.removeEventListener("error", onError);
+              if (ok) resolve();
+              else reject(new Error(failReason));
+            };
+            const onLoadedData = () => finish(true);
+            const onError = () => {
+              const errCode = video.error?.code ?? "unknown";
+              failReason = `video atlas error code ${String(errCode)}`;
+              finish(false);
+            };
+            const timer = window.setTimeout(() => finish(true), 1800);
+            video.addEventListener("loadeddata", onLoadedData);
+            video.addEventListener("error", onError);
+            video.load();
+          });
+
+          const tex = new THREE.VideoTexture(video);
+          tex.generateMipmaps = false;
+          tex.minFilter = THREE.LinearFilter;
+          tex.magFilter = THREE.LinearFilter;
+          tex.wrapS = THREE.ClampToEdgeWrapping;
+          tex.wrapT = THREE.ClampToEdgeWrapping;
+          tuneTexture(tex, true);
+          void video.play().catch(() => undefined);
+          if (diagState && !diagState.media.videoAtlas.loaded) {
+            diagState.media.videoAtlas.loaded = relativePath;
+          }
+          return tex;
+        } catch (e) {
+          if (diagState) {
+            const reason = e instanceof Error ? e.message : "video atlas load failed";
+            diagState.media.videoAtlas.failed.push(`${relativePath} :: ${reason}`);
+          }
+          return null;
+        }
+      };
+      const loadKtx = async (name: string, isColor = false) => {
+        const tex = await ktx2Loader.loadAsync(publicUrl(`assets/orion/original/high/${name}`));
+        tuneTexture(tex, isColor);
         return tex;
       };
+      const wantsAnimatedBillboards = runtimeConfig.billboards.enabled && runtimeConfig.billboards.animatedCount > 0;
 
       const [
         mainDiffuse,
@@ -682,6 +802,7 @@ export function OrionCityBackground({
         flyingCarTex,
         arcadeAtlasTex,
         skyHdr,
+        skyBackdropTex,
       ] = await Promise.all([
         loadKtx("main-diffuse.ktx2", true),
         loadKtx("main-alpha.ktx2"),
@@ -696,7 +817,16 @@ export function OrionCityBackground({
         loadKtx("flying-car.ktx2", true),
         loadKtx("Arcade.ktx2", true),
         exrLoader.loadAsync(publicUrl("assets/orion/original/sky-512-HDR.exr")),
+        loadImageOptional("assets/orion/original/sky4k-75.avif", true),
       ]);
+      let billboardVideoAtlasTex: ThreeTypes.VideoTexture | null = null;
+      if (wantsAnimatedBillboards) {
+        const preferredPath = "assets/orion/original/video-atlas.mp4";
+        billboardVideoAtlasTex = await loadVideoAtlasOptional(preferredPath);
+        if (!billboardVideoAtlasTex) {
+          if (diagState) diagState.issues.push("video_atlas_unavailable");
+        }
+      }
 
       skyHdr.mapping = THREE.EquirectangularReflectionMapping;
       skyHdr.anisotropy = Math.min(Math.max(2, textureAniso), maxAnisotropy);
@@ -832,6 +962,24 @@ export function OrionCityBackground({
       skyDome.position.set(centerX, cityGroundY + 460, centerZ - 120);
       world.add(skyDome);
 
+      let skyBackdropMat: ThreeTypes.MeshBasicMaterial | null = null;
+      if (skyBackdropTex) {
+        if (diagState) diagState.media.skyBackdropLoaded = true;
+        skyBackdropMat = registerMaterial(new THREE.MeshBasicMaterial({
+          map: skyBackdropTex,
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.26,
+          side: THREE.BackSide,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        }));
+        const skyBackdrop = new THREE.Mesh(new THREE.SphereGeometry(2140, 36, 28), skyBackdropMat);
+        skyBackdrop.position.copy(skyDome.position);
+        skyBackdrop.rotation.y = Math.PI * 0.24;
+        world.add(skyBackdrop);
+      }
+
       const skyGlowGeo = new THREE.SphereGeometry(1800, 24, 18);
       const skyGlowMat = registerMaterial(new THREE.MeshBasicMaterial({
         color: 0x73d7ff,
@@ -954,12 +1102,14 @@ export function OrionCityBackground({
         metalness: materialCfg.building.metalness,
         roughness: materialCfg.building.roughness,
         envMapIntensity: materialCfg.building.envMapIntensity,
-        alphaTest: materialCfg.building.alphaTest,
+        alphaTest: runtimeConfig.quality === "ultra"
+          ? 0.08
+          : Math.min(materialCfg.building.alphaTest, 0.2),
         transparent: false,
         side: THREE.DoubleSide,
       }));
       if ("alphaToCoverage" in (set2Mat as any)) {
-        (set2Mat as any).alphaToCoverage = materialCfg.building.alphaToCoverage;
+        (set2Mat as any).alphaToCoverage = false;
       }
 
       const building4CustomMat = registerMaterial(new THREE.MeshStandardMaterial({
@@ -1089,15 +1239,20 @@ export function OrionCityBackground({
                 if (!mm.map && !mm.emissiveMap) {
                   originalMaterial = undefined;
                 } else {
-                  const baseEmissive = Number(mm.emissiveIntensity || (mm.emissiveMap ? 1.1 : 0.7));
+                  tuneTexture(mm.map ?? null, true);
+                  tuneTexture(mm.emissiveMap ?? null, true);
+                  tuneTexture(mm.roughnessMap ?? null, false);
+                  tuneTexture(mm.metalnessMap ?? null, false);
+                  const baseEmissive = Number(mm.emissiveIntensity || (mm.emissiveMap ? 1.15 : 0.75));
                   if (mm.emissiveMap) {
                     mm.emissive = new THREE.Color(0xffffff);
-                    mm.emissiveIntensity = Math.min(2.2, Math.max(1.1, baseEmissive * 1.2));
+                    mm.emissiveIntensity = Math.min(2.6, Math.max(1.35, baseEmissive * 1.25));
                   } else {
-                    mm.emissiveIntensity = Math.min(1.35, Math.max(0.7, baseEmissive));
+                    mm.emissiveIntensity = Math.min(1.5, Math.max(0.8, baseEmissive));
                   }
-                  mm.envMapIntensity = Math.max(Number(mm.envMapIntensity || 0), 0.12);
-                  mm.side = THREE.DoubleSide;
+                  mm.metalness = Math.min(0.16, Math.max(0.04, Number(mm.metalness ?? materialCfg.building.metalness)));
+                  mm.roughness = Math.min(0.9, Math.max(0.64, Number(mm.roughness ?? materialCfg.building.roughness)));
+                  mm.envMapIntensity = Math.max(Number(mm.envMapIntensity || 0), 0.16);
                 }
               }
               if (originalMaterial) sceneMaterials.add(originalMaterial);
@@ -1134,6 +1289,14 @@ export function OrionCityBackground({
         if (BUILDING_USE_SET2.has(name)) return set2Mat;
         return set1Mat;
       };
+      const buildingOccluders: ThreeTypes.Mesh[] = [];
+      const buildingFootprints: Array<{
+        name: string;
+        x: number;
+        z: number;
+        halfX: number;
+        halfZ: number;
+      }> = [];
 
       const placeBuilding = (cfg: {
         name: string;
@@ -1146,13 +1309,20 @@ export function OrionCityBackground({
         stretchZ?: number;
         scaleMul?: number;
         allowInCorridor?: boolean;
+        avoidHardOverlap?: boolean;
       }) => {
-        if (!cfg.allowInCorridor && inViewCorridor(cfg.x, cfg.z)) return;
+        if (!cfg.allowInCorridor && inViewCorridor(cfg.x, cfg.z)) {
+          if (diagState) diagState.buildings.rejectedInCorridor += 1;
+          return;
+        }
         if (!cfg.allowInCorridor) {
           const rel = new THREE.Vector2(cfg.x - baseCam.x, cfg.z - baseCam.z);
           const depth = rel.dot(viewDirXZ);
           const lateral = Math.abs(rel.dot(viewRightXZ));
-          if (depth > -80 && depth < 840 && lateral < 760) return;
+          if (depth > -80 && depth < 840 && lateral < 760) {
+            if (diagState) diagState.buildings.rejectedInCorridor += 1;
+            return;
+          }
         }
 
         const asset = buildingAssets.get(cfg.name);
@@ -1163,10 +1333,45 @@ export function OrionCityBackground({
         const mesh = new THREE.Mesh(asset.geometry, material);
 
         const srcH = Math.max(1, bounds.max.y - bounds.min.y);
-        const baseScale = (cfg.targetHeight / srcH) * (cfg.scaleMul ?? 1);
-        const sx = baseScale * (cfg.stretchX ?? 1);
+        const usesOriginalBaked = BUILDING_USE_ORIGINAL.has(cfg.name);
+        const targetHeight = usesOriginalBaked ? Math.min(cfg.targetHeight, 520) : cfg.targetHeight;
+        const baseScale = (targetHeight / srcH) * (cfg.scaleMul ?? 1);
+        const sxRaw = baseScale * (cfg.stretchX ?? 1);
         const sy = baseScale;
-        const sz = baseScale * (cfg.stretchZ ?? 1);
+        const szRaw = baseScale * (cfg.stretchZ ?? 1);
+        const sx = usesOriginalBaked
+          ? THREE.MathUtils.clamp(sxRaw, baseScale * 0.92, baseScale * 1.1)
+          : sxRaw;
+        const sz = usesOriginalBaked
+          ? THREE.MathUtils.clamp(szRaw, baseScale * 0.92, baseScale * 1.1)
+          : szRaw;
+        const halfX = Math.max(1, (bounds.max.x - bounds.min.x) * sx * 0.5);
+        const halfZ = Math.max(1, (bounds.max.z - bounds.min.z) * sz * 0.5);
+        if (cfg.avoidHardOverlap !== false) {
+          let hardOverlap = false;
+          for (const b of buildingFootprints) {
+            const minX = Math.max(cfg.x - halfX, b.x - b.halfX);
+            const maxX = Math.min(cfg.x + halfX, b.x + b.halfX);
+            const minZ = Math.max(cfg.z - halfZ, b.z - b.halfZ);
+            const maxZ = Math.min(cfg.z + halfZ, b.z + b.halfZ);
+            const ox = maxX - minX;
+            const oz = maxZ - minZ;
+            if (ox <= 0 || oz <= 0) continue;
+            const overlapArea = ox * oz;
+            const minArea = Math.min((halfX * 2) * (halfZ * 2), (b.halfX * 2) * (b.halfZ * 2));
+            const ratio = overlapArea / Math.max(1, minArea);
+            const dist = Math.hypot(cfg.x - b.x, cfg.z - b.z);
+            const overlapRadius = Math.max(halfX, halfZ, b.halfX, b.halfZ) * 1.08;
+            if (ratio > 0.58 && dist < overlapRadius) {
+              hardOverlap = true;
+              break;
+            }
+          }
+          if (hardOverlap) {
+            if (diagState) diagState.buildings.rejectedOverlap += 1;
+            return;
+          }
+        }
 
         mesh.scale.set(sx, sy, sz);
         mesh.rotation.y = cfg.yaw;
@@ -1174,6 +1379,16 @@ export function OrionCityBackground({
         mesh.castShadow = false;
         mesh.receiveShadow = false;
         world.add(mesh);
+        buildingOccluders.push(mesh);
+
+        buildingFootprints.push({
+          name: cfg.name,
+          x: mesh.position.x,
+          z: mesh.position.z,
+          halfX,
+          halfZ,
+        });
+        if (diagState) diagState.buildings.placed += 1;
       };
 
       // Keep Orion custom landmark placements but align them to current city ground.
@@ -1189,6 +1404,7 @@ export function OrionCityBackground({
           stretchZ: rand(0.9, 1.14),
           scaleMul: rand(0.95, 1.1),
           allowInCorridor: false,
+          avoidHardOverlap: false,
         });
       }
 
@@ -1211,13 +1427,17 @@ export function OrionCityBackground({
       for (const ring of rings) {
         const offset = rand(0, Math.PI * 2);
         for (let i = 0; i < ring.count; i++) {
+          if (diagState) diagState.buildings.ringAttempts += 1;
           const a = offset + (i / ring.count) * Math.PI * 2;
           const x = centerX + Math.cos(a) * ring.radius + rand(-ring.jitter, ring.jitter);
           const z = centerZ + Math.sin(a) * ring.radius + rand(-ring.jitter, ring.jitter);
 
           // Keep the immediate center cleaner for login readability.
           const nearCenter = Math.abs(x - centerX) < 260 && Math.abs(z - centerZ) < 340;
-          if (nearCenter && ring.radius <= 640) continue;
+          if (nearCenter && ring.radius <= 640) {
+            if (diagState) diagState.buildings.rejectedNearCenter += 1;
+            continue;
+          }
 
           const name = pickName();
           placeBuilding({
@@ -1266,6 +1486,7 @@ export function OrionCityBackground({
 
       // Distant skyline wall to avoid visible black bands on ultra-wide monitors.
       for (let i = 0; i < 96; i++) {
+        if (diagState) diagState.buildings.distantAttempts += 1;
         const a = rand(-Math.PI, Math.PI);
         const radius = rand(950, 1400);
         const x = centerX + Math.cos(a) * radius;
@@ -1282,6 +1503,47 @@ export function OrionCityBackground({
           scaleMul: rand(1.12, 1.48),
           allowInCorridor: false,
         });
+      }
+
+      if (diagState && buildingFootprints.length > 1) {
+        const overlaps: Array<{
+          a: string;
+          b: string;
+          ratio: number;
+          distance: number;
+        }> = [];
+        for (let i = 0; i < buildingFootprints.length; i++) {
+          const a = buildingFootprints[i];
+          if (!a) continue;
+          for (let j = i + 1; j < buildingFootprints.length; j++) {
+            const b = buildingFootprints[j];
+            if (!b) continue;
+            const minX = Math.max(a.x - a.halfX, b.x - b.halfX);
+            const maxX = Math.min(a.x + a.halfX, b.x + b.halfX);
+            const minZ = Math.max(a.z - a.halfZ, b.z - b.halfZ);
+            const maxZ = Math.min(a.z + a.halfZ, b.z + b.halfZ);
+            const ox = maxX - minX;
+            const oz = maxZ - minZ;
+            if (ox <= 0 || oz <= 0) continue;
+
+            const overlapArea = ox * oz;
+            const aArea = (a.halfX * 2) * (a.halfZ * 2);
+            const bArea = (b.halfX * 2) * (b.halfZ * 2);
+            const ratio = overlapArea / Math.max(1, Math.min(aArea, bArea));
+            if (ratio < 0.22) continue;
+
+            overlaps.push({
+              a: a.name,
+              b: b.name,
+              ratio: Number(ratio.toFixed(3)),
+              distance: Number(Math.hypot(a.x - b.x, a.z - b.z).toFixed(1)),
+            });
+          }
+        }
+        overlaps.sort((x, y) => y.ratio - x.ratio);
+        diagState.buildings.overlapPairCount = overlaps.length;
+        diagState.buildings.overlapPairs = overlaps.slice(0, 12);
+        if (overlaps.length > 0) diagState.issues.push("building_footprint_overlap");
       }
 
       // Air traffic: keep legacy motion for default mode, pooled traffic for V2.
@@ -1450,21 +1712,147 @@ export function OrionCityBackground({
         flickerScale: number;
       };
       const billboardActors: BillboardActor[] = [];
+      type BillboardPlacement = {
+        mesh: ThreeTypes.Mesh;
+        layer: "source" | "orion" | "custom";
+        slot?: string;
+        animated: boolean;
+        x: number;
+        y: number;
+        z: number;
+        w: number;
+        h: number;
+      };
+      const billboardPlacements: BillboardPlacement[] = [];
+      const registerBillboardPlacement = (
+        mesh: ThreeTypes.Mesh,
+        cfg: {
+          layer: "source" | "orion" | "custom";
+          slot?: string;
+          animated: boolean;
+          w: number;
+          h: number;
+        },
+      ) => {
+        const p = mesh.position;
+        billboardPlacements.push({
+          mesh,
+          layer: cfg.layer,
+          slot: cfg.slot,
+          animated: cfg.animated,
+          x: p.x,
+          y: p.y,
+          z: p.z,
+          w: cfg.w,
+          h: cfg.h,
+        });
+        if (diagState) {
+          if (cfg.layer === "source") diagState.billboards.sourceCount += 1;
+          if (cfg.layer === "orion") diagState.billboards.orionCount += 1;
+          if (cfg.layer === "custom") diagState.billboards.customCount += 1;
+          if (cfg.animated) diagState.billboards.animatedPlaced += 1;
+        }
+      };
+      const overlapsPlacedBillboards = (x: number, y: number, z: number, w: number, h: number, padding = 10) => billboardPlacements.some((b) => {
+        const distXZ = Math.hypot(x - b.x, z - b.z);
+        const minDist = (((w + b.w) * 0.5) * 0.82) + padding;
+        const verticalOk = Math.abs(y - b.y) < ((h + b.h) * 0.28);
+        return distXZ < minDist && verticalOk;
+      });
+      const estimateBillboardSize = (mesh: ThreeTypes.Mesh, fallbackW: number, fallbackH: number) => {
+        const geom = mesh.geometry as ThreeTypes.BufferGeometry | undefined;
+        if (!geom) return { w: fallbackW, h: fallbackH };
+        if (!geom.boundingBox) geom.computeBoundingBox();
+        if (!geom.boundingBox) return { w: fallbackW, h: fallbackH };
+        const size = new THREE.Vector3();
+        geom.boundingBox.getSize(size);
+        return {
+          w: Math.max(1, Math.abs(size.x * mesh.scale.x)),
+          h: Math.max(1, Math.abs(size.y * mesh.scale.y)),
+        };
+      };
       const billboardCfg = runtimeConfig.billboards;
       if (billboardCfg.enabled) {
-        // Original Orion arcade billboards (static atlas slices instead of video).
-        const sourceUV: Record<string, ThreeTypes.Vector2> = {
+        // Orion atlas slots reused by both source and custom skyline billboards.
+        type OrionAtlasSlot = "A" | "B" | "C" | "D";
+        const sourceUV: Record<OrionAtlasSlot, ThreeTypes.Vector2> = {
           A: new THREE.Vector2(0, 0),
           B: new THREE.Vector2(0.5, 0),
           C: new THREE.Vector2(0, 0.5),
           D: new THREE.Vector2(0.5, 0.5),
         };
-        const sourceBrightness: Record<string, number> = {
+        const sourceBrightness: Record<OrionAtlasSlot, number> = {
           A: 1,
           B: 0.7,
           C: 0.45,
           D: 0.62,
         };
+        const createAtlasSlice = (
+          baseTex: ThreeTypes.Texture,
+          slot: OrionAtlasSlot,
+        ) => {
+          const uv = sourceUV[slot];
+          const map = baseTex.clone();
+          map.flipY = false;
+          map.anisotropy = textureAniso;
+          map.wrapS = THREE.ClampToEdgeWrapping;
+          map.wrapT = THREE.ClampToEdgeWrapping;
+          map.repeat.set(0.5, 0.5);
+          map.offset.copy(uv);
+          map.minFilter = (baseTex as any).isVideoTexture
+            ? THREE.LinearFilter
+            : THREE.LinearMipmapLinearFilter;
+          map.magFilter = THREE.LinearFilter;
+          map.generateMipmaps = !(baseTex as any).isVideoTexture;
+          (map as any).colorSpace = (baseTex as any).colorSpace ?? (map as any).colorSpace;
+          map.needsUpdate = true;
+          loadedTextures.add(map);
+          if (diagState && (baseTex as any).isVideoTexture) {
+            diagState.billboards.videoSliceTypes.push({
+              slot,
+              ctor: map.constructor?.name ?? "UnknownTexture",
+              isVideoTexture: Boolean((map as any).isVideoTexture),
+            });
+          }
+          return map;
+        };
+        const createAtlasMaterial = (
+          slot: OrionAtlasSlot,
+          intensityMul: number,
+          alphaTest: number,
+        ) => {
+          const map = createAtlasSlice(arcadeAtlasTex, slot);
+
+          const brightness = sourceBrightness[slot] ?? 1;
+          const mat = registerMaterial(new THREE.MeshStandardMaterial({
+            map,
+            emissiveMap: map,
+            color: 0xffffff,
+            emissive: new THREE.Color(0xffffff),
+            emissiveIntensity: (0.72 + brightness * 0.26) * readabilityBoost * intensityMul,
+            roughness: 0.44,
+            metalness: 0.12,
+            transparent: true,
+            opacity: 0.94,
+            alphaTest,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+          }));
+          mat.polygonOffset = true;
+          mat.polygonOffsetFactor = -1;
+          mat.polygonOffsetUnits = -2;
+          return mat;
+        };
+        const orientBillboard = (mesh: ThreeTypes.Mesh, yaw: number) => {
+          const nX = Math.sin(yaw);
+          const nZ = Math.cos(yaw);
+          mesh.rotation.y = yaw;
+          const toCamX = baseCam.x - mesh.position.x;
+          const toCamZ = baseCam.z - mesh.position.z;
+          if ((nX * toCamX) + (nZ * toCamZ) < 0) mesh.rotation.y += Math.PI;
+        };
+
+        // Original Orion arcade billboards (kept as source layer).
         const arcadeTemplate = level.getObjectByName("Arcade-Screen") as ThreeTypes.Mesh | null;
         const arcadeAnchorA = level.getObjectByName("Arcade-Instance-A");
         if (arcadeTemplate && (arcadeTemplate as any).isMesh && arcadeAnchorA) {
@@ -1473,41 +1861,10 @@ export function OrionCityBackground({
           const invAnchorA = new THREE.Matrix4().copy(arcadeAnchorA.matrixWorld).invert();
           const templateLocalFromA = new THREE.Matrix4().multiplyMatrices(invAnchorA, arcadeTemplate.matrixWorld);
 
-          for (const slot of ["A", "B", "C", "D"]) {
+          for (const slot of ["A", "B", "C", "D"] as OrionAtlasSlot[]) {
             const anchor = level.getObjectByName(`Arcade-Instance-${slot}`);
-            const uv = sourceUV[slot];
-            if (!anchor || !uv) continue;
-
-            const map = arcadeAtlasTex.clone();
-            map.flipY = false;
-            map.anisotropy = textureAniso;
-            map.wrapS = THREE.ClampToEdgeWrapping;
-            map.wrapT = THREE.ClampToEdgeWrapping;
-            map.repeat.set(0.5, 0.5);
-            map.offset.copy(uv);
-            map.minFilter = THREE.LinearMipmapLinearFilter;
-            map.magFilter = THREE.LinearFilter;
-            map.needsUpdate = true;
-            loadedTextures.add(map);
-
-            const brightness = sourceBrightness[slot] ?? 1;
-            const mat = registerMaterial(new THREE.MeshStandardMaterial({
-              map,
-              emissiveMap: map,
-              color: 0xffffff,
-              emissive: new THREE.Color(0xffffff),
-              emissiveIntensity: (0.86 + brightness * 0.32) * readabilityBoost,
-              roughness: 0.44,
-              metalness: 0.12,
-              transparent: true,
-              opacity: 0.96,
-              alphaTest: 0.04,
-              depthWrite: false,
-              side: THREE.DoubleSide,
-            }));
-            mat.polygonOffset = true;
-            mat.polygonOffsetFactor = -1;
-            mat.polygonOffsetUnits = -2;
+            if (!anchor) continue;
+            const mat = createAtlasMaterial(slot, 0.9, 0.05);
 
             let mesh: ThreeTypes.Mesh;
             if (slot === "A") {
@@ -1524,53 +1881,132 @@ export function OrionCityBackground({
             mesh.castShadow = false;
             mesh.receiveShadow = false;
             mesh.renderOrder = 7;
+            const size = estimateBillboardSize(mesh, 36, 220);
+            registerBillboardPlacement(mesh, {
+              layer: "source",
+              slot,
+              animated: false,
+              w: size.w,
+              h: size.h,
+            });
 
             billboardActors.push({
               material: mat,
               baseIntensity: mat.emissiveIntensity,
               phase: rnd() * Math.PI * 2,
-              flickerScale: 0.018 + rnd() * 0.012,
+              flickerScale: 0.01 + rnd() * 0.008,
             });
           }
         }
 
+        // Orion skyline billboards: larger, static, clearly visible in login composition.
+        const orionGroup = new THREE.Group();
+        world.add(orionGroup);
+        const orionAnchors: Array<{
+          x: number; y: number; z: number; yaw: number; w: number; h: number; offset: number; slot: OrionAtlasSlot;
+        }> = [
+          { x: centerX - 642, y: cityGroundY + 194, z: centerZ - 216, yaw: 0.47, w: 66, h: 340, offset: 60, slot: "A" },
+          { x: centerX + 650, y: cityGroundY + 188, z: centerZ - 210, yaw: -0.46, w: 64, h: 332, offset: 60, slot: "B" },
+          { x: centerX - 724, y: cityGroundY + 260, z: centerZ - 378, yaw: 0.53, w: 58, h: 312, offset: 56, slot: "C" },
+          { x: centerX + 734, y: cityGroundY + 252, z: centerZ - 368, yaw: -0.51, w: 56, h: 302, offset: 56, slot: "D" },
+        ];
+        for (const a of orionAnchors) {
+          const mat = createAtlasMaterial(a.slot, 1.22, 0.035);
+          const mesh = new THREE.Mesh(new THREE.PlaneGeometry(a.w, a.h), mat);
+          const nX = Math.sin(a.yaw);
+          const nZ = Math.cos(a.yaw);
+          mesh.position.set(
+            a.x + (nX * a.offset),
+            a.y,
+            a.z + (nZ * a.offset),
+          );
+          orientBillboard(mesh, a.yaw);
+          mesh.castShadow = false;
+          mesh.receiveShadow = false;
+          mesh.renderOrder = 8;
+          orionGroup.add(mesh);
+          registerBillboardPlacement(mesh, {
+            layer: "orion",
+            slot: a.slot,
+            animated: false,
+            w: a.w,
+            h: a.h,
+          });
+
+          billboardActors.push({
+            material: mat,
+            baseIntensity: mat.emissiveIntensity,
+            phase: rnd() * Math.PI * 2,
+            flickerScale: 0.012 + rnd() * 0.01,
+          });
+        }
+
+        // Custom billboard layer.
         if (billboardCfg.count > 0) {
           const billboardGroup = new THREE.Group();
           world.add(billboardGroup);
 
           const anchors = [
-            { x: centerX - 640, y: cityGroundY + 194, z: centerZ - 214, yaw: 0.47, w: 54, h: 338, offset: 58 },
-            { x: centerX + 646, y: cityGroundY + 188, z: centerZ - 208, yaw: -0.46, w: 52, h: 330, offset: 58 },
-            { x: centerX - 716, y: cityGroundY + 258, z: centerZ - 372, yaw: 0.53, w: 46, h: 308, offset: 54 },
-            { x: centerX + 724, y: cityGroundY + 252, z: centerZ - 360, yaw: -0.51, w: 44, h: 300, offset: 54 },
-            { x: centerX - 792, y: cityGroundY + 322, z: centerZ - 566, yaw: 0.58, w: 40, h: 278, offset: 50 },
-            { x: centerX + 804, y: cityGroundY + 316, z: centerZ - 552, yaw: -0.57, w: 40, h: 274, offset: 50 },
+            { x: centerX - 652, y: cityGroundY + 196, z: centerZ - 226, yaw: 0.47, w: 46, h: 332, offset: 64 },
+            { x: centerX + 658, y: cityGroundY + 190, z: centerZ - 220, yaw: -0.46, w: 44, h: 324, offset: 64 },
+            { x: centerX - 732, y: cityGroundY + 260, z: centerZ - 386, yaw: 0.53, w: 40, h: 300, offset: 60 },
+            { x: centerX + 740, y: cityGroundY + 254, z: centerZ - 374, yaw: -0.51, w: 38, h: 292, offset: 60 },
+            { x: centerX - 804, y: cityGroundY + 322, z: centerZ - 572, yaw: 0.58, w: 34, h: 272, offset: 56 },
+            { x: centerX + 816, y: cityGroundY + 318, z: centerZ - 560, yaw: -0.57, w: 34, h: 268, offset: 56 },
+            { x: centerX - 928, y: cityGroundY + 234, z: centerZ - 296, yaw: 0.63, w: 44, h: 306, offset: 70 },
+            { x: centerX + 938, y: cityGroundY + 228, z: centerZ - 292, yaw: -0.62, w: 42, h: 300, offset: 70 },
+            { x: centerX - 998, y: cityGroundY + 286, z: centerZ - 512, yaw: 0.67, w: 36, h: 280, offset: 64 },
+            { x: centerX + 1008, y: cityGroundY + 280, z: centerZ - 504, yaw: -0.66, w: 36, h: 276, offset: 64 },
           ];
           const targetCount = Math.min(billboardCfg.count, anchors.length);
+          const animatedCount = Math.min(targetCount, Math.max(0, billboardCfg.animatedCount));
+          const animatedSlots: OrionAtlasSlot[] = ["A", "B", "C", "D"];
+          let placed = 0;
+          let animatedPlaced = 0;
 
-          for (let i = 0; i < targetCount; i++) {
+          for (let i = 0; i < anchors.length; i++) {
+            if (placed >= targetCount) break;
             const a = anchors[i];
             if (!a) continue;
-            const tex = createBillboardTexture(THREE, i, rnd);
+            const nX = Math.sin(a.yaw);
+            const nZ = Math.cos(a.yaw);
+            const posX = a.x + (nX * a.offset);
+            const posZ = a.z + (nZ * a.offset);
+            if (overlapsPlacedBillboards(posX, a.y, posZ, a.w, a.h, 14)) {
+              if (diagState) diagState.billboards.customSkippedOverlap += 1;
+              continue;
+            }
+
+            let tex: ThreeTypes.Texture | null = null;
+            const shouldAnimate = Boolean(billboardVideoAtlasTex && animatedPlaced < animatedCount);
+            const animatedSlot = animatedSlots[animatedPlaced % animatedSlots.length] ?? "A";
+            if (shouldAnimate && billboardVideoAtlasTex) {
+              const slot = animatedSlot;
+              tex = createAtlasSlice(billboardVideoAtlasTex, slot);
+            } else {
+              tex = createBillboardTexture(THREE, placed, rnd);
+            }
             if (!tex) continue;
-            tex.flipY = false;
-            tex.anisotropy = textureAniso;
-            tex.minFilter = THREE.LinearMipmapLinearFilter;
-            tex.magFilter = THREE.LinearFilter;
-            tex.needsUpdate = true;
-            loadedTextures.add(tex);
+            if (!(tex as any).isVideoTexture) {
+              tex.flipY = false;
+              tex.anisotropy = textureAniso;
+              tex.minFilter = THREE.LinearMipmapLinearFilter;
+              tex.magFilter = THREE.LinearFilter;
+              tex.needsUpdate = true;
+              loadedTextures.add(tex);
+            }
 
             const mat = registerMaterial(new THREE.MeshStandardMaterial({
               map: tex,
               emissiveMap: tex,
               color: 0xffffff,
               emissive: new THREE.Color(0xffffff),
-              emissiveIntensity: 0.94 + rnd() * 0.24,
+              emissiveIntensity: 0.72 + rnd() * 0.16,
               roughness: 0.48,
               metalness: 0.09,
               transparent: true,
-              opacity: 0.96,
-              alphaTest: 0.04,
+              opacity: 0.9,
+              alphaTest: 0.05,
               depthWrite: false,
               side: THREE.DoubleSide,
             }));
@@ -1579,27 +2015,90 @@ export function OrionCityBackground({
             mat.polygonOffsetUnits = -1;
 
             const mesh = new THREE.Mesh(new THREE.PlaneGeometry(a.w, a.h), mat);
-            const nX = Math.sin(a.yaw);
-            const nZ = Math.cos(a.yaw);
             mesh.position.set(
-              a.x + (nX * a.offset),
+              posX,
               a.y,
-              a.z + (nZ * a.offset),
+              posZ,
             );
-            mesh.rotation.y = a.yaw;
+            orientBillboard(mesh, a.yaw);
             mesh.castShadow = false;
             mesh.receiveShadow = false;
-            mesh.renderOrder = 8;
+            mesh.renderOrder = 9;
             billboardGroup.add(mesh);
+            registerBillboardPlacement(mesh, {
+              layer: "custom",
+              slot: shouldAnimate ? animatedSlot : undefined,
+              animated: shouldAnimate,
+              w: a.w,
+              h: a.h,
+            });
+            if (shouldAnimate) animatedPlaced += 1;
+            placed += 1;
 
             billboardActors.push({
               material: mat,
               baseIntensity: mat.emissiveIntensity,
               phase: rnd() * Math.PI * 2,
-              flickerScale: 0.024 + rnd() * 0.018,
+              flickerScale: 0.014 + rnd() * 0.012,
             });
           }
         }
+      }
+
+      if (diagState && billboardPlacements.length > 1) {
+        const overlaps: Array<{
+          a: string;
+          b: string;
+          dist: number;
+          dy: number;
+        }> = [];
+        for (let i = 0; i < billboardPlacements.length; i++) {
+          const a = billboardPlacements[i];
+          if (!a) continue;
+          for (let j = i + 1; j < billboardPlacements.length; j++) {
+            const b = billboardPlacements[j];
+            if (!b) continue;
+            const dist = Math.hypot(a.x - b.x, a.z - b.z);
+            const minDist = ((a.w + b.w) * 0.5) * 0.86;
+            const dy = Math.abs(a.y - b.y);
+            if (dist < minDist && dy < ((a.h + b.h) * 0.25)) {
+              overlaps.push({
+                a: `${a.layer}:${a.slot ?? "-"}`,
+                b: `${b.layer}:${b.slot ?? "-"}`,
+                dist: Number(dist.toFixed(1)),
+                dy: Number(dy.toFixed(1)),
+              });
+            }
+          }
+        }
+        diagState.billboards.overlapPairCount = overlaps.length;
+        diagState.billboards.overlapPairs = overlaps.slice(0, 12);
+        if (overlaps.length > 0) diagState.issues.push("billboard_overlap");
+
+        const occluded: Array<{ layer: string; slot?: string; blockerDist: number }> = [];
+        const raycaster = new THREE.Raycaster();
+        const dir = new THREE.Vector3();
+        for (const b of billboardPlacements) {
+          dir.set(b.x - baseCam.x, b.y - baseCam.y, b.z - baseCam.z);
+          const dist = dir.length();
+          if (dist <= 1e-3) continue;
+          dir.multiplyScalar(1 / dist);
+          raycaster.set(baseCam, dir);
+          raycaster.near = 0;
+          raycaster.far = Math.max(0, dist - 8);
+          const hits = raycaster.intersectObjects(buildingOccluders, false);
+          if (hits.length > 0) {
+            const blockerDist = hits[0]?.distance ?? dist;
+            occluded.push({
+              layer: b.layer,
+              slot: b.slot,
+              blockerDist: Number(blockerDist.toFixed(1)),
+            });
+          }
+        }
+        diagState.billboards.occludedByBuildings = occluded.length;
+        diagState.billboards.occludedSamples = occluded.slice(0, 12);
+        if (occluded.length > 0) diagState.issues.push("billboard_occluded");
       }
 
       // Rain (1-2 layers by preset).
@@ -1703,6 +2202,11 @@ export function OrionCityBackground({
         }
       }
 
+      if (diagState) {
+        diagState.generatedAt = new Date().toISOString();
+        (window as any).__AX_ORION_DIAG__ = diagState;
+      }
+
       const size = new THREE.Vector2();
       function resize() {
         const w = Math.max(1, window.innerWidth);
@@ -1778,6 +2282,9 @@ export function OrionCityBackground({
         floorGlowMat.opacity = runtimeConfig.post.floorGlowBase + pulse * runtimeConfig.post.floorGlowAmp;
         laneMat.opacity = runtimeConfig.post.laneGlowBase + pulse * runtimeConfig.post.laneGlowAmp;
         skyGlowMat.opacity = 0.045 + (0.5 + 0.5 * Math.sin(t * 0.17)) * 0.045;
+        if (skyBackdropMat) {
+          skyBackdropMat.opacity = 0.2 + (0.5 + 0.5 * Math.sin(t * 0.09)) * 0.1;
+        }
 
         if (scene.fog instanceof THREE.FogExp2) {
           scene.fog.color.copy(tmpColor.setRGB(
@@ -1900,6 +2407,15 @@ export function OrionCityBackground({
 
         for (const tex of loadedTextures) tex.dispose();
         for (const m of sceneMaterials) disposeMaterial(m);
+        for (const video of managedVideos) {
+          try {
+            video.pause();
+            video.removeAttribute("src");
+            video.load();
+          } catch {
+            // no-op
+          }
+        }
       };
     })().catch(() => {
       // Keep CSS fallback if loading fails.

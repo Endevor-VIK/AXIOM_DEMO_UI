@@ -7,7 +7,7 @@ AXS_HEADER_META:
   goal: "Document"
   scope: "AXIOM WEB CORE UI"
   lang: ru
-  last_updated: 2026-02-16
+  last_updated: 2026-02-19
   editable_by_agents: true
   change_policy: "Update via AgentOps log"
 -->
@@ -34,6 +34,8 @@ AXS_HEADER_META:
   - Артефакты: `ops/artifacts/ui_scan/manual/orion_source_requests.json`, `ops/artifacts/ui_scan/manual/orion_source_probe.png`
 - 2026-02-12T00:38:11+03:00 — Действие: По запросу CREATOR уточнено ограничение: движение камеры не менять (оставить parallax от курсора), требуется только правильный базовый ракурс на центр города. → Результат: OK
 - 2026-02-16T20:03:44+03:00 — Действие: по запросу CREATOR подготовлен план S0-S5 для вывода 0030 на новый уровень и отдельный SPEC с quality gates; зафиксированы блокеры (typecheck + отсутствие выделенного e2e login gate) → Результат: OK
+- 2026-02-19T16:50:20+03:00 — Действие: Разобраны свежие кропы CREATOR по «грязным» фасадам; подтверждено, что `building7..10` используют собственные baked-материалы, а `building1/2/5/6` идут через shared-set. Критичный регресс: `building7.glb` был исключён из `BUILDING_USE_ORIGINAL`, что давало UV-мусор/грязные пятна на части инстансов. → Результат: OK
+- 2026-02-19T20:39:27+03:00 — Действие: выполнена детальная forensic-диагностика текущего Orion login-рендера по запросу CREATOR (`debug=1`, runtime telemetry + сетевой трейс + сравнение anchor-координат billboard-слоёв). Подтверждены причины артефактов: (1) почти полное совпадение custom/orion billboard-позиций (расстояние 4.8–10.4 world units), (2) изменённая в прошлых правках skyline-density логика, (3) `video-atlas.mp4` не декодируется в Chromium (`HTMLMediaError code 4`), из-за чего animated-slot не активируется. → Результат: OK
 
 ## Step B — Implementation
 - 2026-02-10T19:50:03+03:00 — Действие: Добавлен boot-sequence overlay и переход в login, подключены стили → Результат: OK
@@ -85,6 +87,23 @@ AXS_HEADER_META:
   - Обновлено: `app/routes/login/page.tsx`, `lib/analytics.ts`
 - 2026-02-17T00:32:18+03:00 — Действие: переведены основные приватные route-экраны на lazy loading (`React.lazy + Suspense`) для реального code-splitting; синхронизирован `warmPrimaryRoutes` на prefetch route-chunks после `boot=ready` → Результат: OK
   - Обновлено: `app/main.tsx`, `app/routes/login/page.tsx`
+- 2026-02-19T16:50:20+03:00 — Действие: восстановлен source-профиль для heavy-модели `building7.glb` (`BUILDING_USE_ORIGINAL`), чтобы убрать UV-артефакты от shared-set материала. → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-19T16:50:20+03:00 — Действие: выполнена стабилизация original-heavy материалов (`building7..10`): единая настройка color-space/anisotropy для карт, мягкий PBR-тюнинг (emissive/roughness/metalness/envMap) + ограничение экстремального scale/stretch для original-инстансов. → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-19T16:50:20+03:00 — Действие: снижена доля heavy/original зданий в ближнем foreground strip и перераспределён heavy chance по радиусам skyline (ближе к камере — чище профиль, дальний skyline — сохранена плотность). → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-19T16:59:23+03:00 — Действие: по запросу CREATOR возвращена прежняя плотность/раскладка skyline: восстановлен baseline-распределитель зданий (`rnd() < 0.28` для heavy pool) и исходный foreground-pattern (`i % 3`) без ослабления near-heavy. Фиксы фасадных материалов сохранены. → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-19T19:36:27+03:00 — Действие: интегрированы оригинальные ассеты глубины Orion (`sky4k-75.avif`, `video-atlas*.mp4`) в login-рендер: добавлен sky back-layer, подключён animated atlas для skyline-billboards (с fallback), усилена плотность skyline через quality-scaled генератор (`rings + distant wall`) и сохранён фикс проблемных фасадов Set2 (`alphaToCoverage=false`, lowered alphaTest). → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`, `components/login/orionLoginConfig.ts`
+  - Добавлено: `public/assets/orion/original/sky4k-75.avif`, `public/assets/orion/original/video-atlas.mp4`, `public/assets/orion/original/video-atlas-ultra.mp4`
+- 2026-02-19T20:39:27+03:00 — Действие: выполнен целевой фикс расстановки и наложений: возвращён baseline skyline-distribution (`rings + distant=96`, corridor/nearCenter bounds), добавлен анти-overlap фильтр для hard-intersection building footprints, переразведены custom billboard anchors + runtime overlap-guard, добавлен диагностический канал `window.__AX_ORION_DIAG__` (buildings/billboards/media/issues) для воспроизводимого анализа в `debug=1`. → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-19T20:39:27+03:00 — Действие: стабилизирован media-fallback для animated billboards: убран нестабильный выбор `video-atlas-ultra.mp4`, оставлен единый `video-atlas.mp4` + детальный reason-log по media decode error (`code 4`) в diag-объекте. → Результат: OK
+  - Обновлено: `components/login/OrionCityBackground.tsx`
+- 2026-02-19T20:39:27+03:00 — Действие: в runtime preset `ultra` временно отключены animated billboard slots (`animatedCount=0`) до перекодирования `video-atlas` в совместимый codec-profile; при этом сохранены sky/backdrop и статические Orion/custom billboard-слои без сетевых фейлов. → Результат: OK
+  - Обновлено: `components/login/orionLoginConfig.ts`
 
 ## Step C — Documentation
 - 2026-02-10T19:50:03+03:00 — Действие: Документация не требуется → Результат: SKIP
@@ -154,6 +173,25 @@ AXS_HEADER_META:
 - 2026-02-17T00:42:06+03:00 — Действие: `npm run test:e2e:preview -- --project=chromium tests/e2e/login-boot.spec.ts` после lazy-route рефактора → Результат: PASS
   - Итого: `4 passed` (`1.6m`), boot-контракт сохранён.
   - Подтверждено: production build разрезан на route-chunks (news/content/profile/settings/favorites/reader и др.), без предупреждений mixed static/dynamic import для этих модулей.
+- 2026-02-19T16:50:20+03:00 — Действие: `npm run build` после серии Orion-фиксов (material profile + skyline retune) → Результат: PASS
+- 2026-02-19T16:50:20+03:00 — Действие: Playwright smoke `/login?debug=1` (strict preview `127.0.0.1:4173`) с поэтапной A/B сверкой до/после фиксов. → Результат: OK
+  - Артефакты: `ops/artifacts/ui_scan/manual_2026-02-19T16-26-54_orion_ab/login.png`, `ops/artifacts/ui_scan/manual_2026-02-19T16-39-17_orion_fix2/login.png`, `ops/artifacts/ui_scan/manual_2026-02-19T16-44-19_orion_fix3/login.png`
+- 2026-02-19T16:59:23+03:00 — Действие: `npm run build` после возврата baseline skyline density → Результат: PASS
+- 2026-02-19T16:59:23+03:00 — Действие: Playwright smoke `/login?debug=1` (strict preview `127.0.0.1:4173`) после restore density. → Результат: OK
+  - Артефакт: `ops/artifacts/ui_scan/manual_2026-02-19T16-57-29_orion_density_restore/login.png`
+- 2026-02-19T19:36:27+03:00 — Действие: `npm run build` после интеграции sky4k/video-atlas и пересборки skyline density. → Результат: PASS
+- 2026-02-19T19:36:27+03:00 — Действие: Playwright smoke `/login?debug=1` (strict preview `127.0.0.1:4173`) + контрольный full-page screenshot после патча. → Результат: OK
+  - Артефакт: `ops/artifacts/ui_scan/manual_2026-02-19T19-31-16/login.png`
+- 2026-02-19T19:36:27+03:00 — Действие: runtime asset-audit через сетевой трейс `/login?debug=1`. → Результат: OK
+  - Артефакт: `ops/artifacts/ui_scan/manual/orion_runtime_requests_after_patch.json`
+  - Подтверждено загрузкой: `sky4k-75.avif`, `video-atlas.mp4`, полный high-набор `building1..10.glb` и `BG-Buildings-Set1/2*.ktx2`.
+- 2026-02-19T20:39:27+03:00 — Действие: `npm run build` после анти-overlap + diagnostic patch. → Результат: PASS
+- 2026-02-19T20:39:27+03:00 — Действие: расширенный Playwright smoke `/login?debug=1` (strict preview `127.0.0.1:4173`) с экспортом runtime diagnostics (`__AX_ORION_DIAG__`) + screenshot. → Результат: OK
+  - Артефакты: `ops/artifacts/ui_scan/manual_2026-02-19T20-28-58_orion_diag/login.png`, `ops/artifacts/ui_scan/manual_2026-02-19T20-28-58_orion_diag/report.json`
+  - Подтверждено: `billboard overlapPairCount=0`, `customSkippedOverlap=4`, `building overlapPairCount=23` (было 67 до anti-overlap фильтра), `video-atlas` decode error: `code 4`, `failed_requests` содержит `video-atlas.mp4 net::ERR_ABORTED`.
+- 2026-02-19T20:46:38+03:00 — Действие: финальный smoke `/login?debug=1` после rollback `animatedCount` в preset: без failed requests, без billboard overlap, с сохранённой плотностью skyline и anti-overlap guard. → Результат: OK
+  - Артефакты: `ops/artifacts/ui_scan/manual_2026-02-19T20-46-38_orion_diag/login.png`, `ops/artifacts/ui_scan/manual_2026-02-19T20-46-38_orion_diag/report.json`
+  - Подтверждено: `failed_requests=[]`, `issues=[building_footprint_overlap,billboard_occluded]`, `rejectedOverlap=19`, `building overlapPairCount=23`, `customSkippedOverlap=4`, `billboard overlapPairCount=0`.
 
 ## Step E — Git
 - 2026-02-10T19:52:49+03:00 — Commit: `d761090` — `feat(login): add boot loader transition` — Файлы: `app/routes/login/page.tsx`, `styles/login-boot.css`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`, `ops/agent_ops/logs/00_LOG_INDEX.md`
