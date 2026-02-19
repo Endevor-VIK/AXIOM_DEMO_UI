@@ -221,6 +221,7 @@ AXS_HEADER_META:
 - 2026-02-19T20:58:18+03:00 — Commit: `f72b03a` — `chore(agent-ops): record Orion diagnostics commit details` — Файлы: `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 - 2026-02-19T21:50:05+03:00 — Commit: `0f1f56e` — `docs(0030): extend Orion visual parity specification` — Файлы: `docs/iterations/0030_login-boot-loader-transition/SPEC.md`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 - 2026-02-19T21:54:36+03:00 — Commit: `3fa6623` — `chore(agent-ops): record 0030 Orion spec extension commit` — Файлы: `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
+- 2026-02-19T23:24:48+03:00 — Commit: `452ce5f` — `feat(login-bg): execute OVP P0-P1 skyline overlap cleanup` — Файлы: `components/login/OrionCityBackground.tsx`, `ops/agent_ops/logs/0030_login-boot-loader-transition.md`
 
 ---
 
